@@ -43,15 +43,8 @@ export default class Clubs extends BaseModel {
   @column()
   public clubDescription?: string;
 
-  @column({
-    consume: (value: string | null) => {
-      if (value) {
-        return JSON.parse(value);
-      }
-      return null;
-    },
-  })
-  public settings: object;;
+  @column()
+  public settings: object;
 
   @column()
   public siteUrl?: string;

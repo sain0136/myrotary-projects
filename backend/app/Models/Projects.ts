@@ -20,7 +20,7 @@ export default class Projects extends BaseModel {
   public pledgesAssociated: Array<Pledge> | [];
 
   @computed()
-  public projectDetails:  {};
+  public projectDetails: {};
 
   @column({ isPrimary: true })
   public projectId: number;
@@ -55,140 +55,49 @@ export default class Projects extends BaseModel {
   @column.date()
   public completionDate: DateTime;
 
-  @column({
-    consume: (value: string | null) => {
-      if (value) {
-        return JSON.parse(value);
-      }
-      return null;
-    },
-  })
+  @column()
   public areaFocus: object;
 
-  @column({
-    consume: (value: string) => {
-      if (value) {
-        return parseFloat(value);
-      }
-      return null; // added for null value was not here before
-    },
-  })
+  @column()
   public fundingGoal: number;
 
-  @column({
-    consume: (value: string) => {
-      if (value) {
-        return parseFloat(value);
-      }
-      return null;
-    },
-  })
+  @column()
   public anticipatedFunding: number;
 
-  @column({
-    consume: (value: string) => {
-      if (value) {
-        return parseFloat(value);
-      }
-      return null;
-    },
-  })
+  @column()
   public intialSponsorClubContribution: number;
 
-  @column({
-    consume: (value: string) => {
-      if (value) {
-        return parseFloat(value);
-      }
-      return null;
-    },
-  })
+  @column()
   public coOperatingOrganisationContribution: number;
 
-  @column({
-    consume: (value: string) => {
-      if (value) {
-        return parseFloat(value);
-      }
-      return null;
-    },
-  })
+  @column()
   public districtSimplifiedGrantRequest: number;
 
-  @column({
-    consume: (value: string) => {
-      if (value) {
-        return parseFloat(value);
-      }
-      return null;
-    },
-  })
+  @column()
   public districtMatchingGrantRequest: number;
 
-  @column({
-    consume: (value: string) => {
-      if (value) {
-        return parseFloat(value);
-      }
-      return null;
-    },
-  })
+  @column()
   public totalPledges: number;
-
 
   @column()
   public currency: string;
 
-  @column({
-    consume: (value: string | null) => {
-      if (value) {
-        return JSON.parse(value);
-      }
-      return null;
-    },
-  })
+  @column()
   public extraDescriptions: object;
 
-  @column({
-    consume: (value: string | null) => {
-      if (value) {
-        return JSON.parse(value);
-      }
-      return null;
-    },
-  })
+  @column()
   public itemizedBudget: object;
 
-  @column({
-    consume: (value: string | null) => {
-      if (value) {
-        return JSON.parse(value);
-      }
-      return null;
-    },
-  })
+  @column()
   public hostclubInformation: object;
 
-  @column({
-    consume: (value: string | null) => {
-      if (value) {
-        return JSON.parse(value);
-      }
-      return null;
-    },
-  })
+  @column()
   public fileUploads: any;
 
   @column()
   public rotaryYear: string;
 
-  @column({
-    serialize: (value: string | null) => {
-      if (value) {
-        return JSON.parse(value);
-      }
-    },
-  })
+  @column()
   public imageLink: string;
 
   @column()

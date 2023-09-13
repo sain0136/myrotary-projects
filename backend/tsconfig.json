@@ -23,9 +23,6 @@
       ],
       "Database/*": [
         "./database/*"
-      ],
-      "@shared/*": [
-        "path/to/shared/*"
       ]
     },
     "types": [
