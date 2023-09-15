@@ -1,4 +1,4 @@
-import { IUser } from "./UserInterface";
+import { IUser } from "App/Shared/Interfaces/UserInterface";
 
 export interface ProjectDetails {
   creatorData: {
