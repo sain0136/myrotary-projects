@@ -1,31 +1,28 @@
-<script lang='ts'>
+<script lang="ts">
 export default {
-  name: 'App',
+  name: "App",
 };
-
 </script>
-<script setup lang='ts'>
-import Test from '@/modules/admin/views/Test.vue'
-import { useLanguage } from '@/utils/languages/UseLanguage'
+<script setup lang="ts">
+import Test from "@/modules/admin/views/Test.vue";
+import { useLanguage } from "@/utils/languages/UseLanguage";
 import { useToast } from "primevue/usetoast";
-import { onMounted, watch } from 'vue';
-import { toastHandler } from '@/utils/composables/ToastHandler'
-const { langTranslations } = useLanguage()
-const { toastRecord ,refCounter } = toastHandler()
+import { watch } from "vue";
+import { toastHandler } from "@/utils/composables/ToastHandler";
+const { langTranslations } = useLanguage();
+const { toastRecord, refCounter } = toastHandler();
 const toast = useToast();
 
 watch(refCounter, () => {
-  toast.add(toastRecord)
-}, )
+  toast.add(toastRecord);
+});
 </script>
 
-  
 <template>
   <div>
     <Toast />
     <nav class=" ">
-
-      <div class=" font-bold text-white">
+      <div class="font-bold text-white">
         {{ langTranslations.welcome }}
       </div>
     </nav>
@@ -33,7 +30,7 @@ watch(refCounter, () => {
   </div>
 </template>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
 div {
   height: 100%;
   margin: auto;

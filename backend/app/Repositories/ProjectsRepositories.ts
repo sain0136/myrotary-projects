@@ -4,32 +4,24 @@ import Districts from "App/Models/Districts";
 import Pledges from "App/Models/Pledges";
 import Projects from "App/Models/Projects";
 import Users from "App/Models/Users";
-import { ProjectDetails } from "Contracts/Shared/Interfaces/ProjectInterface";
-import { IUser } from "Contracts/Shared/Interfaces/UserInterface";
+import { IProjectDetails } from "App/Shared/Interfaces/ProjectInterface";
+import { IUser } from "App/Shared/Interfaces/UserInterface";
 
 export default class ProjectsRepositories {
-  /**
-   * @desc Retrieves project details based on a given id including information about the creator,
-   * district and club associated with the project.
-   * @param  {number} id
-   */
   public async getProjectDetails(id: number) {
-    const projectById: Projects = await Projects.findOrFail(id);
-    const creator: Users = await Users.findOrFail(projectById.createdBy);
-    const projectDisrict: Districts = await Districts.findOrFail(
-      projectById.districtId
-    );
-    const projectClub: Clubs = await Clubs.findOrFail(projectById.clubId);
+    const projectById = await Projects.findOrFail(id);
+    const creator = await Users.findOrFail(projectById.createdBy);
+    const projectDisrict = await Districts.findOrFail(projectById.districtId);
+    const projectClub = await Clubs.findOrFail(projectById.clubId);
     let projectAdmins = await Database.from("project_roles")
       .select("*")
       .where({ project_id: id });
     const allProjectAdmins = [] as IUser[];
     for await (const admin of projectAdmins) {
-      const user: Users = await Users.findOrFail(admin.user_id);
-      allProjectAdmins.push(user as unknown as IUser);
+      const users = await Users.findOrFail(admin.user_id);
+      allProjectAdmins.push(users as unknown as IUser);
     }
-
-    const projectDetails: ProjectDetails = {
+    const projectDetails: IProjectDetails = {
       creatorData: {
         fullName: creator.fullName,
         email: creator.email,

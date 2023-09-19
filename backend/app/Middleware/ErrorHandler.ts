@@ -35,6 +35,12 @@ const databaseErrors: { [key: string]: databaseError } = {
  * @return {Promise<void>} A promise that resolves when the function completes.
  */
 export default class ErrorHandler {
+  /**
+   * Handles the incoming HTTP request and response for exceptions.
+   *
+   * @param {HttpContextContract} request - The HTTP context contract containing the request and response objects.
+   * @param {() => Promise<void>} next - The next function in the middleware chain.
+   */
   public async handle(
     { request, response }: HttpContextContract,
     next: () => Promise<void>
