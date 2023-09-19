@@ -20,7 +20,9 @@ const corsConfig: CorsConfig = {
   | you can define a function to enable/disable it on per request basis as well.
   |
   */
-  enabled: false,
+
+  
+  enabled: true,
 
   // You can also use a function that return true or false.
   // enabled: (request) => request.url().startsWith('/api')
@@ -44,7 +46,10 @@ const corsConfig: CorsConfig = {
   |                     one of the above values.
   |
   */
-  origin: true,
+
+  /* origin: '*' allows any domain to access your API. 
+  This is fine for development but not recommended for production */
+  origin: '*',
 
   /*
   |--------------------------------------------------------------------------
@@ -117,6 +122,10 @@ const corsConfig: CorsConfig = {
   | https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials
   |
   */
+
+  /* credentials: true allows the browser to expose the response to frontend JavaScript
+   when the Access-Control-Allow-Credentials header is true. Make sure you understand the 
+   implications of this setting, especially if your application deals with sensitive information. */
   credentials: true,
 
   /*

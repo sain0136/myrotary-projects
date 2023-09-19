@@ -27,6 +27,13 @@ const databaseErrors: { [key: string]: databaseError } = {
   },
 };
 
+/**
+ * Handles the HTTP request and response.
+ *
+ * @param {HttpContextContract} request - The HTTP context contract.
+ * @param {() => Promise<void>} next - The next function to be called.
+ * @return {Promise<void>} A promise that resolves when the function completes.
+ */
 export default class ErrorHandler {
   public async handle(
     { request, response }: HttpContextContract,
@@ -49,6 +56,12 @@ export default class ErrorHandler {
     }
   }
 
+  /**
+   * Retrieves the translated message based on the provided custom exception.
+   *
+   * @param {CustomException} exception - The custom exception object containing status, errno, sqlMessage, stack, and message properties.
+   * @return {translation} The translated message based on the exception.
+   */
   private getTranslatedMessage({
     status,
     errno,
