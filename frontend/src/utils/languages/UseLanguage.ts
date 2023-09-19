@@ -2,7 +2,7 @@ import { ref, computed } from "vue";
 import type { Ref } from "vue";
 import { translations } from "@/utils/languages/Translations";
 
- type lang = "en" | "fr";
+type lang = "en" | "fr";
 // Reactive variable for the current language
 const languagePref: Ref<lang> = ref("en");
 

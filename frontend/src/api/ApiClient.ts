@@ -6,7 +6,7 @@ export class ApiClient {
 
   constructor() {}
 
-  // TODO: add Return Type in future 
+  // TODO: add Return Type in future
   public async fetchWrapper(
     method: string,
     endpoint: string,

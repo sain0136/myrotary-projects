@@ -1,6 +1,6 @@
 import { IUser } from "App/Shared/Interfaces/UserInterface";
 
-export interface ProjectDetails {
+export interface IProjectDetails {
   creatorData: {
     fullName: string;
     email: string;
