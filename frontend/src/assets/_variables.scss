@@ -1,28 +1,25 @@
 //  Screen Sizes
-$mobilePhoneScreen: 500px;
-$mobileScreen: 768px;
-$tabletMinScreen: 769px;
-$tabletMaxScreen: 1023px;
-$desktopScreen: 1024px;
-$desktopLargeScreen: 1280px;
-$desktopExtraLargeScreen: 1440px;
-//Base  Colors
+$smallMobile: 640px; // Small mobile devices
+$tablet: 768px; // Tablet devices
+$desktop: 1024px; // Desktop devices
+$wideDesktop: 1280px; // Wide desktop devices
+$ultraWideScreen: 1536px; // Ultra-wide desktop devices
+//Neutral   Colors
 $nearBlack: #212427;
 $nearWhite: #f5f5fa;
-$secondary: #119abf;
-$contrast: #ff6b6b;
-$accent: #2ecc71;
 $neutral-light: #f8f9fa;
 $neutral-dark: #343a40;
-// Color Pallete
-$primary: #00BDD6;
-$secondary: #8353E2;
-$color3:#4069E5;
-$color4:#ED7D2D;
-$danger:#DE3B40;
-$warning:#EFB034;
-$success:#1DD75B;
-$info:#379AE6;
-$lighter-background-color: #282828;
-$background-color: #161616;
-$container-background-color: #171A1FFF;
+// Background Color
+$background-color: #f5f5fa;
+// Primary Colors
+$primary: #ffb607;
+$primary-near-black: #212427;
+$primary-hover: #ffa200;
+// Secondary Colors
+$secondary: #72a900;
+$contrast: #2f4858;
+// Error and Success Colors
+$danger: #de3b40;
+$warning: #efb034;
+$success: #1dd75b;
+$info: #379ae6;
