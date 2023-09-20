@@ -25,9 +25,9 @@ const { langTranslations } = useLanguage();
     <div class="z-[1] flex h-screen items-center justify-center">
       <div class="text-center flex flex-col gap-8">
         <H2 :content="langTranslations.notfoundText" />
-        <H1 content="404" />
+        <H1 class="text-7xl" content="404" />
         <H2 :content="langTranslations.opps" />
-        <div class="mt-10 flex justify-center gap-8">
+        <div class="flex justify-center gap-8">
           <RotaryButton
             @click="router.push({ name: 'Landing' })"
             :theme="'black'"
