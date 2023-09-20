@@ -16,13 +16,12 @@ watch(refCounter, () => {
 </script>
 
 <template>
-  <div id="app">
+  <div>
     <Toast />
-    <main class=".fluid-container">
+    <main class="fluid-container">
       <router-view></router-view>
     </main>
   </div>
 </template>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

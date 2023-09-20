@@ -1,8 +1,14 @@
-export interface Roles {
+import type {
+  ClubRole,
+  DistrictRole,
+  UserType,
+} from "@/utils/types/commonTypes";
+
+export interface IRoles {
   club_id?: number;
-  club_role?: string;
+  club_role?: ClubRole;
   district_id?: number;
-  district_role?: string;
+  district_role?: DistrictRole;
   role_id: number;
   user_id: number;
   created_at: string;
@@ -23,12 +29,12 @@ export interface IUser {
   extra_details: object;
   club_id: number;
   district_id: number | null;
-  user_type: string;
+  user_type: UserType;
   // Created after
   user_id?: number;
   // computed properties
   fullName: string;
-  role: Array<Roles>;
+  role: Array<IRoles>;
   // creation or etc properties
   [key: string]: any;
   role_type?: string;
