@@ -29,3 +29,24 @@ Cons:
 Adds database queries to your application, which could impact performance.
 Requires a UI for admins to update the text.
 Implementation: Store the text in a database table but pulled it from json colum in mainassets table
+
+# Vue Router
+
+No, dynamic routes and lazy-loading are two different concepts.
+
+Dynamic Routes
+Dynamic routes are routes that are defined using a special syntax to include parts of the URL as route parameters. For example, /user/:id is a dynamic route where :id is a route parameter. When you navigate to /user/1, the id parameter will be 1.
+
+In the context of HMR, if you are working on a component that is loaded based on a dynamic route and you make changes to how those route parameters are used within the component, HMR might not always update the component as expected. You might have to manually refresh the page to see the changes.
+
+Lazy-Loading
+Lazy-loading is a technique where you only load the code for a route when the user actually navigates to that route. This is done to improve the initial load time of the application. In Vue Router, you can achieve this by using dynamic imports in your route configuration:
+
+javascript
+Copy code
+const routes = [
+{ path: '/about', component: () => import('@/views/About.vue') }
+]
+Here, the About.vue component will only be loaded when the user navigates to /about, not when the application initially loads.
+
+Both dynamic routes and lazy-loading are useful features, but they serve different purposes. Dynamic routes are about making your routes flexible and parameterized, while lazy-loading is about optimizing load performance.

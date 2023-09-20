@@ -20,8 +20,14 @@ export default {
         primary: "#FFB607",
         primaryNearBlack: "#212427",
         primaryHover: "#FFA200",
+        primaryFocus: "#FFC833",
+        primaryNearBlackHover: "#3A3E44",
+        primaryNearBlackFocus: "#53575D",
+
         // Secondary Colors
         secondary: "#72A900",
+        secondaryHover: "#8dbd00",
+        secondaryFocus: "#a8d100",
         contrast: "#2F4858",
         // Error and Success Colors
         danger: "#DE3B40",
