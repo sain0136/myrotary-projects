@@ -1,4 +1,5 @@
 import UserRepositories from "../Repositories/UserRepositories";
+import { AuthenticationRequestData } from "App/Utils/CommonTypes";
 
 export default class UserService {
   /* In this UserService class, the UserRepositories class is injected into 
@@ -10,19 +11,15 @@ export default class UserService {
 
   public async index() {
     const allUsers = await this.userRepositories.index();
-    for await (const user of allUsers) {
-      if (user.userType === "CLUB") {
-        user.role = user.role = await user
-          .related("clubRole")
-          .pivotQuery()
-          .where({ user_id: user.userId });
-      } else {
-        user.role = await user
-          .related("districtRole")
-          .pivotQuery()
-          .where({ user_id: user.userId });
-      }
-    }
     return allUsers;
+  }
+
+  public async authenticateUser(
+    AuthenticationRequestData: AuthenticationRequestData
+  ) {
+    const userLoginData = await this.userRepositories.authenticateUser(
+      AuthenticationRequestData
+    );
+    return userLoginData;
   }
 }

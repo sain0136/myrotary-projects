@@ -1,18 +1,9 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import CustomException from "App/Exceptions/CustomException";
 import Logger from "@ioc:Adonis/Core/Logger";
+import { Translation, DatabaseError } from "App/Utils/CommonTypes";
 
-type translation = {
-  en: string;
-  fr: string;
-};
-
-type databaseError = {
-  en: string;
-  fr: string;
-};
-
-const databaseErrors: { [key: string]: databaseError } = {
+const databaseErrors: { [key: string]: DatabaseError } = {
   "1062": {
     en: "Duplicate record entry ",
     fr: "Entrée d'enregistrement en double",
@@ -56,7 +47,8 @@ export default class ErrorHandler {
         response.status(error.status).send({
           statusCode: error.status,
           rawMessage: error.sqlMessage ? error.sqlMessage : error.message,
-          translatedMessage: this.getTranslatedMessage(error),
+          translatedMessage:
+            error.translatedMessage ?? this.getTranslatedMessage(error),
         });
       }
     }
@@ -66,7 +58,7 @@ export default class ErrorHandler {
    * Retrieves the translated message based on the provided custom exception.
    *
    * @param {CustomException} exception - The custom exception object containing status, errno, sqlMessage, stack, and message properties.
-   * @return {translation} The translated message based on the exception.
+   * @return {Translation} The translated message based on the exception.
    */
   private getTranslatedMessage({
     status,
@@ -74,7 +66,7 @@ export default class ErrorHandler {
     sqlMessage,
     stack,
     message,
-  }: CustomException): translation {
+  }: CustomException): Translation {
     if (errno && databaseErrors[errno]) {
       return databaseErrors[errno];
     } else {

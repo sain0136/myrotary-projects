@@ -5,7 +5,9 @@ export default {
 </script>
 
 <script setup lang="ts">
+import Password from "primevue/password";
 import { defineProps } from "vue";
+
 defineEmits(["update:modelValue"]);
 
 type inputType = "text" | "password" | "email" | "number" | "date";
@@ -34,7 +36,7 @@ const randomId =
   <div class="mb-4">
     <label
       :aria-label="label"
-      for="first_name"
+      :for="id ?? randomId"
       class="block pl-0.5 mb-2 text-sm font-semibold text-nearBlack"
       >{{ label }}</label
     >
@@ -53,8 +55,8 @@ const randomId =
       "
       :v-model="modelValue"
       :disabled="disabled ?? false"
-      autocomplete="off"
-      :name="label"
+      :autocomplete="Password ? 'new-password' : 'off'"
+      :name="type"
       :type="type"
       class="bg-gray-50 border text-gray-900 text-sm rounded-lg block w-full p-2.5"
       :placeholder="placeholder ?? ''"

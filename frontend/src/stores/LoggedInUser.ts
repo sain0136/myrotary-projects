@@ -43,6 +43,8 @@ export const useLoggedInUserStore = defineStore(
     };
   },
   {
-    persist: true,
+    persist: {
+      storage: localStorage,
+    },
   }
 );

@@ -11,7 +11,7 @@ export class ApiClient {
     method: string,
     endpoint: string,
     data?: object | string | FormData | null
-  ): Promise<any> {
+  ): Promise<any | ICustomError> {
     const url = `${this.baseURL}${endpoint}`;
     const options: RequestInit = {
       method,
@@ -20,20 +20,16 @@ export class ApiClient {
       },
       body: data ? JSON.stringify(data) : null,
     };
-    try {
-      const response = await fetch(url, options);
-      const jsonData = await response.json();
-      if (response.status !== 200) {
-        const partialError = jsonData as unknown as ICustomError;
-        throw new CustomError(
-          partialError.statusCode,
-          partialError.rawMessage,
-          partialError.translatedMessage
-        );
-      }
-      return jsonData;
-    } catch (error) {
-      throw error;
+    const response = await fetch(url, options);
+    const jsonData = await response.json();
+    if (response.status !== 200) {
+      const partialError = jsonData as unknown as ICustomError;
+      throw new CustomError(
+        partialError.statusCode,
+        partialError.rawMessage,
+        partialError.translatedMessage
+      );
     }
+    return jsonData;
   }
 }
