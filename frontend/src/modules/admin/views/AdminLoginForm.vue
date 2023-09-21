@@ -6,28 +6,82 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, onUnmounted, ref } from "vue";
+import { onMounted, onUnmounted, reactive, ref } from "vue";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import BaseInput from "@/components/form/BaseInput.vue";
 import H3 from "@/components/headings/H3.vue";
 import H2 from "@/components/headings/H2.vue";
-const show = ref(false);
-
-onMounted(() => {
-  setTimeout(() => {
-    show.value = true;
-  }, 500);
-});
+import { UsersApi } from "@/api/services/UserApi";
+import { errorHandler } from "@/utils/composables/ErrorHandler";
+import { ApiClient } from "@/api/ApiClient";
+import type { CustomError } from "@/utils/classes/customError";
+import { useVuelidate } from "@vuelidate/core";
+import { required, email, helpers, minLength } from "@vuelidate/validators";
+import router from "@/router";
+import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 
 /* Data */
+const show = ref(false);
+const { handleError, handleSuccess } = errorHandler();
 const { langTranslations } = useLanguage();
-const email = ref("");
-const password = ref("");
-const logo = ref("");
+const state = reactive({
+  email: "",
+  password: "",
+});
+const store = useLoggedInUserStore();
+
+// const logo = ref("");
+const usersApi = new UsersApi(new ApiClient());
+
+/* Validations */
+const rules = {
+  email: {
+    emailFormat: helpers.withMessage(
+      langTranslations.value.formErorrText.emailFormat,
+      email
+    ),
+    required: helpers.withMessage(
+      langTranslations.value.formErorrText.required,
+      required
+    ),
+  },
+  password: {
+    required: helpers.withMessage(
+      langTranslations.value.formErorrText.required,
+      required
+    ),
+    minLength: helpers.withMessage(
+      langTranslations.value.formErorrText.minLength,
+      minLength(6)
+    ),
+  },
+};
+const v$ = useVuelidate(rules, state);
+
+/* Hooks */
+onMounted(() => {
+  show.value = true;
+});
+onUnmounted(() => {
+  show.value = false;
+});
 
 /* Methods */
-const yourSubmitMethod = () => {
-  console.log(email.value);
+const yourSubmitMethod = async () => {
+  const isFormCorrect = await v$.value.$validate();
+  if (!isFormCorrect) return;
+  try {
+    const response = await usersApi.authenticateUser(
+      state.email,
+      state.password,
+      true
+    );
+    store.setLoggedInUser(response.user);
+    handleSuccess(langTranslations.value.adminLoginForm.successfulLogin);
+    router.push({ name: "SiteAdmin" });
+  } catch (error) {
+    handleError(error as CustomError);
+  }
 };
 </script>
 
@@ -52,16 +106,18 @@ const yourSubmitMethod = () => {
 
         <div>
           <BaseInput
-            v-model="email"
+            v-model="state.email"
             :label="langTranslations.email"
             :type="'email'"
             :required="true"
+            :errorMEssage="v$.email?.$errors[0]?.$message as string | undefined"
           />
           <BaseInput
-            v-model="password"
+            v-model="state.password"
             :label="langTranslations.password"
             :type="'password'"
             :required="true"
+            :errorMEssage="v$.password?.$errors[0]?.$message as string | undefined"
           />
           <RotaryButton
             @click="yourSubmitMethod"

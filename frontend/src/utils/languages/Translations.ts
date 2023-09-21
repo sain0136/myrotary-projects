@@ -17,6 +17,12 @@ export interface Translation {
     welcome: string;
     signIn: string;
     subHeading: string;
+    successfulLogin: string;
+  };
+  formErorrText: {
+    required: string;
+    emailFormat: string;
+    minLength: string;
   };
 }
 
@@ -40,7 +46,13 @@ export const translations: Record<string, Translation> = {
       welcome: "Welcome Back",
       signIn: "Sign In",
       subHeading: "Rotary Administration awaits you",
-    }
+      successfulLogin: "Access Granted. Welcome Back Peter Labelle!",
+    },
+    formErorrText: {
+      required: "This field is required",
+      emailFormat: "Please enter a valid email",
+      minLength: "Minimum length is 6 characters",
+    },
   },
   fr: {
     welcome: "Bienvenue!",
@@ -61,6 +73,12 @@ export const translations: Record<string, Translation> = {
       welcome: "Bienvenue de nouveau",
       signIn: "Se connecter",
       subHeading: "Administration du Rotary vous attend",
-    }
+      successfulLogin: "Accès autorisé. Bienvenue de nouveau Peter Labelle!",
+    },
+    formErorrText: {
+      required: "Ce champ est obligatoire",
+      emailFormat: "Veuillez entrer un email valide",
+      minLength: "La longueur minimale est de 6 caractères",
+    },
   },
 };
