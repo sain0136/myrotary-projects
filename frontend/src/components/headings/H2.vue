@@ -10,8 +10,9 @@ defineProps<{
   content: string;
 }>();
 </script>
+
 <template>
-  <h2 class="text-4xl font-bold dark:text-white">{{ content }}</h2>
+  <h2 class="text-xl md:text-4xl font-bold dark:text-white">{{ content }}</h2>
 </template>
 
 <style lang="scss" scoped></style>

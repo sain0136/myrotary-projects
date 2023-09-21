@@ -11,8 +11,9 @@ defineProps<{
   content: string;
 }>();
 </script>
+
 <template>
-  <h3 class="text-3xl font-bold dark:text-white">{{ content }}</h3>
+  <h3 class="text-lg md:text-3xl font-bold dark:text-white">{{ content }}</h3>
 </template>
 
 <style lang="scss" scoped></style>

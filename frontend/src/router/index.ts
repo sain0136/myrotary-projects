@@ -7,6 +7,11 @@ const routes = [
     component: () => import("@/components/notfound/NotFound.vue"),
   },
   {
+    path: "/admin-login",
+    name: "AdminLoginForm",
+    component: () => import("@/modules/admin/views/AdminLoginForm.vue"),
+  },
+  {
     path: "/",
     name: "Landing",
     component: () => import("@/modules/home/views/Landing.vue"),
@@ -25,6 +30,6 @@ const router = createRouter({
     return { top: 0 };
   },
   routes,
-})
+});
 
 export default router;
