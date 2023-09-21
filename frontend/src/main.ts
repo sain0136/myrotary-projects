@@ -1,4 +1,3 @@
-import "@/assets/styles.scss";
 import ToastService from "primevue/toastservice";
 import Toast from "primevue/toast";
 import { createApp } from "vue";
@@ -7,6 +6,7 @@ import router from "@/router/index";
 import PrimeVue from "primevue/config";
 import "primevue/resources/themes/lara-light-blue/theme.css";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
+import "@/assets/styles.scss";
 
 import App from "@/App.vue";
 

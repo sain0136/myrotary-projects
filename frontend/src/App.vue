@@ -18,10 +18,14 @@ watch(refCounter, () => {
 <template>
   <div>
     <Toast />
-    <main class="fluid-container">
+    <main class=" ">
       <router-view></router-view>
     </main>
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+main {
+  min-height: 100vh;
+}
+</style>

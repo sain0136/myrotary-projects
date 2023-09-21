@@ -11,6 +11,13 @@ export interface Translation {
   home: string;
   contactUs: string;
   opps: string;
+  email: string;
+  password: string;
+  adminLoginForm: {
+    welcome: string;
+    signIn: string;
+    subHeading: string;
+  };
 }
 
 export const translations: Record<string, Translation> = {
@@ -27,6 +34,13 @@ export const translations: Record<string, Translation> = {
     home: "Home",
     contactUs: "Contact Us",
     opps: "Opps!",
+    email: "Email",
+    password: "Password",
+    adminLoginForm: {
+      welcome: "Welcome Back",
+      signIn: "Sign In",
+      subHeading: "Rotary Administration awaits you",
+    }
   },
   fr: {
     welcome: "Bienvenue!",
@@ -41,5 +55,12 @@ export const translations: Record<string, Translation> = {
     home: "Accueil",
     contactUs: "Contactez-nous",
     opps: "Opps!",
+    email: "Email",
+    password: "Mot de passe",
+    adminLoginForm: {
+      welcome: "Bienvenue de nouveau",
+      signIn: "Se connecter",
+      subHeading: "Administration du Rotary vous attend",
+    }
   },
 };
