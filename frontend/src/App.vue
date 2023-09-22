@@ -18,7 +18,7 @@ watch(refCounter, () => {
 <template>
   <div>
     <Toast />
-    <main class=" ">
+    <main class="flex flex-col">
       <router-view></router-view>
     </main>
   </div>
