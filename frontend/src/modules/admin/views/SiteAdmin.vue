@@ -5,14 +5,14 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { useLoggedInUserStore } from "@/stores/LoggedInUser";
-
-const store = useLoggedInUserStore();
+import AdminFooter from "@/modules/admin/components/AdminFooter.vue";
 </script>
 
 <template>
-  <div>This is the site admin page</div>
-  <div>{{ store.loggedInUser.fullName }}</div>
+  <div class="fluid-container">
+    <router-view></router-view>
+  </div>
+  <AdminFooter />
 </template>
 
 <style lang="scss" scoped></style>

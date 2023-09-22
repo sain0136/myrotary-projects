@@ -16,10 +16,20 @@ const routes = [
     name: "Landing",
     component: () => import("@/modules/home/views/Landing.vue"),
   },
+
+  // Admin Routes
   {
     path: "/admin-portal",
     name: "SiteAdmin",
     component: () => import("@/modules/admin/views/SiteAdmin.vue"),
+    children: [
+      {
+        path: "welcome",
+        name: "AdminWelcome",
+        component: () =>
+          import("@/modules/admin/components/siteadmin/AdminWelcome.vue"),
+      },
+    ],
   },
 ];
 

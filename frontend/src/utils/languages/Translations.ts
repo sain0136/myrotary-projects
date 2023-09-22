@@ -24,6 +24,11 @@ export interface Translation {
     emailFormat: string;
     minLength: string;
   };
+  adminDash: {
+    footerCopyright: string;
+    welcomeH1: string;
+    welcomeH2: string;
+  };
 }
 
 export const translations: Record<string, Translation> = {
@@ -53,6 +58,12 @@ export const translations: Record<string, Translation> = {
       emailFormat: "Please enter a valid email",
       minLength: "Minimum length is 6 characters",
     },
+    adminDash: {
+      footerCopyright: "Copyright ©",
+      welcomeH1: "Welcome to the Admin Dashboard",
+      welcomeH2:
+        "Use this dashboard to manage the MyRotaryProjects web application",
+    },
   },
   fr: {
     welcome: "Bienvenue!",
@@ -79,6 +90,12 @@ export const translations: Record<string, Translation> = {
       required: "Ce champ est obligatoire",
       emailFormat: "Veuillez entrer un email valide",
       minLength: "La longueur minimale est de 6 caractères",
+    },
+    adminDash: {
+      footerCopyright: "Copyright ©",
+      welcomeH1: "Bienvenue sur le tableau de bord",
+      welcomeH2:
+        "Utilisez ce tableau de bord pour gérer l'application MyRotaryProjects",
     },
   },
 };
