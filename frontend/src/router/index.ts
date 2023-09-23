@@ -29,6 +29,12 @@ const routes = [
         component: () =>
           import("@/modules/admin/components/siteadmin/AdminWelcome.vue"),
       },
+      {
+        path: "district",
+        name: "District",
+        component: () =>
+          import("@/modules/admin/components/siteadmin/District.vue"),
+      },
     ],
   },
 ];

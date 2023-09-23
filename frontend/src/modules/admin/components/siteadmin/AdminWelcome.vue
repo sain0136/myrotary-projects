@@ -18,6 +18,7 @@ const { langTranslations } = useLanguage();
     class="h-full justify-center text-center gap-4 flex items-center flex-col"
   >
     <H1 :content="langTranslations.adminDash.welcomeH1" />
+    <img src="/rotary-logo.svg" alt="" class="w-32 h-32" />
     <H2 class="text-gray-500" :content="langTranslations.adminDash.welcomeH2" />
   </section>
 </template>
