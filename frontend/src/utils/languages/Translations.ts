@@ -28,6 +28,11 @@ export interface Translation {
     footerCopyright: string;
     welcomeH1: string;
     welcomeH2: string;
+    profile: string;
+    headerDashboard: string;
+    districtLabel: string;
+    clubLabel: string;
+    settingsLabel: string;
   };
 }
 
@@ -63,6 +68,11 @@ export const translations: Record<string, Translation> = {
       welcomeH1: "Welcome to the Admin Dashboard",
       welcomeH2:
         "Use this dashboard to manage the MyRotaryProjects web application",
+      profile: "Profile",
+      headerDashboard: "Admin Dashboard",
+      districtLabel: "Districts",
+      clubLabel: "Clubs",
+      settingsLabel: "Settings",
     },
   },
   fr: {
@@ -96,6 +106,11 @@ export const translations: Record<string, Translation> = {
       welcomeH1: "Bienvenue sur le tableau de bord",
       welcomeH2:
         "Utilisez ce tableau de bord pour gérer l'application MyRotaryProjects",
+      profile: "Profil",
+      headerDashboard: "Tableau de bord",
+      districtLabel: "Districts",
+      clubLabel: "Club",
+      settingsLabel: "Paramètres",
     },
   },
 };

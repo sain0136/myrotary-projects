@@ -11,20 +11,19 @@ const { langTranslations } = useLanguage();
 </script>
 
 <template>
-  <footer class="bg-primaryNearBlack shadow mt-auto">
+  <footer class="bg-primaryNearBlack shadow mt-auto text-center md:ml-64">
     <div
-      class="w-full mx-auto max-w-screen-xl text-center p-4 md:flex md:items-center md:justify-between"
+      class="w-full mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between"
     >
-      <span class="text-gray-500">
-        {{ langTranslations.adminDash.footerCopyright }}
+      <span class="text-nearWhite font-bold">
+        {{
+          langTranslations.adminDash.footerCopyright +
+          " " +
+          new Date().getFullYear() +
+          " " +
+          "MyRotaryProjects"
+        }}
       </span>
-      <ul
-        class="flex flex-wrap items-center mt-3 text-sm font-medium text-gray-500 sm:mt-0"
-      >
-        <li>
-          <a href="#" class="mr-4 hover:underline md:mr-6"></a>
-        </li>
-      </ul>
     </div>
   </footer>
 </template>
