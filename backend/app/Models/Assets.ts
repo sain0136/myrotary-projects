@@ -20,15 +20,14 @@ export default class Assets extends BaseModel {
   @column()
   public globalInitial?: number;
 
-  @column({
-    consume: (value: string | null) => {
-      if (value) {
-        return JSON.parse(value);
-      }
-      return null;
-    },
-  })
+  @column()
   public assets?: object;
+
+  @column()
+  public main_logo?: string;
+
+  @column()
+  public admin_content_control?: string;
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime;
