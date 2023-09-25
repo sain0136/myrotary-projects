@@ -1,7 +1,8 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
+import CustomException from "App/Exceptions/CustomException";
 import UploadsRepositories from "App/Repositories/UploadsRepositories";
 import UploadsService from "App/Services/UploadsService";
-import Drive from "@ioc:Adonis/Core/Drive";
+import { CustomErrorType } from "App/Utils/CommonTypes";
 
 export default class UploadsController {
   private initializeServices() {
@@ -11,24 +12,45 @@ export default class UploadsController {
   }
 
   public async test({ request, response }: HttpContextContract) {
-    const coverImage = request.file("test");
-    const { uploadsService } = this.initializeServices();
-
     try {
+      const coverImage = request.file("test");
+      const { uploadsService } = this.initializeServices();
       const path = await uploadsService.test(coverImage);
       return response.json(path);
     } catch (error) {
-      debugger;
       console.log(error);
     }
   }
 
-  public async delete({ request }: HttpContextContract) {
-    const filename = request.input("filename");
+  public async uploadFiles({ request, response }: HttpContextContract) {
     try {
-      await Drive.delete(filename);
+      const files = request.files("files");
+      const storagePath = request.input("storagePath");
+      const databaseTarget = request.input("databaseTarget");
+      const fileTypes = request.input("fileTypes");
+
+      const { uploadsService } = this.initializeServices();
+      const result = await uploadsService.uploadFiles(
+        files,
+        storagePath,
+        databaseTarget,
+        fileTypes
+      );
+      return response.json(result);
     } catch (error) {
       console.log(error);
+      throw new CustomException(error as CustomErrorType);
+    }
+  }
+
+  public async delete({ request, response }: HttpContextContract) {
+    try {
+      const filenames: Array<string> = request.input("filenames");
+      const { uploadsService } = this.initializeServices();
+      await uploadsService.delete(filenames);
+      return response.json({});
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
     }
   }
 }

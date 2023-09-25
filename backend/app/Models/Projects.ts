@@ -81,15 +81,15 @@ export default class Projects extends BaseModel {
 
   @column()
   public currency: string;
+  // Todo: Are these strings or objects will they be returned unseralized ?
+  @column()
+  public extraDescriptions: string;
 
   @column()
-  public extraDescriptions: object;
+  public itemizedBudget: string;
 
   @column()
-  public itemizedBudget: object;
-
-  @column()
-  public hostclubInformation: object;
+  public hostclubInformation: string;
 
   @column()
   public fileUploads: any;
