@@ -32,8 +32,13 @@ const routes = [
       {
         path: "district",
         name: "District",
+        component: () => import("@/modules/admin/components/district/District.vue"),
+      },
+      {
+        path: "settings",
+        name: "Settings",
         component: () =>
-          import("@/modules/admin/components/siteadmin/District.vue"),
+          import("@/modules/admin/components/sitesettings/Settings.vue"),
       },
     ],
   },

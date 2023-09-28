@@ -32,7 +32,7 @@ const sideBarItems: Record<
          1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 
          1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66Z"/></svg>
     `,
-    link: "",
+    link: "Settings",
   },
   district: {
     label: langTranslations.value.adminDash.districtLabel,

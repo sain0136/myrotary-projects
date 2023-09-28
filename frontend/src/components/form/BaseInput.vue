@@ -6,7 +6,6 @@ export default {
 
 <script setup lang="ts">
 import Password from "primevue/password";
-import { defineProps } from "vue";
 
 defineEmits(["update:modelValue"]);
 

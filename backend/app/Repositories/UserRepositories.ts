@@ -76,9 +76,5 @@ export default class UserRepositories {
       district,
       club,
     };
-    // if (!session.get("userIsLoggedIn")) {
-    //   session.put("userIsLoggedIn", true);
-    //   session.put("lastApiCallTimeStamp", DateTime.now().toMillis());
-    // }
   }
 }

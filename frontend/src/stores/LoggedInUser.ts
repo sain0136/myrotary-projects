@@ -3,10 +3,13 @@ import { reactive, ref } from "vue";
 import type { IUser } from "@/utils/interfaces/IUser";
 import User from "@/utils/classes/User";
 
+import { UsersApi } from "@/api/services/UserApi";
+import { ApiClient } from "@/api/ApiClient";
+
 export const useLoggedInUserStore = defineStore(
   "loggedInUser",
   () => {
-    let loggedInUser: IUser = reactive(new User());
+    const loggedInUser: IUser = reactive(new User());
 
     const isUserLoggedIn = ref(false);
 
@@ -16,9 +19,11 @@ export const useLoggedInUserStore = defineStore(
       isUserLoggedIn.value = true;
     }
 
-    function logOut() {
+    async function logOut() {
       Object.assign(loggedInUser, new User());
       isUserLoggedIn.value = false;
+      const usersApi = new UsersApi(new ApiClient());
+      await usersApi.logoutUser();
       // loggedInUser = reactive(new User());
     }
 

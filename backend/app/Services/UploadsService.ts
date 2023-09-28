@@ -1,5 +1,7 @@
 import UploadsRepositories from "App/Repositories/UploadsRepositories";
 import Drive from "@ioc:Adonis/Core/Drive";
+import Assets from "App/Models/Assets";
+
 import type {
   uploadedFile,
   uploadedFiletypes,
@@ -31,6 +33,9 @@ export default class UploadsService {
       };
       postUploadedFiles.push(upload);
     }
+    const oldFilesToBeDeleted = await Assets.findOrFail(1);
+    const file = oldFilesToBeDeleted.main_logo as unknown as uploadedFile;
+    await Drive.delete(file.s3Name);
     return await this.uploadsRepositories.uploadFiles(
       postUploadedFiles,
       databaseTarget

@@ -5,7 +5,6 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { defineProps } from "vue";
 import type { theme } from "@/utils/types/commonTypes";
 
 defineProps<{

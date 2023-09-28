@@ -5,7 +5,7 @@
  * file.
  */
 
-import type { CorsConfig } from '@ioc:Adonis/Core/Cors'
+import type { CorsConfig } from "@ioc:Adonis/Core/Cors";
 
 const corsConfig: CorsConfig = {
   /*
@@ -21,7 +21,6 @@ const corsConfig: CorsConfig = {
   |
   */
 
-  
   enabled: true,
 
   // You can also use a function that return true or false.
@@ -49,9 +48,9 @@ const corsConfig: CorsConfig = {
 
   /* origin: '*' allows any domain to access your API. 
   This is fine for development but not recommended for production */
-  origin: '*',
+  origin: ["http://localhost:5173", "http://127.0.0.1:3333"],
 
-  /*
+  /* 
   |--------------------------------------------------------------------------
   | Methods
   |--------------------------------------------------------------------------
@@ -61,7 +60,7 @@ const corsConfig: CorsConfig = {
   |
   | Following is the list of default methods. Feel free to add more.
   */
-  methods: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE'],
+  methods: ["GET", "HEAD", "POST", "PUT", "DELETE"],
 
   /*
   |--------------------------------------------------------------------------
@@ -80,7 +79,12 @@ const corsConfig: CorsConfig = {
   | Function          - Receives the current header and should return one of the above values.
   |
   */
-  headers: true,
+  headers: [
+    "Content-Type",
+    "Authorization",
+    "Access-Control-Allow-Origin",
+    "Access-Control-Allow-Credentials",
+  ],
 
   /*
   |--------------------------------------------------------------------------
@@ -103,12 +107,13 @@ const corsConfig: CorsConfig = {
   |
   */
   exposeHeaders: [
-    'cache-control',
-    'content-language',
-    'content-type',
-    'expires',
-    'last-modified',
-    'pragma',
+    "cache-control",
+    "content-language",
+    "content-type",
+    "expires",
+    "last-modified",
+    "pragma",
+    "Content-Range",
   ],
 
   /*
@@ -138,6 +143,6 @@ const corsConfig: CorsConfig = {
   |
   */
   maxAge: 90,
-}
+};
 
-export default corsConfig
+export default corsConfig;

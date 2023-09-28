@@ -83,13 +83,18 @@ export default class ErrorHandler {
         };
       case 401:
         return {
-          en: "Unauthorized",
-          fr: "Non autorisé",
+          en: "Unauthorized. Please login to continue ",
+          fr: "Non autorisé. Veuillez vous connecter pour continuer",
         };
       case 403:
         return {
           en: "Forbidden",
           fr: "Interdit",
+        };
+      case 601:
+        return {
+          en: "You were logged out due to inactivity. Please login again.",
+          fr: "Vous avez été déconnecté suite à l'inactivité. Veuillez vous reconnecter",
         };
       case 500:
         return {

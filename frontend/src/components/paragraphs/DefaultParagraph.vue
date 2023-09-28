@@ -5,8 +5,6 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { defineProps } from "vue";
-
 defineProps<{
   p1: string;
   p2?: string;
