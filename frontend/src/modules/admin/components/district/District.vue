@@ -8,18 +8,21 @@ export default {
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted, ref } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
-
+import { UsersApi } from "@/api/services/UserApi";
+import { ApiClient } from "@/api/ApiClient";
 /* Data */
 const { langTranslations } = useLanguage();
-
+const usersApi = new UsersApi(new ApiClient());
 /* Hooks */
-onMounted(async () => {});
+onMounted(async () => {
+  const response = await usersApi.getAllUsers();
+});
 
 /* Methods */
 </script>
 
 <template>
-  <div>{{ langTranslations.adminDash.settingsLabel }}</div>
+  <div>hoi</div>
 </template>
 
 <style lang="scss" scoped></style>

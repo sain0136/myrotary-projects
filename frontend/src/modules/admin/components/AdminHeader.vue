@@ -6,16 +6,24 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, ref } from "vue";
+import { onBeforeUnmount, onMounted, provide, ref } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
-
+import { useLoggedInUserStore } from "@/stores/LoggedInUser";
+import router from "@/router";
+import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
+import { useLoggedInClub } from "@/stores/LoggedInClub";
 /* Data */
+const userStore = useLoggedInUserStore();
+const districtStore = useLoggedInDistrict();
+const clubStore = useLoggedInClub();
 defineEmits(["update:modelValue"]);
 defineProps<{
   drawerVal: boolean;
 }>();
 const { langTranslations, languagePref, setLanguage } = useLanguage();
 const show = ref(false);
+const rootElement = ref<HTMLElement | null>(null);
+
 const title =
   languagePref.value === "en"
     ? langTranslations.value.french
@@ -23,11 +31,39 @@ const title =
 
 /* Hooks */
 onMounted(async () => {});
-
+onBeforeUnmount(() => {
+  // Cleanup: Remove event listener to avoid memory leaks
+  document.removeEventListener("click", hideDropdown);
+});
 /* Methods */
 const changeLanguage = () => {
   const lang = languagePref.value === "en" ? "fr" : "en";
   setLanguage(lang);
+};
+
+const toggleDropdown = () => {
+  show.value = !show.value;
+
+  if (show.value) {
+    document.addEventListener("click", hideDropdown);
+  } else {
+    document.removeEventListener("click", hideDropdown);
+  }
+};
+
+const hideDropdown = (event: Event): void => {
+  const target = event.target as Node;
+  if (rootElement.value && !rootElement.value.contains(target)) {
+    show.value = false;
+    document.removeEventListener("click", hideDropdown);
+  }
+};
+
+const logoutAdmin = async () => {
+  await userStore.logOut();
+  districtStore.resetDistrict();
+  clubStore.resetClub();
+  router.push({ name: "AdminLoginForm" });
 };
 </script>
 
@@ -100,9 +136,10 @@ const changeLanguage = () => {
             alt="user photo"
           />
         </button>
-        <div class="flex flex-col">
+        <div ref="rootElement" class="flex flex-col">
+          <!-- NOTE: By using @click.stop, you're stopping the click event from bubbling up to the document, so the dropdown stays open  -->
           <button
-            @click="show = !show"
+            @click.stop="toggleDropdown"
             type="button"
             class="buttons flex mx-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
             id="user-menu-button"
@@ -131,13 +168,18 @@ const changeLanguage = () => {
             </div>
             <ul class="py-1 text-nearWhite" aria-labelledby="dropdown">
               <li>
-                <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-100"
-                  >My profile</a
+                <a
+                  href="#"
+                  class="block py-2 px-4 text-sm hover:bg-gray-100 hover:text-nearBlack"
+                  >{{ langTranslations.adminDash.myProfileLabel }}</a
                 >
               </li>
               <li>
-                <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-100"
-                  >Logout</a
+                <a
+                  @click="logoutAdmin"
+                  href="#"
+                  class="block py-2 px-4 text-sm hover:bg-gray-100 hover:text-nearBlack"
+                  >{{ langTranslations.logoutLabel }}</a
                 >
               </li>
             </ul>

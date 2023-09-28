@@ -23,6 +23,7 @@ export interface Translation {
     required: string;
     emailFormat: string;
     minLength: string;
+    noFilesUpload: string;
   };
   adminDash: {
     footerCopyright: string;
@@ -33,7 +34,15 @@ export interface Translation {
     districtLabel: string;
     clubLabel: string;
     settingsLabel: string;
+    logoTabLabel: string;
+    configTabLabel: string;
+    uploadFileH1Header: string;
+    myProfileLabel: string;
   };
+  uploadFileLabel: string;
+  submit: string;
+  logoutLabel: string;
+  sessionTimeoutHeader: string;
 }
 
 export const translations: Record<string, Translation> = {
@@ -62,6 +71,7 @@ export const translations: Record<string, Translation> = {
       required: "This field is required",
       emailFormat: "Please enter a valid email",
       minLength: "Minimum length is 6 characters",
+      noFilesUpload: "Please upload file/files",
     },
     adminDash: {
       footerCopyright: "Copyright ©",
@@ -73,7 +83,15 @@ export const translations: Record<string, Translation> = {
       districtLabel: "Districts",
       clubLabel: "Clubs",
       settingsLabel: "Settings",
+      logoTabLabel: "Logo",
+      configTabLabel: "Configure Rotary",
+      uploadFileH1Header: "Change Rotary Logo",
+      myProfileLabel: "My Profile",
     },
+    uploadFileLabel: "Upload File",
+    submit: "Submit",
+    logoutLabel: "Logout",
+    sessionTimeoutHeader: "Session Timeout",
   },
   fr: {
     welcome: "Bienvenue!",
@@ -100,6 +118,7 @@ export const translations: Record<string, Translation> = {
       required: "Ce champ est obligatoire",
       emailFormat: "Veuillez entrer un email valide",
       minLength: "La longueur minimale est de 6 caractères",
+      noFilesUpload: "Veuillez télécharger des fichiers",
     },
     adminDash: {
       footerCopyright: "Copyright ©",
@@ -111,6 +130,14 @@ export const translations: Record<string, Translation> = {
       districtLabel: "Districts",
       clubLabel: "Club",
       settingsLabel: "Paramètres",
+      logoTabLabel: "Logo",
+      configTabLabel: "Configurer le Rotary",
+      uploadFileH1Header: "Changer le logo du Rotary",
+      myProfileLabel: "Mon profil",
     },
+    uploadFileLabel: "Télécharger le fichier",
+    submit: "Soumettre",
+    logoutLabel: "Se déconnecter",
+    sessionTimeoutHeader: "Délai de session",
   },
 };

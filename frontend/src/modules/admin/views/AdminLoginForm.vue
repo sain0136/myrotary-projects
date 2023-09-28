@@ -14,12 +14,13 @@ import H2 from "@/components/headings/H2.vue";
 import { UsersApi } from "@/api/services/UserApi";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import { ApiClient } from "@/api/ApiClient";
-import type { CustomError } from "@/utils/classes/customError";
+import type { CustomError } from "@/utils/classes/CustomError";
 import { useVuelidate } from "@vuelidate/core";
 import { required, email, helpers, minLength } from "@vuelidate/validators";
 import router from "@/router";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
-
+import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
+import { useLoggedInClub } from "@/stores/LoggedInClub";
 /* Data */
 const show = ref(false);
 const { handleError, handleSuccess } = errorHandler();
@@ -28,7 +29,9 @@ const state = reactive({
   email: "",
   password: "",
 });
-const store = useLoggedInUserStore();
+const userStore = useLoggedInUserStore();
+const districtStore = useLoggedInDistrict();
+const clubStore = useLoggedInClub();
 
 // const logo = ref("");
 const usersApi = new UsersApi(new ApiClient());
@@ -76,7 +79,9 @@ const yourSubmitMethod = async () => {
       state.password,
       true
     );
-    store.setLoggedInUser(response.user);
+    userStore.setLoggedInUser(response.user);
+    districtStore.setLoggedInDistrict(response.district);
+    clubStore.setLoggedInClub(response.club);
     handleSuccess(langTranslations.value.adminLoginForm.successfulLogin);
     router.push({ name: "SiteAdmin" });
   } catch (error) {

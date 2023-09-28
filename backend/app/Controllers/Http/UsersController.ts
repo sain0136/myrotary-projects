@@ -3,6 +3,7 @@ import UserRepositories from "App/Repositories/UserRepositories";
 import UserService from "App/Services/UserService";
 import CustomException from "App/Exceptions/CustomException";
 import { CustomErrorType } from "App/Utils/CommonTypes";
+import { DateTime } from "luxon";
 
 export default class UsersController {
   private initializeServices() {
@@ -21,7 +22,11 @@ export default class UsersController {
     }
   }
 
-  public async authenticateUser({ request, response }: HttpContextContract) {
+  public async authenticateUser({
+    request,
+    response,
+    session,
+  }: HttpContextContract) {
     const password: string = request.input("password");
     const email: string = request.input("email");
     const webAdmin: boolean = request.input("webAdmin");
@@ -32,9 +37,29 @@ export default class UsersController {
         email,
         webAdmin,
       });
+      if (userData) {
+        // if (!session.get("userIsLoggedIn")) {
+        session.put("userIsLoggedIn", true);
+        session.put("lastApiCallTimeStamp", DateTime.now().toMillis());
+      }
       return response.json(userData);
     } catch (error) {
       throw new CustomException(error as CustomErrorType);
     }
+  }
+
+  public async logout({ session, response }: HttpContextContract) {
+    session.clear();
+    if (!(session as any).store.isEmpty) {
+      throw new CustomException({
+        message: "Error logging out",
+        status: 605,
+        translatedMessage: {
+          en: "Error logging out",
+          fr: "Erreur de déconnexion",
+        },
+      });
+    }
+    return response.json({});
   }
 }

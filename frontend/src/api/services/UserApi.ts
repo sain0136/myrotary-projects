@@ -20,4 +20,8 @@ export class UsersApi {
       webAdmin,
     });
   }
+
+  public async logoutUser(): Promise<void> {
+    return await this.apiClient.fetchWrapper("POST", "/user/logout/");
+  }
 }
