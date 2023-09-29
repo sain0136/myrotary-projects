@@ -13,6 +13,18 @@ export interface Translation {
   opps: string;
   email: string;
   password: string;
+  webmasterLabel: string;
+  cityLabel: string;
+  countryLabel: string;
+  adminLabel: string;
+  districtLabel: string;
+  clubLabel: string;
+  postalCodeLabel: string;
+  aboutLabel: string;
+  stateOrProvinceLabel: string;
+  addressLabel: string;
+  footerLabel: string;
+  saveLabel: string;
   adminLoginForm: {
     welcome: string;
     signIn: string;
@@ -68,6 +80,18 @@ export const translations: Record<string, Translation> = {
     email: "Email",
     password: "Password",
     phone: "Phone",
+    webmasterLabel: "Web Admin",
+    cityLabel: "City",
+    countryLabel: "Country",
+    adminLabel: "Admin",
+    districtLabel: "District",
+    clubLabel: "Club",
+    postalCodeLabel: "Postal Code",
+    aboutLabel: "About",
+    stateOrProvinceLabel: "State/Province",
+    addressLabel: "Address",
+    footerLabel: "Footer",
+    saveLabel: "Save",
     configFormLabels: {
       adminFullNam: "Web Admin Full Name",
     },
@@ -121,6 +145,18 @@ export const translations: Record<string, Translation> = {
     email: "Email",
     password: "Mot de passe",
     phone: "Numéro de téléphone",
+    webmasterLabel: "Web Admin",
+    cityLabel: "Ville",
+    countryLabel: "Pays",
+    adminLabel: "Admin",
+    districtLabel: "District",
+    clubLabel: "Club",
+    postalCodeLabel: "Code postal",
+    aboutLabel: "À propos",
+    stateOrProvinceLabel: "Etat/Province",
+    addressLabel: "Adresse",
+    footerLabel: "Footer",
+    saveLabel: "Enregistrer",
     configFormLabels: {
       adminFullNam: "Nom complet du Web Admin",
     },

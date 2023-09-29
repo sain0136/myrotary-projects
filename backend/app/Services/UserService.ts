@@ -1,4 +1,4 @@
-import UserRepositories from "../Repositories/UserRepositories";
+import UserRepositories from "App/Repositories/UserRepositories";
 import { AuthenticationRequestData } from "App/Utils/CommonTypes";
 
 export default class UserService {

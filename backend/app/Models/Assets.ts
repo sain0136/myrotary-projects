@@ -21,7 +21,7 @@ export default class Assets extends BaseModel {
   public globalInitial?: number;
 
   @column()
-  public assets?: object;
+  public assets?: string;
 
   @column()
   public main_logo?: string;
