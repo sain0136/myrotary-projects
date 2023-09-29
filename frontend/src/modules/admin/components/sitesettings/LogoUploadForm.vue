@@ -90,7 +90,7 @@ const submit = async () => {
       {{ v$.image.$errors[0].$message }}
     </p>
     <p class="font-bold" id="file_input_help">
-      {{ "PNG, JPG or GIF (MAX. 10 GB)." }}
+      {{ langTranslations.fileUploadLabelFormats }}
     </p>
     <div>
       <RotaryButton
