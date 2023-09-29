@@ -20,7 +20,7 @@ export default class Authorize {
     if (session.get("userIsLoggedIn")) {
       let lastApiCallTimeStamp = session.get("lastApiCallTimeStamp");
       let now = DateTime.now().toMillis();
-      const oneHourInMilliseconds = 300;
+      const oneHourInMilliseconds = 3600000;
       if (now - lastApiCallTimeStamp > oneHourInMilliseconds) {
         session.clear();
         const message =
