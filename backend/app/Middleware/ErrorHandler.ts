@@ -69,6 +69,11 @@ export default class ErrorHandler {
   }: CustomException): Translation {
     if (errno && databaseErrors[errno]) {
       return databaseErrors[errno];
+    } else if (errno) {
+      return {
+        en: "Something went wrong. A report was sent to the administrator",
+        fr: "Quelque chose s'est mal passé. Un rapport a été envoyée à l'administrateur",
+      };
     } else {
       Logger.error(`Unknown database error code: ${errno} `);
       Logger.error(`Error message: ${message}`);
@@ -98,7 +103,7 @@ export default class ErrorHandler {
         };
       case 500:
         return {
-          en: "Internal Server Error",
+          en: "Internal Server Error. Please try again later",
           fr: "Erreur interne du serveur",
         };
       default:

@@ -15,6 +15,17 @@ export interface IRoles {
   updated_at: number;
 }
 
+export type uploadedFile = {
+  databaseTarget: databaseTarget;
+  fileType: uploadedFiletypes;
+  s3UrlLink: string;
+  s3Name: string;
+};
+
+export interface IExtraDetails {
+  profilePicture?: uploadedFile;
+}
+
 export interface IUser {
   firstname: string;
   lastname: string;
@@ -26,7 +37,7 @@ export interface IUser {
   phone: string;
   email: string;
   password: string;
-  extra_details: object;
+  extra_details: IExtraDetails;
   club_id: number;
   district_id: number | null;
   user_type: UserType;

@@ -12,7 +12,7 @@ import LogoUploadForm from "@/modules/admin/components/sitesettings/LogoUploadFo
 import H1 from "@/components/headings/H1.vue";
 import SiteConfigForm from "@/modules/admin/components/sitesettings/SiteConfigForm.vue";
 /* Data */
-const activeTab = ref("logo");
+const activeTab = ref(localStorage.getItem("settingsLastTab") ?? "logo");
 const { langTranslations } = useLanguage();
 const tabs = ref([
   { name: "logo", label: langTranslations.value.adminDash.logoTabLabel },
@@ -25,6 +25,7 @@ onMounted(async () => {});
 /* Methods */
 const setActiveTab = (tabName: string) => {
   activeTab.value = tabName;
+  localStorage.setItem("settingsLastTab", tabName);
 };
 </script>
 

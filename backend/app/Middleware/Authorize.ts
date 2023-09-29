@@ -13,7 +13,9 @@ export default class Authorize {
     console.info("Is session fresh? %s", session.fresh);
     if (
       request.parsedUrl.pathname === "/user/authenticate/" ||
-      request.parsedUrl.pathname === "/user/logout/"
+      request.parsedUrl.pathname === "/user/authenticate" ||
+      request.parsedUrl.pathname === "/user/logout/" ||
+      request.parsedUrl.pathname === "/user/logout"
     ) {
       return next();
     }

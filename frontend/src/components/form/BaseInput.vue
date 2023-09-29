@@ -10,7 +10,21 @@ import Password from "primevue/password";
 defineEmits(["update:modelValue"]);
 
 type inputType = "text" | "password" | "email" | "number" | "date";
-defineProps<{
+const {
+  modelValue,
+  label,
+  type,
+  id,
+  required,
+  placeholder,
+  errorMEssage,
+  disabled,
+  readonly,
+  step,
+  min,
+  max,
+  pattern,
+} = defineProps<{
   modelValue: string | number | Date;
   label: string;
   type: inputType;
@@ -25,7 +39,6 @@ defineProps<{
   max?: number;
   pattern?: string;
 }>();
-
 const randomId =
   String.fromCharCode(97 + Math.floor(Math.random() * 26)) +
   String(Math.floor(Math.random() * 5000) + 5000);
@@ -52,12 +65,13 @@ const randomId =
       @input="
         $emit('update:modelValue', ($event.target as HTMLInputElement).value)
       "
+      :value="modelValue"
       :v-model="modelValue"
       :disabled="disabled ?? false"
       :autocomplete="Password ? 'new-password' : 'off'"
       :name="type"
       :type="type"
-      class="bg-gray-50 border text-gray-900 text-sm rounded-lg block w-full p-2.5"
+      class="bg-gray-50 border text-nearBlack text-sm rounded-lg block w-full p-2.5"
       :placeholder="placeholder ?? ''"
       :required="required ?? false"
     />
