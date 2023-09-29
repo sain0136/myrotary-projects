@@ -10,6 +10,7 @@ import { onMounted, ref } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import LogoUploadForm from "@/modules/admin/components/sitesettings/LogoUploadForm.vue";
 import H1 from "@/components/headings/H1.vue";
+import SiteConfigForm from "@/modules/admin/components/sitesettings/SiteConfigForm.vue";
 /* Data */
 const activeTab = ref("logo");
 const { langTranslations } = useLanguage();
@@ -49,6 +50,9 @@ const setActiveTab = (tabName: string) => {
   >
     <H1 :content="langTranslations.adminDash.uploadFileH1Header" />
     <LogoUploadForm />
+  </div>
+  <div v-if="activeTab === 'setting'">
+    <SiteConfigForm />
   </div>
 </template>
 

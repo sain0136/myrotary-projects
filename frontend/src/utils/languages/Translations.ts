@@ -19,6 +19,10 @@ export interface Translation {
     subHeading: string;
     successfulLogin: string;
   };
+  phone: string;
+  configFormLabels: {
+    adminFullNam: string;
+  };
   formErorrText: {
     required: string;
     emailFormat: string;
@@ -44,6 +48,7 @@ export interface Translation {
   logoutLabel: string;
   sessionTimeoutHeader: string;
   fileUploadLabelFormats: string;
+  myRotaryProjectsLabel: string;
 }
 
 export const translations: Record<string, Translation> = {
@@ -62,6 +67,10 @@ export const translations: Record<string, Translation> = {
     opps: "Opps!",
     email: "Email",
     password: "Password",
+    phone: "Phone",
+    configFormLabels: {
+      adminFullNam: "Web Admin Full Name",
+    },
     adminLoginForm: {
       welcome: "Welcome Back",
       signIn: "Sign In",
@@ -94,6 +103,7 @@ export const translations: Record<string, Translation> = {
     logoutLabel: "Logout",
     sessionTimeoutHeader: "Session Timeout",
     fileUploadLabelFormats: "PNG, JPG or GIF (MAX. 10 GB).",
+    myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
     welcome: "Bienvenue!",
@@ -110,6 +120,10 @@ export const translations: Record<string, Translation> = {
     opps: "Opps!",
     email: "Email",
     password: "Mot de passe",
+    phone: "Numéro de téléphone",
+    configFormLabels: {
+      adminFullNam: "Nom complet du Web Admin",
+    },
     adminLoginForm: {
       welcome: "Bienvenue de nouveau",
       signIn: "Se connecter",
@@ -142,5 +156,6 @@ export const translations: Record<string, Translation> = {
     logoutLabel: "Se déconnecter",
     sessionTimeoutHeader: "Délai de session",
     fileUploadLabelFormats: "PNG, JPG ou GIF (MAX. 10 GB).",
+    myRotaryProjectsLabel: "MyRotaryProjects",
   },
 };
