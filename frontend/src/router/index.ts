@@ -39,14 +39,12 @@ const routes = [
       {
         path: "district",
         name: "District",
-        component: () =>
-          import("@/modules/admin/components/district/District.vue"),
+        component: () => import("@/modules/admin/views/District.vue"),
       },
       {
         path: "settings",
         name: "Settings",
-        component: () =>
-          import("@/modules/admin/components/sitesettings/Settings.vue"),
+        component: () => import("@/modules/admin/views/Settings.vue"),
       },
     ],
   },
