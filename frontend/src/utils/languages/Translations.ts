@@ -43,6 +43,7 @@ export interface Translation {
   submit: string;
   logoutLabel: string;
   sessionTimeoutHeader: string;
+  fileUploadLabelFormats: string;
 }
 
 export const translations: Record<string, Translation> = {
@@ -92,6 +93,7 @@ export const translations: Record<string, Translation> = {
     submit: "Submit",
     logoutLabel: "Logout",
     sessionTimeoutHeader: "Session Timeout",
+    fileUploadLabelFormats: "PNG, JPG or GIF (MAX. 10 GB).",
   },
   fr: {
     welcome: "Bienvenue!",
@@ -139,5 +141,6 @@ export const translations: Record<string, Translation> = {
     submit: "Soumettre",
     logoutLabel: "Se déconnecter",
     sessionTimeoutHeader: "Délai de session",
+    fileUploadLabelFormats: "PNG, JPG ou GIF (MAX. 10 GB).",
   },
 };
