@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 // import SiteAdminRoutes from "@/modules/admin/routes/routes"
 // import LandingRoutes from "@/modules/home/views/Landing.vue"
 const routes = [
@@ -22,6 +23,12 @@ const routes = [
     path: "/admin-portal",
     name: "SiteAdmin",
     component: () => import("@/modules/admin/views/SiteAdmin.vue"),
+    beforeEnter: () => {
+      const { isUserLoggedIn } = useLoggedInUserStore();
+      if (!isUserLoggedIn) {
+        return "/admin-login";
+      }
+    },
     children: [
       {
         path: "welcome",
@@ -32,7 +39,8 @@ const routes = [
       {
         path: "district",
         name: "District",
-        component: () => import("@/modules/admin/components/district/District.vue"),
+        component: () =>
+          import("@/modules/admin/components/district/District.vue"),
       },
       {
         path: "settings",
