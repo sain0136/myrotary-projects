@@ -15,7 +15,10 @@ export type storagePath = "./siteadmin";
 
 export type databaseTarget = "assets";
 
-export type uploadedFiletypes = "main-logo" | "projectCoverImage";
+export type uploadedFiletypes =
+  | "profile-picture"
+  | "main-logo"
+  | "project-coverImage";
 
 export type uploadFileData = {
   databaseTarget: databaseTarget;
