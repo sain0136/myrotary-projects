@@ -159,12 +159,12 @@ const logoutAdmin = async () => {
             id="dropdown"
           >
             <div class="py-3 px-4">
-              <span class="block text-sm font-semibold text-nearWhite"
-                >Peter Labelle</span
-              >
-              <span class="block text-sm text-nearWhite truncate"
-                >name@flowbite.com</span
-              >
+              <span class="block text-sm font-semibold text-nearWhite">{{
+                userStore.loggedInUser.fullName ?? "John Doe"
+              }}</span>
+              <span class="block text-sm text-nearWhite truncate">{{
+                userStore.loggedInUser.email
+              }}</span>
             </div>
             <ul class="py-1 text-nearWhite" aria-labelledby="dropdown">
               <li>
