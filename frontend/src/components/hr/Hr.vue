@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts"></script>
 <template>
-  <hr class="h-px my-8 bg-gray-200 border-0" />
+  <hr class="h-px my-8 bg-gray-500 border-0" />
 </template>
 
 <style lang="scss" scoped></style>

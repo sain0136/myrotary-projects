@@ -23,14 +23,3 @@ export type AuthenticationRequestData = {
   password: string;
   webAdmin?: boolean;
 };
-
-export type databaseTarget = "assets";
-
-export type uploadedFiletypes = "main-logo" | "projectCoverImage";
-
-export type uploadedFile = {
-  databaseTarget: databaseTarget;
-  fileType: uploadedFiletypes;
-  s3UrlLink: string;
-  s3Name: string;
-};

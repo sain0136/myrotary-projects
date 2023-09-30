@@ -7,12 +7,13 @@ export default {
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onBeforeUnmount, onMounted, provide, ref } from "vue";
-import { errorHandler } from "@/utils/composables/ErrorHandler";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import router from "@/router";
 import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
 import { useLoggedInClub } from "@/stores/LoggedInClub";
+import { useSiteAssets } from "@/stores/SiteAssets";
 /* Data */
+const assetsStore = useSiteAssets();
 const userStore = useLoggedInUserStore();
 const districtStore = useLoggedInDistrict();
 const clubStore = useLoggedInClub();
@@ -149,7 +150,10 @@ const logoutAdmin = async () => {
             <span class="sr-only">Open user menu</span>
             <img
               class="w-10 h-10 rounded-full"
-              src="/peter.jpg"
+              :src="
+                assetsStore.siteAssets.assets.profilePicture?.s3UrlLink ??
+                '/peter.jpg'
+              "
               alt="user photo"
             />
           </button>

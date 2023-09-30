@@ -13,7 +13,7 @@ export type UserType = "CLUB" | "DISTRICT";
 
 export type storagePath = "./siteadmin";
 
-export type databaseTarget = "assets";
+export type databaseTarget = "assets" | "profile-picture";
 
 export type uploadedFiletypes =
   | "profile-picture"

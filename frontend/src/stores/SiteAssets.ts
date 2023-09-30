@@ -6,7 +6,7 @@ import { reactive, ref } from "vue";
 export const useSiteAssets = defineStore(
   "siteAssets",
   () => {
-    const siteAssets = reactive(new Assets());
+    const siteAssets = reactive(new Assets() as IAssets);
 
     function setSiteAssets(assets: IAssets) {
       Object.assign(siteAssets, assets);
