@@ -12,7 +12,7 @@ import LogoUploadForm from "@/modules/admin/components/sitesettings/LogoUploadFo
 import H1 from "@/components/headings/H1.vue";
 import Hr from "@/components/hr/Hr.vue";
 import { useRouter, useRoute } from "vue-router";
-import ProfleForm from "../components/sitesettings/ProfleForm.vue";
+import ProfileForm from "@/modules/admin/components/sitesettings/ProfileForm.vue";
 import SiteConfigForm from "@/modules/admin/components/sitesettings/SiteConfigForm.vue";
 /* Data */
 const scrollTarget = ref<HTMLElement | null>(null);
@@ -83,7 +83,7 @@ const setActiveTab = (tabName: string) => {
     :content="langTranslations.adminDash.myProfileLabel"
   />
   <div ref="scrollTarget" class="flex justify-center">
-    <ProfleForm
+    <ProfileForm
       class="w-1/2"
       :title="langTranslations.profileImageUploadLabel"
     />

@@ -32,7 +32,6 @@ export class ApiClient {
     const jsonData = await response.json();
     if (response.status === 601) {
       const { languagePref, langTranslations } = useLanguage();
-
       const { changeShowModal, setModal } = modalHandler();
       setModal(
         langTranslations.value.sessionTimeoutHeader,

@@ -1,12 +1,11 @@
 import UploadsRepositories from "App/Repositories/UploadsRepositories";
 import Drive from "@ioc:Adonis/Core/Drive";
-import Assets from "App/Models/Assets";
 
 import type {
   uploadedFile,
   uploadedFiletypes,
   databaseTarget,
-} from "App/Utils/CommonTypes";
+} from "App/Shared/Interfaces/IAssets";
 export default class UploadsService {
   constructor(private uploadsRepositories: UploadsRepositories) {}
 
@@ -20,26 +19,35 @@ export default class UploadsService {
     databaseTarget: databaseTarget,
     fileTypes: uploadedFiletypes
   ) {
+    // TODO : ENV variable for cdn ?
+    const cdnEndpoint = "https://rotary-s3.nyc3.cdn.digitaloceanspaces.com/";
     const postUploadedFiles: Array<uploadedFile> = [];
     for await (const file of files) {
       await file.moveToDisk(storagePath);
       const path = file.filePath;
-      const link = path ? await Drive.getUrl(path as string) : "Error";
-      const upload: uploadedFile = {
-        databaseTarget: databaseTarget,
-        fileType: fileTypes,
-        s3UrlLink: link,
-        s3Name: file.fileName,
-      };
-      postUploadedFiles.push(upload);
+      const link = path ? await Drive.getUrl(path as string) : null;
+      if (link) {
+        const cdnFileUrl = cdnEndpoint + file.fileName;
+        const upload: uploadedFile = {
+          databaseTarget: databaseTarget,
+          fileType: fileTypes,
+          s3UrlLink: cdnFileUrl,
+          s3Name: file.fileName,
+        };
+        postUploadedFiles.push(upload);
+      } else {
+        throw new Error("File not uploaded");
+      }
     }
-    const oldFilesToBeDeleted = await Assets.findOrFail(1);
-    const file = oldFilesToBeDeleted.main_logo as unknown as uploadedFile;
-    await Drive.delete(file.s3Name);
-    return await this.uploadsRepositories.uploadFiles(
+    const response = await this.uploadsRepositories.uploadFiles(
       postUploadedFiles,
       databaseTarget
     );
+    if (response && response.length === 1) {
+      return response[0];
+    } else {
+      return response;
+    }
   }
 
   public async delete(filesToDelete: Array<string>) {

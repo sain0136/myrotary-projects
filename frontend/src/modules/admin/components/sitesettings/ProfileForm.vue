@@ -1,22 +1,19 @@
 <script lang="ts">
 export default {
-  name: "ProfleForm",
+  name: "ProfileForm",
 };
 </script>
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, ref } from "vue";
-import { errorHandler } from "@/utils/composables/ErrorHandler";
+import { onMounted } from "vue";
 import BaseFileUpload from "@/components/form/BaseFileUpload.vue";
-import { ApiClient } from "@/api/ApiClient";
-import { UploadsApi } from "@/api/services/UploadsApi";
 import type { uploadFileData } from "@/utils/types/commonTypes";
 /* Data */
 const { langTranslations } = useLanguage();
 
 const reqData = {
-  databaseTarget: "assets",
+  databaseTarget: "profile-picture",
   storagePath: "./siteadmin",
   files: [],
   fileTypes: "profile-picture",
