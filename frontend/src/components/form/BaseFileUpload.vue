@@ -11,26 +11,30 @@ import { helpers, required } from "@vuelidate/validators";
 import type { uploadFileData } from "@/utils/types/commonTypes";
 import type { CustomError } from "@/utils/classes/CustomError";
 import { useLanguage } from "@/utils/languages/UseLanguage";
-
+import H3 from "@/components/headings/H3.vue";
+import { ApiClient } from "@/api/ApiClient";
+import { AssetsApi } from "@/api/services/AssestsApi";
+import { useSiteAssets } from "@/stores/SiteAssets";
+import { UploadsApi } from "@/api/services/UploadsApi";
+import { errorHandler } from "@/utils/composables/ErrorHandler";
 /* Data */
 const { langTranslations } = useLanguage();
+const assetsApi = new AssetsApi(new ApiClient());
+const siteAssetsStore = useSiteAssets();
+const uploadsApi = new UploadsApi(new ApiClient());
+const { handleError, handleSuccess } = errorHandler();
 
 interface ValidationData {
   file: File | null;
 }
-const {
-  apiCall,
-  acceptedFileTypes,
-  fileUploadLabelFormats,
-  submitLabel,
-  reqData,
-} = defineProps<{
-  apiCall: (data: uploadFileData) => Promise<any>;
-  acceptedFileTypes?: string;
-  fileUploadLabelFormats?: string;
-  submitLabel: string;
-  reqData: uploadFileData;
-}>();
+const { acceptedFileTypes, fileUploadLabelFormats, submitLabel, reqData } =
+  defineProps<{
+    acceptedFileTypes?: string;
+    fileUploadLabelFormats?: string;
+    title?: string;
+    submitLabel: string;
+    reqData: uploadFileData;
+  }>();
 const validationData: ValidationData = reactive({
   file: null,
 });
@@ -65,8 +69,11 @@ const submit = async () => {
         storagePath: reqData.storagePath,
         fileTypes: reqData.fileTypes,
       };
-      await apiCall(req);
-      console.log("File uploaded");
+      const response = await uploadsApi.uploadFile(req);
+      console.log(response);
+      const updateResponse = await assetsApi.getMainAssets();
+      siteAssetsStore.setSiteAssets(updateResponse);
+      handleSuccess(langTranslations.value.toastSuccess);
     } catch (error) {
       console.error(error as CustomError);
     }
@@ -76,6 +83,7 @@ const submit = async () => {
 
 <template>
   <div class="flex flex-col items-center gap-2">
+    <H3 v-if="title" :content="title" />
     <input
       class="block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none"
       aria-describedby="file_input_help"

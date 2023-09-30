@@ -163,12 +163,21 @@ const logoutAdmin = async () => {
                 userStore.loggedInUser.fullName ?? "John Doe"
               }}</span>
               <span class="block text-sm text-nearWhite truncate">{{
-                userStore.loggedInUser.email
+                userStore.loggedInUser.email ?? "john.doe@me.com"
               }}</span>
             </div>
             <ul class="py-1 text-nearWhite" aria-labelledby="dropdown">
               <li>
                 <a
+                  @click="
+                    () => {
+                      toggleDropdown();
+                      router.push({
+                        name: 'Settings',
+                        query: { tabNameProp: 'setting' },
+                      });
+                    }
+                  "
                   href="#"
                   class="block py-2 px-4 text-sm hover:bg-gray-100 hover:text-nearBlack"
                   >{{ langTranslations.adminDash.myProfileLabel }}</a

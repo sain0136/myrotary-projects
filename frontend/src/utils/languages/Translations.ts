@@ -25,6 +25,7 @@ export interface Translation {
   addressLabel: string;
   footerLabel: string;
   saveLabel: string;
+  profileImageUploadLabel: string;
   adminLoginForm: {
     welcome: string;
     signIn: string;
@@ -92,6 +93,7 @@ export const translations: Record<string, Translation> = {
     addressLabel: "Address",
     footerLabel: "Footer",
     saveLabel: "Save",
+    profileImageUploadLabel: "Upload Profile Image",
     configFormLabels: {
       adminFullNam: "Web Admin Full Name",
     },
@@ -157,6 +159,7 @@ export const translations: Record<string, Translation> = {
     addressLabel: "Adresse",
     footerLabel: "Footer",
     saveLabel: "Enregistrer",
+    profileImageUploadLabel: "Télécharger le fichier de profil",
     configFormLabels: {
       adminFullNam: "Nom complet du Web Admin",
     },
