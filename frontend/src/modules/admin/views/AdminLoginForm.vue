@@ -83,7 +83,7 @@ const yourSubmitMethod = async () => {
     districtStore.setLoggedInDistrict(response.district);
     clubStore.setLoggedInClub(response.club);
     handleSuccess(langTranslations.value.adminLoginForm.successfulLogin);
-    router.push({ name: "SiteAdmin" });
+    router.push({ name: "AdminWelcome" });
   } catch (error) {
     handleError(error as CustomError);
   }
