@@ -7,13 +7,13 @@ export default {
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted, ref, watch } from "vue";
-import { errorHandler } from "@/utils/composables/ErrorHandler";
 import LogoUploadForm from "@/modules/admin/components/sitesettings/LogoUploadForm.vue";
 import H1 from "@/components/headings/H1.vue";
 import Hr from "@/components/hr/Hr.vue";
-import { useRouter, useRoute } from "vue-router";
+import { useRoute } from "vue-router";
 import ProfileForm from "@/modules/admin/components/sitesettings/ProfileForm.vue";
 import SiteConfigForm from "@/modules/admin/components/sitesettings/SiteConfigForm.vue";
+
 /* Data */
 const scrollTarget = ref<HTMLElement | null>(null);
 const activeTab = ref(localStorage.getItem("settingsLastTab") ?? "logo");
@@ -23,6 +23,7 @@ const tabs = ref([
   { name: "logo", label: langTranslations.value.adminDash.logoTabLabel },
   { name: "setting", label: langTranslations.value.adminDash.settingsLabel },
 ]);
+
 /* Hooks */
 onMounted(async () => {
   if (route.query.tabNameProp) {
@@ -44,6 +45,7 @@ watch(
     activeTab.value = "setting";
   }
 );
+
 /* Methods */
 const setActiveTab = (tabName: string) => {
   activeTab.value = tabName;
@@ -75,18 +77,17 @@ const setActiveTab = (tabName: string) => {
     <LogoUploadForm />
   </div>
   <div v-if="activeTab === 'setting'">
-    <SiteConfigForm />
-  </div>
-  <Hr />
-  <H1
-    class="text-center mb-8"
-    :content="langTranslations.adminDash.myProfileLabel"
-  />
-  <div ref="scrollTarget" class="flex justify-center">
-    <ProfileForm
-      class="w-1/2"
-      :title="langTranslations.profileImageUploadLabel"
+    <SiteConfigForm /> <Hr />
+    <H1
+      class="text-center mb-8"
+      :content="langTranslations.adminDash.myProfileLabel"
     />
+    <div ref="scrollTarget" class="flex justify-center">
+      <ProfileForm
+        class="w-1/2"
+        :title="langTranslations.profileImageUploadLabel"
+      />
+    </div>
   </div>
 </template>
 

@@ -24,6 +24,7 @@ import "App/Modules/User/routes";
 import "App/Modules/Projects/routes";
 import "App/Modules/Uploads/routes";
 import "App/Modules/Assets/routes";
+import "App/Modules/Districts/routes";
 
 Route.get("/", async () => {
   return { hello: "world" };
