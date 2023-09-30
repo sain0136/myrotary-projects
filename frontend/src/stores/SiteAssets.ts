@@ -1,4 +1,5 @@
 import { Assets } from "@/utils/classes/Assests";
+import type { IAssets } from "@/utils/interfaces/IAssets";
 import { defineStore } from "pinia";
 import { reactive, ref } from "vue";
 
@@ -7,7 +8,7 @@ export const useSiteAssets = defineStore(
   () => {
     const siteAssets = reactive(new Assets());
 
-    function setSiteAssets(assets: Assets) {
+    function setSiteAssets(assets: IAssets) {
       Object.assign(siteAssets, assets);
     }
 

@@ -15,6 +15,17 @@ export interface IContentManagement {
   InstagramUrl: string;
 }
 
+export type databaseTarget = "assets";
+
+export type uploadedFiletypes = "main-logo" | "projectCoverImage";
+
+export type uploadedFile = {
+  databaseTarget: databaseTarget;
+  fileType: uploadedFiletypes;
+  s3UrlLink: string;
+  s3Name: string;
+};
+
 export interface IAssets {
   id: number;
   dm_initial: number;
@@ -30,4 +41,5 @@ export interface IAssets {
     };
     contentManagement: IContentManagement;
   };
+  main_logo: uploadedFile;
 }
