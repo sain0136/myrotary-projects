@@ -1,4 +1,14 @@
 export interface Translation {
+  deleteLabel: string;
+  editLabel: string;
+  actionsLabel: string;
+  nameLabel: string;
+  districtLabel: string;
+  createLabel: string;
+  districtView: {
+    distictTabLabel: string;
+    adminsTabLabel: string;
+  };
   welcome: string;
   goodbye: string;
   english: string;
@@ -17,7 +27,6 @@ export interface Translation {
   cityLabel: string;
   countryLabel: string;
   adminLabel: string;
-  districtLabel: string;
   clubLabel: string;
   postalCodeLabel: string;
   aboutLabel: string;
@@ -66,6 +75,16 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    createLabel: "Create",
+    deleteLabel: "Delete",
+    editLabel: "Edit",
+    actionsLabel: "Actions",
+    nameLabel: "Name",
+    districtLabel: "District",
+    districtView: {
+      distictTabLabel: "District",
+      adminsTabLabel: "Admins",
+    },
     welcome: "Welcome!",
     goodbye: "Goodbye!",
     english: "English",
@@ -85,7 +104,6 @@ export const translations: Record<string, Translation> = {
     cityLabel: "City",
     countryLabel: "Country",
     adminLabel: "Admin",
-    districtLabel: "District",
     clubLabel: "Club",
     postalCodeLabel: "Postal Code",
     aboutLabel: "About",
@@ -132,6 +150,16 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    createLabel: "Créer",
+    deleteLabel: "Supprimer",
+    editLabel: "Modifier",
+    actionsLabel: "Actions",
+    nameLabel: "Nom",
+    districtLabel: "District",
+    districtView: {
+      distictTabLabel: "District",
+      adminsTabLabel: "Admins",
+    },
     welcome: "Bienvenue!",
     goodbye: "Au revoir!",
     english: "Anglais",
@@ -151,7 +179,6 @@ export const translations: Record<string, Translation> = {
     cityLabel: "Ville",
     countryLabel: "Pays",
     adminLabel: "Admin",
-    districtLabel: "District",
     clubLabel: "Club",
     postalCodeLabel: "Code postal",
     aboutLabel: "À propos",
