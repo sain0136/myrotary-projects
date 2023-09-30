@@ -15,10 +15,13 @@ import { UploadsApi } from "@/api/services/UploadsApi";
 import { ApiClient } from "@/api/ApiClient";
 import type { uploadFileData } from "@/utils/types/commonTypes";
 import type { CustomError } from "@/utils/classes/CustomError";
-
+import { useSiteAssets } from "@/stores/SiteAssets";
+import { AssetsApi } from "@/api/services/AssestsApi";
 /* Data */
+const assetsApi = new AssetsApi(new ApiClient());
+const siteAssetsStore = useSiteAssets();
 const { handleError, handleSuccess } = errorHandler();
-
+const session = sessionStorage.getItem("siteAssets") ? true : false;
 const { langTranslations } = useLanguage();
 interface ValidationData {
   image: File | File[] | null;
@@ -68,6 +71,8 @@ const submit = async () => {
         "file_input"
       ) as HTMLInputElement;
       fileInput.value = "";
+      const updateResponse = await assetsApi.getMainAssets();
+      siteAssetsStore.setSiteAssets(updateResponse);
       handleSuccess(langTranslations.value.toastSuccess);
     } catch (error) {
       handleError(error as CustomError);
@@ -78,6 +83,13 @@ const submit = async () => {
 
 <template>
   <div class="flex flex-col items-center gap-2">
+    <div class="py-8" v-if="session">
+      <img
+        class="h-24"
+        :src="siteAssetsStore.siteAssets.main_logo.s3UrlLink"
+        alt="brand"
+      />
+    </div>
     <input
       class="block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none"
       aria-describedby="file_input_help"
