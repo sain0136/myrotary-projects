@@ -6,15 +6,31 @@ export default {
 <script setup lang="ts">
 import { useToast } from "primevue/usetoast";
 
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { toastHandler } from "@/utils/composables/ToastHandler";
 import BaseModal from "./components/modal/BaseModal.vue";
-import { modalHandler } from "@/utils/composables/ModalHandler";
+import { AssetsApi } from "@/api/services/AssestsApi";
+import { ApiClient } from "@/api/ApiClient";
+import { useSiteAssets } from "@/stores/SiteAssets";
+
+const assetsStore = useSiteAssets();
 
 const { toastRecord, refCounter } = toastHandler();
 const toast = useToast();
+const assetsApi = new AssetsApi(new ApiClient());
 watch(refCounter, () => {
   toast.add(toastRecord);
+});
+
+onMounted(async () => {
+  try {
+    if (!sessionStorage.getItem("siteAssets")) {
+      const response = await assetsApi.getMainAssets();
+      assetsStore.setSiteAssets(response);
+    }
+  } catch (error) {
+    console.error(error);
+  }
 });
 </script>
 

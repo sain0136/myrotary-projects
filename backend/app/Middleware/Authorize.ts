@@ -3,6 +3,14 @@ import { DateTime } from "luxon";
 import CustomException from "App/Exceptions/CustomException";
 import { CustomErrorType } from "App/Utils/CommonTypes";
 
+const exceptionRoutes = [
+  "/user/authenticate/",
+  "/user/logout/",
+  "/user/logout",
+  "/user/authenticate",
+  "/assets",
+];
+
 export default class Authorize {
   public async handle(
     { request, session }: HttpContextContract,
@@ -11,12 +19,7 @@ export default class Authorize {
     //TODO: Clean up
     console.info("Session Data: %j", session.all());
     console.info("Is session fresh? %s", session.fresh);
-    if (
-      request.parsedUrl.pathname === "/user/authenticate/" ||
-      request.parsedUrl.pathname === "/user/authenticate" ||
-      request.parsedUrl.pathname === "/user/logout/" ||
-      request.parsedUrl.pathname === "/user/logout"
-    ) {
+    if (exceptionRoutes.includes(request.parsedUrl.pathname as string)) {
       return next();
     }
     if (session.get("userIsLoggedIn")) {
