@@ -1,10 +1,32 @@
 export interface Translation {
+  districtFormHeader: string;
   deleteLabel: string;
   editLabel: string;
   actionsLabel: string;
   nameLabel: string;
   districtLabel: string;
   createLabel: string;
+  yesLabel: string;
+  confirmationDelete: string;
+  succssDeleteToast: string;
+  desciptionLabel: string;
+  settingsLabel: string;
+  sourceLabel: string;
+  addLabel: string;
+  cancelLabel: string;
+  districtForm: {
+    districtNameLabel: string;
+    govLabel: string;
+    submissionStartDateLabel: string;
+    submissionEndDateLabel: string;
+    dmCapLabel: string;
+    dsgCapLabel: string;
+    reqMinLength: string;
+    numbMustBeFraction: string;
+    fractionRateLabel: string;
+    fundingSourcesCalcLabel: string;
+    fundingListText: string;
+  };
   districtView: {
     distictTabLabel: string;
     adminsTabLabel: string;
@@ -75,6 +97,32 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    yesLabel: "Yes",
+    confirmationDelete: "Are you sure you want to delete ",
+    succssDeleteToast: "Deleted Successfully",
+    settingsLabel: "Settings",
+    desciptionLabel: "Description",
+    sourceLabel: "Source",
+    addLabel: "Add",
+    cancelLabel: "Cancel",
+    districtForm: {
+      districtNameLabel: "District Number",
+      govLabel: "District Governer",
+      submissionStartDateLabel:
+        "District Matching and District Simplified Grant Submission Start Date",
+      submissionEndDateLabel:
+        "District Matching and District Simplified Grant Submission End Date",
+      dsgCapLabel: "District Simplified Grant Cap for DDF Matching",
+      dmCapLabel: "District Matching Grant Cap for DDF Matching",
+      reqMinLength: "This field cant be zero",
+      numbMustBeFraction: "Number must be a fraction",
+      fractionRateLabel: "Set the fraction/rate to the USD to match funds",
+      fundingSourcesCalcLabel:
+        "Set the funding sources calculation for this district DDF limit",
+      fundingListText:
+        "Below is the list of funding sources that will used to calulate your districts DDF limit:",
+    },
+    districtFormHeader: "District Form",
     createLabel: "Create",
     deleteLabel: "Delete",
     editLabel: "Edit",
@@ -150,12 +198,39 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    yesLabel: "Oui",
+    confirmationDelete: "Êtes-vous sûr de vouloir supprimer ",
+    succssDeleteToast: "Suppression effectuée",
+    districtFormHeader: "District Form",
     createLabel: "Créer",
     deleteLabel: "Supprimer",
     editLabel: "Modifier",
     actionsLabel: "Actions",
     nameLabel: "Nom",
     districtLabel: "District",
+    desciptionLabel: "Description",
+    settingsLabel: "Paramètres",
+    sourceLabel: "Source",
+    addLabel: "Add",
+    cancelLabel: "Annuler",
+    districtForm: {
+      districtNameLabel: "Numeur du District",
+      govLabel: "Gouverneur du District",
+      submissionStartDateLabel:
+        "Date de début de la soumission simplifiée pour le matching du District",
+      submissionEndDateLabel:
+        "Date de fin de la soumission simplifiée pour le matching du District",
+      dsgCapLabel:
+        "Cap de la soumission simplifiée pour le matching du District",
+      dmCapLabel: "Cap de matching du District",
+      reqMinLength: "Ce champ ne peut pas être nul",
+      numbMustBeFraction: "Le nombre doit être une fraction",
+      fractionRateLabel: "Définissez le taux de fraction pour le USD",
+      fundingSourcesCalcLabel:
+        "Définissez la calcul des sources de financement pour cette limite de DDF",
+      fundingListText:
+        "Voici la liste des sources de financement qui seront utilisées pour calculer votre limite de DDF:",
+    },
     districtView: {
       distictTabLabel: "District",
       adminsTabLabel: "Admins",

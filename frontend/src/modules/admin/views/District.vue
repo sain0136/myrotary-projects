@@ -6,13 +6,14 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import DistrictsTable from "@/modules/admin/components/district/DistrictsTable.vue";
-
+import DistrictForm from "@/components/forms/DistrictForm.vue";
+import { useRoute } from "vue-router";
 /* Data */
-const showDistrictForm = ref(false);
 const { langTranslations } = useLanguage();
-const activeTab = ref("district");
+const route = useRoute();
+const activeTab = ref(sessionStorage.getItem("settingsLastTab") || "District");
 const tabs = ref([
   {
     name: "district",
@@ -27,15 +28,15 @@ const tabs = ref([
 ]);
 
 /* Hooks */
-watch(showDistrictForm, () => {
-  if (showDistrictForm.value) {
-    activeTab.value = "disrictForm";
+onMounted(async () => {
+  if (route.query.tabNameProp) {
+    activeTab.value = "district";
   }
 });
-
 /* Methods */
 const setActiveTab = (tabName: string) => {
   activeTab.value = tabName;
+  sessionStorage.setItem("settingsLastTab", tabName);
 };
 </script>
 
@@ -57,10 +58,7 @@ const setActiveTab = (tabName: string) => {
     </li>
   </ul>
   <div v-if="activeTab === 'district'">
-    <DistrictsTable v-model:model-value="showDistrictForm" class="mt-8" />
-  </div>
-  <div v-if="activeTab === 'disrictForm'">
-    <h1>disrictForm</h1>
+    <DistrictsTable :callBack="setActiveTab" class="mt-8" />
   </div>
 </template>
 

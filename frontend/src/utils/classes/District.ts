@@ -1,7 +1,7 @@
 import type { IDistrict } from "@/utils/interfaces/IDistrict";
 import type { IStorageInformation } from "@/utils/interfaces/IProjects";
 
-export default class RotaryDistrict implements IDistrict {
+export default class District implements IDistrict {
   district_id = 0;
   district_name = "";
   district_number = "";

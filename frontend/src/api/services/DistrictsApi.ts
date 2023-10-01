@@ -20,4 +20,36 @@ export class DistrictApi {
       }
     );
   }
+
+  public async createDistrict(district: IDistrict): Promise<boolean> {
+    return await this.apiClient.fetchWrapper(
+      "POST",
+      `${BASE_ROUTE}/createDistrict`,
+      district
+    );
+  }
+
+  public async updateDistrict(district: IDistrict): Promise<boolean> {
+    return await this.apiClient.fetchWrapper(
+      "POST",
+      `${BASE_ROUTE}/updateDistrict`,
+      district
+    );
+  }
+
+  public async getById(id: number): Promise<IDistrict> {
+    return await this.apiClient.fetchWrapper("POST", `${BASE_ROUTE}/getById`, {
+      id,
+    });
+  }
+
+  public async deleteDistrict(ids: number[]): Promise<boolean> {
+    return await this.apiClient.fetchWrapper(
+      "POST",
+      `${BASE_ROUTE}/deleteDistrict`,
+      {
+        ids,
+      }
+    );
+  }
 }

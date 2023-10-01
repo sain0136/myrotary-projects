@@ -18,7 +18,7 @@ type ColumnOptions = {
 
 type ButtonOptions = {
   show: boolean;
-  callBack: () => void;
+  callBack: (row?: unknown) => void;
 };
 
 /* Data */
@@ -75,7 +75,7 @@ onMounted(async () => {});
           <td class="px-6 py-4 :lg: w-1/12">
             <div class="flex justify-between">
               <a
-                @click="editButton?.callBack()"
+                @click="editButton?.callBack(row)"
                 v-if="editButton?.show"
                 :title="langTranslations.editLabel"
                 href="#"
@@ -83,7 +83,7 @@ onMounted(async () => {});
                 ><Icon icon="tabler:edit"
               /></a>
               <a
-                @click="deleteButton?.callBack()"
+                @click="deleteButton?.callBack(row)"
                 v-if="deleteButton?.show"
                 :title="langTranslations.deleteLabel"
                 href="#"

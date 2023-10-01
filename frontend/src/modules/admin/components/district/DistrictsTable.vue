@@ -15,16 +15,15 @@ import { onMounted, reactive } from "vue";
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import router from "@/router";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
+import { modalHandler } from "@/utils/composables/ModalHandler";
 
 /* Data */
 const { langTranslations } = useLanguage();
 const { handleError, handleSuccess } = errorHandler();
 const districtApi = new DistrictApi(new ApiClient());
 const allDistricts = reactive<IDistrict[]>([]);
-defineProps({
-  modelValue: Boolean,
-});
-defineEmits(["update:modelValue"]);
+const { changeShowModal, setModal } = modalHandler();
+
 /* Hooks */
 onMounted(async () => {
   try {
@@ -42,16 +41,33 @@ onMounted(async () => {
     <BaseDisplayTable
       :delete-button="{
         show: true,
-        callBack: () => {
-          router.push({
-            name: 'AdminWelcome',
-          });
+        callBack: async (district ) => {
+          const toDelete =(district as IDistrict)
+          const id = toDelete.district_id
+          try {
+            setModal(langTranslations.deleteLabel, langTranslations.confirmationDelete + ' ' + toDelete.district_name )
+           const confirmed = await changeShowModal(true)
+            if (id && confirmed) {
+              await districtApi.deleteDistrict([id])  
+              handleSuccess(langTranslations.succssDeleteToast)
+          }
+          } catch (error) {
+            handleError(error as CustomError);
+
+          }
+          router.go(0)
         },
       }"
       :edit-button="{
         show: true,
-        callBack: () => {
-          $emit('update:modelValue', true);
+        callBack: (district) => {
+          const id = (district as IDistrict).district_id
+          if (id) {
+            console.log(id)
+            router.push({
+              path: `district-form/${id}`,
+            });
+          }
         },
       }"
       :table-data="allDistricts"
@@ -66,7 +82,7 @@ onMounted(async () => {
     />
     <div class="flex justify-center">
       <RotaryButton
-        @click="$emit('update:modelValue', true)"
+        @click="router.push({ name: 'DistrictAddEdit' })"
         :label="
           langTranslations.createLabel + ' ' + langTranslations.districtLabel
         "

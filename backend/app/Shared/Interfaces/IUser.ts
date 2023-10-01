@@ -4,7 +4,7 @@ import type {
   UserType,
   databaseTarget,
   uploadedFiletypes,
-} from "@/utils/types/commonTypes";
+} from "App/Shared/Types/commonTypes";
 
 export interface IRoles {
   club_id?: number;

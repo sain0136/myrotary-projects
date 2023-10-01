@@ -51,7 +51,7 @@ const submit = async () => {
           langTranslations.myRotaryProjectsLabel + ' ' + langTranslations.email
         "
         :type="'email'"
-        :error-m-essage="''"
+        :error-message="''"
       />
       <BaseInput
         v-model="state.assets.contentManagement.myRotaryPhone"
@@ -59,7 +59,7 @@ const submit = async () => {
           langTranslations.myRotaryProjectsLabel + ' ' + langTranslations.phone
         "
         :type="'text'"
-        :error-m-essage="''"
+        :error-message="''"
       />
       <BaseInput
         v-model="state.assets.contentManagement.myRotaryAdminFullName"
@@ -69,13 +69,13 @@ const submit = async () => {
           langTranslations.configFormLabels.adminFullNam
         "
         :type="'text'"
-        :error-m-essage="''"
+        :error-message="''"
       />
       <BaseInput
         v-model="state.assets.contentManagement.myRotaryAdminEmail"
         :label="langTranslations.webmasterLabel + ' ' + langTranslations.email"
         :type="'email'"
-        :error-m-essage="''"
+        :error-message="''"
       />
       <BaseInput
         v-model="state.assets.contentManagement.myRotaryAddress"
@@ -85,7 +85,7 @@ const submit = async () => {
           langTranslations.addressLabel
         "
         :type="'text'"
-        :error-m-essage="''"
+        :error-message="''"
       />
       <BaseInput
         v-model="state.assets.contentManagement.myRotaryCity"
@@ -95,7 +95,7 @@ const submit = async () => {
           langTranslations.cityLabel
         "
         :type="'text'"
-        :error-m-essage="''"
+        :error-message="''"
       />
       <BaseInput
         v-model="state.assets.contentManagement.myRotaryProvince"
@@ -105,7 +105,7 @@ const submit = async () => {
           langTranslations.stateOrProvinceLabel
         "
         :type="'text'"
-        :error-m-essage="''"
+        :error-message="''"
       />
       <BaseInput
         v-model="state.assets.contentManagement.myRotaryCountry"
@@ -115,7 +115,7 @@ const submit = async () => {
           langTranslations.countryLabel
         "
         :type="'text'"
-        :error-m-essage="''"
+        :error-message="''"
       />
       <BaseInput
         v-model="state.assets.contentManagement.myRotaryPostalCode"
@@ -125,7 +125,7 @@ const submit = async () => {
           langTranslations.postalCodeLabel
         "
         :type="'text'"
-        :error-m-essage="''"
+        :error-message="''"
       />
     </div>
     <div class="form-block">

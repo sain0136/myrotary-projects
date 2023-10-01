@@ -115,14 +115,14 @@ const yourSubmitMethod = async () => {
             :label="langTranslations.email"
             :type="'email'"
             :required="true"
-            :errorMEssage="v$.email?.$errors[0]?.$message as string | undefined"
+            :errorMessage="v$.email?.$errors[0]?.$message as string | undefined"
           />
           <BaseInput
             v-model="state.password"
             :label="langTranslations.password"
             :type="'password'"
             :required="true"
-            :errorMEssage="v$.password?.$errors[0]?.$message as string | undefined"
+            :errorMessage="v$.password?.$errors[0]?.$message as string | undefined"
           />
           <RotaryButton
             @click="yourSubmitMethod"
