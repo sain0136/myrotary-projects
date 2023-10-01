@@ -17,7 +17,7 @@ const {
   id,
   required,
   placeholder,
-  errorMEssage,
+  errorMessage: errorMEssage,
   disabled,
   readonly,
   step,
@@ -31,7 +31,7 @@ const {
   id?: string;
   required?: boolean;
   placeholder?: string;
-  errorMEssage?: string;
+  errorMessage?: string;
   disabled?: boolean;
   readonly?: boolean;
   step?: number;
@@ -56,7 +56,7 @@ const randomId =
       :id="id ?? randomId"
       :pattern="pattern"
       :aria-label="label"
-      :aria-invalid="!!errorMEssage"
+      :aria-invalid="!!errorMessage"
       :aria-required="required"
       :max="max ?? ''"
       :min="min ?? ''"
@@ -75,8 +75,8 @@ const randomId =
       :placeholder="placeholder ?? ''"
       :required="required ?? false"
     />
-    <p v-if="errorMEssage" id="error" class="mt-2 text-sm text-red-600">
-      <span class="font-medium">{{ errorMEssage }}</span>
+    <p v-if="errorMessage" id="error" class="mt-2 text-sm text-red-600">
+      <span class="font-medium">{{ errorMessage }}</span>
     </p>
   </div>
 </template>

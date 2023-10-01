@@ -17,10 +17,9 @@ const routes = [
     name: "Landing",
     component: () => import("@/modules/home/views/Landing.vue"),
   },
-
   // Admin Routes
   {
-    path: "/admin-portal",
+    path: "/admin-portal/",
     name: "SiteAdmin",
     component: () => import("@/modules/admin/views/SiteAdmin.vue"),
     beforeEnter: () => {
@@ -31,10 +30,16 @@ const routes = [
     },
     children: [
       {
-        path: "welcome",
+        path: "",
         name: "AdminWelcome",
         component: () =>
           import("@/modules/admin/components/siteadmin/AdminWelcome.vue"),
+      },
+      {
+        path: "district-form/:districtId?",
+        name: "DistrictAddEdit",
+        component: () => import("@/components/forms/DistrictForm.vue"),
+        props: true,
       },
       {
         path: "district",

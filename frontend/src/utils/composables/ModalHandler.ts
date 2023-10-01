@@ -1,11 +1,24 @@
-import { reactive, ref } from "vue";
+import { reactive, ref, watch } from "vue";
 
 const showModal = ref(false);
 const headerText = ref("Example Header");
 const bodyText = ref("lorem ipsum dolor sit amet  lorem ipsum dolor sit amet");
-
-const changeShowModal = () => {
+const confirmationModal = ref(false);
+const confirmValue = ref(false);
+const changeShowModal = (
+  confirmation: boolean = false
+): void | Promise<boolean> => {
   showModal.value = !showModal.value;
+  if (confirmation) {
+    confirmationModal.value = confirmation;
+    return new Promise<boolean>((resolve) => {
+      watch(confirmValue, () => {
+        if (confirmValue.value) {
+          resolve(confirmValue.value);
+        }
+      });
+    });
+  }
 };
 
 const setModal = (header: string, body: string) => {
@@ -16,6 +29,7 @@ const setModal = (header: string, body: string) => {
 const resetModal = () => {
   headerText.value = "";
   bodyText.value = "";
+  confirmationModal.value = false;
 };
 
 export const modalHandler = () => {
@@ -26,5 +40,7 @@ export const modalHandler = () => {
     resetModal,
     changeShowModal,
     setModal,
+    confirmationModal,
+    confirmValue,
   };
 };
