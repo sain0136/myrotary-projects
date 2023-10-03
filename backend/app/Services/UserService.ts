@@ -1,4 +1,5 @@
 import UserRepositories from "App/Repositories/UserRepositories";
+import { IUser } from "App/Shared/Interfaces/IUser";
 import { AuthenticationRequestData } from "App/Utils/CommonTypes";
 
 export default class UserService {
@@ -21,5 +22,17 @@ export default class UserService {
       AuthenticationRequestData
     );
     return userLoginData;
+  }
+
+  public async store(user: IUser) {
+    await this.userRepositories.store(user);
+  }
+
+  public async updateUser(user: IUser) {
+    await this.userRepositories.updateUser(user);
+  }
+
+  public async delete(userId: number) {
+    await this.userRepositories.delete(userId);
   }
 }

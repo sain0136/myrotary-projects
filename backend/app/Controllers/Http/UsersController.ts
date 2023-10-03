@@ -4,6 +4,7 @@ import UserService from "App/Services/UserService";
 import CustomException from "App/Exceptions/CustomException";
 import { CustomErrorType } from "App/Utils/CommonTypes";
 import { DateTime } from "luxon";
+import { IUser } from "App/Shared/Interfaces/IUser";
 
 export default class UsersController {
   private initializeServices() {
@@ -61,5 +62,38 @@ export default class UsersController {
       });
     }
     return response.json({});
+  }
+
+  public async store({ request, response }: HttpContextContract) {
+    try {
+      const user: IUser = request.input("user");
+      const { userService } = this.initializeServices();
+      await userService.store(user);
+      return response.json(true);
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
+  }
+
+  public async updateUser({ request, response }: HttpContextContract) {
+    try {
+      const user: IUser = request.input("user");
+      const { userService } = this.initializeServices();
+      await userService.updateUser(user);
+      return response.json(true);
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
+  }
+
+  public async delete({ params, response }: HttpContextContract) {
+    try {
+      const userId: number = params.userId;
+      const { userService } = this.initializeServices();
+      await userService.delete(userId);
+      return response.json(true);
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
   }
 }

@@ -4,3 +4,4 @@ Route.resource("/user/", "UsersController");
 Route.post("user/authenticate/", "UsersController.authenticateUser");
 Route.post("user/email/", "UsersController.emailIsUnique");
 Route.post("user/logout/", "UsersController.logout");
+Route.post("user/update/", "UsersController.updateUser");

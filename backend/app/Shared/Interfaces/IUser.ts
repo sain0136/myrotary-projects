@@ -43,8 +43,7 @@ export interface IUser {
   club_id: number;
   district_id: number | null;
   user_type: UserType;
-  // Created after
-  user_id?: number;
+  user_id: number;
   // computed properties
   fullName: string;
   role: Array<IRoles>;
