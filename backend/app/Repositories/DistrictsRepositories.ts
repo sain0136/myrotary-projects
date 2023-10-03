@@ -1,6 +1,7 @@
 import CustomException from "App/Exceptions/CustomException";
 import Clubs from "App/Models/Clubs";
 import Districts from "App/Models/Districts";
+import Users from "App/Models/Users";
 import type { IDistrict } from "App/Shared/Interfaces/IDistrict";
 
 export default class DistrictsRepositories {
@@ -63,5 +64,29 @@ export default class DistrictsRepositories {
         });
       }
     }
+  }
+
+  public async getDistrictAdmins(
+    districtId: number,
+    currentPage: number,
+    limit: number,
+    allFlag?: boolean
+  ) {
+    const allAdmins = !allFlag
+      ? await Users.query()
+          .where({ district_id: districtId })
+          .paginate(currentPage, limit)
+      : await Users.query()
+          .where({ userType: "DISTRICT" })
+          .paginate(currentPage, limit);
+    for await (const user of allAdmins) {
+      user.role = await user
+        .related("districtRole")
+        .pivotQuery()
+        .where({ user_id: user.userId });
+      const district = await Districts.findOrFail(user.districtId);
+      user.extraDetails = { district_name: district.districtName };
+    }
+    return allAdmins;
   }
 }

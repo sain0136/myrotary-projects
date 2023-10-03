@@ -1,5 +1,6 @@
 import { ApiClient } from "@/api/ApiClient";
 import type { IDistrict } from "@/utils/interfaces/IDistrict";
+import type { PaginationResult } from "@/utils/types/commonTypes";
 const BASE_ROUTE = "/districts";
 
 export class DistrictApi {
@@ -51,5 +52,19 @@ export class DistrictApi {
         ids,
       }
     );
+  }
+
+  public async getDistrictAdmins(
+    currentPage: number,
+    limit: number,
+    districtId: number,
+    allAdmins?: boolean
+  ): Promise<PaginationResult> {
+    return await this.apiClient.fetchWrapper("POST", `${BASE_ROUTE}/admins`, {
+      districtId,
+      currentPage,
+      limit,
+      allAdmins,
+    });
   }
 }

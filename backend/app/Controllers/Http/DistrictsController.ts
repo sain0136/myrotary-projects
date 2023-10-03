@@ -72,4 +72,23 @@ export default class DistrictsController {
       throw new CustomException(error as CustomErrorType);
     }
   }
+
+  public async getDistrictAdmins({ request, response }: HttpContextContract) {
+    try {
+      const districtId: number = request.input("districtId");
+      const currentPage: number = request.input("currentPage", 1);
+      const limit: number = request.input("limit", 10);
+      const allFlag: boolean | undefined = request.input("allAdmins", false);
+      const { districtsService } = this.initializeServices();
+      const allDistricts = await districtsService.getDistrictAdmins(
+        districtId,
+        currentPage,
+        limit,
+        allFlag
+      );
+      return response.json(allDistricts);
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
+  }
 }

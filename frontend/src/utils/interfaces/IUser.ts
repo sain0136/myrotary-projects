@@ -26,6 +26,7 @@ export type uploadedFile = {
 
 export interface IExtraDetails {
   profilePicture?: uploadedFile;
+  district_name?: string;
 }
 
 export interface IUser {

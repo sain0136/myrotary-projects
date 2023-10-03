@@ -1,4 +1,5 @@
 export interface Translation {
+  roleLabel: string;
   districtFormHeader: string;
   deleteLabel: string;
   editLabel: string;
@@ -97,6 +98,7 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    roleLabel: "Role",
     yesLabel: "Yes",
     confirmationDelete: "Are you sure you want to delete ",
     succssDeleteToast: "Deleted Successfully",
@@ -198,6 +200,7 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    roleLabel: "Role",
     yesLabel: "Oui",
     confirmationDelete: "Êtes-vous sûr de vouloir supprimer ",
     succssDeleteToast: "Suppression effectuée",

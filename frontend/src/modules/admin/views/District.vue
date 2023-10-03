@@ -8,8 +8,8 @@ export default {
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted, ref, watch } from "vue";
 import DistrictsTable from "@/modules/admin/components/district/DistrictsTable.vue";
-import DistrictForm from "@/components/forms/DistrictForm.vue";
 import { useRoute } from "vue-router";
+import DistrictAdminsTable from "@/modules/admin/components/district/DistrictAdminsTable.vue";
 /* Data */
 const { langTranslations } = useLanguage();
 const route = useRoute();
@@ -18,11 +18,6 @@ const tabs = ref([
   {
     name: "district",
     label: langTranslations.value.districtView.distictTabLabel,
-  },
-  {
-    name: "disrictForm",
-    label: "bacon",
-    hidden: true,
   },
   { name: "admins", label: langTranslations.value.districtView.adminsTabLabel },
 ]);
@@ -46,7 +41,6 @@ const setActiveTab = (tabName: string) => {
   >
     <li class="mr-2" v-for="tab in tabs" :key="tab.name">
       <a
-        v-if="!tab.hidden"
         @click="setActiveTab(tab.name)"
         class="inline-block cursor-pointer rounded-t-lg p-4 text-2xl hover:bg-gray-300 hover:text-gray-600"
         :class="{
@@ -59,6 +53,9 @@ const setActiveTab = (tabName: string) => {
   </ul>
   <div v-if="activeTab === 'district'">
     <DistrictsTable :callBack="setActiveTab" class="mt-8" />
+  </div>
+  <div v-if="activeTab === 'admins'">
+    <DistrictAdminsTable />
   </div>
 </template>
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: "DistrictsTable",
+  name: "DistrictAdminsTable",
 };
 </script>
 
@@ -11,11 +11,12 @@ import BaseDisplayTable from "@/components/tables/BaseDisplayTable.vue";
 import type { CustomError } from "@/utils/classes/CustomError";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import type { IDistrict } from "@/utils/interfaces/IDistrict";
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import router from "@/router";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import { modalHandler } from "@/utils/composables/ModalHandler";
+import type { IUser } from "@/utils/interfaces/IUser";
 
 /* Data */
 const { langTranslations } = useLanguage();
@@ -23,16 +24,29 @@ const { handleError, handleSuccess } = errorHandler();
 const districtApi = new DistrictApi(new ApiClient());
 const allDistricts = reactive<IDistrict[]>([]);
 const { changeShowModal, setModal } = modalHandler();
-
+const currentPage = ref(1);
+const allAdmins = reactive<IUser[]>([]);
 /* Hooks */
 onMounted(async () => {
   try {
-    const response = await districtApi.getAllDistricts(true);
-    Object.assign(allDistricts, response);
+    const response = await districtApi.getDistrictAdmins(
+      currentPage.value,
+      10,
+      1,
+      true
+    );
+    const districtAdmins = response.data as IUser[];
+    for (const user of districtAdmins) {
+      user.title = user.role[0].district_role ?? "N/A";
+      user.districtName = user.extra_details.district_name ?? "N/A";
+    }
+    Object.assign(allAdmins, districtAdmins);
+    currentPage.value = response.meta.current_page;
   } catch (error) {
     handleError(error as CustomError);
   }
 });
+/* Methods */
 </script>
 
 <template>
@@ -68,13 +82,22 @@ onMounted(async () => {
           }
         },
       }"
-      :table-data="allDistricts"
+      :table-data="allAdmins"
       :columns="[
-        { name: langTranslations.districtLabel, colName: 'district_name' },
         {
-          name: langTranslations.districtLabel + ' #',
+          name: langTranslations.nameLabel,
+          colName: 'fullName',
+          columnWidth: 'w-2/12',
+        },
+        {
+          name: langTranslations.districtLabel,
           collapsable: true,
-          colName: 'district_number',
+          colName: 'districtName',
+        },
+        {
+          name: langTranslations.roleLabel,
+          lgScreenCollapsable: true,
+          colName: 'title',
         },
       ]"
     />
@@ -82,7 +105,7 @@ onMounted(async () => {
       <RotaryButton
         @click="router.push({ name: 'DistrictAddEdit' })"
         :label="
-          langTranslations.createLabel + ' ' + langTranslations.districtLabel
+          langTranslations.createLabel + ' ' + langTranslations.adminLabel
         "
         :theme="'primary'"
       />

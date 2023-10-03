@@ -1,3 +1,7 @@
+import type { IClub } from "../interfaces/IClub";
+import type { IDistrict } from "../interfaces/IDistrict";
+import type { IUser } from "../interfaces/IUser";
+
 export type theme = "primary" | "black" | "secondary";
 
 export type DistrictRole =
@@ -25,4 +29,15 @@ export type uploadFileData = {
   fileTypes: uploadedFiletypes;
   files: File[];
   storagePath: storagePath;
+};
+
+export type PaginationResult = {
+  data: Array<IUser | IClub | IDistrict>;
+  meta: {
+    first_page: number;
+    last_page: number;
+    current_page: number;
+    per_page: number;
+    total: number;
+  };
 };

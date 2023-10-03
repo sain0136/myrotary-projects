@@ -6,3 +6,4 @@ Route.post("districts/createDistrict", "DistrictsController.createDistrict");
 Route.post("districts/updateDistrict", "DistrictsController.updateDistrict");
 Route.post("districts/getById", "DistrictsController.getById");
 Route.post("districts/deleteDistrict", "DistrictsController.deleteDistrict");
+Route.post("/districts/admins", "DistrictsController.getDistrictAdmins");

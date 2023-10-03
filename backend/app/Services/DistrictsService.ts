@@ -33,4 +33,19 @@ export default class DistrictsService {
   public async deleteDistrict(ids: number[]) {
     await this.districtsRepositories.deleteDistrict(ids);
   }
+
+  public async getDistrictAdmins(
+    districtId: number,
+    currentPage: number,
+    limit: number,
+    allFlag?: boolean
+  ) {
+    const allDistricts = await this.districtsRepositories.getDistrictAdmins(
+      districtId,
+      currentPage,
+      limit,
+      allFlag
+    );
+    return allDistricts;
+  }
 }

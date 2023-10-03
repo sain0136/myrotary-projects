@@ -8,12 +8,15 @@ export default {
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted, ref } from "vue";
 import { Icon } from "@iconify/vue";
+type tailwindWidths = "w-2/12";
 
 /* Types */
 type ColumnOptions = {
   name: string;
+  lgScreenCollapsable?: boolean;
   collapsable?: boolean;
   colName: string;
+  columnWidth?: tailwindWidths;
 };
 
 type ButtonOptions = {
@@ -32,7 +35,6 @@ const { tableData, columns, editButton, deleteButton } = defineProps<{
 
 /* Hooks */
 onMounted(async () => {});
-
 /* Methods */
 </script>
 
@@ -47,7 +49,8 @@ onMounted(async () => {});
             scope="col"
             class="px-6 py-3"
             :class="{
-              'hidden md:block': column.collapsable,
+              'hidden md:table-cell': column.collapsable,
+              'hidden lg:table-cell': column.lgScreenCollapsable,
             }"
           >
             {{ column.name }}
@@ -65,12 +68,13 @@ onMounted(async () => {});
         >
           <td
             v-for="column in columns"
-            class="px-6 py-4"
+            class="px-6 py-4 whitespace-nowrap :lg:whitespace-normal"
             :class="{
-              'hidden md:block': column.collapsable,
+              'hidden md:table-cell': column.collapsable,
+              'hidden lg:table-cell': column.lgScreenCollapsable,
             }"
           >
-            {{ row[column.colName] }}
+            <span> {{ row[column.colName] }} </span>
           </td>
           <td class="px-6 py-4 :lg: w-1/12">
             <div class="flex justify-between">
