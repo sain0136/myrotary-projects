@@ -75,7 +75,7 @@ export default class Users extends BaseModel {
   }
 
   @column()
-  public extraDetails: string;
+  public extraDetails: string | object;
 
   @column()
   public userType: string;

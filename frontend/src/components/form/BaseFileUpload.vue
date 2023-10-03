@@ -70,7 +70,6 @@ const submit = async () => {
         fileTypes: reqData.fileTypes,
       };
       const response = await uploadsApi.uploadFile(req);
-      console.log(response);
       const updateResponse = await assetsApi.getMainAssets();
       siteAssetsStore.setSiteAssets(updateResponse);
       handleSuccess(langTranslations.value.toastSuccess);

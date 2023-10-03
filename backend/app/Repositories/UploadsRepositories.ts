@@ -27,7 +27,6 @@ export default class UploadsController {
             const rotaryAssets = await Assets.findOrFail(1);
             const main = rotaryAssets.$attributes.main_logo as uploadedFile;
             if (main) {
-              console.log(main);
               await Drive.delete(main.s3Name);
             }
             await rotaryAssets

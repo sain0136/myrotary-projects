@@ -64,8 +64,7 @@ const submit = async () => {
         storagePath: "./siteadmin",
         fileTypes: "main-logo",
       };
-      const response = await uploadsApi.uploadFile(req);
-      console.log(response);
+      await uploadsApi.uploadFile(req);
       validationData.image = null;
       const fileInput = document.getElementById(
         "file_input"
