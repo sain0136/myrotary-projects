@@ -54,7 +54,7 @@ const setActiveTab = (tabName: string) => {
   <div v-if="activeTab === 'district'">
     <DistrictsTable :callBack="setActiveTab" class="mt-8" />
   </div>
-  <div v-if="activeTab === 'admins'">
+  <div v-if="activeTab === 'admins'" class="mt-8">
     <DistrictAdminsTable />
   </div>
 </template>
