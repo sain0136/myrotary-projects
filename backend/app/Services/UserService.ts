@@ -24,8 +24,13 @@ export default class UserService {
     return userLoginData;
   }
 
-  public async store(user: IUser) {
-    await this.userRepositories.store(user);
+  public async getUser(userId: number) {
+    const user = await this.userRepositories.getUser(userId);
+    return user;
+  }
+
+  public async createUser(user: IUser) {
+    await this.userRepositories.createUser(user);
   }
 
   public async updateUser(user: IUser) {

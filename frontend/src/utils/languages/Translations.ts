@@ -1,6 +1,7 @@
 export interface Translation {
   roleLabel: string;
   districtFormHeader: string;
+  userFormHeader: string;
   deleteLabel: string;
   editLabel: string;
   actionsLabel: string;
@@ -15,6 +16,10 @@ export interface Translation {
   sourceLabel: string;
   addLabel: string;
   cancelLabel: string;
+  userForm: {
+    firstNameLabel: string;
+    lastNameLabel: string;
+  };
   districtForm: {
     districtNameLabel: string;
     govLabel: string;
@@ -98,6 +103,11 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    userForm: {
+      firstNameLabel: "First Name",
+      lastNameLabel: "Last Name",
+    },
+    userFormHeader: "User Form",
     roleLabel: "Role",
     yesLabel: "Yes",
     confirmationDelete: "Are you sure you want to delete ",
@@ -200,6 +210,11 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    userForm: {
+      firstNameLabel: "Prénom",
+      lastNameLabel: "Nom de Famillle",
+    },
+    userFormHeader: "User Form",
     roleLabel: "Role",
     yesLabel: "Oui",
     confirmationDelete: "Êtes-vous sûr de vouloir supprimer ",

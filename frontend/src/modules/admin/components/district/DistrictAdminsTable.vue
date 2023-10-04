@@ -73,11 +73,14 @@ onMounted(async () => {
       }"
       :edit-button="{
         show: true,
-        callBack: (district) => {
-          const id = (district as IDistrict).district_id
+        callBack: (user) => {
+          const id = (user as IUser).user_id
           if (id) {
             router.push({
-              path: `district-form/${id}`,
+              path: `user-form/${id}`,
+              query: {
+                userType: 'DistrictAdmin'
+              }
             });
           }
         },
@@ -103,7 +106,12 @@ onMounted(async () => {
     />
     <div class="flex justify-center">
       <RotaryButton
-        @click="router.push({ name: 'DistrictAddEdit' })"
+        @click="
+          router.push({
+            name: 'UserAddEdit',
+            query: { userType: 'DistrictAdmin' },
+          })
+        "
         :label="
           langTranslations.createLabel + ' ' + langTranslations.adminLabel
         "

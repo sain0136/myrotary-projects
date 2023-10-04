@@ -80,7 +80,11 @@ export default class UserRepositories {
     };
   }
 
-  public async store(user: IUser) {
+  public async getUser(userId: number) {
+    return await Users.findOrFail(userId);
+  }
+
+  public async createUser(user: IUser) {
     await Users.create({
       firstname: user.firstname,
       lastname: user.lastname,
