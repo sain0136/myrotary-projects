@@ -29,4 +29,33 @@ export class UsersApi {
   public async logoutUser(): Promise<void> {
     return await this.apiClient.fetchWrapper("POST", `${BASE_ROUTE}/logout`);
   }
+
+  public async getUser(userId: number): Promise<IUser> {
+    return await this.apiClient.fetchWrapper("POST", `${BASE_ROUTE}/getuser`, {
+      userId,
+    });
+  }
+
+  public async createNewUser(user: IUser): Promise<boolean> {
+    return await this.apiClient.fetchWrapper(
+      "POST",
+      `${BASE_ROUTE}/user/create`,
+      user
+    );
+  }
+
+  public async updateUser(user: IUser) {
+    return await this.apiClient.fetchWrapper(
+      "POST",
+      `${BASE_ROUTE}/update`,
+      user
+    );
+  }
+
+  public async deleteUser(userId: number): Promise<boolean> {
+    return await this.apiClient.fetchWrapper(
+      "DELETE",
+      `${BASE_ROUTE}/user/${userId}`
+    );
+  }
 }

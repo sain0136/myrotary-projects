@@ -64,11 +64,22 @@ export default class UsersController {
     return response.json({});
   }
 
-  public async store({ request, response }: HttpContextContract) {
+  public async getUser({ request, response }: HttpContextContract) {
+    try {
+      const userId: number = request.input("userId");
+      const { userService } = this.initializeServices();
+      const user = await userService.getUser(userId);
+      return response.json(user);
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
+  }
+
+  public async createUser({ request, response }: HttpContextContract) {
     try {
       const user: IUser = request.input("user");
       const { userService } = this.initializeServices();
-      await userService.store(user);
+      await userService.createUser(user);
       return response.json(true);
     } catch (error) {
       throw new CustomException(error as CustomErrorType);

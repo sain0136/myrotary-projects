@@ -42,6 +42,12 @@ const routes = [
         props: true,
       },
       {
+        path: "user-form/:userId?",
+        name: "UserAddEdit",
+        component: () => import("@/components/forms/UserForm.vue"),
+        props: true,
+      },
+      {
         path: "district",
         name: "District",
         component: () => import("@/modules/admin/views/District.vue"),
