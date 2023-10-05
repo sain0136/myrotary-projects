@@ -51,7 +51,14 @@ const duplicateErrorMsg = ref({
   en: "",
   fr: "",
 });
-
+const minLengthMessage = {
+  en: "Must be at least 100 characters",
+  fr: "Doit contenir au moins 100 caractères",
+};
+const maxLengthMessage = {
+  en: "Must be at most 1000 characters",
+  fr: "Doit contenir au plus 1000 caractères",
+};
 const submitLabel = isEdit
   ? {
       en: "Update",
@@ -91,8 +98,14 @@ const rules = {
       langTranslations.value.formErorrText.required,
       required
     ),
-    maxLength: maxLength(1000),
-    minLenght: minLength(100),
+    maxLength: helpers.withMessage(
+      maxLengthMessage[languagePref.value],
+      maxLength(1000)
+    ),
+    minLenght: helpers.withMessage(
+      minLengthMessage[languagePref.value],
+      minLength(100)
+    ),
   },
   district_details: {
     dates: {

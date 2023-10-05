@@ -37,7 +37,7 @@ export default class UserService {
     await this.userRepositories.updateUser(user);
   }
 
-  public async delete(userId: number) {
-    await this.userRepositories.delete(userId);
+  public async deleteUser(userId: number) {
+    await this.userRepositories.deleteUser(userId);
   }
 }

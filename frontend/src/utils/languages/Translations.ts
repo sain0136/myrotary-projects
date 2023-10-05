@@ -1,4 +1,6 @@
 export interface Translation {
+  baseClubLabel: string;
+  baseSelectLabel: string;
   roleLabel: string;
   districtFormHeader: string;
   userFormHeader: string;
@@ -17,6 +19,7 @@ export interface Translation {
   addLabel: string;
   cancelLabel: string;
   userForm: {
+    districtSelectLabel: string;
     firstNameLabel: string;
     lastNameLabel: string;
   };
@@ -103,7 +106,10 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    baseClubLabel: "Base Club",
+    baseSelectLabel: "Select...",
     userForm: {
+      districtSelectLabel: "Assign to District",
       firstNameLabel: "First Name",
       lastNameLabel: "Last Name",
     },
@@ -210,7 +216,10 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    baseClubLabel: "Base Club",
+    baseSelectLabel: "Sélectionner...",
     userForm: {
+      districtSelectLabel: "Assigner au District",
       firstNameLabel: "Prénom",
       lastNameLabel: "Nom de Famillle",
     },

@@ -81,11 +81,36 @@ export default class UserRepositories {
   }
 
   public async getUser(userId: number) {
-    return await Users.findOrFail(userId);
+    const user = await Users.findOrFail(userId);
+    if (user.userType === "CLUB") {
+      user.role = user.role = await user
+        .related("clubRole")
+        .pivotQuery()
+        .where({ user_id: user.userId });
+    } else {
+      user.role = await user
+        .related("districtRole")
+        .pivotQuery()
+        .where({ user_id: user.userId });
+    }
+    return user;
   }
 
   public async createUser(user: IUser) {
-    await Users.create({
+    if (
+      (!user.user_type && user.user_type !== "CLUB") ||
+      (!user.role_type && user.role_type !== "DISTRICT")
+    ) {
+      throw new CustomException({
+        message: "Malformed user",
+        status: 505,
+        translatedMessage: {
+          en: "Malformed user",
+          fr: "Malformé utilisateur",
+        },
+      });
+    }
+    const createdUser = await Users.create({
       firstname: user.firstname,
       lastname: user.lastname,
       address: user.address,
@@ -101,16 +126,16 @@ export default class UserRepositories {
       userType: user.user_type,
       extraDetails: JSON.stringify(user.extra_details),
     });
-    if (user.user_type === "DISTRICT") {
-      const district = await Districts.findOrFail(user.district_id);
-      await user.related("districtRole").attach({
+    if (createdUser.userType === "DISTRICT") {
+      const district = await Districts.findOrFail(createdUser.districtId);
+      await createdUser.related("districtRole").attach({
         [district.districtId]: {
           district_role: user.role_type,
         },
       });
     } else {
-      const club = await Clubs.findOrFail(user.club_id);
-      await user.related("clubRole").attach({
+      const club = await Clubs.findOrFail(createdUser.clubId);
+      await createdUser.related("clubRole").attach({
         [club.clubId]: {
           club_role: user.role_type,
         },
@@ -138,6 +163,7 @@ export default class UserRepositories {
         extraDetails: JSON.stringify(user.extra_details),
       })
       .save();
+    // TODO: Do i even do this ir no change in role type
     if (user.user_type === "DISTRICT") {
       await updatedUser.related("districtRole").detach();
       const district: Districts = await Districts.findOrFail(user.district_id);
@@ -157,7 +183,7 @@ export default class UserRepositories {
     }
   }
 
-  public async delete(userId: number) {
+  public async deleteUser(userId: number) {
     const user = await Users.findOrFail(userId);
     // TODO : REfoctor Db query for speed in future
     const projects = await Projects.all();

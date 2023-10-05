@@ -17,6 +17,7 @@ import router from "@/router";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import { modalHandler } from "@/utils/composables/ModalHandler";
 import type { IUser } from "@/utils/interfaces/IUser";
+import { UsersApi } from "@/api/services/UserApi";
 
 /* Data */
 const { langTranslations } = useLanguage();
@@ -26,6 +27,7 @@ const allDistricts = reactive<IDistrict[]>([]);
 const { changeShowModal, setModal } = modalHandler();
 const currentPage = ref(1);
 const allAdmins = reactive<IUser[]>([]);
+const userApi = new UsersApi(new ApiClient());
 /* Hooks */
 onMounted(async () => {
   try {
@@ -54,19 +56,18 @@ onMounted(async () => {
     <BaseDisplayTable
       :delete-button="{
         show: true,
-        callBack: async (district ) => {
-          const toDelete =(district as IDistrict)
-          const id = toDelete.district_id
+        callBack: async (user ) => {
+          const toDelete =(user as IUser)
+          const id = toDelete.user_id
           try {
-            setModal(langTranslations.deleteLabel, langTranslations.confirmationDelete + ' ' + toDelete.district_name )
+            setModal(langTranslations.deleteLabel, langTranslations.confirmationDelete + ' ' + toDelete.fullName )
            const confirmed = await changeShowModal(true)
             if (id && confirmed) {
-              await districtApi.deleteDistrict([id])  
+              await userApi.deleteUser(id)
               handleSuccess(langTranslations.succssDeleteToast)
           }
           } catch (error) {
             handleError(error as CustomError);
-
           }
           router.go(0)
         },
@@ -79,7 +80,7 @@ onMounted(async () => {
             router.push({
               path: `user-form/${id}`,
               query: {
-                userType: 'DistrictAdmin'
+                userType: 'districtAdmin'
               }
             });
           }
@@ -109,7 +110,7 @@ onMounted(async () => {
         @click="
           router.push({
             name: 'UserAddEdit',
-            query: { userType: 'DistrictAdmin' },
+            query: { userType: 'districtAdmin' },
           })
         "
         :label="

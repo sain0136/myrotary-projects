@@ -10,7 +10,7 @@ export class DistrictApi {
     allFlag?: boolean,
     currentPage?: number,
     limit?: number
-  ): Promise<Array<IDistrict>> {
+  ): Promise<Array<IDistrict> | PaginationResult> {
     return await this.apiClient.fetchWrapper(
       "POST",
       `${BASE_ROUTE}/getAllDistricts`,
