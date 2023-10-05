@@ -11,7 +11,7 @@ import BaseDisplayTable from "@/components/tables/BaseDisplayTable.vue";
 import type { CustomError } from "@/utils/classes/CustomError";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import type { IDistrict } from "@/utils/interfaces/IDistrict";
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import router from "@/router";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
@@ -24,26 +24,60 @@ const { handleError, handleSuccess } = errorHandler();
 const districtApi = new DistrictApi(new ApiClient());
 const allDistricts = reactive<IDistrict[]>([]);
 const { changeShowModal, setModal } = modalHandler();
-const currentPage = ref(1);
+const pagination = reactive({
+  currentPage: 1,
+  lastPage: 1,
+  total: 0,
+  limit: 5,
+});
+
 /* Hooks */
 onMounted(async () => {
+  await getAllDistricts();
+});
+watch(
+  () => pagination.limit,
+  async () => {
+    await getAllDistricts();
+  }
+);
+
+/* Methods */
+const getAllDistricts = async () => {
   try {
+    allDistricts.splice(0, allDistricts.length);
     const response = (await districtApi.getAllDistricts(
       false,
       1,
       10
     )) as PaginationResult;
     Object.assign(allDistricts, response.data);
-    currentPage.value = response.meta.current_page;
+    pagination.currentPage = response.meta.current_page;
+    pagination.lastPage = response.meta.last_page;
+    pagination.total = response.meta.total;
   } catch (error) {
     handleError(error as CustomError);
   }
-});
+};
+
+const handlePageChange = (nextOrPrevious: "next" | "previous") => {
+  pagination.currentPage =
+    nextOrPrevious === "next"
+      ? pagination.currentPage + 1
+      : pagination.currentPage - 1;
+  getAllDistricts();
+};
 </script>
 
 <template>
   <div class="flex flex-col gap-8">
     <BaseDisplayTable
+      :handle-page-change="handlePageChange"
+      :current-page="pagination.currentPage"
+      :last-page="pagination.lastPage"
+      :total-results="pagination.total"
+      :limit="pagination.limit"
+      @update:limit="pagination.limit = $event"
       :delete-button="{
         show: true,
         callBack: async (district ) => {
