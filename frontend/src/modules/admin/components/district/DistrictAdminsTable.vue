@@ -11,7 +11,7 @@ import BaseDisplayTable from "@/components/tables/BaseDisplayTable.vue";
 import type { CustomError } from "@/utils/classes/CustomError";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import type { IDistrict } from "@/utils/interfaces/IDistrict";
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import router from "@/router";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
@@ -25,15 +25,33 @@ const { handleError, handleSuccess } = errorHandler();
 const districtApi = new DistrictApi(new ApiClient());
 const allDistricts = reactive<IDistrict[]>([]);
 const { changeShowModal, setModal } = modalHandler();
-const currentPage = ref(1);
 const allAdmins = reactive<IUser[]>([]);
 const userApi = new UsersApi(new ApiClient());
+const pagination = reactive({
+  currentPage: 1,
+  lastPage: 1,
+  total: 0,
+  limit: 5,
+});
 /* Hooks */
 onMounted(async () => {
+  await getAllAdmins();
+});
+// watch () => pagination.limit --> expalantion here : https://vuejs.org/guide/essentials/watchers.html#deep-watchers
+watch(
+  () => pagination.limit,
+  async () => {
+    await getAllAdmins();
+  }
+);
+
+/* Methods */
+const getAllAdmins = async () => {
   try {
+    allAdmins.splice(0, allAdmins.length);
     const response = await districtApi.getDistrictAdmins(
-      currentPage.value,
-      10,
+      pagination.currentPage,
+      pagination.limit,
       1,
       true
     );
@@ -43,17 +61,32 @@ onMounted(async () => {
       user.districtName = user.extra_details.district_name ?? "N/A";
     }
     Object.assign(allAdmins, districtAdmins);
-    currentPage.value = response.meta.current_page;
+    pagination.currentPage = response.meta.current_page;
+    pagination.lastPage = response.meta.last_page;
+    pagination.total = response.meta.total;
   } catch (error) {
     handleError(error as CustomError);
   }
-});
-/* Methods */
+};
+
+const handlePageChange = (nextOrPrevious: "next" | "previous") => {
+  pagination.currentPage =
+    nextOrPrevious === "next"
+      ? pagination.currentPage + 1
+      : pagination.currentPage - 1;
+  getAllAdmins();
+};
 </script>
 
 <template>
   <div class="flex flex-col gap-8">
     <BaseDisplayTable
+      :handle-page-change="handlePageChange"
+      :current-page="pagination.currentPage"
+      :last-page="pagination.lastPage"
+      :total-results="pagination.total"
+      :limit="pagination.limit"
+      @update:limit="pagination.limit = $event"
       :delete-button="{
         show: true,
         callBack: async (user ) => {

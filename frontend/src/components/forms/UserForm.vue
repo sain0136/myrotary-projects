@@ -57,7 +57,8 @@ const chosenDistrictError = ref({
   fr: "Doit assigner un Admin a un District et un Club",
 });
 const clubMap = reactive<Map<string, number>>(new Map());
-const allClubsInDistrict = reactive<string[]>([]);
+const userTitle = ref("");
+// const allClubsInDistrict = reactive<string[]>([]);
 const chosenClub = ref("");
 const submitLabel = userId
   ? {
@@ -232,6 +233,8 @@ onMounted(async () => {
     if (userId) {
       const response = await userApi.getUser(parseInt(userId as string));
       Object.assign(user, response);
+      userTitle.value =
+        (user.role[0].district_role ?? "") + ": " + user.fullName;
     }
   } catch (error) {
     handleError(error as CustomError);
@@ -321,9 +324,7 @@ const redirect = () => {
         :options="ResourceList.districtRolesList"
         :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined "
       />
-      <H2
-        :content="(user.role[0].district_role ?? '') + ': ' + user.fullName"
-      />
+      <H2 :content="userTitle" />
     </div>
     <div class="form-block">
       <BaseInput
