@@ -77,7 +77,7 @@ export default class UsersController {
 
   public async createUser({ request, response }: HttpContextContract) {
     try {
-      const user: IUser = request.input("user");
+      const user = request.body() as IUser;
       const { userService } = this.initializeServices();
       await userService.createUser(user);
       return response.json(true);
@@ -88,7 +88,7 @@ export default class UsersController {
 
   public async updateUser({ request, response }: HttpContextContract) {
     try {
-      const user: IUser = request.input("user");
+      const user = request.body() as IUser;
       const { userService } = this.initializeServices();
       await userService.updateUser(user);
       return response.json(true);
@@ -97,11 +97,11 @@ export default class UsersController {
     }
   }
 
-  public async delete({ params, response }: HttpContextContract) {
+  public async deleteUser({ request, response }: HttpContextContract) {
     try {
-      const userId: number = params.userId;
+      const userId: number = request.input("userId");
       const { userService } = this.initializeServices();
-      await userService.delete(userId);
+      await userService.deleteUser(userId);
       return response.json(true);
     } catch (error) {
       throw new CustomException(error as CustomErrorType);

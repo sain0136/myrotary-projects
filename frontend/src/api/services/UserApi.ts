@@ -39,7 +39,7 @@ export class UsersApi {
   public async createNewUser(user: IUser): Promise<boolean> {
     return await this.apiClient.fetchWrapper(
       "POST",
-      `${BASE_ROUTE}/user/create`,
+      `${BASE_ROUTE}/create`,
       user
     );
   }
@@ -53,9 +53,8 @@ export class UsersApi {
   }
 
   public async deleteUser(userId: number): Promise<boolean> {
-    return await this.apiClient.fetchWrapper(
-      "DELETE",
-      `${BASE_ROUTE}/user/${userId}`
-    );
+    return await this.apiClient.fetchWrapper("POST", `${BASE_ROUTE}/delete`, {
+      userId,
+    });
   }
 }

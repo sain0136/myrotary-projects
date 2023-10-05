@@ -11,11 +11,12 @@ import BaseDisplayTable from "@/components/tables/BaseDisplayTable.vue";
 import type { CustomError } from "@/utils/classes/CustomError";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import type { IDistrict } from "@/utils/interfaces/IDistrict";
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import router from "@/router";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import { modalHandler } from "@/utils/composables/ModalHandler";
+import type { PaginationResult } from "@/utils/types/commonTypes";
 
 /* Data */
 const { langTranslations } = useLanguage();
@@ -23,12 +24,17 @@ const { handleError, handleSuccess } = errorHandler();
 const districtApi = new DistrictApi(new ApiClient());
 const allDistricts = reactive<IDistrict[]>([]);
 const { changeShowModal, setModal } = modalHandler();
-
+const currentPage = ref(1);
 /* Hooks */
 onMounted(async () => {
   try {
-    const response = await districtApi.getAllDistricts(true);
-    Object.assign(allDistricts, response);
+    const response = (await districtApi.getAllDistricts(
+      false,
+      1,
+      10
+    )) as PaginationResult;
+    Object.assign(allDistricts, response.data);
+    currentPage.value = response.meta.current_page;
   } catch (error) {
     handleError(error as CustomError);
   }
