@@ -1,4 +1,8 @@
 export interface Translation {
+  clubsView: {
+    clubMembersLabel: string;
+    clubsLabel: string;
+  };
   resultLabel: string;
   allLabel: string;
   nextButtonLabel: string;
@@ -110,6 +114,10 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    clubsView: {
+      clubMembersLabel: "Club Members",
+      clubsLabel: "Clubs",
+    },
     resultLabel: "Results",
     allLabel: "All",
     nextButtonLabel: "Next",
@@ -224,6 +232,10 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    clubsView: {
+      clubMembersLabel: "Membres du club",
+      clubsLabel: "Clubs",
+    },
     resultLabel: "Résultats",
     allLabel: "Tous",
     nextButtonLabel: "Suivant",
