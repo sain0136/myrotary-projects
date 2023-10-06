@@ -9,7 +9,7 @@ import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted, ref } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import { useRoute } from "vue-router";
-
+import ClubsTable from "@/modules/admin/components/club/ClubsTable.vue";
 /* Data */
 const { langTranslations } = useLanguage();
 const route = useRoute();
@@ -51,6 +51,10 @@ const setActiveTab = (tabName: string) => {
       </a>
     </li>
   </ul>
+  <div v-if="activeTab === 'clubs'">
+    <ClubsTable />
+  </div>
+  <div v-if="activeTab === 'members'" class="mt-8"></div>
 </template>
 
 <style lang="scss" scoped>
