@@ -17,7 +17,7 @@ type ColumnOptions = {
   colName: string;
   columnWidth?: tailwindWidths;
 };
-type tailwindWidths = "w-2/12";
+type tailwindWidths = "w-2/12" | "w-1/12" | "w-1/6";
 type ButtonOptions = {
   show: boolean;
   callBack: (row?: unknown) => void;

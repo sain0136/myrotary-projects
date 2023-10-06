@@ -10,10 +10,13 @@ import { onMounted, ref, watch } from "vue";
 import DistrictsTable from "@/modules/admin/components/district/DistrictsTable.vue";
 import { useRoute } from "vue-router";
 import DistrictAdminsTable from "@/modules/admin/components/district/DistrictAdminsTable.vue";
+
 /* Data */
 const { langTranslations } = useLanguage();
 const route = useRoute();
-const activeTab = ref(sessionStorage.getItem("settingsLastTab") || "District");
+const activeTab = ref(
+  sessionStorage.getItem("districtViewLastTab") || "District"
+);
 const tabs = ref([
   {
     name: "district",
@@ -28,10 +31,11 @@ onMounted(async () => {
     activeTab.value = "district";
   }
 });
+
 /* Methods */
 const setActiveTab = (tabName: string) => {
   activeTab.value = tabName;
-  sessionStorage.setItem("settingsLastTab", tabName);
+  sessionStorage.setItem("DistrictViewLastTab", tabName);
 };
 </script>
 

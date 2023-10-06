@@ -13,7 +13,7 @@ export default class ClubsController {
 
   public async clubsInDistrict({ response, request }: HttpContextContract) {
     try {
-      const currentPage: number = request.input("current_page", 1);
+      const currentPage: number = request.input("currentPage", 1);
       const limit: number = request.input("limit", 10);
       const districtID: number = request.input("districtId");
       const { clubService } = this.initializeServices();

@@ -16,7 +16,7 @@ const { options, modelValue, defaultOption, label, errorMessage } =
   defineProps<{
     label: string;
     errorMessage?: string;
-    modelValue: string;
+    modelValue: string | number;
     defaultOption?: string;
     options: string[];
   }>();
