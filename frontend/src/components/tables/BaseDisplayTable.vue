@@ -2,12 +2,15 @@
 export default {
   name: "BaseDisplayTable",
 };
+
 </script>
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch, provide } from "vue";
 import { Icon } from "@iconify/vue";
+import type Button from "primevue/button";
+
 
 /* Types */
 type ColumnOptions = {
@@ -28,19 +31,47 @@ const { tableData, columns, editButton, deleteButton } = defineProps<{
   columns: ColumnOptions[];
   editButton?: ButtonOptions;
   deleteButton?: ButtonOptions;
+  showCheckboxes: Boolean;
 }>();
+
+const checkedItems = ref<any[]>([]);
+
+const selectAll = ref(false);
+
+watch(selectAll, (newVal) => {
+  if (newVal) {
+    checkedItems.value = [...tableData];
+  } else {
+    checkedItems.value = [];
+  }
+});
 
 /* Hooks */
 onMounted(async () => {});
 
 /* Methods */
+const onButtonClick = () => {
+  const districtId = checkedItems.value.map(item => item.district_id)
+  console.log(districtId)
+}
+
 </script>
 
 <template>
   <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-    <table class="w-full text-sm text-left text-nearWhite">
-      <thead class="text-xs text-nearWhite uppercase bg-gray-500">
-        <tr>
+    <button  @click="onButtonClick">Delete</button>
+    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+      <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <tr class="row border-b bg-nearBlack border-gray-700">
+          <th scope="col" class="p-4">
+                    <div class="flex items-center">
+                        <input id="checkbox-all-search"
+                         v-model="selectAll"
+                         type="checkbox" 
+                         class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label for="checkbox-all-search" class="sr-only">checkbox</label>
+                    </div>
+                </th>
           <th
             v-for="column in columns"
             :key="column.name"
@@ -63,12 +94,25 @@ onMounted(async () => {});
           :key="index"
           class="row border-b bg-nearBlack border-gray-700"
         >
+        <td v-if="showCheckboxes" class="w-4 p-4">
+                    <div class="flex items-center">
+                        <input id="checkbox-table-search-1"
+                        v-model="checkedItems" 
+                        :value="row" 
+                        type="checkbox" 
+                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        
+                        >
+                        <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+                    </div>
+        </td>
           <td
-            v-for="column in columns"
+            v-for="(column, index) in columns"
             class="px-6 py-4"
             :class="{
               'hidden md:block': column.collapsable,
             }"
+            :key="index"
           >
             {{ row[column.colName] }}
           </td>
@@ -97,6 +141,7 @@ onMounted(async () => {});
     </table>
   </div>
 </template>
+
 
 <style lang="scss" scoped>
 @import "@/assets/_variables.scss";

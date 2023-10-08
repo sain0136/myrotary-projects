@@ -18,7 +18,7 @@ export default class DistrictsRepositories {
   public async createDistrict(district: IDistrict) {
     await Districts.create({
       districtNumber: "D-" + district.district_name,
-      districtName: "district " + district.district_name,
+      districtName:  "District" + district.district_name,
       districtEmail: district.district_email,
       districtPresident: district.district_president,
       districtDescription: district.district_description,

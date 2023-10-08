@@ -1,6 +1,12 @@
 <script lang="ts">
 export default {
   name: "DistrictsTable",
+  props: {
+  showCheckboxes: {
+    type: Boolean,
+    default: false
+  }
+},
 };
 </script>
 
@@ -11,7 +17,7 @@ import BaseDisplayTable from "@/components/tables/BaseDisplayTable.vue";
 import type { CustomError } from "@/utils/classes/CustomError";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import type { IDistrict } from "@/utils/interfaces/IDistrict";
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, inject,  ref  } from "vue";
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import router from "@/router";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
@@ -24,6 +30,8 @@ const districtApi = new DistrictApi(new ApiClient());
 const allDistricts = reactive<IDistrict[]>([]);
 const { changeShowModal, setModal } = modalHandler();
 
+
+
 /* Hooks */
 onMounted(async () => {
   try {
@@ -34,14 +42,19 @@ onMounted(async () => {
     handleError(error as CustomError);
   }
 });
+
+
+
+
 </script>
 
 <template>
   <div class="flex flex-col gap-8">
     <BaseDisplayTable
+      :show-checkboxes="true"
       :delete-button="{
         show: true,
-        callBack: async (district ) => {
+        callBack: async (district) => {
           const toDelete =(district as IDistrict)
           const id = toDelete.district_id
           try {
@@ -58,6 +71,7 @@ onMounted(async () => {
           router.go(0)
         },
       }"
+      
       :edit-button="{
         show: true,
         callBack: (district) => {
@@ -80,6 +94,7 @@ onMounted(async () => {
         },
       ]"
     />
+      
     <div class="flex justify-center">
       <RotaryButton
         @click="router.push({ name: 'DistrictAddEdit' })"
