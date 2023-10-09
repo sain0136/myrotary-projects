@@ -6,8 +6,9 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch, provide, reactive } from "vue";
 import { Icon } from "@iconify/vue";
+import RotaryButton from "../buttons/RotaryButton.vue";
 
 /* Types */
 type ColumnOptions = {
@@ -24,6 +25,10 @@ type ButtonOptions = {
 };
 
 /* Data */
+
+let checkedItems = reactive<unknown[]>([]);
+const isAllSelected = ref(false);
+
 defineEmits(["update:limit"]);
 const limitValuesList = [5, 10, 25, 50, 100];
 const { langTranslations } = useLanguage();
@@ -37,6 +42,8 @@ const {
   lastPage,
   totalResults,
   limit,
+  showCheckboxes,
+  multiSelectDelete,
 } = defineProps<{
   currentPage: number;
   tableData: any[];
@@ -47,19 +54,85 @@ const {
   lastPage: number;
   totalResults: number;
   limit: number;
+  showCheckboxes: Boolean;
+  // perhaps make expict union type  selectedItems typed ? like allow a select types that can be passed in
+  multiSelectDelete?: (selectedItems: unknown[]) => void;
 }>();
-
 /* Hooks */
 onMounted(async () => {});
 
+watch(isAllSelected, () => {
+  isAllSelected.value = checkedItems.length === tableData.length;
+});
+
+watch(
+  checkedItems,
+  () => {
+    isAllSelected.value = checkedItems.length === tableData.length;
+  },
+  { deep: true }
+);
+
 /* Methods */
+const handleCheckboxChange = (e: Event, row: unknown) => {
+  if (e.target) {
+    if ((e.target as HTMLInputElement).checked) {
+      checkedItems.push(row);
+    } else {
+      checkedItems.splice(checkedItems.indexOf(row), 1);
+    }
+  }
+};
+
+const handleSelectAll = (e: Event) => {
+  if (e.target) {
+    const isChecked = (e.target as HTMLInputElement).checked;
+    for (let row of tableData) {
+      row.checked = isChecked;
+    }
+    if ((e.target as HTMLInputElement).checked) {
+      checkedItems.push(...tableData);
+    } else {
+      checkedItems.splice(0, checkedItems.length);
+    }
+  }
+};
+
+const handlehandleDeleteMultiple = () => {
+  if (multiSelectDelete) {
+    multiSelectDelete(checkedItems);
+    isAllSelected.value = false;
+    checkedItems.splice(0, checkedItems.length);
+  }
+};
 </script>
 
 <template>
   <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <div>
+      <RotaryButton
+        v-if="showCheckboxes"
+        :disable="checkedItems.length < 1"
+        :label="langTranslations.deleteLabel"
+        @click="handlehandleDeleteMultiple"
+        :theme="'primary'"
+      />
+    </div>
     <table class="w-full text-sm text-left text-nearWhite">
       <thead class="text-xs text-nearWhite uppercase bg-gray-500">
         <tr>
+          <th v-if="showCheckboxes" scope="col" class="p-4">
+            <div class="flex items-center">
+              <input
+                v-model="isAllSelected"
+                id="checkbox-all-search"
+                @change="handleSelectAll($event)"
+                type="checkbox"
+                class="w-4 h-4 text-secondary bg-gray-100 border-gray-300 rounded"
+              />
+              <label for="checkbox-all-search" class="sr-only">checkbox</label>
+            </div>
+          </th>
           <th
             v-for="column in columns"
             :key="column.name"
@@ -83,8 +156,24 @@ onMounted(async () => {});
           :key="index"
           class="row border-b bg-nearBlack border-gray-700"
         >
+          <td v-if="showCheckboxes" class="w-4 p-4">
+            <div class="flex items-center">
+              <input
+                v-model="row.checked"
+                :id="'checkbox-table-search-' + index"
+                :value="row"
+                type="checkbox"
+                class="w-4 h-4 text-secondary bg-gray-100 border-gray-300 rounded"
+                @change="handleCheckboxChange($event, row)"
+              />
+              <label :for="'checkbox-table-search-' + index" class="sr-only"
+                >checkbox</label
+              >
+            </div>
+          </td>
           <td
-            v-for="column in columns"
+            v-for="(column, index) in columns"
+            :key="index"
             class="px-6 py-4 whitespace-nowrap :lg:whitespace-normal"
             :class="{
               'hidden md:table-cell': column.collapsable,
@@ -96,7 +185,7 @@ onMounted(async () => {});
           <td class="px-6 py-4 :lg: w-1/12">
             <div class="flex justify-between">
               <a
-                @click="editButton?.callBack(row)"
+                @click="editButton?.callBack({ ...row })"
                 v-if="editButton?.show"
                 :title="langTranslations.editLabel"
                 href="#"
@@ -104,7 +193,7 @@ onMounted(async () => {});
                 ><Icon icon="tabler:edit"
               /></a>
               <a
-                @click="deleteButton?.callBack(row)"
+                @click="deleteButton?.callBack({ ...row })"
                 v-if="deleteButton?.show"
                 :title="langTranslations.deleteLabel"
                 href="#"

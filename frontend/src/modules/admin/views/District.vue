@@ -15,7 +15,7 @@ import DistrictAdminsTable from "@/modules/admin/components/district/DistrictAdm
 const { langTranslations } = useLanguage();
 const route = useRoute();
 const activeTab = ref(
-  sessionStorage.getItem("districtViewLastTab") || "District"
+  sessionStorage.getItem("districtViewLastTab") || "district"
 );
 const tabs = ref([
   {
@@ -35,7 +35,7 @@ onMounted(async () => {
 /* Methods */
 const setActiveTab = (tabName: string) => {
   activeTab.value = tabName;
-  sessionStorage.setItem("DistrictViewLastTab", tabName);
+  sessionStorage.setItem("districtViewLastTab", tabName);
 };
 </script>
 

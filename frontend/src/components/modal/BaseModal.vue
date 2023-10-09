@@ -28,9 +28,16 @@ const { langTranslations, languagePref } = useLanguage();
 onMounted(async () => {});
 
 /* Methods */
-const conformModal = () => {
-  changeShowModal();
-  confirmValue.value = true;
+// const conformModal = () => {
+//   changeShowModal();
+//   confirmValue.value = true;
+// };
+const confirm = () => {
+  window.dispatchEvent(new Event("confirmEvent"));
+};
+
+const cancel = () => {
+  window.dispatchEvent(new Event("cancelEvent"));
 };
 </script>
 
@@ -88,15 +95,11 @@ const conformModal = () => {
         >
           <RotaryButton
             v-if="confirmationModal"
-            @click="conformModal"
+            @click="confirm"
             :label="langTranslations.yesLabel"
             :theme="'primary'"
           />
-          <RotaryButton
-            @click="changeShowModal"
-            :label="'Close'"
-            :theme="'primary'"
-          />
+          <RotaryButton @click="cancel" :label="'Close'" :theme="'primary'" />
         </div>
       </div>
     </div>

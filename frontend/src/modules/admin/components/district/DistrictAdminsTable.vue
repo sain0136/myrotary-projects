@@ -68,6 +68,24 @@ const getAllAdmins = async () => {
     handleError(error as CustomError);
   }
 };
+const deleteAdmin = async (user: unknown) => {
+  const toDelete = user as IUser;
+  const id = toDelete.user_id;
+  try {
+    setModal(
+      langTranslations.value.deleteLabel,
+      langTranslations.value.confirmationDelete + " " + toDelete.fullName
+    );
+    const confirmed = await changeShowModal(true);
+    if (id && confirmed) {
+      await userApi.deleteUser(id);
+      handleSuccess(langTranslations.value.succssDeleteToast);
+    }
+    await getAllAdmins();
+  } catch (error) {
+    handleError(error as CustomError);
+  }
+};
 
 const handlePageChange = (nextOrPrevious: "next" | "previous") => {
   pagination.currentPage =
@@ -81,6 +99,8 @@ const handlePageChange = (nextOrPrevious: "next" | "previous") => {
 <template>
   <div class="flex flex-col gap-8">
     <BaseDisplayTable
+      :multi-select-delete="(selectedItems) => {}"
+      :show-checkboxes="false"
       :handle-page-change="handlePageChange"
       :current-page="pagination.currentPage"
       :last-page="pagination.lastPage"
@@ -89,20 +109,8 @@ const handlePageChange = (nextOrPrevious: "next" | "previous") => {
       @update:limit="pagination.limit = $event"
       :delete-button="{
         show: true,
-        callBack: async (user ) => {
-          const toDelete =(user as IUser)
-          const id = toDelete.user_id
-          try {
-            setModal(langTranslations.deleteLabel, langTranslations.confirmationDelete + ' ' + toDelete.fullName )
-           const confirmed = await changeShowModal(true)
-            if (id && confirmed) {
-              await userApi.deleteUser(id)
-              handleSuccess(langTranslations.succssDeleteToast)
-          }
-          } catch (error) {
-            handleError(error as CustomError);
-          }
-          router.go(0)
+        callBack: (user) => {
+          deleteAdmin(user);
         },
       }"
       :edit-button="{
