@@ -244,18 +244,19 @@ onMounted(async () => {
 /* Methods */
 const validateAndSubmit = async () => {
   const isFormCorrect = await v$.value.$validate();
-  if (!isFormCorrect || chosenDistrict.value === "") {
+  if (!isFormCorrect || (!userId && chosenDistrict.value === "")) {
     handleValidationForm();
     return;
   }
   try {
     if (userId) {
+      await userApi.updateUser(user);
     } else {
       if (userType === "clubUser") {
         user.user_type = "CLUB";
       }
 
-      if (userType === "districtAdmin" && userId) {
+      if (userType === "districtAdmin") {
         if (typeof districtMap.get(chosenDistrict.value) !== "undefined") {
           {
             user.district_id = districtMap.get(chosenDistrict.value) as number;
@@ -279,6 +280,7 @@ const validateAndSubmit = async () => {
       router.push({ name: "District", query: { tabNameProp: "district" } });
     }
     handleSuccess(langTranslations.value.toastSuccess);
+    redirect();
   } catch (error) {
     handleError(error as CustomError);
   }
@@ -317,7 +319,6 @@ const redirect = () => {
       />
       <!-- TODO: implications of changes to users role -->
       <BaseSelect
-        v-if="!userId"
         class="w-1/2"
         v-model="user.role_type"
         :label="langTranslations.roleLabel"
@@ -407,7 +408,11 @@ const redirect = () => {
       <RotaryButton
         :theme="'primary'"
         :label="submitLabel[languagePref]"
-        @click="validateAndSubmit()"
+        @click="
+          () => {
+            validateAndSubmit();
+          }
+        "
       />
       <RotaryButton
         :theme="'primary'"

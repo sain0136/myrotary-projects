@@ -19,7 +19,7 @@ export default class DistrictsRepositories {
   public async createDistrict(district: IDistrict) {
     await Districts.create({
       districtNumber: "D-" + district.district_name,
-      districtName: "district " + district.district_name,
+      districtName: "District " + district.district_name,
       districtEmail: district.district_email,
       districtPresident: district.district_president,
       districtDescription: district.district_description,
@@ -58,8 +58,8 @@ export default class DistrictsRepositories {
         throw new CustomException({
           message: "You can't delete a District that has Clubs",
           translatedMessage: {
-            en: "You can't delete a District that has Clubs",
-            fr: "Vous ne pouvez pas supprimer un District qui a des Clubs",
+            en: "You can't delete Districts that have Clubs associated",
+            fr: "Vous ne pouvez pas supprimer un District qui a des Clubs associés",
           },
         });
       }

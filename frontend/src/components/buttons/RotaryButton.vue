@@ -10,6 +10,7 @@ import type { theme } from "@/utils/types/commonTypes";
 defineProps<{
   theme: theme;
   label: string;
+  disable?: boolean;
 }>();
 
 const themes: Record<theme, string> = {
@@ -24,12 +25,22 @@ const themes: Record<theme, string> = {
 
 <template>
   <button
+    :disabled="disable"
     type="button"
-    :class="themes[theme]"
-    class="focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2"
+    :class="[themes[theme], { 'disable ': disable }]"
+    class="focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 cursor-pointer"
   >
     {{ label }}
   </button>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.disable {
+  pointer-events: none;
+  cursor: not-allowed;
+  opacity: 0.5;
+  &:hover {
+    background: none;
+  }
+}
+</style>

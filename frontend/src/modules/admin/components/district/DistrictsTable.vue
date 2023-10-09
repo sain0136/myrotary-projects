@@ -8,7 +8,7 @@ export default {
 import { ApiClient } from "@/api/ApiClient";
 import { DistrictApi } from "@/api/services/DistrictsApi";
 import BaseDisplayTable from "@/components/tables/BaseDisplayTable.vue";
-import type { CustomError } from "@/utils/classes/CustomError";
+import { CustomError } from "@/utils/classes/CustomError";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import type { IDistrict } from "@/utils/interfaces/IDistrict";
 import { onMounted, reactive, ref, watch } from "vue";
@@ -17,6 +17,7 @@ import router from "@/router";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import { modalHandler } from "@/utils/composables/ModalHandler";
 import type { PaginationResult } from "@/utils/types/commonTypes";
+import type { ICustomError } from "@/utils/interfaces/ICustomError";
 
 /* Data */
 const { langTranslations } = useLanguage();
@@ -30,7 +31,6 @@ const pagination = reactive({
   total: 0,
   limit: 5,
 });
-
 /* Hooks */
 onMounted(async () => {
   await getAllDistricts();
@@ -68,11 +68,60 @@ const handlePageChange = (nextOrPrevious: "next" | "previous") => {
       : pagination.currentPage - 1;
   getAllDistricts();
 };
+
+const confirmMultiDelete = async (selectedItems: unknown[]) => {
+  try {
+    if (selectedItems) {
+      let toDeleteNames = "";
+      const ids = (selectedItems as IDistrict[]).map((d) => {
+        toDeleteNames += d.district_name + ", ";
+        return d.district_id;
+      });
+      setModal(
+        langTranslations.value.deleteLabel,
+        langTranslations.value.confirmationDelete +
+          " " +
+          toDeleteNames.replace(/,\s*$/, "")
+      );
+      const confirmed = await changeShowModal(true);
+      if (confirmed && ids) {
+        await districtApi.deleteDistrict(ids);
+        handleSuccess(langTranslations.value.succssDeleteToast);
+      }
+      await getAllDistricts();
+    }
+    throw new Error();
+  } catch (error) {
+    handleError(error as CustomError);
+  }
+};
+
+const deleteDistrict = async (district: unknown) => {
+  const toDelete = { ...(district as IDistrict) };
+  const id = toDelete.district_id;
+  try {
+    setModal(
+      langTranslations.value.deleteLabel,
+      langTranslations.value.confirmationDelete + " " + toDelete.district_name
+    );
+    const confirmed = await changeShowModal(true);
+    if (id && confirmed) {
+      await districtApi.deleteDistrict([id]);
+      handleSuccess(langTranslations.value.succssDeleteToast);
+    }
+    await getAllDistricts();
+  } catch (error) {
+    console.log(error);
+    handleError(error as CustomError);
+  }
+};
 </script>
 
 <template>
   <div class="flex flex-col gap-8">
     <BaseDisplayTable
+      :multi-select-delete="confirmMultiDelete"
+      :show-checkboxes="true"
       :handle-page-change="handlePageChange"
       :current-page="pagination.currentPage"
       :last-page="pagination.lastPage"
@@ -81,22 +130,7 @@ const handlePageChange = (nextOrPrevious: "next" | "previous") => {
       @update:limit="pagination.limit = $event"
       :delete-button="{
         show: true,
-        callBack: async (district ) => {
-          const toDelete =(district as IDistrict)
-          const id = toDelete.district_id
-          try {
-            setModal(langTranslations.deleteLabel, langTranslations.confirmationDelete + ' ' + toDelete.district_name )
-           const confirmed = await changeShowModal(true)
-            if (id && confirmed) {
-              await districtApi.deleteDistrict([id])  
-              handleSuccess(langTranslations.succssDeleteToast)
-          }
-          } catch (error) {
-            handleError(error as CustomError);
-
-          }
-          router.go(0)
-        },
+        callBack: deleteDistrict,
       }"
       :edit-button="{
         show: true,

@@ -8,15 +8,28 @@ const confirmValue = ref(false);
 const changeShowModal = (
   confirmation: boolean = false
 ): void | Promise<boolean> => {
-  showModal.value = !showModal.value;
+  showModal.value = confirmation;
   if (confirmation) {
     confirmationModal.value = confirmation;
     return new Promise<boolean>((resolve) => {
-      watch(confirmValue, () => {
-        if (confirmValue.value) {
-          resolve(confirmValue.value);
-        }
-      });
+      const confirmHandler = () => {
+        resolve(true);
+        window.removeEventListener("confirmEvent", confirmHandler);
+        window.removeEventListener("cancelEvent", cancelHandler);
+        showModal.value = false;
+        resetModal();
+      };
+
+      const cancelHandler = () => {
+        resolve(false);
+        window.removeEventListener("confirmEvent", confirmHandler);
+        window.removeEventListener("cancelEvent", cancelHandler);
+        showModal.value = false;
+        resetModal();
+      };
+
+      window.addEventListener("confirmEvent", confirmHandler);
+      window.addEventListener("cancelEvent", cancelHandler);
     });
   }
 };
