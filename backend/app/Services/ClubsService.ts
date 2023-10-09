@@ -13,4 +13,24 @@ export default class ClubsService {
       limit
     );
   }
+
+  public async createClub(club: any) {
+    return await this.clubRepository.createClub(club);
+  }
+
+  public async updateClub(club: any) {
+    return await this.clubRepository.updateClub(club);
+  }
+
+  public async getById(id: number) {
+    return await this.clubRepository.getById(id);
+  }
+
+  public async deleteClub(id: number) {
+    return await this.clubRepository.deleteClub(id);
+  }
+
+  public async getClubUsers(id: number) {
+    return await this.clubRepository.getClubUsers(id);
+  }
 }

@@ -44,7 +44,7 @@ export default class Clubs extends BaseModel {
   public clubDescription?: string;
 
   @column()
-  public settings: object;
+  public settings: string;
 
   @column()
   public siteUrl?: string;
