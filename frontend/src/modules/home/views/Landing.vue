@@ -6,6 +6,7 @@ export default {
 
 <script setup lang="ts">
 import LandingHeader from "@/modules/home/components/LandingHeader.vue";
+import LandingFooter from "@/modules/home/components/LandingFooter.vue";
 </script>
 
 <template>
@@ -13,6 +14,7 @@ import LandingHeader from "@/modules/home/components/LandingHeader.vue";
   <div class="fluid-container h-full">
     <router-view></router-view>
   </div>
+  <LandingFooter />
 </template>
 
 <style lang="scss" scoped></style>
