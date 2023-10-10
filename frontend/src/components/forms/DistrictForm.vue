@@ -31,13 +31,11 @@ import type { CustomError } from "@/utils/classes/CustomError";
 
 /* Data */
 const districtApi = new DistrictApi(new ApiClient());
-
 const isEdit = router.currentRoute.value.params.districtId ? true : false;
 const districtId = isEdit
   ? parseInt(router.currentRoute.value.params.districtId as string)
   : null;
 const { handleError, handleSuccess, handleValidationForm } = errorHandler();
-
 const district = reactive(new District());
 const { langTranslations, languagePref } = useLanguage();
 const sourceList = [

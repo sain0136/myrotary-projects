@@ -46,7 +46,7 @@ export default class UserRepositories {
     }
   }
 
-  private async addUserRoles(user: Users) {
+  public async addUserRoles(user: Users) {
     if (user.userType === "CLUB") {
       user.role = user.role = await user
         .related("clubRole")

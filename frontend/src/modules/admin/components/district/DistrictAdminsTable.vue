@@ -57,8 +57,8 @@ const getAllAdmins = async () => {
     );
     const districtAdmins = response.data as IUser[];
     for (const user of districtAdmins) {
-      user.title = user.role[0].district_role ?? "N/A";
-      user.districtName = user.extra_details.district_name ?? "N/A";
+      user.title = user.role[0]?.district_role ?? "N/A";
+      user.districtName = user.extra_details?.district_name ?? "N/A";
     }
     Object.assign(allAdmins, districtAdmins);
     pagination.currentPage = response.meta.current_page;

@@ -29,22 +29,22 @@ export default class ClubsController {
     }
   }
 
-  public createClub({ request, response }: HttpContextContract) {
+  public async createClub({ request, response }: HttpContextContract) {
     try {
       const club = request.body() as IClub;
       const { clubService } = this.initializeServices();
-      clubService.createClub(club);
+      await clubService.createClub(club);
       return response.json(true);
     } catch (error) {
       throw new CustomException(error as CustomErrorType);
     }
   }
 
-  public updateClub({ request, response }: HttpContextContract) {
+  public async updateClub({ request, response }: HttpContextContract) {
     try {
       const club = request.body() as IClub;
       const { clubService } = this.initializeServices();
-      clubService.updateClub(club);
+      await clubService.updateClub(club);
       return response.json(true);
     } catch (error) {
       throw new CustomException(error as CustomErrorType);
@@ -64,7 +64,7 @@ export default class ClubsController {
 
   public async deleteClub({ request, response }: HttpContextContract) {
     try {
-      const id: number = request.input("ids");
+      const id: number = request.input("id");
       const { clubService } = this.initializeServices();
       await clubService.deleteClub(id);
       return response.json(true);
@@ -76,8 +76,10 @@ export default class ClubsController {
   public async getClubUsers({ request, response }: HttpContextContract) {
     try {
       const id: number = request.input("id");
+      const currentPage: number = request.input("currentPage", 1);
+      const limit: number = request.input("limit", 10);
       const { clubService } = this.initializeServices();
-      const users = await clubService.getClubUsers(id);
+      const users = await clubService.getClubUsers(id, currentPage, limit);
       return response.json(users);
     } catch (error) {
       throw new CustomException(error as CustomErrorType);

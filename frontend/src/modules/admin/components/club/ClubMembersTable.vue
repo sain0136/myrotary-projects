@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: "ClubsTable",
+  name: "ClubMembersTable",
 };
 </script>
 
@@ -20,17 +20,20 @@ import BaseSelect from "@/components/form/BaseSelect.vue";
 import { ClubApi } from "@/api/services/ClubApi";
 import H3 from "@/components/headings/H3.vue";
 import type { IClub } from "@/utils/interfaces/IClub";
+import type { IUser } from "@/utils/interfaces/IUser";
 
 /* Data */
 const { langTranslations } = useLanguage();
 const { handleError, handleSuccess } = errorHandler();
 const { changeShowModal, setModal } = modalHandler();
-const districtApi = new DistrictApi(new ApiClient());
-const clubApi = new ClubApi(new ApiClient());
-const chosenDistrict = ref("");
-const chosenDistrictId = ref(0);
-const allClubsInDistrict = reactive<IClub[]>([]);
 const allDistricts = reactive<Map<string, number>>(new Map());
+const allClubsInDistrict = reactive<Map<string, number>>(new Map());
+const districtApi = new DistrictApi(new ApiClient());
+const chosenDistrict = ref("");
+const chosenClub = ref("");
+const chosenId = ref(0);
+const clubApi = new ClubApi(new ApiClient());
+const allUsersInClub = reactive<Array<IUser>>([]);
 const pagination = reactive({
   currentPage: 1,
   lastPage: 1,
@@ -39,16 +42,32 @@ const pagination = reactive({
 });
 
 /* Hooks */
-watch(chosenDistrict, () => {
+watch(chosenDistrict, async () => {
   if (chosenDistrict.value !== undefined) {
-    chosenDistrictId.value = allDistricts.get(chosenDistrict.value) as number;
-    Object.assign(pagination, {
-      currentPage: 1,
-      lastPage: 1,
-      total: 0,
-      limit: 5,
-    });
-    getClubsByDistrict();
+    allUsersInClub.splice(0, allUsersInClub.length);
+    chosenClub.value = "";
+    chosenId.value = 0;
+    const id = allDistricts.get(chosenDistrict.value) as number;
+    try {
+      allClubsInDistrict.clear();
+      const response = await clubApi.clubsInDistrict(
+        id,
+        pagination.currentPage,
+        1000000
+      );
+      (response?.data as IClub[]).map((club) => {
+        allClubsInDistrict.set(club.club_name, club.club_id as number);
+      });
+    } catch (error) {
+      handleError(error as CustomError);
+    }
+  }
+});
+
+watch(chosenClub, () => {
+  if (chosenClub.value !== undefined && chosenClub.value !== "") {
+    chosenId.value = allClubsInDistrict.get(chosenClub.value) as number;
+    getClubMembers();
   }
 });
 
@@ -66,26 +85,28 @@ onMounted(async () => {
     handleError(error as CustomError);
   }
 });
-watch(
-  () => pagination.limit,
-  async () => {
-    await getClubsByDistrict();
-  }
-);
 
 /* Methods */
-const getClubsByDistrict = async () => {
+const getClubMembers = async () => {
   try {
-    const response = (await clubApi.clubsInDistrict(
-      chosenDistrictId.value,
+    allUsersInClub.splice(0, allUsersInClub.length);
+    const response = (await clubApi.getClubUsers(
+      chosenId.value,
       pagination.currentPage,
       pagination.limit
     )) as PaginationResult;
-    allClubsInDistrict.splice(0, allClubsInDistrict.length);
-    Object.assign(allClubsInDistrict, response.data);
-    pagination.currentPage = response.meta.current_page;
-    pagination.lastPage = response.meta.last_page;
-    pagination.total = response.meta.total;
+    if (response?.data) {
+      for (const user of response.data as IUser[]) {
+        if (user.role) {
+          user.title = user.role[0]?.club_role ?? user.role[0]?.district_role;
+        } else {
+          user.title = "N/A";
+        }
+      }
+      (response.data as IUser[]).map((user) => {
+        allUsersInClub.push(user);
+      });
+    }
   } catch (error) {
     handleError(error as CustomError);
   }
@@ -96,28 +117,10 @@ const handlePageChange = (nextOrPrevious: "next" | "previous") => {
     nextOrPrevious === "next"
       ? pagination.currentPage + 1
       : pagination.currentPage - 1;
-  getClubsByDistrict();
+  getClubMembers();
 };
 
-const deleteClub = async (club: unknown) => {
-  const toDelete = club as IClub;
-  const id = toDelete.club_id;
-  debugger;
-  try {
-    setModal(
-      langTranslations.value.deleteLabel,
-      langTranslations.value.confirmationDelete + " " + toDelete.club_name
-    );
-    const confirmed = await changeShowModal(true);
-    if (id && confirmed) {
-      await clubApi.deleteClub(id);
-      handleSuccess(langTranslations.value.succssDeleteToast);
-    }
-    await getClubsByDistrict();
-  } catch (error) {
-    handleError(error as CustomError);
-  }
-};
+const deleteClub = async (club: unknown) => {};
 </script>
 
 <template>
@@ -131,9 +134,21 @@ const deleteClub = async (club: unknown) => {
         :label="''"
       />
     </div>
+    <div
+      v-if="chosenDistrict"
+      class="flex mt-8 justify-center flex-col gap-4 items-center"
+    >
+      <H3 :content="langTranslations.clubsView.clubsLabel" />
+      <BaseSelect
+        class="w-1/2"
+        :options="[...allClubsInDistrict.keys()]"
+        v-model="chosenClub"
+        :label="''"
+      />
+    </div>
     <BaseDisplayTable
       :show-checkboxes="false"
-      v-if="allClubsInDistrict.length > 0"
+      v-if="allUsersInClub.length > 0"
       :handle-page-change="handlePageChange"
       :current-page="pagination.currentPage"
       :last-page="pagination.lastPage"
@@ -146,44 +161,32 @@ const deleteClub = async (club: unknown) => {
       }"
       :edit-button="{
         show: true,
-        callBack: (club) => {
-          const id = (club as IClub).club_id
+        callBack: (user) => {
+          const id = (user as IUser).user_id
           if (id) {
             router.push({
-              path: `club-form/${id}`,
+              path: `user-form/${id}`,
               query: {
-              formType: 'siteAdmin',
+              formType: 'siteAdminClub',
             },
             });
           }
         },
       }"
-      :table-data="allClubsInDistrict"
+      :table-data="allUsersInClub"
       :columns="[
         {
-          name: langTranslations.clubLabel,
-          colName: 'club_name',
-          columnWidth: 'w-1/6',
+          name: langTranslations.nameLabel,
+          colName: 'fullName',
+          columnWidth: 'w-2/12',
+        },
+        {
+          name: langTranslations.roleLabel,
+          lgScreenCollapsable: true,
+          colName: 'title',
         },
       ]"
     />
-    <div class="flex justify-center" v-else>
-      <H3 :content="langTranslations.clubsView.noClubsInDistrict" />
-    </div>
-    <div class="flex justify-center">
-      <RotaryButton
-        @click="
-          router.push({
-            name: 'ClubAddEdit',
-            query: {
-              formType: 'siteAdmin',
-            },
-          })
-        "
-        :label="langTranslations.createLabel + ' ' + langTranslations.clubLabel"
-        :theme="'primary'"
-      />
-    </div>
   </div>
 </template>
 

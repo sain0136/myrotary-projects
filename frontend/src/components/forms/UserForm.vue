@@ -41,7 +41,7 @@ const userId = route.params.userId;
 const userType = route.query.userType
   ? (route.query.userType as UserType)
   : null;
-
+const formType = route.query.formType;
 const user = reactive(new User());
 const { handleError, handleSuccess, handleValidationForm } = errorHandler();
 const userApi = new UsersApi(new ApiClient());
@@ -233,8 +233,14 @@ onMounted(async () => {
     if (userId) {
       const response = await userApi.getUser(parseInt(userId as string));
       Object.assign(user, response);
-      userTitle.value =
-        (user.role[0].district_role ?? "") + ": " + user.fullName;
+      if (formType === "siteAdminClub") {
+        userTitle.value =
+          (user.role[0].club_role ?? "") + ": " + user.fullName ??
+          (user.role[0].district_role ?? "") + ": " + user.fullName;
+      } else {
+        userTitle.value =
+          (user.role[0].district_role ?? "") + ": " + user.fullName;
+      }
     }
   } catch (error) {
     handleError(error as CustomError);
@@ -287,6 +293,10 @@ const validateAndSubmit = async () => {
 };
 
 const redirect = () => {
+  if (formType === "siteAdminClub") {
+    router.push({ name: "Club" });
+    return;
+  }
   router.push({ name: "District" });
 };
 </script>
@@ -319,10 +329,19 @@ const redirect = () => {
       />
       <!-- TODO: implications of changes to users role -->
       <BaseSelect
+        v-if="!formType"
         class="w-1/2"
         v-model="user.role_type"
         :label="langTranslations.roleLabel"
         :options="ResourceList.districtRolesList"
+        :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined "
+      />
+      <BaseSelect
+        v-if="formType === 'siteAdminClub'"
+        class="w-1/2"
+        v-model="user.role_type"
+        :label="langTranslations.roleLabel"
+        :options="ResourceList.clubRolesList"
         :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined "
       />
       <H2 :content="userTitle" />

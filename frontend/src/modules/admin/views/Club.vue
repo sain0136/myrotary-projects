@@ -10,6 +10,7 @@ import { onMounted, ref } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import { useRoute } from "vue-router";
 import ClubsTable from "@/modules/admin/components/club/ClubsTable.vue";
+import ClubMembersTable from "@/modules/admin/components/club/ClubMembersTable.vue";
 /* Data */
 const { langTranslations } = useLanguage();
 const route = useRoute();
@@ -54,7 +55,9 @@ const setActiveTab = (tabName: string) => {
   <div v-if="activeTab === 'clubs'">
     <ClubsTable />
   </div>
-  <div v-if="activeTab === 'members'" class="mt-8"></div>
+  <div v-if="activeTab === 'members'" class="mt-8">
+    <ClubMembersTable />
+  </div>
 </template>
 
 <style lang="scss" scoped>

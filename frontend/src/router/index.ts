@@ -48,6 +48,12 @@ const routes = [
         props: true,
       },
       {
+        path: "club-form/:clubId?",
+        name: "ClubAddEdit",
+        component: () => import("@/components/forms/ClubForm.vue"),
+        props: true,
+      },
+      {
         path: "district",
         name: "District",
         component: () => import("@/modules/admin/views/District.vue"),
