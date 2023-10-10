@@ -15,12 +15,15 @@ const success = {
 };
 
 const handleError = (error: CustomError) => {
-  handleToast(
-    "error",
-    errorName[languagePref.value],
-    error.translatedMessage[languagePref.value],
-    "3000"
-  );
+  const errorBody = {
+    en: '"error not translated": ' + error.message,
+    fr: '"erreur non traduite": ' + error.message,
+  };
+  let message = errorBody[languagePref.value];
+  if (error.translatedMessage?.en) {
+    message = error.translatedMessage[languagePref.value];
+  }
+  handleToast("error", errorName[languagePref.value], message, "3000");
 };
 
 const handleValidationForm = () => {
@@ -32,7 +35,7 @@ const handleValidationForm = () => {
     "error",
     errorName[languagePref.value],
     formNotValid[languagePref.value],
-    "3000"
+    "5000"
   );
 };
 

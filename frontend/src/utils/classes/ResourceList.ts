@@ -7,6 +7,12 @@ export default class ResourceList {
     "District International Chair",
   ];
 
+  static clubRolesList: Array<string> = [
+    "Club Admin",
+    "Standard Member",
+    "Guest",
+  ];
+
   static canadaProvinceList: Array<string> = [
     "Alberta",
     "British Columbia",

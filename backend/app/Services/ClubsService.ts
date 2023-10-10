@@ -30,7 +30,7 @@ export default class ClubsService {
     return await this.clubRepository.deleteClub(id);
   }
 
-  public async getClubUsers(id: number) {
-    return await this.clubRepository.getClubUsers(id);
+  public async getClubUsers(id: number, currentPage: number, limit: number) {
+    return await this.clubRepository.getClubUsers(id, currentPage, limit);
   }
 }

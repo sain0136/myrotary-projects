@@ -1,4 +1,10 @@
 export interface Translation {
+  clubForm: {
+    clubFormHeader: string;
+    disableDsgLabel: string;
+    disableDmLabel: string;
+    disableGlobalLabel: string;
+  };
   clubsView: {
     clubMembersLabel: string;
     clubsLabel: string;
@@ -116,6 +122,12 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    clubForm: {
+      clubFormHeader: "Club Form",
+      disableDsgLabel: "Disable District Simplified Projects",
+      disableDmLabel: "Disable District Matching Projects",
+      disableGlobalLabel: "Disable Global Projects",
+    },
     clubsView: {
       clubMembersLabel: "Club Members",
       clubsLabel: "Clubs",
@@ -236,6 +248,12 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    clubForm: {
+      clubFormHeader: "Club Form",
+      disableDsgLabel: "Disable District Simplified Projects",
+      disableDmLabel: "Disable District Matching Projects",
+      disableGlobalLabel: "Disable Global Projects",
+    },
     clubsView: {
       noClubsInDistrict: "Aucun club dans le district",
       clubMembersLabel: "Membres du club",

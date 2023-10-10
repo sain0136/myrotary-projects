@@ -78,8 +78,23 @@ export default class ClubRepositories {
     }
   }
 
-  public async getClubUsers(id: number) {
-    const users = await Users.query().where({ club_id: id });
+  public async getClubUsers(id: number, currentPage: number, limit: number) {
+    const users = await Users.query()
+      .where({ club_id: id })
+      .paginate(currentPage, limit);
+    for await (const user of users) {
+      if (user.userType === "CLUB") {
+        user.role = user.role = await user
+          .related("clubRole")
+          .pivotQuery()
+          .where({ user_id: user.userId });
+      } else {
+        user.role = await user
+          .related("districtRole")
+          .pivotQuery()
+          .where({ user_id: user.userId });
+      }
+    }
     return users;
   }
 }

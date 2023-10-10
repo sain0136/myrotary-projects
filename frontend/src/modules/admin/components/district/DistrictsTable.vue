@@ -111,7 +111,6 @@ const deleteDistrict = async (district: unknown) => {
     }
     await getAllDistricts();
   } catch (error) {
-    console.log(error);
     handleError(error as CustomError);
   }
 };
