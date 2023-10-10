@@ -35,13 +35,17 @@ import type { IClub } from "@/utils/interfaces/IClub";
 import { all } from "axios";
 /* Data */
 type UserType = "districtAdmin" | "clubUser" | null;
+type formType = "siteAdminClub" | "siteAdminDistrict" | null;
 const route = useRoute();
 const { langTranslations, languagePref } = useLanguage();
 const userId = route.params.userId;
 const userType = route.query.userType
   ? (route.query.userType as UserType)
   : null;
-const formType = route.query.formType;
+const clubId = route.query.clubId ?? null;
+const formType = route.query.formType
+  ? (route.query.formType as formType)
+  : null;
 const user = reactive(new User());
 const { handleError, handleSuccess, handleValidationForm } = errorHandler();
 const userApi = new UsersApi(new ApiClient());
@@ -237,9 +241,11 @@ onMounted(async () => {
         userTitle.value =
           (user.role[0].club_role ?? "") + ": " + user.fullName ??
           (user.role[0].district_role ?? "") + ": " + user.fullName;
+        user.role_type = user.role[0].club_role ?? "";
       } else {
         userTitle.value =
           (user.role[0].district_role ?? "") + ": " + user.fullName;
+        user.role_type = user.role[0].district_role ?? "";
       }
     }
   } catch (error) {
@@ -250,7 +256,10 @@ onMounted(async () => {
 /* Methods */
 const validateAndSubmit = async () => {
   const isFormCorrect = await v$.value.$validate();
-  if (!isFormCorrect || (!userId && chosenDistrict.value === "")) {
+  if (
+    !isFormCorrect ||
+    (!userId && formType === "siteAdminDistrict" && chosenDistrict.value === "")
+  ) {
     handleValidationForm();
     return;
   }
@@ -260,8 +269,8 @@ const validateAndSubmit = async () => {
     } else {
       if (userType === "clubUser") {
         user.user_type = "CLUB";
+        user.club_id = Number(clubId as string);
       }
-
       if (userType === "districtAdmin") {
         if (typeof districtMap.get(chosenDistrict.value) !== "undefined") {
           {
@@ -283,7 +292,6 @@ const validateAndSubmit = async () => {
         }
       }
       await userApi.createNewUser(user);
-      router.push({ name: "District", query: { tabNameProp: "district" } });
     }
     handleSuccess(langTranslations.value.toastSuccess);
     redirect();
@@ -297,7 +305,10 @@ const redirect = () => {
     router.push({ name: "Club" });
     return;
   }
-  router.push({ name: "District" });
+  if (formType === "siteAdminDistrict") {
+    router.push({ name: "District" });
+    return;
+  }
 };
 </script>
 
@@ -329,7 +340,7 @@ const redirect = () => {
       />
       <!-- TODO: implications of changes to users role -->
       <BaseSelect
-        v-if="!formType"
+        v-if="formType === 'siteAdminDistrict'"
         class="w-1/2"
         v-model="user.role_type"
         :label="langTranslations.roleLabel"

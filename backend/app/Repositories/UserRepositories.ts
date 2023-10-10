@@ -122,7 +122,8 @@ export default class UserRepositories {
       email: user.email,
       password: user.password,
       clubId: user.club_id,
-      districtId: user.district_id ? user.district_id : undefined,
+      districtId:
+        user.district_id && user.district_id > 0 ? user.district_id : undefined,
       userType: user.user_type,
       extraDetails: JSON.stringify(user.extra_details),
     });

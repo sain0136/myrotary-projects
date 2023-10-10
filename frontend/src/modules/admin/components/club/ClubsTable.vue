@@ -102,7 +102,6 @@ const handlePageChange = (nextOrPrevious: "next" | "previous") => {
 const deleteClub = async (club: unknown) => {
   const toDelete = club as IClub;
   const id = toDelete.club_id;
-  debugger;
   try {
     setModal(
       langTranslations.value.deleteLabel,
