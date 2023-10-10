@@ -1,4 +1,5 @@
 export interface Translation {
+  sendEmailLabel: string;
   clubForm: {
     clubFormHeader: string;
     disableDsgLabel: string;
@@ -123,6 +124,7 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    sendEmailLabel: "Send us an email",
     clubForm: {
       clubFormHeader: "Club Form",
       disableDsgLabel: "Disable District Simplified Projects",
@@ -250,6 +252,7 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    sendEmailLabel: "Envoyer un email",
     clubForm: {
       clubFormHeader: "Club Form",
       disableDsgLabel: "Disable District Simplified Projects",

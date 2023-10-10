@@ -12,10 +12,23 @@ const routes = [
     name: "AdminLoginForm",
     component: () => import("@/modules/admin/views/AdminLoginForm.vue"),
   },
+  // Landing Routes
   {
     path: "/",
     name: "Landing",
     component: () => import("@/modules/home/views/Landing.vue"),
+    children: [
+      {
+        path: "/",
+        name: "Home",
+        component: () => import("@/modules/home/views/LandingHome.vue"),
+      },
+      {
+        path: "/about",
+        name: "About",
+        component: () => import("@/modules/home/views/About.vue"),
+      },
+    ],
   },
   // Admin Routes
   {

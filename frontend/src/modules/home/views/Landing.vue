@@ -4,10 +4,15 @@ export default {
 };
 </script>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import LandingHeader from "@/modules/home/components/LandingHeader.vue";
+</script>
 
 <template>
-  <div>Landing Homie</div>
+  <LandingHeader />
+  <div class="fluid-container h-full">
+    <router-view></router-view>
+  </div>
 </template>
 
 <style lang="scss" scoped></style>
