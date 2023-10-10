@@ -1,5 +1,11 @@
 export interface Translation {
   sendEmailLabel: string;
+  landingFooter: {
+    privacyPolicyLabel: string;
+    termsOfUseLabel: string;
+    legalHeaderLabel: string;
+    followUsLabel: string;
+  };
   clubForm: {
     clubFormHeader: string;
     disableDsgLabel: string;
@@ -125,6 +131,12 @@ export interface Translation {
 export const translations: Record<string, Translation> = {
   en: {
     sendEmailLabel: "Send us an email",
+    landingFooter: {
+      privacyPolicyLabel: "Privacy Policy",
+      termsOfUseLabel: "Terms & Conditions",
+      legalHeaderLabel: "Legal",
+      followUsLabel: "Follow Us",
+    },
     clubForm: {
       clubFormHeader: "Club Form",
       disableDsgLabel: "Disable District Simplified Projects",
@@ -253,6 +265,12 @@ export const translations: Record<string, Translation> = {
   },
   fr: {
     sendEmailLabel: "Envoyer un email",
+    landingFooter: {
+      privacyPolicyLabel: "Politique de confidentialité",
+      termsOfUseLabel: "Conditions d'utilisation",
+      legalHeaderLabel: "Mentions légales",
+      followUsLabel: "Suivez-nous",
+    },
     clubForm: {
       clubFormHeader: "Club Form",
       disableDsgLabel: "Disable District Simplified Projects",
