@@ -121,6 +121,7 @@ const handlePageChange = (nextOrPrevious: "next" | "previous") => {
             router.push({
               path: `user-form/${id}`,
               query: {
+                formType : 'siteAdminDistrict',
                 userType: 'districtAdmin'
               }
             });
@@ -151,7 +152,7 @@ const handlePageChange = (nextOrPrevious: "next" | "previous") => {
         @click="
           router.push({
             name: 'UserAddEdit',
-            query: { userType: 'districtAdmin' },
+            query: { userType: 'districtAdmin', formType: 'siteAdminDistrict' },
           })
         "
         :label="

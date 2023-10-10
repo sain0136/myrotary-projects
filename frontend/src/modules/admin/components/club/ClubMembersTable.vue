@@ -21,6 +21,7 @@ import { ClubApi } from "@/api/services/ClubApi";
 import H3 from "@/components/headings/H3.vue";
 import type { IClub } from "@/utils/interfaces/IClub";
 import type { IUser } from "@/utils/interfaces/IUser";
+import { UsersApi } from "@/api/services/UserApi";
 
 /* Data */
 const { langTranslations } = useLanguage();
@@ -30,6 +31,7 @@ const allDistricts = reactive<Map<string, number>>(new Map());
 const allClubsInDistrict = reactive<Map<string, number>>(new Map());
 const districtApi = new DistrictApi(new ApiClient());
 const chosenDistrict = ref("");
+const userApi = new UsersApi(new ApiClient());
 const chosenClub = ref("");
 const chosenId = ref(0);
 const clubApi = new ClubApi(new ApiClient());
@@ -106,6 +108,9 @@ const getClubMembers = async () => {
       (response.data as IUser[]).map((user) => {
         allUsersInClub.push(user);
       });
+      pagination.currentPage = response.meta.current_page;
+      pagination.lastPage = response.meta.last_page;
+      pagination.total = response.meta.total;
     }
   } catch (error) {
     handleError(error as CustomError);
@@ -120,7 +125,24 @@ const handlePageChange = (nextOrPrevious: "next" | "previous") => {
   getClubMembers();
 };
 
-const deleteClub = async (club: unknown) => {};
+const deleteClubMember = async (user: unknown) => {
+  const toDelete = user as IUser;
+  const id = toDelete.user_id;
+  try {
+    setModal(
+      langTranslations.value.deleteLabel,
+      langTranslations.value.confirmationDelete + " " + toDelete.fullName
+    );
+    const confirmed = await changeShowModal(true);
+    if (id && confirmed) {
+      await userApi.deleteUser(id);
+      handleSuccess(langTranslations.value.succssDeleteToast);
+    }
+    getClubMembers();
+  } catch (error) {
+    handleError(error as CustomError);
+  }
+};
 </script>
 
 <template>
@@ -157,7 +179,9 @@ const deleteClub = async (club: unknown) => {};
       @update:limit="pagination.limit = $event"
       :delete-button="{
         show: true,
-        callBack: deleteClub,
+        callBack: (user) => {
+          deleteClubMember(user);
+        },
       }"
       :edit-button="{
         show: true,
@@ -187,6 +211,23 @@ const deleteClub = async (club: unknown) => {};
         },
       ]"
     />
+    <div class="flex justify-center">
+      <RotaryButton
+        v-if="chosenId"
+        @click="
+          router.push({
+            name: 'UserAddEdit',
+            query: {
+              formType: 'siteAdminClub',
+              userType: 'clubUser',
+              clubId: chosenId,
+            },
+          })
+        "
+        :label="langTranslations.clubsView.creatNewClubMemberLabel"
+        :theme="'primary'"
+      />
+    </div>
   </div>
 </template>
 
