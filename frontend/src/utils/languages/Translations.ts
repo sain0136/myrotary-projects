@@ -1,4 +1,5 @@
 export interface Translation {
+  landingpageBannerText: string;
   sendEmailLabel: string;
   landingFooter: {
     privacyPolicyLabel: string;
@@ -130,6 +131,7 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    landingpageBannerText: "Our Projects",
     sendEmailLabel: "Send us an email",
     landingFooter: {
       privacyPolicyLabel: "Privacy Policy",
@@ -264,6 +266,7 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    landingpageBannerText: "Nos Projets",
     sendEmailLabel: "Envoyer un email",
     landingFooter: {
       privacyPolicyLabel: "Politique de confidentialité",
