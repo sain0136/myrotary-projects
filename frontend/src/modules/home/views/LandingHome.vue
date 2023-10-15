@@ -33,9 +33,12 @@ onMounted(async () => {});
     <main class="landing-grid">
       <FilterTab />
       <div class="project-cards">
-        <div class="h-60 bg-black"></div>
-        <div class="h-60 bg-black"></div>
-        <div class="h-60 bg-black"></div>
+        <div class="bg-black"></div>
+        <div class="bg-black"></div>
+        <div class="bg-black"></div>
+        <div class="bg-black"></div>
+        <div class="bg-black"></div>
+        <div class="bg-black"></div>
       </div>
     </main>
     <section id="paginationrow" class="landing-grid">
@@ -106,40 +109,39 @@ onMounted(async () => {});
   margin: 0 auto;
 }
 .landing-grid {
-  display: grid;
-  grid-template-columns: [first] 100%;
-  grid-template-rows: [row1-start] 100%;
-  @media screen and (min-width: $tablet) {
+  @media screen and (min-width: $smallMobile) {
     display: grid;
-    grid-template-columns: [first] 25% [second] 75%;
+    grid-template-columns: [first] 30% [second] 70%;
     grid-template-rows: [row1-start] 100%;
   }
-  @media screen and (max-width: $smallMobile) {
+  @media screen and (max-width: $tablet) {
     display: flex;
     flex-direction: column;
     gap: 2rem;
   }
-}
-
-.project-cards {
-  padding: 0 1rem;
-  @media screen and (max-width: $smallMobile) {
-    display: grid;
-    grid-column: first;
-    grid-row: row1-start;
-    row-gap: 1rem;
-  }
-  @media screen and (min-width: $tablet) {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    row-gap: 1rem;
-    column-gap: 1rem;
-  }
-  @media screen and (min-width: $desktop) {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    row-gap: 4rem;
-    column-gap: 1rem;
+  .project-cards {
+    position: relative;
+    padding: 0 1rem;
+    div {
+      height: 500px;
+    }
+    @media screen and (max-width: $tablet) {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+    @media screen and (min-width: $tablet) {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      row-gap: 1rem;
+      column-gap: 1rem;
+    }
+    @media screen and (min-width: $wideDesktop) {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      row-gap: 4rem;
+      column-gap: 1rem;
+    }
   }
 }
 </style>

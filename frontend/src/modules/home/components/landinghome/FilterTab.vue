@@ -148,8 +148,9 @@ const resetSearch = () => {
       <span class="font-extrabold py-8 text-center" v-if="!showFilter">
         {{ langTranslations.filterProjectsLabel }}
       </span>
-      <div class="filter flex flex-col gap-6">
+      <div class="filters flex flex-col gap-6">
         <BaseInput
+          class="flex-1"
           :label="langTranslations.landingPage.searchTermsLabel"
           type="text"
           v-model="filterData.filterText"
@@ -189,7 +190,9 @@ const resetSearch = () => {
           :options="ResourceList.regionList"
           v-model="filterData.filterRegion"
         />
-        <div class="button_row flex gap-2 px-8">
+        <div
+          class="button-row flex flex-col lg:flex-row gap-2 px-8 items-center"
+        >
           <RotaryButton
             :label="langTranslations.landingPage.searchButtonLabel"
             :theme="'primary'"
@@ -214,5 +217,9 @@ const resetSearch = () => {
   // @media screen and (max-width: $smallMobile) {
   //   display: none;
   // }
+
+  .filters {
+    width: 100%;
+  }
 }
 </style>
