@@ -32,7 +32,7 @@ import { DistrictApi } from "@/api/services/DistrictsApi";
 import ResourceList from "@/utils/classes/ResourceList";
 import { ClubApi } from "@/api/services//ClubApi";
 import type { IClub } from "@/utils/interfaces/IClub";
-import { all } from "axios";
+
 /* Data */
 type UserType = "districtAdmin" | "clubUser" | null;
 type formType = "siteAdminClub" | "siteAdminDistrict" | null;
@@ -50,7 +50,6 @@ const user = reactive(new User());
 const { handleError, handleSuccess, handleValidationForm } = errorHandler();
 const userApi = new UsersApi(new ApiClient());
 const clubApi = new ClubApi(new ApiClient());
-const districtNames = reactive<string[]>([]);
 const districtApi = new DistrictApi(new ApiClient());
 const allDistricts = [];
 // TODO: Verify later district names are unique in db

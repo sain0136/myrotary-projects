@@ -41,3 +41,43 @@ export type PaginationResult = {
     total: number;
   };
 };
+
+export type GrantType =
+  | "Club Project"
+  | "District Simplified Project"
+  | "District Matching Project"
+  | "Global Project";
+
+export const grantType = {
+  CLUBPROJECT: "Club Project",
+  DISTRICTSIMPLIFIEDPROJECT: "District Simplified Project",
+  DISTRICTMATCHINGPROJECT: "District Matching Project",
+  GLOBALPROJECT: "Global Project",
+};
+
+export const projectStatus = {
+  LOOKINGFORFUNDING: "Looking For Funding",
+  FULLYFUNDED: "Fully Funded",
+  PENDINGAPPROVAL: "Pending Approval",
+  APPROVED: "Approved",
+  REPORTSDUE: "Reports Due",
+  COMPLETED: "Completed",
+};
+
+export type ProjectStatus =
+  | "Looking For Funding"
+  | "Fully Funded"
+  | "Pending Approval"
+  | "Approved"
+  | "Reports Due"
+  | "Completed";
+
+export type IAreaOfFocus = {
+  Peace_Conflict_Prevention: boolean;
+  Disease_Prevention_And_Treatment: boolean;
+  Water_And_Sanitation: boolean;
+  Maternal_And_Child_Health: boolean;
+  Basic_Education_And_Literacy: boolean;
+  Economic_And_Community_Development: boolean;
+  Environment: boolean;
+};
