@@ -1,5 +1,16 @@
 export interface Translation {
+  filterProjectsLabel: string;
   landingpageBannerText: string;
+  statusLabel: string;
+  landingPage: {
+    searchTermsLabel: string;
+    grantTypeLabel: string;
+    yearLabel: string;
+    searchButtonLabel: string;
+    resetLabel: string;
+    areaOfFocusLabel: string;
+    regionLabel: string;
+  };
   sendEmailLabel: string;
   landingFooter: {
     privacyPolicyLabel: string;
@@ -131,6 +142,17 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    statusLabel: "Status",
+    filterProjectsLabel: "Filter Projects",
+    landingPage: {
+      searchTermsLabel: "Search Term",
+      grantTypeLabel: "Grant Type",
+      yearLabel: "Year",
+      searchButtonLabel: "Search",
+      resetLabel: "Reset",
+      areaOfFocusLabel: "Area of Focus",
+      regionLabel: "Region",
+    },
     landingpageBannerText: "Our Projects",
     sendEmailLabel: "Send us an email",
     landingFooter: {
@@ -266,6 +288,17 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    statusLabel: "Statut",
+    filterProjectsLabel: "Filtrer",
+    landingPage: {
+      searchTermsLabel: "Rechercher",
+      grantTypeLabel: "Type de financement",
+      yearLabel: "Année",
+      searchButtonLabel: "Rechercher",
+      resetLabel: "Réinitialiser",
+      areaOfFocusLabel: "Zone de recherche",
+      regionLabel: "Région",
+    },
     landingpageBannerText: "Nos Projets",
     sendEmailLabel: "Envoyer un email",
     landingFooter: {

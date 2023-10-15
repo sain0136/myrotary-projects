@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { handleError, onMounted, reactive, ref, watch } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import District from "@/utils/classes/District";
 import { useVuelidate } from "@vuelidate/core";
@@ -14,19 +14,10 @@ import router from "@/router";
 import ResourceList from "@/utils/classes/ResourceList";
 import BaseCheckBox from "@/components/form/BaseCheckBox.vue";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
-import H3 from "@/components/headings/H3.vue";
 import H2 from "@/components/headings/H2.vue";
 import Hr from "@/components/hr/Hr.vue";
 import BaseInput from "@/components/form/BaseInput.vue";
-import { Icon } from "@iconify/vue";
-import BaseTextarea from "@/components/form/BaseTextarea.vue";
-import {
-  email,
-  helpers,
-  maxLength,
-  minLength,
-  required,
-} from "@vuelidate/validators/dist/index.mjs";
+import { email, helpers, required } from "@vuelidate/validators/dist/index.mjs";
 import { DistrictApi } from "@/api/services/DistrictsApi";
 import { ApiClient } from "@/api/ApiClient";
 import { CustomError } from "@/utils/classes/CustomError";

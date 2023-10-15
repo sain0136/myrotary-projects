@@ -1,19 +1,43 @@
+import { grantType, projectStatus } from "@/utils/types/commonTypes";
+
 export default class ResourceList {
   constructor() {}
-  static districtRolesList: Array<string> = [
+  static districtRolesList = [
     "District Admin",
     "District Grants Chair",
     "District Foundations Chair",
     "District International Chair",
   ];
 
-  static clubRolesList: Array<string> = [
-    "Club Admin",
-    "Standard Member",
-    "Guest",
+  static statusList = Object.values(projectStatus);
+
+  static grantTypeList = Object.values(grantType);
+
+  static areaOfFocusList = [
+    "Peace Conflict Prevention",
+    "Disease Prevention And Treatment",
+    "Water And Sanitation",
+    "Maternal And Child Health",
+    "Basic Education And Literacy",
+    "Economic And Community Development",
+    "Environment",
   ];
 
-  static canadaProvinceList: Array<string> = [
+  static regionList = [
+    "Africa",
+    "Central America",
+    "North America",
+    "South America",
+    "Asia",
+    "South East Asia",
+    "Eastern Europe",
+    "Western Europe",
+    "Middle East",
+  ];
+
+  static clubRolesList = ["Club Admin", "Standard Member", "Guest"];
+
+  static canadaProvinceList = [
     "Alberta",
     "British Columbia",
     "Manitoba",
@@ -29,7 +53,7 @@ export default class ResourceList {
     "Yukon Territory",
   ];
 
-  static usaStatesList: Array<string> = [
+  static usaStatesList = [
     "Alaska",
     "Alabama",
     "Arkansas",
