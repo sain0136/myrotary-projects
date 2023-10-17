@@ -81,6 +81,11 @@ const routes = [
         name: "Club",
         component: () => import("@/modules/admin/views/Club.vue"),
       },
+      {
+        path: "profile",
+        name: "My Profile",
+        component: () => import("@/modules/admin/views/MyProfile.vue")
+      }
     ],
   },
 ];

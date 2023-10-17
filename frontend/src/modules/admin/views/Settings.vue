@@ -78,16 +78,16 @@ const setActiveTab = (tabName: string) => {
   </div>
   <div v-if="activeTab === 'setting'">
     <SiteConfigForm /> <Hr />
-    <H1
+    <!-- <H1
       class="text-center mb-8"
       :content="langTranslations.adminDash.myProfileLabel"
-    />
-    <div ref="scrollTarget" class="flex justify-center">
+    /> -->
+    <!-- <div ref="scrollTarget" class="flex justify-center">
       <ProfileForm
         class="w-1/2"
         :title="langTranslations.profileImageUploadLabel"
       />
-    </div>
+    </div> -->
   </div>
 </template>
 

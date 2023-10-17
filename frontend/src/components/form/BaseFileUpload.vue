@@ -82,6 +82,14 @@ const submit = async () => {
 
 <template>
   <div class="flex flex-col items-center gap-2">
+    <div class="py-8">
+      <img
+        class="h-24"
+        :src="siteAssetsStore.siteAssets.assets.profilePicture?.s3UrlLink ??
+              '/peter.jpg'"
+        alt="brand"
+      />
+    </div>
     <H3 v-if="title" :content="title" />
     <input
       class="block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none"
