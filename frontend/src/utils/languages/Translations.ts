@@ -29,6 +29,7 @@ export interface Translation {
     clubsLabel: string;
     choseDistrictForClubs: string;
     noClubsInDistrict: string;
+    noClubMembersInDistrict: string;
     creatNewClubMemberLabel: string;
   };
   resultLabel: string;
@@ -174,6 +175,7 @@ export const translations: Record<string, Translation> = {
       clubsLabel: "Clubs",
       choseDistrictForClubs: "Select a District for Club Listings",
       noClubsInDistrict: "No Clubs in District",
+      noClubMembersInDistrict: "No Club members in District",
       creatNewClubMemberLabel: "Create New Club Member",
     },
     resultLabel: "Results",
@@ -322,6 +324,7 @@ export const translations: Record<string, Translation> = {
       clubMembersLabel: "Membres du club",
       clubsLabel: "Clubs",
       choseDistrictForClubs: "Choisissez un district pour la liste des clubs",
+      noClubMembersInDistrict: "Aucun membre du club dans le district",
       creatNewClubMemberLabel: "Creer un membre de club",
     },
     resultLabel: "Résultats",

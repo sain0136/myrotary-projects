@@ -116,6 +116,8 @@ const submit = async () => {
 <style lang="scss" scoped>
 /* Your styles here */
 .circular-image {
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
 }
 </style>

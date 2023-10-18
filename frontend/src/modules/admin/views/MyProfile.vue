@@ -19,7 +19,7 @@ const { langTranslations } = useLanguage();
         <H1
             class="text-center mb-8"
             :content="langTranslations.adminDash.myProfileLabel"
-        />
+          />
         <div class="flex justify-center">
             <ProfileForm
             class="w-1/2"

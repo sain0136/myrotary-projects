@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import { useVuelidate } from "@vuelidate/core";
 import { helpers, required } from "@vuelidate/validators";

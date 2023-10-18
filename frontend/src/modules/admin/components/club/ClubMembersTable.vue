@@ -211,6 +211,9 @@ const deleteClubMember = async (user: unknown) => {
         },
       ]"
     />
+    <div class="flex justify-center" v-else>
+      <H3 :content="langTranslations.clubsView.noClubMembersInDistrict" />
+    </div>
     <div class="flex justify-center">
       <RotaryButton
         v-if="chosenId"

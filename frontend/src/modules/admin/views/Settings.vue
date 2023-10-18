@@ -9,9 +9,7 @@ import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted, ref, watch } from "vue";
 import LogoUploadForm from "@/modules/admin/components/sitesettings/LogoUploadForm.vue";
 import H1 from "@/components/headings/H1.vue";
-import Hr from "@/components/hr/Hr.vue";
 import { useRoute } from "vue-router";
-import ProfileForm from "@/modules/admin/components/sitesettings/ProfileForm.vue";
 import SiteConfigForm from "@/modules/admin/components/sitesettings/SiteConfigForm.vue";
 
 /* Data */
