@@ -13,4 +13,12 @@ export default class UserService {
     }
     return allProjects;
   }
+
+  public async getAllProjects(currentPage: number, limit: number) {
+    const allProjects = await this.projectsRepositories.getAllProjects(
+      currentPage,
+      limit
+    );
+    return allProjects;
+  }
 }

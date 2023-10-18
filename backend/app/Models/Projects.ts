@@ -47,7 +47,7 @@ export default class Projects extends BaseModel {
   public country: string;
 
   @column()
-  public region: String;
+  public region: string;
 
   @column.date()
   public startDate: DateTime;

@@ -1,5 +1,10 @@
-import type { IClub } from "../interfaces/IClub";
-import type { IDistrict } from "../interfaces/IDistrict";
+import type { IClub } from "@/utils/interfaces/IClub";
+import type { IDistrict } from "@/utils/interfaces/IDistrict";
+import type {
+  IClubProject,
+  IDmProject,
+  IDsgProject,
+} from "@/utils/interfaces/IProjects";
 import type { IUser } from "../interfaces/IUser";
 
 export type theme = "primary" | "black" | "secondary";
@@ -32,7 +37,9 @@ export type uploadFileData = {
 };
 
 export type PaginationResult = {
-  data: Array<IUser | IClub | IDistrict>;
+  data: Array<
+    IUser | IClub | IDistrict | IDmProject | IDsgProject | IClubProject
+  >;
   meta: {
     first_page: number;
     last_page: number;
