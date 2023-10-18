@@ -6,17 +6,47 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import Banners from "@/components/banners/Banners.vue";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import FilterTab from "@/modules/home/components/landinghome/FilterTab.vue";
+import { ApiClient } from "@/api/ApiClient";
+import { ProjectsApi } from "@/api/services/ProjectsApi";
+import type { CustomError } from "@/utils/classes/CustomError";
+import type {
+  IClubProject,
+  IDmProject,
+  IDsgProject,
+} from "@/utils/interfaces/IProjects";
 
 /* Data */
+const { handleError, handleSuccess } = errorHandler();
 const { langTranslations } = useLanguage();
+const projectsApi = new ProjectsApi(new ApiClient());
+const pagination = reactive({
+  currentPage: 1,
+  lastPage: 1,
+  total: 0,
+  limit: 6,
+});
+const projects: Array<IDsgProject | IDmProject | IClubProject> = reactive([]);
 
 /* Hooks */
-onMounted(async () => {});
+onMounted(async () => {
+  try {
+    const response = await projectsApi.getAllProjects(
+      pagination.currentPage,
+      pagination.limit
+    );
+    debugger;
+    projects.push(
+      ...(response.data as Array<IDsgProject | IDmProject | IClubProject>)
+    );
+  } catch (error) {
+    handleError(error as CustomError);
+  }
+});
 
 /* Methods */
 </script>

@@ -20,6 +20,7 @@ import BaseSelect from "@/components/form/BaseSelect.vue";
 import { ClubApi } from "@/api/services/ClubApi";
 import H3 from "@/components/headings/H3.vue";
 import type { IClub } from "@/utils/interfaces/IClub";
+import type District from "@/utils/classes/District";
 
 /* Data */
 const { langTranslations } = useLanguage();
@@ -59,7 +60,7 @@ onMounted(async () => {
       1,
       100000
     )) as PaginationResult;
-    response.data.map((district) => {
+    (response.data as District[]).map((district) => {
       allDistricts.set(district.district_name, district.district_id as number);
     });
   } catch (error) {
