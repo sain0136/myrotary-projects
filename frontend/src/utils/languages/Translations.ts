@@ -75,6 +75,8 @@ export interface Translation {
   districtView: {
     distictTabLabel: string;
     adminsTabLabel: string;
+    noAdminsInDistrict: string;
+    choseAdminForDistrict: string;
   };
   welcome: string;
   goodbye: string;
@@ -222,6 +224,8 @@ export const translations: Record<string, Translation> = {
     districtView: {
       distictTabLabel: "District",
       adminsTabLabel: "Admins",
+      noAdminsInDistrict: "No Admins in District",
+      choseAdminForDistrict: "Select an Admin for District Listing"
     },
     welcome: "Welcome!",
     goodbye: "Goodbye!",
@@ -369,6 +373,8 @@ export const translations: Record<string, Translation> = {
     districtView: {
       distictTabLabel: "District",
       adminsTabLabel: "Admins",
+      noAdminsInDistrict: "Aucun administrateur dans le district",
+      choseAdminForDistrict: "Sélectionnez un administrateur pour la liste des districts"
     },
     welcome: "Bienvenue!",
     goodbye: "Au revoir!",

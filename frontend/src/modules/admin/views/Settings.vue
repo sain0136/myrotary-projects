@@ -77,17 +77,7 @@ const setActiveTab = (tabName: string) => {
     <LogoUploadForm />
   </div>
   <div v-if="activeTab === 'setting'">
-    <SiteConfigForm /> <Hr />
-    <!-- <H1
-      class="text-center mb-8"
-      :content="langTranslations.adminDash.myProfileLabel"
-    /> -->
-    <!-- <div ref="scrollTarget" class="flex justify-center">
-      <ProfileForm
-        class="w-1/2"
-        :title="langTranslations.profileImageUploadLabel"
-      />
-    </div> -->
+    <SiteConfigForm />
   </div>
 </template>
 

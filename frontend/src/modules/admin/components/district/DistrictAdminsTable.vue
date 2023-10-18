@@ -10,6 +10,7 @@ import { DistrictApi } from "@/api/services/DistrictsApi";
 import BaseDisplayTable from "@/components/tables/BaseDisplayTable.vue";
 import type { CustomError } from "@/utils/classes/CustomError";
 import BaseSelect from "@/components/form/BaseSelect.vue";
+import H3 from "@/components/headings/H3.vue";
 
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import type { IDistrict } from "@/utils/interfaces/IDistrict";
@@ -29,10 +30,8 @@ const { langTranslations } = useLanguage();
 
 const { handleError, handleSuccess } = errorHandler();
 const districtApi = new DistrictApi(new ApiClient());
-// const allDistricts = reactive<IDistrict[]>([]);
 const allDistricts = reactive<Map<string, number>>(new Map());
 const { changeShowModal, setModal } = modalHandler();
-const allAdmins = reactive<IUser[]>([]);
 const allDistrictsinDistrict = reactive<IDistrict[]>([])
 
 const chosenDistrict = ref("");
@@ -88,7 +87,6 @@ watch(
 
 const getDistrictAdmin = async () => {
   try{
-
     allDistrictsinDistrict.splice(0, allDistrictsinDistrict.length)
     const response = (await districtApi.getDistrictAdmins(
     pagination.currentPage,
@@ -123,29 +121,6 @@ const getDistrictAdmin = async () => {
   }
 }
 
-// const getAllAdmins = async () => {
-//   try {
-//     allAdmins.splice(0, allAdmins.length);
-//     const response = await districtApi.getDistrictAdmins(
-//       pagination.currentPage,
-//       pagination.limit,
-//       1,
-//       true
-//     );
-//     const districtAdmins = response.data as IUser[];
-//     for (const user of districtAdmins) {
-//       user.title = user.role[0].district_role ?? "N/A";
-//       user.districtName = user.extra_details.district_name ?? "N/A";
-//     }
-//     Object.assign(allAdmins, districtAdmins);
-//     pagination.currentPage = response.meta.current_page;
-//     pagination.lastPage = response.meta.last_page;
-//     pagination.total = response.meta.total;
-//   } catch (error) {
-//     handleError(error as CustomError);
-//   }
-// };
-
 
 const deleteAdmin = async (user: unknown) => {
   const toDelete = user as IUser;
@@ -166,6 +141,26 @@ const deleteAdmin = async (user: unknown) => {
   }
 };
 
+const editAdmin = async (user: unknown) => {
+  const toEdit = user as IUser;
+  const id = toEdit.user_id;
+  try {
+    if(id) {
+       router.push({
+        path: `user-form/${id}`,
+              query: {
+                formType : 'siteAdminDistrict',
+                userType: 'districtAdmin'
+              }
+      })
+    }
+    await getDistrictAdmin();
+  } catch (error) {
+    handleError(error as CustomError)
+  }
+}
+
+
 const handlePageChange = (nextOrPrevious: "next" | "previous") => {
   pagination.currentPage =
     nextOrPrevious === "next"
@@ -178,6 +173,7 @@ const handlePageChange = (nextOrPrevious: "next" | "previous") => {
 <template>
   <div class="flex flex-col gap-8">
     <div class="flex mt-8 justify-center flex-col gap-4 items-center">
+      <H3 :content="langTranslations.districtView.choseAdminForDistrict" />
       <BaseSelect
         class="w-1/2"
         :options="[...allDistricts.keys()]"
@@ -186,7 +182,7 @@ const handlePageChange = (nextOrPrevious: "next" | "previous") => {
       />
     </div>
     <BaseDisplayTable
-      
+      v-if="allDistrictsinDistrict.length > 0"
       :multi-select-delete="(selectedItems) => {}"
       :show-checkboxes="false"
       :handle-page-change="handlePageChange"
@@ -204,15 +200,7 @@ const handlePageChange = (nextOrPrevious: "next" | "previous") => {
       :edit-button="{
         show: true,
         callBack: (user) => {
-          const id = (user as IUser).user_id
-          if (id) {
-            router.push({
-              path: `user-form/${id}`,
-              query: {
-                userType: 'districtAdmin'
-              }
-            });
-          }
+          editAdmin(user)
         },
       }"
       :table-data="allDistrictsinDistrict"
@@ -234,12 +222,15 @@ const handlePageChange = (nextOrPrevious: "next" | "previous") => {
         },
       ]"
     />
+    <div class="flex justify-center" v-else>
+      <H3 :content="langTranslations.districtView.noAdminsInDistrict" />
+    </div>
     <div class="flex justify-center">
       <RotaryButton
         @click="
           router.push({
             name: 'UserAddEdit',
-            query: { userType: 'districtAdmin' },
+            query: { userType: 'districtAdmin', formType: 'siteAdminDistrict' },
           })
         "
         :label="

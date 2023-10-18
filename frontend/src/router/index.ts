@@ -83,7 +83,7 @@ const routes = [
       },
       {
         path: "profile",
-        name: "My Profile",
+        name: "MyProfile",
         component: () => import("@/modules/admin/views/MyProfile.vue")
       }
     ],

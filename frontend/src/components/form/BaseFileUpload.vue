@@ -84,7 +84,7 @@ const submit = async () => {
   <div class="flex flex-col items-center gap-2">
     <div class="py-8">
       <img
-        class="h-24"
+        class="h-24 circular-image"
         :src="siteAssetsStore.siteAssets.assets.profilePicture?.s3UrlLink ??
               '/peter.jpg'"
         alt="brand"
@@ -115,4 +115,7 @@ const submit = async () => {
 
 <style lang="scss" scoped>
 /* Your styles here */
+.circular-image {
+  border-radius: 50%;
+}
 </style>
