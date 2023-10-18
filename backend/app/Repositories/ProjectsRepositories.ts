@@ -5,7 +5,7 @@ import Pledges from "App/Models/Pledges";
 import Projects from "App/Models/Projects";
 import Users from "App/Models/Users";
 import { IProjectDetails } from "App/Shared/Interfaces/ProjectInterface";
-import { IUser } from "App/Shared/Interfaces/UserInterface";
+import { IUser } from "App/Shared/Interfaces/IUser";
 
 export default class ProjectsRepositories {
   public async getProjectDetails(id: number) {
@@ -46,6 +46,13 @@ export default class ProjectsRepositories {
 
   public async index() {
     const allProjects = await Projects.all();
+    return allProjects;
+  }
+
+  public async getAllProjects(currentPage: number, limit: number) {
+    const allProjects = await Projects.query()
+      .select("*")
+      .paginate(currentPage, limit);
     return allProjects;
   }
 }
