@@ -17,6 +17,7 @@ import { AssetsApi } from "@/api/services/AssestsApi";
 import { useSiteAssets } from "@/stores/SiteAssets";
 import { UploadsApi } from "@/api/services/UploadsApi";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
+import RotaryButton from "@/components/buttons/RotaryButton.vue";
 /* Data */
 const { langTranslations } = useLanguage();
 const assetsApi = new AssetsApi(new ApiClient());
@@ -73,23 +74,24 @@ const submit = async () => {
       const updateResponse = await assetsApi.getMainAssets();
       siteAssetsStore.setSiteAssets(updateResponse);
       handleSuccess(langTranslations.value.toastSuccess);
+      resetInput();
     } catch (error) {
       console.error(error as CustomError);
     }
   }
 };
+
+const resetInput = () => {
+  validationData.file = null;
+  v$.value.$reset();
+  const fileInput = document.getElementById("file_input") as HTMLInputElement;
+  fileInput.value = "";
+};
 </script>
 
 <template>
   <div class="flex flex-col items-center gap-2">
-    <div class="py-8">
-      <img
-        class="h-24 circular-image"
-        :src="siteAssetsStore.siteAssets.assets.profilePicture?.s3UrlLink ??
-              '/peter.jpg'"
-        alt="brand"
-      />
-    </div>
+    <div class="py-8"></div>
     <H3 v-if="title" :content="title" />
     <input
       class="block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none"
@@ -106,18 +108,13 @@ const submit = async () => {
       {{ fileUploadLabelFormats }}
     </p>
     <div>
-      <button class="bg-black text-white px-4 py-2 rounded" @click="submit()">
+      <RotaryButton :label="submitLabel" :theme="'black'" @click="submit">
         {{ submitLabel }}
-      </button>
+      </RotaryButton>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 /* Your styles here */
-.circular-image {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-}
 </style>
