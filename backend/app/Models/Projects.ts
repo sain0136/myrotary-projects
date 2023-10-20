@@ -98,7 +98,7 @@ export default class Projects extends BaseModel {
   public rotaryYear: string;
 
   @column()
-  public imageLink: string;
+  public imageLink: object;
 
   @column()
   public createdBy: number;

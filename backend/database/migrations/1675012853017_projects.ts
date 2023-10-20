@@ -9,7 +9,7 @@ export default class extends BaseSchema {
       table.string("project_name", 50).notNullable().unique();
       table.string("grant_type", 50).notNullable();
       table.string("project_status", 25).notNullable();
-      table.integer("project_number", 7).notNullable()
+      table.integer("project_number", 7).notNullable();
       // the code is the number + the abbrev of the type of project i.e DM-1348420
       table.string("project_code", 12).notNullable().unique();
       table.string("project_description", 3000).nullable();
@@ -31,7 +31,7 @@ export default class extends BaseSchema {
       table.jsonb("hostclub_information").nullable();
       table.jsonb("file_uploads").nullable();
       table.string("rotary_year", 10).notNullable();
-      table.string("image_link", 3000).nullable();
+      table.jsonb("image_link").nullable();
       table
         .integer("created_by", 50)
         .unsigned()

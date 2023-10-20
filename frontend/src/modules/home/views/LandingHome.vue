@@ -13,6 +13,7 @@ import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import FilterTab from "@/modules/home/components/landinghome/FilterTab.vue";
 import { ApiClient } from "@/api/ApiClient";
 import { ProjectsApi } from "@/api/services/ProjectsApi";
+import ProjectCard from "@/modules/home/components/landinghome/ProjectCard.vue";
 import type { CustomError } from "@/utils/classes/CustomError";
 import type {
   IClubProject,
@@ -39,7 +40,6 @@ onMounted(async () => {
       pagination.currentPage,
       pagination.limit
     );
-    debugger;
     projects.push(
       ...(response.data as Array<IDsgProject | IDmProject | IClubProject>)
     );
@@ -63,12 +63,11 @@ onMounted(async () => {
     <main class="landing-grid">
       <FilterTab />
       <div class="project-cards">
-        <div class="bg-black"></div>
-        <div class="bg-black"></div>
-        <div class="bg-black"></div>
-        <div class="bg-black"></div>
-        <div class="bg-black"></div>
-        <div class="bg-black"></div>
+        <ProjectCard
+          v-for="project in projects"
+          :key="project.project_id"
+          :project="project"
+        />
       </div>
     </main>
     <section id="paginationrow" class="landing-grid">
@@ -159,6 +158,7 @@ onMounted(async () => {
       display: flex;
       flex-direction: column;
       gap: 2rem;
+      align-items: center;
     }
     @media screen and (min-width: $tablet) {
       display: grid;
