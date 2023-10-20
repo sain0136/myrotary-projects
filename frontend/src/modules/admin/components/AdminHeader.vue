@@ -177,8 +177,8 @@ const logoutAdmin = async () => {
                     () => {
                       toggleDropdown();
                       router.push({
-                        name: 'Settings',
-                        query: { tabNameProp: 'setting' },
+                        name: 'MyProfile',
+                        query: { tabNameProp: 'profile' },
                       });
                     }
                   "

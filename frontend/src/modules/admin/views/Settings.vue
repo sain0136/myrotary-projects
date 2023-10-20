@@ -9,9 +9,7 @@ import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted, ref, watch } from "vue";
 import LogoUploadForm from "@/modules/admin/components/sitesettings/LogoUploadForm.vue";
 import H1 from "@/components/headings/H1.vue";
-import Hr from "@/components/hr/Hr.vue";
 import { useRoute } from "vue-router";
-import ProfileForm from "@/modules/admin/components/sitesettings/ProfileForm.vue";
 import SiteConfigForm from "@/modules/admin/components/sitesettings/SiteConfigForm.vue";
 
 /* Data */
@@ -77,17 +75,7 @@ const setActiveTab = (tabName: string) => {
     <LogoUploadForm />
   </div>
   <div v-if="activeTab === 'setting'">
-    <SiteConfigForm /> <Hr />
-    <H1
-      class="text-center mb-8"
-      :content="langTranslations.adminDash.myProfileLabel"
-    />
-    <div ref="scrollTarget" class="flex justify-center">
-      <ProfileForm
-        class="w-1/2"
-        :title="langTranslations.profileImageUploadLabel"
-      />
-    </div>
+    <SiteConfigForm />
   </div>
 </template>
 

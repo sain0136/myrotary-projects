@@ -22,6 +22,7 @@ import H3 from "@/components/headings/H3.vue";
 import type { IClub } from "@/utils/interfaces/IClub";
 import type { IUser } from "@/utils/interfaces/IUser";
 import { UsersApi } from "@/api/services/UserApi";
+import type { IDistrict } from "@/utils/interfaces/IDistrict";
 
 /* Data */
 const { langTranslations } = useLanguage();
@@ -80,7 +81,7 @@ onMounted(async () => {
       1,
       100000
     )) as PaginationResult;
-    response.data.map((district) => {
+    (response.data as IDistrict[]).map((district) => {
       allDistricts.set(district.district_name, district.district_id as number);
     });
   } catch (error) {
@@ -157,8 +158,8 @@ const deleteClubMember = async (user: unknown) => {
       />
     </div>
     <div
-      v-if="chosenDistrict"
       class="flex mt-8 justify-center flex-col gap-4 items-center"
+      v-if="chosenDistrict && allClubsInDistrict.size > 0"
     >
       <H3 :content="langTranslations.clubsView.clubsLabel" />
       <BaseSelect
@@ -168,6 +169,11 @@ const deleteClubMember = async (user: unknown) => {
         :label="''"
       />
     </div>
+    <H3
+      class="text-center"
+      v-else-if="chosenDistrict && allClubsInDistrict.size === 0"
+      :content="langTranslations.clubsView.noClubsInDistrict"
+    />
     <BaseDisplayTable
       :show-checkboxes="false"
       v-if="allUsersInClub.length > 0"
@@ -211,6 +217,12 @@ const deleteClubMember = async (user: unknown) => {
         },
       ]"
     />
+    <div
+      class="flex justify-center"
+      v-else-if="chosenDistrict && chosenClub && allUsersInClub.length === 0"
+    >
+      <H3 :content="langTranslations.clubsView.noClubMembersInClub" />
+    </div>
     <div class="flex justify-center">
       <RotaryButton
         v-if="chosenId"

@@ -51,6 +51,16 @@ const sideBarItems: Record<
     `,
     link: "Club",
   },
+  profile: {
+    label: langTranslations.value.adminDash.myProfileLabel,
+    icon: `
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor"
+    class="iconify-icon w-8 h-8 text-gray-500 transition duration-75 group-hover:text-nearBlack"
+     fill-rule="evenodd" d="M8 7a4 4 0 1 1 8 0a4 4 0 0 1-8 0Zm0 6a5 5 0 0 0-5 5a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3a5 5 0 0 0-5-5H8Z"
+     clip-rule="evenodd"/>
+    `,
+    link: "MyProfile",
+  },
 };
 
 /* Hooks */

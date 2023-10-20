@@ -7,13 +7,10 @@ export default {
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted, ref } from "vue";
-import { errorHandler } from "@/utils/composables/ErrorHandler";
-import { useRoute } from "vue-router";
 import ClubsTable from "@/modules/admin/components/club/ClubsTable.vue";
 import ClubMembersTable from "@/modules/admin/components/club/ClubMembersTable.vue";
 /* Data */
 const { langTranslations } = useLanguage();
-const route = useRoute();
 const activeTab = ref(sessionStorage.getItem("clubViewLastTab") || "clubs");
 const tabs = ref([
   {

@@ -29,6 +29,7 @@ export interface Translation {
     clubsLabel: string;
     choseDistrictForClubs: string;
     noClubsInDistrict: string;
+    noClubMembersInClub: string;
     creatNewClubMemberLabel: string;
   };
   resultLabel: string;
@@ -75,6 +76,8 @@ export interface Translation {
   districtView: {
     distictTabLabel: string;
     adminsTabLabel: string;
+    noAdminsInDistrict: string;
+    choseAdminForDistrict: string;
   };
   welcome: string;
   goodbye: string;
@@ -172,6 +175,7 @@ export const translations: Record<string, Translation> = {
       clubsLabel: "Clubs",
       choseDistrictForClubs: "Select a District for Club Listings",
       noClubsInDistrict: "No Clubs in District",
+      noClubMembersInClub: "This club has no members",
       creatNewClubMemberLabel: "Create New Club Member",
     },
     resultLabel: "Results",
@@ -222,6 +226,8 @@ export const translations: Record<string, Translation> = {
     districtView: {
       distictTabLabel: "District",
       adminsTabLabel: "Admins",
+      noAdminsInDistrict: "No Admins in District",
+      choseAdminForDistrict: "Select an Admin for District Listing",
     },
     welcome: "Welcome!",
     goodbye: "Goodbye!",
@@ -318,6 +324,7 @@ export const translations: Record<string, Translation> = {
       clubMembersLabel: "Membres du club",
       clubsLabel: "Clubs",
       choseDistrictForClubs: "Choisissez un district pour la liste des clubs",
+      noClubMembersInClub: "Ce club n'a aucun membre",
       creatNewClubMemberLabel: "Creer un membre de club",
     },
     resultLabel: "Résultats",
@@ -369,6 +376,9 @@ export const translations: Record<string, Translation> = {
     districtView: {
       distictTabLabel: "District",
       adminsTabLabel: "Admins",
+      noAdminsInDistrict: "Aucun administrateur dans le district",
+      choseAdminForDistrict:
+        "Sélectionnez un administrateur pour la liste des districts",
     },
     welcome: "Bienvenue!",
     goodbye: "Au revoir!",
