@@ -15,6 +15,7 @@ import type {
 } from "@/utils/interfaces/IProjects";
 import type { CustomError } from "@/utils/classes/CustomError";
 import { useCurrencyFormatter } from "@/utils/composables/CurrencyFormatter";
+
 /* Data */
 const { langTranslations, languagePref } = useLanguage();
 const percentage = ref(0);

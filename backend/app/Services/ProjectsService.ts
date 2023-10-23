@@ -1,4 +1,5 @@
 import ProjectsRepositories from "App/Repositories/ProjectsRepositories";
+import { ProjectFilters } from "App/Utils/CommonTypes";
 
 export default class UserService {
   constructor(private projectsRepositories: ProjectsRepositories) {}
@@ -20,5 +21,12 @@ export default class UserService {
       limit
     );
     return allProjects;
+  }
+
+  public async filter(projectFilters: ProjectFilters) {
+    const filteredProjects = await this.projectsRepositories.filter(
+      projectFilters
+    );
+    return filteredProjects;
   }
 }

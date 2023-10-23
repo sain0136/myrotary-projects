@@ -6,6 +6,7 @@ import Projects from "App/Models/Projects";
 import Users from "App/Models/Users";
 import { IProjectDetails } from "App/Shared/Interfaces/ProjectInterface";
 import { IUser } from "App/Shared/Interfaces/IUser";
+import { ProjectFilters } from "App/Utils/CommonTypes";
 
 export default class ProjectsRepositories {
   public async getProjectDetails(id: number) {
@@ -54,5 +55,58 @@ export default class ProjectsRepositories {
       .select("*")
       .paginate(currentPage, limit);
     return allProjects;
+  }
+
+  public async filter(projectFilters: ProjectFilters) {
+    return await Projects.query()
+      .where(async (db) => {
+        if (projectFilters.rotary_year) {
+          db.from("projects").where({
+            rotary_year: projectFilters.rotary_year,
+          });
+        }
+
+        if (projectFilters.grant_type) {
+          db.from("projects").where({ grant_type: projectFilters.grant_type });
+        }
+
+        if (projectFilters.district_id) {
+          db.from("projects").where({
+            district_id: projectFilters.district_id,
+          });
+        }
+
+        if (projectFilters.club_id) {
+          db.from("projects").where({ club_id: projectFilters.club_id });
+        }
+
+        if (projectFilters.project_region) {
+          db.from("projects").where({ region: projectFilters.project_region });
+        }
+
+        if (projectFilters.project_status) {
+          db.from("projects").where({
+            project_status: projectFilters.project_status,
+          });
+        }
+
+        if (projectFilters.area_focus) {
+          db.from("projects").whereRaw(
+            `area_focus->>'$.${projectFilters.area_focus}' = 'true'`
+          );
+        }
+        if (projectFilters.search_text) {
+          await db
+            .from("projects")
+            .where(
+              "project_description",
+              "like",
+              `%${projectFilters.search_text}%`
+            )
+            .orWhere("project_name", "like", `%${projectFilters.search_text}%`);
+        }
+      })
+      .orderBy("project_id", "desc")
+      .paginate(projectFilters.current_page, projectFilters.limit);
   }
 }

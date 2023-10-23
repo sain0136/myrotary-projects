@@ -20,6 +20,9 @@ import type {
   IDmProject,
   IDsgProject,
 } from "@/utils/interfaces/IProjects";
+import ResourceList from "@/utils/classes/ResourceList";
+
+import type { ProjectFilters } from "@/utils/types/commonTypes";
 
 /* Data */
 const { handleError, handleSuccess } = errorHandler();
@@ -32,7 +35,18 @@ const pagination = reactive({
   limit: 6,
 });
 const projects: Array<IDsgProject | IDmProject | IClubProject> = reactive([]);
-
+const filters: ProjectFilters = reactive({
+  current_page: 1,
+  limit: 6,
+  club_id: 0,
+  search_text: "",
+  project_status: "",
+  project_region: "",
+  area_focus: "",
+  rotary_year: "",
+  district_id: 0,
+  grant_type: "",
+});
 /* Hooks */
 onMounted(async () => {
   try {
@@ -49,6 +63,29 @@ onMounted(async () => {
 });
 
 /* Methods */
+const recieveFilters = (f: ProjectFilters) => {
+  Object.assign(filters, f);
+  filterProjects();
+};
+
+const filterProjects = async () => {
+  try {
+    const filterConverter = ResourceList.searchTermConversionMap();
+    const aof = filterConverter.get(filters.area_focus)
+      ? filterConverter.get(filters.area_focus)
+      : "";
+    const response = await projectsApi.filter({
+      ...filters,
+      area_focus: aof ? aof : "",
+    });
+    projects.splice(0, projects.length);
+    projects.push(
+      ...(response.data as Array<IDsgProject | IDmProject | IClubProject>)
+    );
+  } catch (error) {
+    handleError(error as CustomError);
+  }
+};
 </script>
 
 <template>
@@ -61,7 +98,7 @@ onMounted(async () => {
       <RotaryButton :label="'View'" :theme="'secondary'" />
     </div>
     <main class="landing-grid">
-      <FilterTab />
+      <FilterTab @sendFilters="recieveFilters" />
       <div class="project-cards">
         <ProjectCard
           v-for="project in projects"

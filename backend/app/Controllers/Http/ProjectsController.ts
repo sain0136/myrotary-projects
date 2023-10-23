@@ -3,7 +3,7 @@ import CustomException from "App/Exceptions/CustomException";
 import ProjectsRepositories from "App/Repositories/ProjectsRepositories";
 import ProjectsService from "App/Services/ProjectsService";
 import RotaryYear from "App/Utils/Classes/RotaryYear";
-import { CustomErrorType } from "App/Utils/CommonTypes";
+import { CustomErrorType, ProjectFilters } from "App/Utils/CommonTypes";
 
 export default class ProjectsController {
   private initializeServices() {
@@ -37,6 +37,17 @@ export default class ProjectsController {
         limit
       );
       return response.json(allProjects);
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
+  }
+
+  public async filter({ request, response }: HttpContextContract) {
+    try {
+      const projectFilters: ProjectFilters = request.input("filters");
+      const { projectsService } = this.initializeServices();
+      const filteredProjects = await projectsService.filter(projectFilters);
+      return response.json(filteredProjects);
     } catch (error) {
       throw new CustomException(error as CustomErrorType);
     }
