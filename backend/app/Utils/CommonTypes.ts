@@ -23,3 +23,16 @@ export type AuthenticationRequestData = {
   password: string;
   webAdmin?: boolean;
 };
+
+export type ProjectFilters = {
+  current_page: number;
+  limit: number;
+  club_id: number;
+  search_text: string;
+  project_status: string;
+  project_region: string;
+  area_focus: string;
+  rotary_year: string;
+  district_id: number;
+  grant_type: string;
+};

@@ -1,5 +1,6 @@
 import { ApiClient } from "@/api/ApiClient";
 import type { PaginationResult } from "@/utils/types/commonTypes";
+import type { ProjectFilters } from "@/utils/types/commonTypes";
 const BASE_ROUTE = "/projects";
 
 export class ProjectsApi {
@@ -27,5 +28,13 @@ export class ProjectsApi {
         limit,
       }
     );
+  }
+
+  public async filter(
+    projectFilters: ProjectFilters
+  ): Promise<PaginationResult> {
+    return await this.apiClient.fetchWrapper("POST", `${BASE_ROUTE}/filter`, {
+      filters: projectFilters,
+    });
   }
 }

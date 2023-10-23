@@ -23,6 +23,63 @@ export default class ResourceList {
     "Environment",
   ];
 
+  static searchTermConversionMap() {
+    const searchTermConversionMap: Map<string, string> = new Map();
+    searchTermConversionMap.set(
+      "Peace Conflict Prevention",
+      "Peace_Conflict_Prevention"
+    );
+    searchTermConversionMap.set(
+      "Disease Prevention And Treatment",
+      "Disease_Prevention_And_Treatment"
+    );
+    searchTermConversionMap.set("Water And Sanitation", "Water_And_Sanitation");
+    searchTermConversionMap.set(
+      "Maternal And Child Health",
+      "Maternal_And_Child_Health"
+    );
+    searchTermConversionMap.set(
+      "Basic Education And Literacy",
+      "Basic_Education_And_Literacy"
+    );
+    searchTermConversionMap.set(
+      "Economic And Community Development",
+      "Economic_And_Community_Development"
+    );
+    searchTermConversionMap.set("Environment", "Environment");
+    return searchTermConversionMap;
+  }
+
+  static reverseTermConversionMap() {
+    const reverseTermConversionMap: Map<string, string> = new Map();
+    reverseTermConversionMap.set(
+      "Peace_Conflict_Prevention",
+      "Peace Conflict Prevention"
+    );
+    reverseTermConversionMap.set(
+      "Disease_Prevention_And_Treatment",
+      "Disease Prevention And Treatment"
+    );
+    reverseTermConversionMap.set(
+      "Water_And_Sanitation",
+      "Water And Sanitation"
+    );
+    reverseTermConversionMap.set(
+      "Maternal_And_Child_Health",
+      "Maternal And Child Health"
+    );
+    reverseTermConversionMap.set(
+      "Basic_Education_And_Literacy",
+      "Basic Education And Literacy"
+    );
+    reverseTermConversionMap.set(
+      "Economic_And_Community_Development",
+      "Economic And Community Development"
+    );
+    reverseTermConversionMap.set("Environment", "Environment");
+    return reverseTermConversionMap;
+  }
+
   static regionList = [
     "Africa",
     "Central America",
