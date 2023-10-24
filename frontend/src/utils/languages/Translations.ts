@@ -1,4 +1,5 @@
 export interface Translation {
+  noResultsLabel: string;
   filterProjectsLabel: string;
   landingpageBannerText: string;
   statusLabel: string;
@@ -145,6 +146,7 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    noResultsLabel: "No Results",
     statusLabel: "Status",
     filterProjectsLabel: "Filter Projects",
     landingPage: {
@@ -294,6 +296,7 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    noResultsLabel: "Aucun Résultat",
     statusLabel: "Statut",
     filterProjectsLabel: "Filtrer",
     landingPage: {

@@ -11,7 +11,6 @@ import District from "@/utils/classes/District";
 import { DistrictApi } from "@/api/services/DistrictsApi";
 import { ApiClient } from "@/api/ApiClient";
 import type { CustomError } from "@/utils/classes/CustomError";
-import Club from "@/utils/classes/Club";
 import { ClubApi } from "@/api/services/ClubApi";
 import BaseInput from "@/components/form/BaseInput.vue";
 import BaseSelect from "@/components/form/BaseSelect.vue";
@@ -44,16 +43,11 @@ const filterData: ProjectFilters = reactive({
   rotary_year: "",
   district_id: 0,
   grant_type: "",
+  reset: false,
 });
 const emit = defineEmits();
 const chosenDistrict = ref("");
 const chosenClub = ref("");
-const pagination = reactive({
-  currentPage: 1,
-  lastPage: 1,
-  total: 0,
-  limit: 5,
-});
 
 /* Hooks */
 onMounted(async () => {
@@ -123,8 +117,10 @@ const resetSearch = () => {
     rotary_year: "",
     district_id: 0,
     grant_type: "",
+    reset: true,
   });
   emit("sendFilters", filterData);
+  filterData.reset = false;
   showFilter.value = false;
 };
 </script>
