@@ -17,14 +17,14 @@ export class ProjectsApi {
   }
 
   public async getAllProjects(
-    currentPage: number,
+    current_page: number,
     limit: number
   ): Promise<PaginationResult> {
     return await this.apiClient.fetchWrapper(
       "POST",
       `${BASE_ROUTE}/getAllProjects`,
       {
-        currentPage,
+        current_page,
         limit,
       }
     );

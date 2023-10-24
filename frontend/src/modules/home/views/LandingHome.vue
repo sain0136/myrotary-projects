@@ -27,10 +27,11 @@ import type { ProjectFilters } from "@/utils/types/commonTypes";
 /* Data */
 const { handleError, handleSuccess } = errorHandler();
 const { langTranslations } = useLanguage();
+const filterSearchMode = ref(false);
 const projectsApi = new ProjectsApi(new ApiClient());
 const pagination = reactive({
-  currentPage: 1,
-  lastPage: 1,
+  current_page: 1,
+  last_page: 1,
   total: 0,
   limit: 6,
 });
@@ -47,16 +48,11 @@ const filters: ProjectFilters = reactive({
   district_id: 0,
   grant_type: "",
 });
+
 /* Hooks */
 onMounted(async () => {
   try {
-    const response = await projectsApi.getAllProjects(
-      pagination.currentPage,
-      pagination.limit
-    );
-    projects.push(
-      ...(response.data as Array<IDsgProject | IDmProject | IClubProject>)
-    );
+    await getAllProjects();
   } catch (error) {
     handleError(error as CustomError);
   }
@@ -64,8 +60,23 @@ onMounted(async () => {
 
 /* Methods */
 const recieveFilters = (f: ProjectFilters) => {
+  filterSearchMode.value = f.reset ? false : true; // if reset is true, the filterSearchMode is set to false
   Object.assign(filters, f);
   filterProjects();
+};
+
+const getAllProjects = async () => {
+  const response = await projectsApi.getAllProjects(
+    pagination.current_page,
+    pagination.limit
+  );
+  projects.splice(0, projects.length);
+  projects.push(
+    ...(response.data as Array<IDsgProject | IDmProject | IClubProject>)
+  );
+  pagination.current_page = response.meta.current_page;
+  pagination.last_page = response.meta.last_page;
+  pagination.total = response.meta.total;
 };
 
 const filterProjects = async () => {
@@ -82,8 +93,44 @@ const filterProjects = async () => {
     projects.push(
       ...(response.data as Array<IDsgProject | IDmProject | IClubProject>)
     );
+    pagination.current_page = response.meta.current_page;
+    pagination.last_page = response.meta.last_page;
+    pagination.total = response.meta.total;
+    window.scrollTo(0, 0);
   } catch (error) {
     handleError(error as CustomError);
+  }
+};
+
+const handlePageChange = (direction: string) => {
+  if (direction === "next") {
+    if (pagination.current_page < pagination.last_page) {
+      try {
+        if (filterSearchMode.value) {
+          filters.current_page = filters.current_page + 1;
+          filterProjects();
+        } else {
+          pagination.current_page = pagination.current_page + 1;
+          getAllProjects();
+        }
+      } catch (error) {
+        handleError(error as CustomError);
+      }
+    }
+  } else if (direction === "previous") {
+    if (pagination.current_page > 1) {
+      try {
+        if (filterSearchMode.value) {
+          filters.current_page = filters.current_page - 1;
+          filterProjects();
+        } else {
+          pagination.current_page = pagination.current_page - 1;
+          getAllProjects();
+        }
+      } catch (error) {
+        handleError(error as CustomError);
+      }
+    }
   }
 };
 </script>
@@ -99,12 +146,22 @@ const filterProjects = async () => {
     </div>
     <main class="landing-grid">
       <FilterTab @sendFilters="recieveFilters" />
-      <div class="project-cards">
+      <div class="project-cards" v-if="projects.length > 0">
         <ProjectCard
           v-for="project in projects"
           :key="project.project_id"
           :project="project"
         />
+      </div>
+      <div class="no-results-container" v-if="projects.length === 0">
+        <div
+          class="no-results-box m-auto flex flex-col items-center gap-4 pt-20"
+        >
+          <img src="/cube.svg" alt="Cube Icon" class="cube-icon w-1/4" />
+          <h2 class="font-bold text-xl">
+            {{ langTranslations.noResultsLabel }}
+          </h2>
+        </div>
       </div>
     </main>
     <section id="paginationrow" class="landing-grid">
@@ -112,9 +169,9 @@ const filterProjects = async () => {
       <div class="flex justify-center items-center">
         <div class="flex justify-center">
           <!-- Previous Button -->
-          <!-- @click="handlePageChange('previous')"
-        v-if="currentPage > 1" -->
           <a
+            @click="handlePageChange('previous')"
+            v-if="pagination.current_page !== 1"
             href="#"
             class="flex items-center justify-center px-3 h-8 mr-3 text-sm font-medium text-nearWhite bg-nearBlack hover:bg-primaryHover focus:ring-primaryFocus rounded-lg"
           >
@@ -135,9 +192,9 @@ const filterProjects = async () => {
             </svg>
             {{ langTranslations.prevButtonLabel }}
           </a>
-          <!--         @click="handlePageChange('next')"
-        v-if="currentPage !== lastPage" -->
           <a
+            @click="handlePageChange('next')"
+            v-if="pagination.current_page !== pagination.last_page"
             href="#"
             class="flex items-center justify-center px-3 h-8 text-sm font-medium text-nearWhite bg-nearBlack hover:bg-primaryHover focus:ring-primaryFocus rounded-lg"
           >

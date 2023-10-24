@@ -47,6 +47,7 @@ export type ProjectFilters = {
   rotary_year: string;
   district_id: number;
   grant_type: string;
+  reset?: boolean;
 };
 
 export type PaginationResult = {
