@@ -27,6 +27,7 @@ const truncatedTitle = ref("");
 const truncatedDesc = ref("");
 const { handleError, handleSuccess, handleValidationForm } = errorHandler();
 const { currencyFormatterFunding } = useCurrencyFormatter();
+
 /* Hooks */
 onMounted(async () => {
   imageLink.value = await generateRandomImage();

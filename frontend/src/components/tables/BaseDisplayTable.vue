@@ -43,18 +43,22 @@ const {
   totalResults,
   limit,
   showCheckboxes,
+  disablePagination,
   multiSelectDelete,
+  hideActionsColumn,
 } = defineProps<{
   currentPage: number;
   tableData: any[];
   columns: ColumnOptions[];
-  editButton?: ButtonOptions;
-  deleteButton?: ButtonOptions;
   handlePageChange: (nextOrPrevious: "next" | "previous") => void;
   lastPage: number;
   totalResults: number;
   limit: number;
   showCheckboxes: Boolean;
+  editButton?: ButtonOptions;
+  deleteButton?: ButtonOptions;
+  disablePagination?: Boolean;
+  hideActionsColumn?: boolean;
   // perhaps make expict union type  selectedItems typed ? like allow a select types that can be passed in
   multiSelectDelete?: (selectedItems: unknown[]) => void;
 }>();
@@ -145,7 +149,7 @@ const handlehandleDeleteMultiple = () => {
           >
             {{ column.name }}
           </th>
-          <th scope="col" class="px-6 py-3">
+          <th v-if="!hideActionsColumn" scope="col" class="px-6 py-3">
             {{ langTranslations.actionsLabel }}
           </th>
         </tr>
@@ -182,7 +186,10 @@ const handlehandleDeleteMultiple = () => {
           >
             <span> {{ row[column.colName] }} </span>
           </td>
-          <td class="px-6 py-4 :lg: w-1/12">
+          <td
+            v-if="hideActionsColumn != true"
+            class="actions-col px-6 py-4 :lg: w-1/12"
+          >
             <div class="flex justify-between">
               <a
                 @click="editButton?.callBack({ ...row })"
@@ -206,7 +213,7 @@ const handlehandleDeleteMultiple = () => {
       </tbody>
     </table>
   </div>
-  <div class="flex justify-between">
+  <div v-if="disablePagination !== true" class="flex justify-between">
     <div class="flex gap-2">
       <select
         @input="
@@ -232,7 +239,7 @@ const handlehandleDeleteMultiple = () => {
         {{ (totalResults ?? 0) + " " + langTranslations.resultLabel }}
       </p>
     </div>
-    <div class="flex">
+    <div class="pagination-row flex">
       <!-- Previous Button -->
       <a
         @click="handlePageChange('previous')"

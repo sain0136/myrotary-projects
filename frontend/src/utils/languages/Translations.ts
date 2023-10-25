@@ -1,4 +1,6 @@
 export interface Translation {
+  listviewlabel: string;
+  gridviewlabel: string;
   noResultsLabel: string;
   filterProjectsLabel: string;
   landingpageBannerText: string;
@@ -146,6 +148,8 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    listviewlabel: "List View",
+    gridviewlabel: "Grid View",
     noResultsLabel: "No Results",
     statusLabel: "Status",
     filterProjectsLabel: "Filter Projects",
@@ -296,6 +300,8 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    listviewlabel: "List View",
+    gridviewlabel: "Grid View",
     noResultsLabel: "Aucun Résultat",
     statusLabel: "Statut",
     filterProjectsLabel: "Filtrer",

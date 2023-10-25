@@ -88,6 +88,7 @@ const passwordMinLength = {
   en: "Must be at least 8 characters",
   fr: "Doit contenir au moins 8 caractères",
 };
+
 /* Validations */
 const rules = {
   firstname: {
