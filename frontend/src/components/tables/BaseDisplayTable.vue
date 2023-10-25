@@ -59,8 +59,10 @@ const {
   deleteButton?: ButtonOptions;
   disablePagination?: Boolean;
   hideActionsColumn?: boolean;
-  // perhaps make expict union type  selectedItems typed ? like allow a select types that can be passed in
+  //TODO perhaps make expict union type  selectedItems typed ? like allow a select types that can be passed in
   multiSelectDelete?: (selectedItems: unknown[]) => void;
+  // TODO all these unknowns into types
+  rowEvents?: (row: unknown) => void;
 }>();
 /* Hooks */
 onMounted(async () => {});
@@ -156,9 +158,13 @@ const handlehandleDeleteMultiple = () => {
       </thead>
       <tbody>
         <tr
+          @click="() => (rowEvents ? rowEvents(row) : undefined)"
           v-for="(row, index) in tableData"
           :key="index"
           class="row border-b bg-nearBlack border-gray-700"
+          :class="{
+            'cursor-pointer': rowEvents,
+          }"
         >
           <td v-if="showCheckboxes" class="w-4 p-4">
             <div class="flex items-center">

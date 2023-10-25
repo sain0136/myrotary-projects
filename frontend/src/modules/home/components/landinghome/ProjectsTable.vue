@@ -13,6 +13,7 @@ import type {
   IDsgProject,
   IDmProject,
   IClubProject,
+  IGenericProject,
 } from "@/utils/interfaces/IProjects";
 
 /* Data */
@@ -30,6 +31,10 @@ const { projects } = defineProps<{
 <template>
   <div class="p-4">
     <BaseDisplayTable
+      :row-events="(row) => {
+        const project = row as IGenericProject;
+        console.log(project.project_name);
+    }"
       :hide-actions-column="true"
       :disable-pagination="true"
       :show-checkboxes="false"
