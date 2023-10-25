@@ -21,6 +21,7 @@ import router from "@/router";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
 import { useLoggedInClub } from "@/stores/LoggedInClub";
+
 /* Data */
 const show = ref(false);
 const { handleError, handleSuccess } = errorHandler();
@@ -32,7 +33,6 @@ const state = reactive({
 const userStore = useLoggedInUserStore();
 const districtStore = useLoggedInDistrict();
 const clubStore = useLoggedInClub();
-
 // const logo = ref("");
 const usersApi = new UsersApi(new ApiClient());
 
