@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import Banners from "@/components/banners/Banners.vue";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
@@ -51,15 +51,33 @@ const filters: ProjectFilters = reactive({
 });
 type viewmodes = "list" | "grid";
 const viewmode = ref<viewmodes>("grid");
+
 /* Hooks */
-onMounted(async () => {
+onMounted(() => {
   try {
-    await getAllProjects();
+    getAllProjects();
   } catch (error) {
     handleError(error as CustomError);
   }
 });
 
+watch(viewmode, () => {
+  if (viewmode.value === "list") {
+    pagination.current_page = 1;
+    pagination.limit = 15;
+    filters.limit = 15;
+  }
+  if (viewmode.value === "grid") {
+    pagination.current_page = 1;
+    pagination.limit = 6;
+    filters.limit = 6;
+  }
+  if (filterSearchMode.value) {
+    filterProjects();
+  } else {
+    getAllProjects();
+  }
+});
 /* Methods */
 const recieveFilters = (f: ProjectFilters) => {
   filterSearchMode.value = f.reset ? false : true; // if reset is true, the filterSearchMode is set to false
@@ -82,6 +100,9 @@ const getAllProjects = async () => {
 };
 
 const filterProjects = async () => {
+  if (viewmode.value === "list") {
+    filters.limit = 15;
+  }
   try {
     const filterConverter = ResourceList.searchTermConversionMap();
     const aof = filterConverter.get(filters.area_focus)
