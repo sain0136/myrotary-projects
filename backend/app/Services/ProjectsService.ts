@@ -29,4 +29,14 @@ export default class UserService {
     );
     return filteredProjects;
   }
+
+  public async show(id: number) {
+    const project = await this.projectsRepositories.show(id);
+    project.pledgesAssociated =
+      await this.projectsRepositories.pledgesAsscoiated(project.projectId);
+    project.projectDetails = await this.projectsRepositories.getProjectDetails(
+      project.projectId
+    );
+    return project;
+  }
 }
