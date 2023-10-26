@@ -24,6 +24,13 @@ const routes = [
         component: () => import("@/modules/home/views/LandingHome.vue"),
       },
       {
+        path: "/:name?",
+        name: "ProjectDetails",
+        component: () =>
+          import("@/modules/home/components/landinghome/ProjectDetails.vue"),
+        props: true,
+      },
+      {
         path: "/about",
         name: "About",
         component: () => import("@/modules/home/views/About.vue"),
@@ -84,8 +91,8 @@ const routes = [
       {
         path: "profile",
         name: "MyProfile",
-        component: () => import("@/modules/admin/views/MyProfile.vue")
-      }
+        component: () => import("@/modules/admin/views/MyProfile.vue"),
+      },
     ],
   },
 ];
