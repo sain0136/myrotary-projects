@@ -1,9 +1,16 @@
 export interface Translation {
+  projectLabels: {
+    raisedLabel: string;
+    goalLabel: string;
+    estimatedLabel: string;
+  };
   listviewlabel: string;
   gridviewlabel: string;
   noResultsLabel: string;
   filterProjectsLabel: string;
   landingpageBannerText: string;
+  projectNotFoundError: string;
+  projectCodeLabel: string;
   statusLabel: string;
   landingPage: {
     searchTermsLabel: string;
@@ -148,6 +155,13 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    projectLabels: {
+      raisedLabel: "Raised",
+      goalLabel: "Goal",
+      estimatedLabel: "Estimated Completion Date",
+    },
+    projectCodeLabel: "Project Code",
+    projectNotFoundError: "Project not found",
     listviewlabel: "List View",
     gridviewlabel: "Grid View",
     noResultsLabel: "No Results",
@@ -300,6 +314,13 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    projectLabels: {
+      raisedLabel: "Donné",
+      goalLabel: "Objectif",
+      estimatedLabel: "Date de fin estimée",
+    },
+    projectCodeLabel: "Code Projet",
+    projectNotFoundError: "Projet introuvable",
     listviewlabel: "List View",
     gridviewlabel: "Grid View",
     noResultsLabel: "Aucun Résultat",

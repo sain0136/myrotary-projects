@@ -14,7 +14,7 @@ const success = {
   fr: "Succès",
 };
 
-const handleError = (error: CustomError) => {
+const handleError = (error: CustomError, overrideTimeout?: boolean) => {
   const errorBody = {
     en: '"error not translated": ' + error.message,
     fr: '"erreur non traduite": ' + error.message,
@@ -23,7 +23,8 @@ const handleError = (error: CustomError) => {
   if (error.translatedMessage?.en) {
     message = error.translatedMessage[languagePref.value];
   }
-  handleToast("error", errorName[languagePref.value], message, "3000");
+  const time = overrideTimeout ? "5000" : "3000";
+  handleToast("error", errorName[languagePref.value], message, time);
 };
 
 const handleValidationForm = () => {
