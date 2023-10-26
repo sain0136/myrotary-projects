@@ -15,7 +15,7 @@ import type {
 } from "@/utils/interfaces/IProjects";
 import type { CustomError } from "@/utils/classes/CustomError";
 import { useCurrencyFormatter } from "@/utils/composables/CurrencyFormatter";
-
+import router from "@/router";
 /* Data */
 const { langTranslations, languagePref } = useLanguage();
 const percentage = ref(0);
@@ -46,6 +46,18 @@ onMounted(async () => {
 });
 
 /* Methods */
+const handleCardClick = () => {
+  router.push({
+    name: "ProjectDetails",
+    params: {
+      name: project.project_name.replace(/\s/g, "-"),
+    },
+    query: {
+      id: project.project_id,
+    },
+  });
+};
+
 const onImageError = (e: Event) => {
   imageLink.value =
     "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=1000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Y2hhcml0eXxlbnwwfHwwfHx8MA%3D%3D";
@@ -95,6 +107,7 @@ const escapeHTML = (unsafe: string) => {
   >
     <a class="upper-card border-b-gray-900" href="#">
       <img
+        @click="handleCardClick"
         @error="onImageError"
         class="rounded-t-lg"
         :src="imageLink ?? undefined"
@@ -104,7 +117,10 @@ const escapeHTML = (unsafe: string) => {
     </a>
     <div class="lower-card p-5 flex flex-col">
       <a href="#">
-        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">
+        <h5
+          @click="handleCardClick"
+          class="mb-2 text-2xl font-bold tracking-tight text-gray-900"
+        >
           {{ truncatedTitle }}
         </h5>
         <div class="status mt-4 flex gap-1">
