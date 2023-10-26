@@ -54,6 +54,10 @@ const viewmode = ref<viewmodes>("grid");
 
 /* Hooks */
 onMounted(() => {
+  const savedview = sessionStorage.getItem("landingViewMode");
+  if (savedview) {
+    viewmode.value = savedview === "list" ? "list" : "grid";
+  }
   try {
     getAllProjects();
   } catch (error) {
@@ -66,11 +70,13 @@ watch(viewmode, () => {
     pagination.current_page = 1;
     pagination.limit = 15;
     filters.limit = 15;
+    sessionStorage.setItem("landingViewMode", "list");
   }
   if (viewmode.value === "grid") {
     pagination.current_page = 1;
     pagination.limit = 6;
     filters.limit = 6;
+    sessionStorage.setItem("landingViewMode", "grid");
   }
   if (filterSearchMode.value) {
     filterProjects();

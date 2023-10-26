@@ -15,6 +15,7 @@ import type {
   IClubProject,
   IGenericProject,
 } from "@/utils/interfaces/IProjects";
+import router from "@/router";
 
 /* Data */
 const { langTranslations } = useLanguage();
@@ -26,15 +27,24 @@ const { projects } = defineProps<{
 }>();
 
 /* Methods */
+const handleRowEvent = (row: IGenericProject) => {
+  const project = row;
+  router.push({
+    name: "ProjectDetails",
+    params: {
+      name: project.project_name.replace(/\s/g, "-"),
+    },
+    query: {
+      id: project.project_id,
+    },
+  });
+};
 </script>
 
 <template>
   <div class="p-4">
     <BaseDisplayTable
-      :row-events="(row) => {
-        const project = row as IGenericProject;
-        console.log(project.project_name);
-    }"
+      :row-events="(row) => handleRowEvent(row as IGenericProject)"
       :hide-actions-column="true"
       :disable-pagination="true"
       :show-checkboxes="false"
