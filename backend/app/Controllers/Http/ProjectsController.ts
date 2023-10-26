@@ -52,4 +52,15 @@ export default class ProjectsController {
       throw new CustomException(error as CustomErrorType);
     }
   }
+
+  public async show({ params, response }: HttpContextContract) {
+    try {
+      const id: number = params.id;
+      const { projectsService } = this.initializeServices();
+      const project = await projectsService.show(id);
+      return response.json(project);
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
+  }
 }

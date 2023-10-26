@@ -109,4 +109,9 @@ export default class ProjectsRepositories {
       .orderBy("project_id", "desc")
       .paginate(projectFilters.current_page, projectFilters.limit);
   }
+
+  public async show(id: number) {
+    const project = await Projects.findOrFail(id);
+    return project;
+  }
 }

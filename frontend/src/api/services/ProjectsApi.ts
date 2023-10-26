@@ -37,4 +37,8 @@ export class ProjectsApi {
       filters: projectFilters,
     });
   }
+
+  public async getProject(id: number): Promise<any> {
+    return await this.apiClient.fetchWrapper("GET", `${BASE_ROUTE}/${id}`);
+  }
 }

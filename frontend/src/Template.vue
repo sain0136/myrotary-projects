@@ -11,6 +11,7 @@ import { errorHandler } from "@/utils/composables/ErrorHandler";
 
 /* Data */
 const { langTranslations } = useLanguage();
+const { handleError } = errorHandler();
 
 /* Hooks */
 onMounted(async () => {});
