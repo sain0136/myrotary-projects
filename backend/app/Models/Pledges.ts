@@ -36,12 +36,11 @@ export default class Pledges extends BaseModel {
   @column()
   public districtNumber: string;
 
-  
   @column()
   public projectId: number;
 
   @column()
-  public userId: string;
+  public userId: string | number;
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime;
