@@ -1,3 +1,10 @@
+interface File {
+  name: string;
+  size: number;
+  type: string;
+  lastModified: number;
+}
+
 export type theme = "primary" | "black" | "secondary";
 
 export type DistrictRole =
@@ -25,4 +32,13 @@ export type uploadFileData = {
   fileTypes: uploadedFiletypes;
   files: File[];
   storagePath: storagePath;
+};
+
+export const ProjectStatus = {
+  LOOKINGFORFUNDING: "Looking For Funding",
+  FULLYFUNDED: "Fully Funded",
+  PENDINGAPPROVAL: "Pending Approval",
+  APPROVED: "Approved",
+  REPORTSDUE: "Reports Due",
+  COMPLETED: "Completed",
 };
