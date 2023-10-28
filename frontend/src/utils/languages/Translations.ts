@@ -1,8 +1,17 @@
 export interface Translation {
+  pledgeProcess: {
+    bulletPoint1: string;
+    bulletPoint2: string;
+    bulletPoint3: string;
+    bulletPoint4: string;
+  };
+  projectLabel: string;
   projectLabels: {
     raisedLabel: string;
     goalLabel: string;
     estimatedLabel: string;
+    pledgeLabel: string;
+    fullyFundedLabel: string;
   };
   listviewlabel: string;
   gridviewlabel: string;
@@ -155,10 +164,22 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    pledgeProcess: {
+      bulletPoint1:
+        "Registered Rotary members can log in as a Rotary member and make a pledge.",
+      bulletPoint2:
+        "If you are not a member, you can still make a pledge. Click make a pledge above.",
+      bulletPoint3: "Fill out the pledge form and make your pledge.",
+      bulletPoint4:
+        "When the project is fully funded and approved, you will be contacted by the project owner to collect funds.",
+    },
+    projectLabel: "Project",
     projectLabels: {
       raisedLabel: "Raised",
       goalLabel: "Goal",
       estimatedLabel: "Estimated Completion Date",
+      pledgeLabel: "Pledge Today",
+      fullyFundedLabel: "Fully Funded",
     },
     projectCodeLabel: "Project Code",
     projectNotFoundError: "Project not found",
@@ -314,10 +335,23 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    pledgeProcess: {
+      bulletPoint1:
+        "Les membres Rotary enregistrés peuvent se connecter en tant que membre Rotary et faire un engagement.",
+      bulletPoint2:
+        "Si vous n'êtes pas membre, vous pouvez toujours faire un engagement. Cliquez sur Faire un engagement ci-dessus.",
+      bulletPoint3:
+        "Remplissez le formulaire d'engagement et effectuez votre engagement.",
+      bulletPoint4:
+        "Lorsque le projet est entièrement financé et approuvé, le propriétaire du projet vous contactera pour collecter les fonds.",
+    },
+    projectLabel: "Projet",
     projectLabels: {
       raisedLabel: "Donné",
       goalLabel: "Objectif",
       estimatedLabel: "Date de fin estimée",
+      pledgeLabel: "Pledge",
+      fullyFundedLabel: "Financement complet",
     },
     projectCodeLabel: "Code Projet",
     projectNotFoundError: "Projet introuvable",

@@ -1,4 +1,9 @@
 import { ApiClient } from "@/api/ApiClient";
+import type {
+  IClubProject,
+  IDmProject,
+  IDsgProject,
+} from "@/utils/interfaces/IProjects";
 import type { PaginationResult } from "@/utils/types/commonTypes";
 import type { ProjectFilters } from "@/utils/types/commonTypes";
 const BASE_ROUTE = "/projects";
@@ -38,7 +43,9 @@ export class ProjectsApi {
     });
   }
 
-  public async getProject(id: number): Promise<any> {
+  public async getProject(
+    id: number
+  ): Promise<IDsgProject | IDmProject | IClubProject> {
     return await this.apiClient.fetchWrapper("GET", `${BASE_ROUTE}/${id}`);
   }
 }
