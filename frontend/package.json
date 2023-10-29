@@ -14,10 +14,12 @@
   },
   "dependencies": {
     "@flavorly/vanilla-components": "^0.7.63",
+    "@types/dinero.js": "^1.9.2",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.4",
     "axios": "^1.5.0",
     "chart.js": "^3.9.1",
+    "dinero.js": "^1.9.1",
     "flowbite": "^1.8.1",
     "luxon": "^3.4.3",
     "pinia": "^2.1.6",
