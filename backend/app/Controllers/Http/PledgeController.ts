@@ -12,11 +12,12 @@ export default class PledgesController {
     return { projectsRepositories, projectsService };
   }
 
-  public async storePledge({ request }: HttpContextContract) {
+  public async storePledge({ request, response }: HttpContextContract) {
     try {
       const pledge: IPledge = request.input("pledge");
       const { projectsService } = this.initializeServices();
       await projectsService.storePledge(pledge);
+      return response.status(200).json(true);
     } catch (error) {
       throw new CustomException(error as CustomErrorType);
     }
