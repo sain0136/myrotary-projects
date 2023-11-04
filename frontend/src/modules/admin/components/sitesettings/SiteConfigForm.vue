@@ -15,6 +15,7 @@ import { AssetsApi } from "@/api/services/AssestsApi";
 import { ApiClient } from "@/api/ApiClient";
 import type { CustomError } from "@/utils/classes/CustomError";
 import { Assets } from "@/utils/classes/Assests";
+
 /* Data */
 const { langTranslations } = useLanguage();
 const assetsApi = new AssetsApi(new ApiClient());

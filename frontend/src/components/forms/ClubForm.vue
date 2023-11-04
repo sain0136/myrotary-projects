@@ -46,6 +46,7 @@ const submitLabel: { [key: string]: string } = clubId
       en: "Submit",
       fr: "Soumettre",
     };
+
 /* Validations */
 const rules = {
   club_name: {
@@ -128,7 +129,9 @@ const validateAndSubmit = async () => {
     } else if (formType === "siteAdmin" && !clubId) {
       await clubApi.createClub(club);
     }
-    handleSuccess(langTranslations.value.toastSuccess);
+    handleSuccess(langTranslations.value.toastSuccess, {
+      path: "club",
+    });
     redirect();
   } catch (error) {
     handleError(error as CustomError);

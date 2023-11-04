@@ -26,6 +26,7 @@ import "App/Modules/Uploads/routes";
 import "App/Modules/Assets/routes";
 import "App/Modules/Districts/routes";
 import "App/Modules/Clubs/routes";
+import "App/Modules/Pledges/routes";
 
 Route.get("/", async () => {
   return { hello: "world" };

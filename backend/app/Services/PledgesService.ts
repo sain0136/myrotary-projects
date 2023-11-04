@@ -1,4 +1,4 @@
-import PledgesRepositories from "App/Repositories/PledgeRepositories";
+import PledgesRepositories from "App/Repositories/PledgesRepositories";
 import { IPledge } from "App/Shared/Interfaces/IPledge";
 
 export default class PledgesService {

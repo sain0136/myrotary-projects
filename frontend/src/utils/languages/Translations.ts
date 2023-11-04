@@ -4,6 +4,15 @@ export interface Translation {
     bulletPoint2: string;
     bulletPoint3: string;
     bulletPoint4: string;
+    pledgeProcessLabel: string;
+    pledgeTodayLabel: string;
+    pledgeFormFillFormLabel: string;
+    pledgeFormInfoLabel: string;
+    donateHeaderLabel: string;
+    maxPledgeLabel: string;
+    amountLabel: string;
+    maxLimitLabel: string;
+    minLimitLabel: string;
   };
   projectLabel: string;
   projectLabels: {
@@ -139,6 +148,8 @@ export interface Translation {
     emailFormat: string;
     minLength: string;
     noFilesUpload: string;
+    maxLength: string;
+    numeric: string;
   };
   adminDash: {
     footerCopyright: string;
@@ -165,6 +176,7 @@ export interface Translation {
 export const translations: Record<string, Translation> = {
   en: {
     pledgeProcess: {
+      maxLimitLabel: "Cannot exceed the max pledge limit",
       bulletPoint1:
         "Registered Rotary members can log in as a Rotary member and make a pledge.",
       bulletPoint2:
@@ -172,6 +184,16 @@ export const translations: Record<string, Translation> = {
       bulletPoint3: "Fill out the pledge form and make your pledge.",
       bulletPoint4:
         "When the project is fully funded and approved, you will be contacted by the project owner to collect funds.",
+      pledgeProcessLabel: "Our Pledge Process",
+      pledgeTodayLabel: "Pledge Today",
+      pledgeFormFillFormLabel:
+        "Please fill out the form below to submit your secure pledge below. Have questions or need help? Contact us at",
+      pledgeFormInfoLabel:
+        "Rest assured, every pledge made through this form goes directly to facilitating the selected project. Your support is instrumental. With a seamless pledging process, we ensure that your contribution reaches the project you are passionate about, providing the much-needed support for its fruition. The transparency of this process allows you to see how your pledge is allocated, reinforcing the collective effort in driving meaningful change. Through your pledge, you become an integral part of a community dedicated to making a tangible impact, demonstrating how individual contributions collectively lead to significant advancements. When it's time to collect the pledged funds, the project owner will personally reach out to you, ensuring a direct and informed process.",
+      donateHeaderLabel: "How much would you like to pledge?",
+      maxPledgeLabel: "Maximum pledge amount",
+      amountLabel: "Amount",
+      minLimitLabel: "Your pledge cannot be less than 1 dollar",
     },
     projectLabel: "Project",
     projectLabels: {
@@ -311,6 +333,8 @@ export const translations: Record<string, Translation> = {
       emailFormat: "Please enter a valid email",
       minLength: "Minimum length is 6 characters",
       noFilesUpload: "Please upload file/files",
+      maxLength: "Maximum length is {length} characters",
+      numeric: "Only numbers are allowed",
     },
     adminDash: {
       footerCopyright: "Copyright ©",
@@ -336,6 +360,9 @@ export const translations: Record<string, Translation> = {
   },
   fr: {
     pledgeProcess: {
+      maxLimitLabel: "Ne peut pas dépasser le plafond des promesses de dons",
+      amountLabel: "Montant",
+      donateHeaderLabel: "Quel est le montant de votre promesse de don ?",
       bulletPoint1:
         "Les membres Rotary enregistrés peuvent se connecter en tant que membre Rotary et faire un engagement.",
       bulletPoint2:
@@ -344,6 +371,14 @@ export const translations: Record<string, Translation> = {
         "Remplissez le formulaire d'engagement et effectuez votre engagement.",
       bulletPoint4:
         "Lorsque le projet est entièrement financé et approuvé, le propriétaire du projet vous contactera pour collecter les fonds.",
+      pledgeProcessLabel: "Notre processus d'engagement",
+      pledgeTodayLabel: "Pledge aujourd'hui",
+      pledgeFormFillFormLabel:
+        "Veuillez remplir le formulaire ci-dessous pour soumettre votre promesse de don sécurisée. Vous avez des questions ou besoin d'aide ? Contactez nous à l'adresse suivante",
+      pledgeFormInfoLabel:
+        "Soyez assuré que chaque promesse de don faite par le biais de ce formulaire est directement affectée à la réalisation du projet sélectionné. Votre soutien est essentiel. Grâce à une procédure d'engagement transparente, nous nous assurons que votre contribution atteint le projet qui vous passionne, en lui apportant le soutien nécessaire à sa réalisation. La transparence de ce processus vous permet de voir comment votre contribution est allouée, ce qui renforce l'effort collectif en faveur d'un changement significatif. Grâce à votre promesse de don, vous devenez partie intégrante d'une communauté qui se consacre à l'obtention d'un impact tangible, démontrant ainsi que les contributions individuelles conduisent collectivement à des avancées significatives. Lorsque le moment est venu de collecter les fonds promis, le propriétaire du projet vous contactera personnellement, garantissant ainsi un processus direct et informé.",
+      maxPledgeLabel: "Montant maximum de l'engagement",
+      minLimitLabel: "Votre engagement ne peut pas être inférieur à 1 dollar",
     },
     projectLabel: "Projet",
     projectLabels: {
@@ -485,6 +520,8 @@ export const translations: Record<string, Translation> = {
       emailFormat: "Veuillez entrer un email valide",
       minLength: "La longueur minimale est de 6 caractères",
       noFilesUpload: "Veuillez télécharger des fichiers",
+      maxLength: "La longueur maximale est de {longueur} caractères.",
+      numeric: "Seuls les chiffres sont autorisés",
     },
     adminDash: {
       footerCopyright: "Copyright ©",

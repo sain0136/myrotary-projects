@@ -96,7 +96,10 @@ onMounted(async () => {});
     >
       <a href="https://flowbite.com/" class="flex items-center">
         <img
-          :src="assetsStore.siteAssets.main_logo.s3UrlLink"
+          :src="
+            assetsStore.siteAssets.main_logo.s3UrlLink ||
+            '/rotary-reserve-logo.png'
+          "
           class="h-14 mr-3"
           alt="Flowbite Logo"
         />

@@ -28,12 +28,17 @@ const routes = [
         name: "ProjectDetails",
         component: () =>
           import("@/modules/home/components/landinghome/ProjectDetails.vue"),
-        props: true,
       },
       {
         path: "/about",
         name: "About",
         component: () => import("@/modules/home/views/About.vue"),
+      },
+      {
+        path: "/pledge",
+        name: "PledgeForm",
+        component: () =>
+          import("@/modules/home/components/landinghome/PledgeForm.vue"),
       },
     ],
   },

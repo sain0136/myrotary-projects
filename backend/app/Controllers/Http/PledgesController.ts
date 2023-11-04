@@ -1,8 +1,8 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import CustomException from "App/Exceptions/CustomException";
 import { CustomErrorType } from "App/Utils/CommonTypes";
-import PledgesRepositories from "App/Repositories/PledgeRepositories";
-import PledgesService from "App/Services/PledgeService";
+import PledgesRepositories from "App/Repositories/PledgesRepositories";
+import PledgesService from "App/Services/PledgesService";
 import { IPledge } from "App/Shared/Interfaces/IProjects";
 
 export default class PledgesController {
@@ -14,7 +14,7 @@ export default class PledgesController {
 
   public async storePledge({ request, response }: HttpContextContract) {
     try {
-      const pledge: IPledge = request.input("pledge");
+      const pledge = request.body() as IPledge;
       const { projectsService } = this.initializeServices();
       await projectsService.storePledge(pledge);
       return response.status(200).json(true);

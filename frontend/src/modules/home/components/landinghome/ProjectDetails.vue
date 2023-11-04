@@ -27,8 +27,10 @@ import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import ResourceList from "@/utils/classes/ResourceList";
 import GenericProject from "@/utils/classes/GenericProject";
 import { Icon } from "@iconify/vue";
-
+import { useRouter } from "vue-router";
+import { useActiveProjectStore } from "@/stores/ActiveProjectStore";
 /* Data */
+const router = useRouter();
 const { currencyFormatterFunding } = useCurrencyFormatter();
 const projectsApi = new ProjectsApi(new ApiClient());
 const route = useRoute();
@@ -38,14 +40,16 @@ const { handleError } = errorHandler();
 const project: IDsgProject | IDmProject | IClubProject | IGenericProject =
   reactive(new GenericProject());
 const areasOfFocus = ref<string[]>([]);
+const { setActiveProject, resetActiveProject } = useActiveProjectStore();
 /* Hooks */
 onMounted(async () => {
   try {
     if (projectId) {
       const response = await projectsApi.getProject(projectId);
       Object.assign(project, response);
+      resetActiveProject();
+      setActiveProject(project);
       const conversion = ResourceList.reverseTermConversionMap;
-
       for (const [key, value] of Object.entries(response.area_focus)) {
         if (value === true) {
           areasOfFocus.value.push(conversion().get(key) as string);
@@ -74,37 +78,51 @@ onMounted(async () => {
       class="upper-container items-center flex flex-col gap-6 md:flex-row justify-between"
     >
       <div class="flex flex-col">
-        <span>
-          <strong>{{ langTranslations.projectCodeLabel }}:</strong>
+        <span class="flex gap-2">
+          <p class="font-bold">{{ langTranslations.projectCodeLabel }}:</p>
           {{ project.project_code }}
         </span>
-        <span v-if="project.projectDetails?.districtClubData.clubName">
-          <strong> {{ langTranslations.clubLabel }}: </strong>
+        <span
+          class="flex gap-2"
+          v-if="project.projectDetails?.districtClubData.clubName"
+        >
+          <p class="font-bold">{{ langTranslations.clubLabel }}:</p>
           {{ project.projectDetails.districtClubData.clubName }}
         </span>
-        <span v-if="project.projectDetails?.districtClubData.district_name">
-          <Strong> {{ langTranslations.districtLabel }}: </Strong>
+        <span
+          class="flex gap-2"
+          v-if="project.projectDetails?.districtClubData.district_name"
+        >
+          <p class="font-bold">{{ langTranslations.districtLabel }}:</p>
           {{ project.projectDetails.districtClubData.district_name }}
         </span>
-        <span>
-          <Strong> {{ langTranslations.landingPage.grantTypeLabel }}: </Strong>
+        <span class="flex gap-2">
+          <p class="font-bold">
+            {{ langTranslations.landingPage.grantTypeLabel }}:
+          </p>
           {{ project.grant_type }}
         </span>
-        <span>
-          <strong>{{ langTranslations.projectLabels.raisedLabel }}:</strong>
+        <span class="flex gap-2">
+          <p class="font-bold">
+            {{ langTranslations.projectLabels.raisedLabel }}:
+          </p>
           {{ currencyFormatterFunding(project.anticipated_funding) }}</span
         >
-        <span
-          ><strong>{{ langTranslations.projectLabels.goalLabel }}: </strong>
+        <span class="flex gap-2"
+          ><p class="font-bold">
+            {{ langTranslations.projectLabels.goalLabel }}:
+          </p>
           {{ currencyFormatterFunding(project.funding_goal) }}
         </span>
-        <span
-          ><strong>{{ langTranslations.projectLabels.estimatedLabel }}: </strong
-          >{{ project.completion_date }}</span
+        <span class="flex gap-2"
+          ><p class="font-bold">
+            {{ langTranslations.projectLabels.estimatedLabel }}:
+          </p>
+          {{ project.completion_date }}</span
         >
-        <span
-          ><strong>{{ langTranslations.statusLabel }}: </strong
-          >{{ project.project_status }}</span
+        <span class="flex gap-2"
+          ><p class="font-bold">{{ langTranslations.statusLabel }}:</p>
+          {{ project.project_status }}</span
         >
       </div>
       <div class="flex flex-col justify-end">
@@ -112,9 +130,13 @@ onMounted(async () => {
           <RotaryButton
             :theme="'secondary'"
             :label="langTranslations.projectLabels.pledgeLabel"
+            @click="router.push({ name: 'PledgeForm' })"
           />
         </div>
-        <div class="fully" v-else>
+        <div
+          class="fully"
+          v-else-if="project.anticipated_funding == project.funding_goal"
+        >
           <h1 class="bg-secondary py-2 px-4 font-bold">
             {{ langTranslations.projectLabels.fullyFundedLabel }}
           </h1>
@@ -171,7 +193,9 @@ onMounted(async () => {
 
       <div class="faq-section my-8 flex justify-between">
         <div class="content_column">
-          <h1 class="mb-2 text-2xl font-bold">Our Pledge Process</h1>
+          <h1 class="mb-2 text-2xl font-bold">
+            {{ langTranslations.pledgeProcess.pledgeProcessLabel }}
+          </h1>
           <ol start="1" class="faq_steps flex flex-col gap-6 md:gap-2">
             <li class="flex gap-2 items-center">
               <Icon
