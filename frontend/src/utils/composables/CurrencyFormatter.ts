@@ -1,13 +1,10 @@
 import { ref, computed, reactive } from "vue";
+import Dinero from "dinero.js";
 
-const formatter = reactive(
-  new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  })
-);
-const currencyFormatterFunding = (amount: number) => {
-  return formatter.format(amount);
+const currencyFormatterFunding = (amountInCents: number) => {
+  // Should come in as cents already
+  const dineroAmount = Dinero({ amount: amountInCents });
+  return dineroAmount.toFormat("$0,0.00");
 };
 
 export const useCurrencyFormatter = () => {
