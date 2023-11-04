@@ -14,10 +14,18 @@ const setLanguage = (lang: lang) => {
 // Computed property that returns the translations for the current language
 const langTranslations = computed(() => translations[languagePref.value]);
 
+function customPrintf(formatString: string, ...args: string[]) {
+  let formattedString = formatString;
+  args.forEach((arg) => {
+    formattedString = formattedString.replace(/\{.*?\}/, arg);
+  });
+  return formattedString;
+}
 export const useLanguage = () => {
   return {
     languagePref,
     setLanguage,
     langTranslations,
+    customPrintf,
   };
 };

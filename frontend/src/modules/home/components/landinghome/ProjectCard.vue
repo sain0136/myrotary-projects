@@ -156,11 +156,14 @@ const escapeHTML = (unsafe: string) => {
         </div>
         <div class="causes-info flex flex-col">
           <span class="flex justify-between gap-4">
-            <strong class=" ">Raised:</strong>
+            <strong class=" "
+              >{{ langTranslations.projectLabels.raisedLabel }}:</strong
+            >
             {{ currencyFormatterFunding(project.anticipated_funding) }}</span
           >
           <span class="flex justify-between gap-4 text-primary-color"
-            ><strong class="">Goal:</strong
+            ><strong class=""
+              >{{ langTranslations.projectLabels.goalLabel }}:</strong
             >{{ currencyFormatterFunding(project.funding_goal) }}</span
           >
         </div>

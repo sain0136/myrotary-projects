@@ -1,5 +1,5 @@
 export interface IPledge {
-  pledge_amount: number;
+  pledge_amount: number | string;
   firstname: string;
   lastname: string;
   email: string;

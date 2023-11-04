@@ -1,4 +1,5 @@
 import type { IUser } from "@/utils/interfaces/IUser";
+import type { IPledge } from "@/utils/interfaces/IPledge";
 
 // common
 interface IContactSection {
@@ -197,15 +198,3 @@ export interface IGlobalProject
   extends IGenericProject,
     IDsgProject,
     IDmProject {}
-
-export interface IPledge {
-  pledge_amount: number;
-  firstname: string;
-  lastname: string;
-  email: string;
-  phone: string;
-  district_number: string;
-  club_name: string;
-  user_id: number;
-  project_id: number;
-}

@@ -11,7 +11,7 @@ export default class PledgesRepositories {
     await Database.transaction(async (trx) => {
       // Fetching the project associated with the pledge within the transaction
       const project = await Projects.query({ client: trx })
-        .where("id", pledge.project_id)
+        .where("project_id", pledge.project_id)
         .firstOrFail();
 
       // Preparing a new pledge instance

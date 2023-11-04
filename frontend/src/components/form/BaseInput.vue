@@ -24,6 +24,7 @@ const {
   min,
   max,
   pattern,
+  inputmode,
 } = defineProps<{
   modelValue: string | number | Date;
   label: string;
@@ -38,6 +39,14 @@ const {
   min?: number;
   max?: number;
   pattern?: string;
+  inputmode?:
+    | "text"
+    | "decimal"
+    | "numeric"
+    | "tel"
+    | "search"
+    | "email"
+    | "url";
 }>();
 const randomId =
   String.fromCharCode(97 + Math.floor(Math.random() * 26)) +
@@ -53,6 +62,7 @@ const randomId =
       >{{ label }}</label
     >
     <input
+      :inputmode="inputmode ?? 'text'"
       :id="id ?? randomId"
       :pattern="pattern"
       :aria-label="label"
