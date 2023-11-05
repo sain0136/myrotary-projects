@@ -16,7 +16,7 @@ export type DistrictRole =
   | "District Foundations Chair"
   | "District International Chair";
 
-export type ClubRole = " Club Admin" | "Standard Member" | "Guest";
+export type ClubRole = "Club Admin" | "Standard Member" | "Guest";
 
 export type UserType = "CLUB" | "DISTRICT";
 
