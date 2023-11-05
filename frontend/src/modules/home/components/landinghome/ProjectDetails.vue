@@ -29,6 +29,7 @@ import GenericProject from "@/utils/classes/GenericProject";
 import { Icon } from "@iconify/vue";
 import { useRouter } from "vue-router";
 import { useActiveProjectStore } from "@/stores/ActiveProjectStore";
+import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
 /* Data */
 const router = useRouter();
 const { currencyFormatterFunding } = useCurrencyFormatter();
@@ -41,6 +42,8 @@ const project: IDsgProject | IDmProject | IClubProject | IGenericProject =
   reactive(new GenericProject());
 const areasOfFocus = ref<string[]>([]);
 const { setActiveProject, resetActiveProject } = useActiveProjectStore();
+const loaded = ref(false);
+
 /* Hooks */
 onMounted(async () => {
   try {
@@ -55,6 +58,7 @@ onMounted(async () => {
           areasOfFocus.value.push(conversion().get(key) as string);
         }
       }
+      loaded.value = true;
     } else {
       throw new CustomError(900, "Project not found", {
         en: "Project not found",
@@ -71,7 +75,8 @@ onMounted(async () => {
 
 <template>
   <Banners :banner-text="langTranslations.landingpageBannerText" />
-  <div class="fluid-container pt-8 p-2" v-if="project">
+
+  <div class="fluid-container pt-8 p-2" v-if="project && loaded">
     <H3 :content="project.project_name" class="text-center" />
     <Hr />
     <div
@@ -238,7 +243,8 @@ onMounted(async () => {
       </div>
     </div>
   </div>
-  <div v-else>
+  <LoadingSpinner v-else-if="!loaded" />
+  <div v-else-if="!project">
     <H1 :content="langTranslations.projectNotFoundError" />
   </div>
 </template>
