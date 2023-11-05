@@ -64,7 +64,7 @@ const logoutAdmin = async () => {
   await userStore.logOut();
   districtStore.resetDistrict();
   clubStore.resetClub();
-  router.push({ name: "AdminLoginForm" });
+  router.push({ name: "Home" });
 };
 </script>
 

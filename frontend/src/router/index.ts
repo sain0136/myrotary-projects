@@ -40,6 +40,11 @@ const routes = [
         component: () =>
           import("@/modules/home/components/landinghome/PledgeForm.vue"),
       },
+      {
+        path: "/login",
+        name: "UserLogin",
+        component: () => import("@/modules/home/views/UserLogin.vue"),
+      },
     ],
   },
   // Admin Routes

@@ -26,6 +26,7 @@ const handleToast = (
   detail: string,
   life: toastLength
 ) => {
+  // `refCounter` is designed to force a re-render when the toast is displayed.
   refCounter.value = refCounter.value + 1;
   const lifeConversion = Number(life);
   toastRecord.severity = severity;

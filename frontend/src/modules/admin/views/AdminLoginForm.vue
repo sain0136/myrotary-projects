@@ -70,7 +70,7 @@ onUnmounted(() => {
 });
 
 /* Methods */
-const yourSubmitMethod = async () => {
+const handleSubmit = async () => {
   const isFormCorrect = await v$.value.$validate();
   if (!isFormCorrect) return;
   try {
@@ -125,7 +125,7 @@ const yourSubmitMethod = async () => {
             :errorMessage="v$.password?.$errors[0]?.$message as string | undefined"
           />
           <RotaryButton
-            @click="yourSubmitMethod"
+            @click="handleSubmit"
             :label="langTranslations.adminLoginForm.signIn"
             theme="primary"
             class="w-full"
