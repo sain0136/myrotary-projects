@@ -133,6 +133,7 @@ export interface Translation {
   footerLabel: string;
   saveLabel: string;
   profileImageUploadLabel: string;
+  loginLabel: string;
   adminLoginForm: {
     welcome: string;
     signIn: string;
@@ -175,6 +176,7 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    loginLabel: "Login",
     pledgeProcess: {
       maxLimitLabel: "Cannot exceed the max pledge limit",
       bulletPoint1:
@@ -326,7 +328,7 @@ export const translations: Record<string, Translation> = {
       welcome: "Welcome Back",
       signIn: "Sign In",
       subHeading: "Rotary Administration awaits you",
-      successfulLogin: "Access Granted. Welcome Back Peter Labelle!",
+      successfulLogin: "Access Granted. Welcome Back {name}!",
     },
     formErorrText: {
       required: "This field is required",
@@ -359,6 +361,7 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    loginLabel: "Connexion",
     pledgeProcess: {
       maxLimitLabel: "Ne peut pas dépasser le plafond des promesses de dons",
       amountLabel: "Montant",
@@ -513,7 +516,7 @@ export const translations: Record<string, Translation> = {
       welcome: "Bienvenue de nouveau",
       signIn: "Se connecter",
       subHeading: "Administration du Rotary vous attend",
-      successfulLogin: "Accès autorisé. Bienvenue de nouveau Peter Labelle!",
+      successfulLogin: "Accès autorisé. Bienvenue de nouveau {name}!",
     },
     formErorrText: {
       required: "Ce champ est obligatoire",
