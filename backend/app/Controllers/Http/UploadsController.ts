@@ -28,13 +28,15 @@ export default class UploadsController {
       const storagePath = request.input("storagePath");
       const databaseTarget = request.input("databaseTarget");
       const fileTypes = request.input("fileTypes");
+      const userId = request.input("userId", null);
 
       const { uploadsService } = this.initializeServices();
       const result = await uploadsService.uploadFiles(
         files,
         storagePath,
         databaseTarget,
-        fileTypes
+        fileTypes,
+        userId
       );
       return response.json(result);
     } catch (error) {

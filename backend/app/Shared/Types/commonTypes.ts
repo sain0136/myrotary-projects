@@ -20,12 +20,15 @@ export type UserType = "CLUB" | "DISTRICT";
 
 export type storagePath = "./siteadmin";
 
-export type databaseTarget = "assets" | "profile-picture";
+export type databaseTarget =
+  | "assets"
+  | "profile-picture"
+  | "profile-picture-user";
 
 export type uploadedFiletypes =
-  | "profile-picture"
   | "main-logo"
-  | "project-coverImage";
+  | "profile-picture"
+  | "projectCoverImage";
 
 export type uploadFileData = {
   databaseTarget: databaseTarget;

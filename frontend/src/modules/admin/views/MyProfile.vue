@@ -8,10 +8,12 @@ import { useLanguage } from "@/utils/languages/UseLanguage";
 import ProfileForm from "@/modules/admin/components/myprofile/ProfileForm.vue";
 import H1 from "@/components/headings/H1.vue";
 import { useSiteAssets } from "@/stores/SiteAssets";
+import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 
 /* Data  */
 const { langTranslations } = useLanguage();
 const siteAssetsStore = useSiteAssets();
+const userStore = useLoggedInUserStore();
 </script>
 
 <template>
@@ -25,8 +27,8 @@ const siteAssetsStore = useSiteAssets();
         <div class="circular-image-container h-52 w-52">
           <img
             :src="
-              siteAssetsStore.siteAssets.assets.profilePicture?.s3UrlLink ??
-              '/peter.jpg'
+              userStore.loggedInUser?.extra_details?.profilePicture
+                ?.s3UrlLink ?? '/peter.jpg'
             "
             alt="brand"
           />

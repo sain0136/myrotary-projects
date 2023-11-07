@@ -18,24 +18,35 @@ import { useSiteAssets } from "@/stores/SiteAssets";
 import { UploadsApi } from "@/api/services/UploadsApi";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
+import { useLoggedInUserStore } from "@/stores/LoggedInUser";
+
 /* Data */
 const { langTranslations } = useLanguage();
 const assetsApi = new AssetsApi(new ApiClient());
 const siteAssetsStore = useSiteAssets();
 const uploadsApi = new UploadsApi(new ApiClient());
 const { handleError, handleSuccess } = errorHandler();
+const userStore = useLoggedInUserStore();
 
 interface ValidationData {
   file: File | null;
 }
-const { acceptedFileTypes, fileUploadLabelFormats, submitLabel, reqData } =
-  defineProps<{
-    acceptedFileTypes?: string;
-    fileUploadLabelFormats?: string;
-    title?: string;
-    submitLabel: string;
-    reqData: uploadFileData;
-  }>();
+const {
+  acceptedFileTypes,
+  fileUploadLabelFormats,
+  submitLabel,
+  reqData,
+  projectId,
+  userId,
+} = defineProps<{
+  acceptedFileTypes?: string;
+  fileUploadLabelFormats?: string;
+  title?: string;
+  submitLabel: string;
+  reqData: uploadFileData;
+  userId?: number;
+  projectId?: number;
+}>();
 const validationData: ValidationData = reactive({
   file: null,
 });
@@ -70,7 +81,10 @@ const submit = async () => {
         storagePath: reqData.storagePath,
         fileTypes: reqData.fileTypes,
       };
-      const response = await uploadsApi.uploadFile(req);
+      const response = await uploadsApi.uploadFile(req, userId, projectId);
+      if (response && "user_id" in response) {
+        userStore.setLoggedInUser(response);
+      }
       const updateResponse = await assetsApi.getMainAssets();
       siteAssetsStore.setSiteAssets(updateResponse);
       handleSuccess(langTranslations.value.toastSuccess);

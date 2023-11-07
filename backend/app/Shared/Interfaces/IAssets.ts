@@ -15,14 +15,11 @@ export interface IContentManagement {
   InstagramUrl: string;
 }
 
-export type databaseTarget = "assets" | "profile-picture";
+type databaseTarget = "assets" | "profile-picture" | "profile-picture-user";
 
-export type uploadedFiletypes =
-  | "main-logo"
-  | "profile-picture"
-  | "projectCoverImage";
+type uploadedFiletypes = "main-logo" | "profile-picture" | "projectCoverImage";
 
-export type uploadedFile = {
+type uploadedFile = {
   databaseTarget: databaseTarget;
   fileType: uploadedFiletypes;
   s3UrlLink: string;
