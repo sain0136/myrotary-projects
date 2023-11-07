@@ -2,10 +2,10 @@ import UploadsRepositories from "App/Repositories/UploadsRepositories";
 import Drive from "@ioc:Adonis/Core/Drive";
 
 import type {
-  uploadedFile,
   uploadedFiletypes,
   databaseTarget,
-} from "App/Shared/Interfaces/IAssets";
+} from "App/Shared/Types/commonTypes";
+import { uploadedFile } from "App/Shared/Interfaces/IUser";
 export default class UploadsService {
   constructor(private uploadsRepositories: UploadsRepositories) {}
 
@@ -17,13 +17,19 @@ export default class UploadsService {
     files: any,
     storagePath = "./",
     databaseTarget: databaseTarget,
-    fileTypes: uploadedFiletypes
+    fileTypes: uploadedFiletypes,
+    userId?: number
   ) {
     // TODO : ENV variable for cdn ?
     const cdnEndpoint = "https://rotary-s3.nyc3.cdn.digitaloceanspaces.com/";
     const postUploadedFiles: Array<uploadedFile> = [];
     for await (const file of files) {
-      await file.moveToDisk(storagePath);
+      if (userId) {
+        const filePath = `${storagePath}/${userId}`;
+        await file.moveToDisk(filePath);
+      } else {
+        await file.moveToDisk(storagePath);
+      }
       const path = file.filePath;
       const link = path ? await Drive.getUrl(path as string) : null;
       if (link) {
@@ -41,9 +47,10 @@ export default class UploadsService {
     }
     const response = await this.uploadsRepositories.uploadFiles(
       postUploadedFiles,
-      databaseTarget
+      databaseTarget,
+      userId
     );
-    if (response && response.length === 1) {
+    if (response && Array.isArray(response) && response.length === 1) {
       return response[0];
     } else {
       return response;

@@ -20,9 +20,12 @@ export type ClubRole = "Club Admin" | "Standard Member" | "Guest";
 
 export type UserType = "CLUB" | "DISTRICT";
 
-export type storagePath = "./siteadmin";
+export type storagePath = "./siteadmin" | "./users";
 
-export type databaseTarget = "assets" | "profile-picture";
+export type databaseTarget =
+  | "assets"
+  | "profile-picture"
+  | "profile-picture-user";
 
 export type uploadedFiletypes =
   | "profile-picture"

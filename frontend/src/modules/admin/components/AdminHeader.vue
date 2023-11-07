@@ -12,6 +12,7 @@ import router from "@/router";
 import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
 import { useLoggedInClub } from "@/stores/LoggedInClub";
 import { useSiteAssets } from "@/stores/SiteAssets";
+
 /* Data */
 const assetsStore = useSiteAssets();
 const userStore = useLoggedInUserStore();
@@ -142,7 +143,7 @@ const logoutAdmin = async () => {
           <button
             @click.stop="toggleDropdown"
             type="button"
-            class="buttons flex mx-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+            class="buttons flex mx-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300"
             id="user-menu-button"
             aria-expanded="false"
             data-dropdown-toggle="dropdown"
@@ -151,8 +152,8 @@ const logoutAdmin = async () => {
             <img
               class="w-10 h-10 rounded-full"
               :src="
-                assetsStore.siteAssets.assets.profilePicture?.s3UrlLink ??
-                '/peter.jpg'
+                userStore.loggedInUser?.extra_details?.profilePicture
+                  ?.s3UrlLink ?? '/peter.jpg'
               "
               alt="user photo"
             />
