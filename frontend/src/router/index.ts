@@ -84,6 +84,12 @@ const routes = [
         props: true,
       },
       {
+        path: "club-members",
+        name: "ClubMembers",
+        component: () =>
+          import("@/modules/admin/components/club/ClubMembersTable.vue"),
+      },
+      {
         path: "district",
         name: "District",
         component: () => import("@/modules/admin/views/District.vue"),

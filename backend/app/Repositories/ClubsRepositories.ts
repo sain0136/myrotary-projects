@@ -3,6 +3,7 @@ import Clubs from "App/Models/Clubs";
 import Projects from "App/Models/Projects";
 import Users from "App/Models/Users";
 import { IClub } from "App/Shared/Interfaces/IClub";
+import { IRoles } from "App/Shared/Interfaces/IUser";
 
 export default class ClubRepositories {
   public async clubsInDistrict(
@@ -83,17 +84,21 @@ export default class ClubRepositories {
       .where({ club_id: id })
       .paginate(currentPage, limit);
     for await (const user of users) {
+      let roleTitle: Array<IRoles>;
       if (user.userType === "CLUB") {
-        user.role = user.role = await user
+        roleTitle = await user
           .related("clubRole")
           .pivotQuery()
           .where({ user_id: user.userId });
       } else {
-        user.role = await user
+        roleTitle = await user
           .related("districtRole")
           .pivotQuery()
           .where({ user_id: user.userId });
       }
+      user.role = roleTitle[0]?.district_role
+        ? roleTitle[0]?.district_role
+        : roleTitle[0]?.club_role;
     }
     return users;
   }

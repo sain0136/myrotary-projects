@@ -67,8 +67,12 @@ export default class UserRepositories {
         .where({ user_id: user.userId });
     }
     user.role = roleTitle[0].club_role || roleTitle[0].district_role;
-    let district = await Districts.findOrFail(user.districtId);
-    let club = await Clubs.findOrFail(user.clubId);
+    let district: Districts | undefined;
+    if (user.districtId) {
+      district = await Districts.findOrFail(user.districtId);
+    }
+    // User should Always have a clubid at least
+    const club = await Clubs.findOrFail(user.clubId);
     return {
       user,
       district,

@@ -3,6 +3,7 @@ import Clubs from "App/Models/Clubs";
 import Districts from "App/Models/Districts";
 import Users from "App/Models/Users";
 import type { IDistrict } from "App/Shared/Interfaces/IDistrict";
+import { IRoles } from "App/Shared/Interfaces/IUser";
 
 export default class DistrictsRepositories {
   public async index(
@@ -80,10 +81,13 @@ export default class DistrictsRepositories {
           .where({ userType: "DISTRICT" })
           .paginate(currentPage, limit);
     for await (const user of allAdmins) {
-      user.role = await user
+      let roleTitle: Array<IRoles>;
+      roleTitle = await user
         .related("districtRole")
         .pivotQuery()
         .where({ user_id: user.userId });
+
+      user.role = roleTitle[0]?.district_role || "N/A";
       const district = await Districts.findOrFail(user.districtId);
       user.extraDetails = { district_name: district.districtName };
     }

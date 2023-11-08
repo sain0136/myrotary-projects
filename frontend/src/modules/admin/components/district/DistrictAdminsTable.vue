@@ -100,7 +100,7 @@ const getDistrictAdmin = async () => {
     const districtAdmins = response.data as IUser[];
 
     for (const user of districtAdmins) {
-      if (user.role && user.role[0]) {
+      if (user.role) {
         user.title = user.role ?? "N/A";
       } else {
         user.title = "N/A";

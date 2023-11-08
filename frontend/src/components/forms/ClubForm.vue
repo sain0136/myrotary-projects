@@ -27,13 +27,18 @@ import { useRoute } from "vue-router";
 import BaseSelect from "@/components/form/BaseSelect.vue";
 
 /* Data */
+type formType = "siteAdmin" | "clubAdmin" | undefined;
 const route = useRoute();
 const districtApi = new DistrictApi(new ApiClient());
 const { langTranslations, languagePref } = useLanguage();
 const { handleError, handleSuccess, handleValidationForm } = errorHandler();
 const club = reactive(new Club());
+// required form data
 const clubId = route.params.clubId ?? null;
-const formType = route.query.formType === "siteAdmin" ? "siteAdmin" : undefined;
+const formType = route.query.formType
+  ? (route.query.formType as formType)
+  : undefined;
+//
 const clubApi = new ClubApi(new ApiClient());
 const districtMap = reactive<Map<string, number>>(new Map());
 const chosenDistrict = ref("");
@@ -124,7 +129,7 @@ const validateAndSubmit = async () => {
         fr: "Doit assigner le club a un district",
       });
     }
-    if (formType === "siteAdmin" && clubId) {
+    if (clubId) {
       await clubApi.updateClub(club);
     } else if (formType === "siteAdmin" && !clubId) {
       await clubApi.createClub(club);
@@ -138,7 +143,12 @@ const validateAndSubmit = async () => {
   }
 };
 const redirect = () => {
-  router.push({ name: "Club" });
+  if (formType === "siteAdmin") {
+    router.push({ name: "Club" });
+  }
+  if (formType === "clubAdmin") {
+    router.go(0);
+  }
 };
 </script>
 
@@ -192,15 +202,15 @@ const redirect = () => {
     </div>
     <div class="form-block">
       <BaseCheckBox
-        v-model="club.settings.disableDsg"
+        v-model="club.settings.disableDsg as boolean"
         :label="langTranslations.clubForm.disableDsgLabel"
       />
       <BaseCheckBox
-        v-model="club.settings.disableDM"
+        v-model="club.settings.disableDM as boolean"
         :label="langTranslations.clubForm.disableDsgLabel"
       />
       <BaseCheckBox
-        v-model="club.settings.disableGlobal"
+        v-model="club.settings.disableGlobal as boolean"
         :label="langTranslations.clubForm.disableGlobalLabel"
       />
     </div>
@@ -218,6 +228,7 @@ const redirect = () => {
         :theme="'primary'"
         :label="langTranslations.cancelLabel"
         @click="redirect()"
+        v-if="formType !== 'clubAdmin'"
       />
     </div>
   </form>

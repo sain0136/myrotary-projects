@@ -23,8 +23,18 @@ import type { IClub } from "@/utils/interfaces/IClub";
 import type { IUser } from "@/utils/interfaces/IUser";
 import { UsersApi } from "@/api/services/UserApi";
 import type { IDistrict } from "@/utils/interfaces/IDistrict";
+import { useRoute } from "vue-router";
+import { useLoggedInUserStore } from "@/stores/LoggedInUser";
+import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
 
 /* Data */
+const route = useRoute();
+type tableView = "clubAdmins" | undefined;
+// required form data
+const tableView = route.query.tableView
+  ? (route.query.tableView as tableView)
+  : undefined;
+//
 const { langTranslations } = useLanguage();
 const { handleError, handleSuccess } = errorHandler();
 const { changeShowModal, setModal } = modalHandler();
@@ -43,10 +53,11 @@ const pagination = reactive({
   total: 0,
   limit: 5,
 });
+const loaded = ref(false);
 
 /* Hooks */
 watch(chosenDistrict, async () => {
-  if (chosenDistrict.value !== undefined) {
+  if (chosenDistrict.value !== undefined && !tableView) {
     allUsersInClub.splice(0, allUsersInClub.length);
     chosenClub.value = "";
     chosenId.value = 0;
@@ -68,14 +79,26 @@ watch(chosenDistrict, async () => {
 });
 
 watch(chosenClub, () => {
-  if (chosenClub.value !== undefined && chosenClub.value !== "") {
+  if (chosenClub.value !== undefined && chosenClub.value !== "" && !tableView) {
     chosenId.value = allClubsInDistrict.get(chosenClub.value) as number;
     getClubMembers();
   }
 });
 
+watch(
+  () => pagination.limit,
+  () => {
+    getClubMembers();
+  }
+);
+
 onMounted(async () => {
   try {
+    if (tableView === "clubAdmins") {
+      chosenId.value = useLoggedInUserStore().loggedInUser?.club_id;
+      await getClubMembers();
+      return;
+    }
     const response = (await districtApi.getAllDistricts(
       false,
       1,
@@ -92,6 +115,7 @@ onMounted(async () => {
 /* Methods */
 const getClubMembers = async () => {
   try {
+    loaded.value = false;
     allUsersInClub.splice(0, allUsersInClub.length);
     const response = (await clubApi.getClubUsers(
       chosenId.value,
@@ -101,7 +125,7 @@ const getClubMembers = async () => {
     if (response?.data) {
       for (const user of response.data as IUser[]) {
         if (user.role) {
-          user.title = user.role[0]?.club_role ?? user.role[0]?.district_role;
+          user.title = user.role ?? user.role;
         } else {
           user.title = "N/A";
         }
@@ -112,6 +136,7 @@ const getClubMembers = async () => {
       pagination.currentPage = response.meta.current_page;
       pagination.lastPage = response.meta.last_page;
       pagination.total = response.meta.total;
+      loaded.value = true;
     }
   } catch (error) {
     handleError(error as CustomError);
@@ -148,7 +173,10 @@ const deleteClubMember = async (user: unknown) => {
 
 <template>
   <div class="flex flex-col gap-8">
-    <div class="flex mt-8 justify-center flex-col gap-4 items-center">
+    <div
+      v-if="!tableView"
+      class="flex mt-8 justify-center flex-col gap-4 items-center"
+    >
       <H3 :content="langTranslations.clubsView.choseDistrictForClubs" />
       <BaseSelect
         class="w-1/2"
@@ -157,9 +185,14 @@ const deleteClubMember = async (user: unknown) => {
         :label="''"
       />
     </div>
+    <H3
+      class="text-center"
+      :content="langTranslations.clubsView.clubMembersLabel"
+      v-if="tableView === 'clubAdmins'"
+    />
     <div
       class="flex mt-8 justify-center flex-col gap-4 items-center"
-      v-if="chosenDistrict && allClubsInDistrict.size > 0"
+      v-if="chosenDistrict && allClubsInDistrict.size > 0 && !tableView"
     >
       <H3 :content="langTranslations.clubsView.clubsLabel" />
       <BaseSelect
@@ -176,7 +209,7 @@ const deleteClubMember = async (user: unknown) => {
     />
     <BaseDisplayTable
       :show-checkboxes="false"
-      v-if="allUsersInClub.length > 0"
+      v-if="allUsersInClub.length > 0 && loaded"
       :handle-page-change="handlePageChange"
       :current-page="pagination.currentPage"
       :last-page="pagination.lastPage"
@@ -188,11 +221,27 @@ const deleteClubMember = async (user: unknown) => {
         callBack: (user) => {
           deleteClubMember(user);
         },
+        hide: (user) => {
+          const member = user as IUser;
+          if (member.user_type === 'DISTRICT') {
+            return true;
+          }
+          return false
+        }
       }"
       :edit-button="{
         show: true,
         callBack: (user) => {
           const id = (user as IUser).user_id
+          if(tableView && id){
+            router.push({
+              path: `user-form/${id}`,
+              query: {
+              formType: 'clubAdmin',
+            },
+            })
+            return
+          }
           if (id) {
             router.push({
               path: `user-form/${id}`,
@@ -200,8 +249,16 @@ const deleteClubMember = async (user: unknown) => {
               formType: 'siteAdminClub',
             },
             });
+            return
           }
         },
+        hide: (user) => {
+          const member = user as IUser;
+          if (member.user_type === 'DISTRICT') {
+            return true;
+          }
+          return false
+        } 
       }"
       :table-data="allUsersInClub"
       :columns="[
@@ -217,9 +274,12 @@ const deleteClubMember = async (user: unknown) => {
         },
       ]"
     />
+    <LoadingSpinner v-else-if="!loaded" />
     <div
       class="flex justify-center"
-      v-else-if="chosenDistrict && chosenClub && allUsersInClub.length === 0"
+      v-else-if="
+        chosenDistrict && chosenClub && allUsersInClub.length === 0 && loaded
+      "
     >
       <H3 :content="langTranslations.clubsView.noClubMembersInClub" />
     </div>
@@ -230,7 +290,7 @@ const deleteClubMember = async (user: unknown) => {
           router.push({
             name: 'UserAddEdit',
             query: {
-              formType: 'siteAdminClub',
+              formType: 'clubAdmin',
               userType: 'clubUser',
               clubId: chosenId,
             },
