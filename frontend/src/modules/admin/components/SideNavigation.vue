@@ -11,6 +11,7 @@ import { errorHandler } from "@/utils/composables/ErrorHandler";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import type { AllUserRoles } from "@/utils/composables/UseAccessControl";
 import { useAccessControl } from "@/utils/composables/UseAccessControl";
+import ResourceList from "@/utils/classes/ResourceList";
 defineProps<{
   drawer: boolean;
 }>();
@@ -23,16 +24,23 @@ const { langTranslations } = useLanguage();
 const loggedinRole = ref("");
 if (userStore.loggedInUser.user_id === 2) {
   loggedinRole.value = "Webmaster";
-} else if (userStore.loggedInUser.role[0].club_role) {
-  loggedinRole.value = userStore.loggedInUser.role[0].club_role;
-} else if (userStore.loggedInUser.role[0].district_role) {
-  loggedinRole.value = userStore.loggedInUser.role[0].district_role;
+} else if (userStore.loggedInUser.role) {
+  loggedinRole.value = userStore.loggedInUser.role;
+} else if (userStore.loggedInUser.role) {
+  loggedinRole.value = userStore.loggedInUser.role;
 } else {
   loggedinRole.value = "guest";
 }
 const sideBarItems: Record<
   string,
-  { label: string; icon: string; link: string; hasAccess: boolean }
+  {
+    label: string;
+    icon: string;
+    link: string;
+    hasAccess: boolean;
+    params?: Record<string, string>;
+    query?: Record<string, string>;
+  }
 > = {
   profile: {
     label: langTranslations.value.adminDash.myProfileLabel,
@@ -65,10 +73,7 @@ const sideBarItems: Record<
   },
   district: {
     label: langTranslations.value.adminDash.districtLabel,
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor"
-      class="iconify-icon w-6 h-6 text-gray-500 transition duration-75 group-hover:text-nearBlack"
-      d="M19 15h-2v-2h2m0 6h-2v-2h2M13 7h-2V5h2m0 6h-2V9h2m0 6h-2v-2h2m0 6h-2v-2h2m-6-6H5V9h2m0 6H5v-2h2m0 6H5v-2h2m8-6V5l-3-3l-3 3v2H3v14h18V11h-6Z"/>
-      </svg>`,
+    icon: ResourceList.sidebarIcons.districtIcon,
     link: "District",
     hasAccess: hasAccess(
       loggedinRole.value as AllUserRoles,
@@ -86,6 +91,24 @@ const sideBarItems: Record<
     hasAccess: hasAccess(
       loggedinRole.value as AllUserRoles,
       "webadmin-club-settings-view"
+    ),
+  },
+  districtAdminsSettings: {
+    label:
+      langTranslations.value.districtView.distictTabLabel +
+      " " +
+      langTranslations.value.settingsLabel,
+    icon: ResourceList.sidebarIcons.districtIcon,
+    link: "DistrictAddEdit",
+    params: {
+      districtId: userStore.loggedInUser?.district_id?.toString() || "0",
+    },
+    query: {
+      formType: "districtAdmin",
+    },
+    hasAccess: hasAccess(
+      loggedinRole.value as AllUserRoles,
+      "districtadmin-district-settings-view"
     ),
   },
 };
@@ -128,7 +151,14 @@ onMounted(async () => {});
         </li>
         <li v-for="item in sideBarItems" :key="item.link">
           <div v-if="item.hasAccess">
-            <router-link class="w-2" :to="{ name: item.link }">
+            <router-link
+              class="w-2"
+              :to="{
+                name: item.link,
+                params: item.params ? item.params : {},
+                query: item.query ? item.query : {},
+              }"
+            >
               <button
                 @click="$emit('update:modelValue', !drawer)"
                 type="button"

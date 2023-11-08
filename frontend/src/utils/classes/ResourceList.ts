@@ -9,6 +9,13 @@ export default class ResourceList {
     "District International Chair",
   ];
 
+  static sidebarIcons = {
+    districtIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor"
+    class="iconify-icon w-6 h-6 text-gray-500 transition duration-75 group-hover:text-nearBlack"
+    d="M19 15h-2v-2h2m0 6h-2v-2h2M13 7h-2V5h2m0 6h-2V9h2m0 6h-2v-2h2m0 6h-2v-2h2m-6-6H5V9h2m0 6H5v-2h2m0 6H5v-2h2m8-6V5l-3-3l-3 3v2H3v14h18V11h-6Z"/>
+    </svg>`,
+  };
+
   static statusList = Object.values(projectStatus);
 
   static grantTypeList = Object.values(grantType);

@@ -4,7 +4,7 @@ import Clubs from "App/Models/Clubs";
 import Districts from "App/Models/Districts";
 import Projects from "App/Models/Projects";
 import Users from "App/Models/Users";
-import { IUser } from "App/Shared/Interfaces/IUser";
+import { IRoles, IUser } from "App/Shared/Interfaces/IUser";
 import { errorTranslations } from "App/Translations/Translations";
 import { AuthenticationRequestData } from "App/Utils/CommonTypes";
 
@@ -45,34 +45,30 @@ export default class UserRepositories {
       throw new CustomException({ message, status, translatedMessage });
     }
   }
-
-  public async addUserRoles(user: Users) {
+  /**
+   * Adds user roles to the user object.
+   *
+   * @param {Users} user - The user object to add roles to.
+   * @return {Promise<{user: Users, district: Districts | undefined, club: Clubs}>} - A promise that resolves to an object containing the updated user, district, and club properties.
+   */
+  public async addUserRoles(
+    user: Users
+  ): Promise<{ user: Users; district: Districts | undefined; club: Clubs }> {
+    let roleTitle: Array<IRoles>;
     if (user.userType === "CLUB") {
-      user.role = user.role = await user
+      roleTitle = await user
         .related("clubRole")
         .pivotQuery()
         .where({ user_id: user.userId });
     } else {
-      user.role = await user
+      roleTitle = await user
         .related("districtRole")
         .pivotQuery()
         .where({ user_id: user.userId });
     }
-    let district = user.districtId
-      ? await Districts.findOrFail(user.districtId)
-      : undefined;
-    if (user.userType === "CLUB") {
-      user.role = user.role = await user
-        .related("clubRole")
-        .pivotQuery()
-        .where({ user_id: user.userId });
-    } else {
-      user.role = await user
-        .related("districtRole")
-        .pivotQuery()
-        .where({ user_id: user.userId });
-    }
-    let club: Clubs = await Clubs.findOrFail(user.clubId);
+    user.role = roleTitle[0].club_role || roleTitle[0].district_role;
+    let district = await Districts.findOrFail(user.districtId);
+    let club = await Clubs.findOrFail(user.clubId);
     return {
       user,
       district,
@@ -82,17 +78,19 @@ export default class UserRepositories {
 
   public async getUser(userId: number) {
     const user = await Users.findOrFail(userId);
+    let roleTitle: Array<IRoles>;
     if (user.userType === "CLUB") {
-      user.role = user.role = await user
+      roleTitle = await user
         .related("clubRole")
         .pivotQuery()
         .where({ user_id: user.userId });
     } else {
-      user.role = await user
+      roleTitle = await user
         .related("districtRole")
         .pivotQuery()
         .where({ user_id: user.userId });
     }
+    user.role = roleTitle[0].club_role || roleTitle[0].district_role;
     return user;
   }
 

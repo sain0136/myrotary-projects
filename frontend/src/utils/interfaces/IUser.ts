@@ -47,7 +47,7 @@ export interface IUser {
   user_id: number;
   // computed properties
   fullName: string;
-  role: Array<IRoles>;
+  role: DistrictRole | ClubRole | string;
   // creation or etc properties
   [key: string]: any;
   role_type?: string;

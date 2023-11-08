@@ -48,6 +48,8 @@ const clubId = ref(route.query.clubId ?? null);
 const formType = ref(
   route.query.formType ? (route.query.formType as formType) : null
 );
+// foolish hack perhaps ... in other form everything is passed through url component is called from
+// router
 const { userIdProp, userTypeProp, clubIdProp, formTypeProp } = defineProps<{
   userIdProp?: string;
   userTypeProp?: UserType;
@@ -77,7 +79,7 @@ const clubMap = reactive<Map<string, number>>(new Map());
 const userTitle = ref("");
 // const allClubsInDistrict = reactive<string[]>([]);
 const chosenClub = ref("");
-const submitLabel = userId
+const submitLabel = userId.value
   ? {
       en: "Update",
       fr: "Modifier",
@@ -248,23 +250,15 @@ onMounted(async () => {
       });
       allDistricts.push();
     }
-    if (userId) {
+    if (userId.value) {
       const response = await userApi.getUser(parseInt(userId.value as string));
       Object.assign(user, response);
       if (formType.value === "siteAdminClub") {
-        const role = user.role[0].club_role
-          ? user.role[0].club_role
-          : user.role[0].district_role
-          ? user.role[0].district_role
-          : "";
+        const role = user.role ? user.role : user.role ? user.role : "";
         userTitle.value = role + ": " + user.fullName;
         user.role_type = role;
       } else {
-        const role = user.role[0].district_role
-          ? user.role[0].district_role
-          : user.role[0].club_role
-          ? user.role[0].club_role
-          : "";
+        const role = user.role ? user.role : user.role ? user.role : "";
         userTitle.value = role + ": " + user.fullName;
         user.role_type = role;
       }
@@ -279,7 +273,7 @@ const validateAndSubmit = async () => {
   const isFormCorrect = await v$.value.$validate();
   if (
     !isFormCorrect ||
-    (!userId &&
+    (!userId.value &&
       formType.value === "siteAdminDistrict" &&
       chosenDistrict.value === "")
   ) {
@@ -287,7 +281,7 @@ const validateAndSubmit = async () => {
     return;
   }
   try {
-    if (userId) {
+    if (userId.value) {
       await userApi.updateUser(user);
     } else {
       if (userType.value === "clubUser") {
@@ -383,10 +377,16 @@ const redirect = () => {
         :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined "
       />
       <H2 v-if="formType !== 'myProfile'" :content="userTitle" />
-      <H2
+      <div
         v-else-if="formType === 'myProfile'"
-        :content="langTranslations.adminDash.personalInformationLabel"
-      />
+        class="flex flex-col gap-4 justify-center items-center font-bold"
+      >
+        <H2 :content="langTranslations.adminDash.personalInformationLabel" />
+        <h6>
+          {{ langTranslations.roleLabel }}:
+          {{ user.role ?? user.role }}
+        </h6>
+      </div>
     </div>
     <div class="form-block">
       <BaseInput
@@ -476,6 +476,7 @@ const redirect = () => {
         "
       />
       <RotaryButton
+        v-if="formType !== 'myProfile'"
         :theme="'primary'"
         :label="langTranslations.cancelLabel"
         @click="redirect()"

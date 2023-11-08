@@ -28,13 +28,21 @@ import {
 import { DistrictApi } from "@/api/services/DistrictsApi";
 import { ApiClient } from "@/api/ApiClient";
 import type { CustomError } from "@/utils/classes/CustomError";
+import { useRoute } from "vue-router";
 
 /* Data */
+type formType = "districtAdmin";
 const districtApi = new DistrictApi(new ApiClient());
+// required form data
+const route = useRoute();
 const isEdit = router.currentRoute.value.params.districtId ? true : false;
+const formType = route.query.formType
+  ? (route.query.formType as formType)
+  : null;
 const districtId = isEdit
   ? parseInt(router.currentRoute.value.params.districtId as string)
   : null;
+//
 const { handleError, handleSuccess, handleValidationForm } = errorHandler();
 const district = reactive(new District());
 const { langTranslations, languagePref } = useLanguage();
@@ -203,20 +211,28 @@ const validateAndSubmit = async () => {
     return;
   }
   try {
+    //TODO Should i udate store data?
     if (isEdit) {
       await districtApi.updateDistrict(district);
     } else {
       await districtApi.createDistrict(district);
     }
     handleSuccess(langTranslations.value.toastSuccess);
-    router.push({ name: "District", query: { tabNameProp: "district" } });
+    redirect();
   } catch (error) {
     handleError(error as CustomError);
   }
 };
 
-const redirect = () => {
-  router.push({ name: "District" });
+const redirect = (cancelPress?: boolean) => {
+  if (formType === "districtAdmin") {
+    router.go(0);
+  } else {
+    router.push({ name: "District", query: { tabNameProp: "district" } });
+  }
+  if (cancelPress) {
+    router.push({ name: "District" });
+  }
 };
 </script>
 
@@ -368,7 +384,8 @@ const redirect = () => {
         <RotaryButton
           :theme="'primary'"
           :label="langTranslations.cancelLabel"
-          @click="redirect()"
+          @click="redirect(true)"
+          v-if="formType !== 'districtAdmin'"
         />
       </div>
     </div>
