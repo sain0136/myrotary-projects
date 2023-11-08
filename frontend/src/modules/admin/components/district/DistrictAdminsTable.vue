@@ -101,7 +101,7 @@ const getDistrictAdmin = async () => {
 
     for (const user of districtAdmins) {
       if (user.role && user.role[0]) {
-        user.title = user.role[0].district_role ?? "N/A";
+        user.title = user.role ?? "N/A";
       } else {
         user.title = "N/A";
       }
