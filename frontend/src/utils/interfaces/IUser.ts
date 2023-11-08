@@ -49,6 +49,6 @@ export interface IUser {
   fullName: string;
   role: Array<IRoles>;
   // creation or etc properties
-  // [key: string]: any;
+  [key: string]: any;
   role_type?: string;
 }

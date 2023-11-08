@@ -9,6 +9,8 @@ import ProfileForm from "@/modules/admin/components/myprofile/ProfileForm.vue";
 import H1 from "@/components/headings/H1.vue";
 import { useSiteAssets } from "@/stores/SiteAssets";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
+import UserForm from "@/components/forms/UserForm.vue";
+import Hr from "@/components/hr/Hr.vue";
 
 /* Data  */
 const { langTranslations } = useLanguage();
@@ -23,6 +25,7 @@ const userStore = useLoggedInUserStore();
         class="text-center mb-8"
         :content="langTranslations.adminDash.myProfileLabel"
       />
+      <Hr />
       <div class="flex flex-col gap-4 items-center justify-center">
         <div class="circular-image-container h-52 w-52">
           <img
@@ -36,6 +39,10 @@ const userStore = useLoggedInUserStore();
         <ProfileForm
           class="w-1/2"
           :title="langTranslations.profileImageUploadLabel"
+        />
+        <UserForm
+          :user-id-prop="userStore.loggedInUser?.user_id.toString()"
+          :form-type-prop="'myProfile'"
         />
       </div>
     </div>

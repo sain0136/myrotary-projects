@@ -24,7 +24,6 @@ import { modalHandler } from "@/utils/composables/ModalHandler";
 import type { IUser } from "@/utils/interfaces/IUser";
 import { UsersApi } from "@/api/services/UserApi";
 
-
 /* Data */
 const { langTranslations } = useLanguage();
 
@@ -32,7 +31,7 @@ const { handleError, handleSuccess } = errorHandler();
 const districtApi = new DistrictApi(new ApiClient());
 const allDistricts = reactive<Map<string, number>>(new Map());
 const { changeShowModal, setModal } = modalHandler();
-const allDistrictsinDistrict = reactive<IDistrict[]>([])
+const allDistrictsinDistrict = reactive<IDistrict[]>([]);
 
 const chosenDistrict = ref("");
 const chosenDistrictId = ref(0);
@@ -67,9 +66,12 @@ onMounted(async () => {
       10
     )) as PaginationResult;
     response.data.map((district) => {
-      allDistricts.set(district.district_name, district.district_id as number);
+      allDistricts.set(
+        (district as IDistrict).district_name,
+        district.district_id as number
+      );
     });
-  }catch(error){
+  } catch (error) {
     handleError(error as CustomError);
   }
   await getDistrictAdmin();
@@ -86,41 +88,39 @@ watch(
 /* Methods */
 
 const getDistrictAdmin = async () => {
-  try{
-    allDistrictsinDistrict.splice(0, allDistrictsinDistrict.length)
+  try {
+    allDistrictsinDistrict.splice(0, allDistrictsinDistrict.length);
     const response = (await districtApi.getDistrictAdmins(
-    pagination.currentPage,
-    pagination.limit,
-    chosenDistrictId.value,
-    false
-    )) as PaginationResult
+      pagination.currentPage,
+      pagination.limit,
+      chosenDistrictId.value,
+      false
+    )) as PaginationResult;
 
     const districtAdmins = response.data as IUser[];
 
     for (const user of districtAdmins) {
-      if(user.role && user.role[0]) {
+      if (user.role && user.role[0]) {
         user.title = user.role[0].district_role ?? "N/A";
       } else {
-        user.title = "N/A"
+        user.title = "N/A";
       }
-      
-      if(user.extra_details) {
-      user.districtName = user.extra_details.district_name ?? "N/A";
+
+      if (user.extra_details) {
+        user.districtName = user.extra_details.district_name ?? "N/A";
       } else {
         user.districtName = "N/A";
       }
     }
 
-    Object.assign(allDistrictsinDistrict, districtAdmins)
+    Object.assign(allDistrictsinDistrict, districtAdmins);
     pagination.currentPage = response.meta.current_page;
     pagination.lastPage = response.meta.last_page;
     pagination.total = response.meta.total;
-
-  }catch(error){
+  } catch (error) {
     handleError(error as CustomError);
   }
-}
-
+};
 
 const deleteAdmin = async (user: unknown) => {
   const toDelete = user as IUser;
@@ -145,28 +145,27 @@ const editAdmin = async (user: unknown) => {
   const toEdit = user as IUser;
   const id = toEdit.user_id;
   try {
-    if(id) {
-       router.push({
+    if (id) {
+      router.push({
         path: `user-form/${id}`,
-              query: {
-                formType : 'siteAdminDistrict',
-                userType: 'districtAdmin'
-              }
-      })
+        query: {
+          formType: "siteAdminDistrict",
+          userType: "districtAdmin",
+        },
+      });
     }
     await getDistrictAdmin();
   } catch (error) {
-    handleError(error as CustomError)
+    handleError(error as CustomError);
   }
-}
-
+};
 
 const handlePageChange = (nextOrPrevious: "next" | "previous") => {
   pagination.currentPage =
     nextOrPrevious === "next"
       ? pagination.currentPage + 1
       : pagination.currentPage - 1;
-      getDistrictAdmin();
+  getDistrictAdmin();
 };
 </script>
 
@@ -200,7 +199,7 @@ const handlePageChange = (nextOrPrevious: "next" | "previous") => {
       :edit-button="{
         show: true,
         callBack: (user) => {
-          editAdmin(user)
+          editAdmin(user);
         },
       }"
       :table-data="allDistrictsinDistrict"

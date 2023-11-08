@@ -35,17 +35,31 @@ import type { IClub } from "@/utils/interfaces/IClub";
 
 /* Data */
 type UserType = "districtAdmin" | "clubUser" | null;
-type formType = "siteAdminClub" | "siteAdminDistrict" | null;
+type formType = "siteAdminClub" | "siteAdminDistrict" | "myProfile" | null;
 const route = useRoute();
 const { langTranslations, languagePref } = useLanguage();
-const userId = route.params.userId;
-const userType = route.query.userType
-  ? (route.query.userType as UserType)
-  : null;
-const clubId = route.query.clubId ?? null;
-const formType = route.query.formType
-  ? (route.query.formType as formType)
-  : null;
+// Required for form
+const userId = ref(route.params.userId);
+const userType = ref(
+  route.query.userType ? (route.query.userType as UserType) : null
+);
+
+const clubId = ref(route.query.clubId ?? null);
+const formType = ref(
+  route.query.formType ? (route.query.formType as formType) : null
+);
+const { userIdProp, userTypeProp, clubIdProp, formTypeProp } = defineProps<{
+  userIdProp?: string;
+  userTypeProp?: UserType;
+  clubIdProp?: string;
+  formTypeProp?: formType;
+}>();
+
+userId.value = userIdProp ? userIdProp : userId.value;
+userType.value = userTypeProp ? userTypeProp : userType.value;
+clubId.value = clubIdProp ? clubIdProp : clubId.value;
+formType.value = formTypeProp ? formTypeProp : formType.value;
+
 const user = reactive(new User());
 const { handleError, handleSuccess, handleValidationForm } = errorHandler();
 const userApi = new UsersApi(new ApiClient());
@@ -227,7 +241,7 @@ watch(chosenDistrict, async () => {
 
 onMounted(async () => {
   try {
-    if (userType === "districtAdmin") {
+    if (userType.value === "districtAdmin") {
       const response = (await districtApi.getAllDistricts(true)) as District[];
       response.forEach((district) => {
         districtMap.set(district.district_name, district.district_id);
@@ -235,17 +249,24 @@ onMounted(async () => {
       allDistricts.push();
     }
     if (userId) {
-      const response = await userApi.getUser(parseInt(userId as string));
+      const response = await userApi.getUser(parseInt(userId.value as string));
       Object.assign(user, response);
-      if (formType === "siteAdminClub") {
-        userTitle.value =
-          (user.role[0].club_role ?? "") + ": " + user.fullName ??
-          (user.role[0].district_role ?? "") + ": " + user.fullName;
-        user.role_type = user.role[0].club_role ?? "";
+      if (formType.value === "siteAdminClub") {
+        const role = user.role[0].club_role
+          ? user.role[0].club_role
+          : user.role[0].district_role
+          ? user.role[0].district_role
+          : "";
+        userTitle.value = role + ": " + user.fullName;
+        user.role_type = role;
       } else {
-        userTitle.value =
-          (user.role[0].district_role ?? "") + ": " + user.fullName;
-        user.role_type = user.role[0].district_role ?? "";
+        const role = user.role[0].district_role
+          ? user.role[0].district_role
+          : user.role[0].club_role
+          ? user.role[0].club_role
+          : "";
+        userTitle.value = role + ": " + user.fullName;
+        user.role_type = role;
       }
     }
   } catch (error) {
@@ -258,7 +279,9 @@ const validateAndSubmit = async () => {
   const isFormCorrect = await v$.value.$validate();
   if (
     !isFormCorrect ||
-    (!userId && formType === "siteAdminDistrict" && chosenDistrict.value === "")
+    (!userId &&
+      formType.value === "siteAdminDistrict" &&
+      chosenDistrict.value === "")
   ) {
     handleValidationForm();
     return;
@@ -267,11 +290,11 @@ const validateAndSubmit = async () => {
     if (userId) {
       await userApi.updateUser(user);
     } else {
-      if (userType === "clubUser") {
+      if (userType.value === "clubUser") {
         user.user_type = "CLUB";
-        user.club_id = Number(clubId as string);
+        user.club_id = Number(clubId.value as string);
       }
-      if (userType === "districtAdmin") {
+      if (userType.value === "districtAdmin") {
         if (typeof districtMap.get(chosenDistrict.value) !== "undefined") {
           {
             user.district_id = districtMap.get(chosenDistrict.value) as number;
@@ -301,11 +324,11 @@ const validateAndSubmit = async () => {
 };
 
 const redirect = () => {
-  if (formType === "siteAdminClub") {
+  if (formType.value === "siteAdminClub") {
     router.push({ name: "Club" });
     return;
   }
-  if (formType === "siteAdminDistrict") {
+  if (formType.value === "siteAdminDistrict") {
     router.push({ name: "District" });
     return;
   }
@@ -314,7 +337,11 @@ const redirect = () => {
 
 <template>
   <form @submit.prevent class="">
-    <H2 class="text-center" :content="langTranslations.userFormHeader" />
+    <H2
+      v-if="formType !== 'myProfile'"
+      class="text-center"
+      :content="langTranslations.userFormHeader"
+    />
     <Hr />
     <div class="flex-block flex-col items-center justify-center">
       <p
@@ -355,7 +382,11 @@ const redirect = () => {
         :options="ResourceList.clubRolesList"
         :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined "
       />
-      <H2 :content="userTitle" />
+      <H2 v-if="formType !== 'myProfile'" :content="userTitle" />
+      <H2
+        v-else-if="formType === 'myProfile'"
+        :content="langTranslations.adminDash.personalInformationLabel"
+      />
     </div>
     <div class="form-block">
       <BaseInput
