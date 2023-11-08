@@ -18,6 +18,8 @@ import { required, email, helpers, minLength } from "@vuelidate/validators";
 import router from "@/router";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import Banners from "@/components/banners/Banners.vue";
+import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
+import { useLoggedInClub } from "@/stores/LoggedInClub";
 
 /* Data */
 const { langTranslations, customPrintf } = useLanguage();
@@ -27,6 +29,8 @@ const state = reactive({
   password: "",
 });
 const userStore = useLoggedInUserStore();
+const districtStore = useLoggedInDistrict();
+const clubStore = useLoggedInClub();
 const usersApi = new UsersApi(new ApiClient());
 
 /* Validations */
@@ -67,6 +71,8 @@ const handleSubmit = async () => {
       state.password
     );
     userStore.setLoggedInUser(response.user);
+    districtStore.setLoggedInDistrict(response.district);
+    clubStore.setLoggedInClub(response.club);
     handleSuccess(
       customPrintf(
         langTranslations.value.adminLoginForm.successfulLogin,

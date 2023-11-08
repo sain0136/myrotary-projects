@@ -26,14 +26,22 @@ import type { IDistrict } from "@/utils/interfaces/IDistrict";
 import { useRoute } from "vue-router";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
+import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
 
 /* Data */
 const route = useRoute();
-type tableView = "clubAdmins" | undefined;
+type tableView = "clubAdmins" | "districtAdmins" | undefined;
 // required form data
-const tableView = route.query.tableView
+let tableView = route.query.tableView
   ? (route.query.tableView as tableView)
   : undefined;
+
+const { tableViewProp } = defineProps<{
+  tableViewProp?: tableView;
+}>();
+if (tableViewProp) {
+  tableView = tableViewProp;
+}
 //
 const { langTranslations } = useLanguage();
 const { handleError, handleSuccess } = errorHandler();
@@ -57,7 +65,7 @@ const loaded = ref(false);
 
 /* Hooks */
 watch(chosenDistrict, async () => {
-  if (chosenDistrict.value !== undefined && !tableView) {
+  if (chosenDistrict.value !== undefined && tableView !== "clubAdmins") {
     allUsersInClub.splice(0, allUsersInClub.length);
     chosenClub.value = "";
     chosenId.value = 0;
@@ -79,7 +87,11 @@ watch(chosenDistrict, async () => {
 });
 
 watch(chosenClub, () => {
-  if (chosenClub.value !== undefined && chosenClub.value !== "" && !tableView) {
+  if (
+    chosenClub.value !== undefined &&
+    chosenClub.value !== "" &&
+    tableView !== "clubAdmins"
+  ) {
     chosenId.value = allClubsInDistrict.get(chosenClub.value) as number;
     getClubMembers();
   }
@@ -107,6 +119,11 @@ onMounted(async () => {
     (response.data as IDistrict[]).map((district) => {
       allDistricts.set(district.district_name, district.district_id as number);
     });
+    if (tableView === "districtAdmins") {
+      chosenDistrict.value =
+        useLoggedInDistrict().loggedInDistrict.district_name || "";
+      return;
+    }
   } catch (error) {
     handleError(error as CustomError);
   }
@@ -174,7 +191,7 @@ const deleteClubMember = async (user: unknown) => {
 <template>
   <div class="flex flex-col gap-8">
     <div
-      v-if="!tableView"
+      v-if="tableView !== 'clubAdmins' && tableView !== 'districtAdmins'"
       class="flex mt-8 justify-center flex-col gap-4 items-center"
     >
       <H3 :content="langTranslations.clubsView.choseDistrictForClubs" />
@@ -192,7 +209,11 @@ const deleteClubMember = async (user: unknown) => {
     />
     <div
       class="flex mt-8 justify-center flex-col gap-4 items-center"
-      v-if="chosenDistrict && allClubsInDistrict.size > 0 && !tableView"
+      v-if="
+        chosenDistrict &&
+        allClubsInDistrict.size > 0 &&
+        tableView !== 'clubAdmins'
+      "
     >
       <H3 :content="langTranslations.clubsView.clubsLabel" />
       <BaseSelect
@@ -233,7 +254,16 @@ const deleteClubMember = async (user: unknown) => {
         show: true,
         callBack: (user) => {
           const id = (user as IUser).user_id
-          if(tableView && id){
+          if(tableView === 'districtAdmins' && id){
+            router.push({
+              path: `user-form/${id}`,
+              query: {
+              formType: 'districtAdmin',
+              }
+            })
+            return
+          }
+          if(tableView === 'clubAdmins' && id){
             router.push({
               path: `user-form/${id}`,
               query: {
@@ -274,7 +304,7 @@ const deleteClubMember = async (user: unknown) => {
         },
       ]"
     />
-    <LoadingSpinner v-else-if="!loaded" />
+    <LoadingSpinner v-else-if="!loaded && chosenClub" />
     <div
       class="flex justify-center"
       v-else-if="
@@ -287,14 +317,27 @@ const deleteClubMember = async (user: unknown) => {
       <RotaryButton
         v-if="chosenId"
         @click="
-          router.push({
-            name: 'UserAddEdit',
-            query: {
-              formType: 'clubAdmin',
-              userType: 'clubUser',
-              clubId: chosenId,
-            },
-          })
+          () => {
+            if (tableView === 'districtAdmins') {
+              router.push({
+                name: 'UserAddEdit',
+                query: {
+                  formType: 'DistrictAdmin',
+                  userType: 'clubUser',
+                  clubId: chosenId,
+                },
+              });
+              return;
+            }
+            router.push({
+              name: 'UserAddEdit',
+              query: {
+                formType: 'clubAdmin',
+                userType: 'clubUser',
+                clubId: chosenId,
+              },
+            });
+          }
         "
         :label="langTranslations.clubsView.creatNewClubMemberLabel"
         :theme="'primary'"

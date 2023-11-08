@@ -40,6 +40,7 @@ type formType =
   | "siteAdminDistrict"
   | "myProfile"
   | "clubAdmin"
+  | "districtAdmin"
   | null;
 const route = useRoute();
 const { langTranslations, languagePref } = useLanguage();
@@ -56,8 +57,7 @@ const clubId = ref(route.query.clubId ?? null);
 const formType = ref(
   route.query.formType ? (route.query.formType as formType) : null
 );
-// foolish hack perhaps ... in other form everything is passed through url component is called from
-// router
+// not a hack when usign this as component that i want to pass props too
 const { userIdProp, userTypeProp, clubIdProp, formTypeProp } = defineProps<{
   userIdProp?: string;
   userTypeProp?: UserType;
@@ -327,6 +327,11 @@ const validateAndSubmit = async () => {
 
 const redirect = () => {
   switch (formType.value) {
+    case "districtAdmin":
+      router.push({
+        name: "ClubsAdmin",
+      });
+      return;
     case "siteAdminClub":
       router.push({ name: "Club" });
       return;
