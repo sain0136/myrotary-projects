@@ -23,6 +23,7 @@ import type { IClub } from "@/utils/interfaces/IClub";
 import type District from "@/utils/classes/District";
 
 /* Data */
+type tableView = "districtAdmin";
 const { langTranslations } = useLanguage();
 const { handleError, handleSuccess } = errorHandler();
 const { changeShowModal, setModal } = modalHandler();
@@ -39,9 +40,14 @@ const pagination = reactive({
   limit: 5,
 });
 
+const { tableView, districtId } = defineProps<{
+  tableView?: tableView;
+  districtId?: number;
+}>();
+
 /* Hooks */
 watch(chosenDistrict, () => {
-  if (chosenDistrict.value !== undefined) {
+  if (chosenDistrict.value !== undefined && !tableView) {
     chosenDistrictId.value = allDistricts.get(chosenDistrict.value) as number;
     Object.assign(pagination, {
       currentPage: 1,
@@ -55,14 +61,22 @@ watch(chosenDistrict, () => {
 
 onMounted(async () => {
   try {
-    const response = (await districtApi.getAllDistricts(
-      false,
-      1,
-      100000
-    )) as PaginationResult;
-    (response.data as District[]).map((district) => {
-      allDistricts.set(district.district_name, district.district_id as number);
-    });
+    if (!tableView) {
+      const response = (await districtApi.getAllDistricts(
+        false,
+        1,
+        100000
+      )) as PaginationResult;
+      (response.data as District[]).map((district) => {
+        allDistricts.set(
+          district.district_name,
+          district.district_id as number
+        );
+      });
+    } else if (tableView === "districtAdmin" && districtId) {
+      chosenDistrictId.value = districtId;
+      getClubsByDistrict();
+    }
   } catch (error) {
     handleError(error as CustomError);
   }
@@ -121,8 +135,11 @@ const deleteClub = async (club: unknown) => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-8">
-    <div class="flex mt-8 justify-center flex-col gap-4 items-center">
+  <div class="flex flex-col mt-8 gap-8">
+    <div
+      v-if="tableView !== 'districtAdmin'"
+      class="flex mt-8 justify-center flex-col gap-4 items-center"
+    >
       <H3 :content="langTranslations.clubsView.choseDistrictForClubs" />
       <BaseSelect
         class="w-1/2"
@@ -148,6 +165,15 @@ const deleteClub = async (club: unknown) => {
         show: true,
         callBack: (club) => {
           const id = (club as IClub).club_id
+          if(id && tableView === 'districtAdmin') {
+            router.push({
+              path: `club-form/${id}`,
+              query: {
+                formType: 'districtAdmin',
+              }
+            })
+            return
+          }
           if (id) {
             router.push({
               path: `club-form/${id}`,
@@ -155,6 +181,7 @@ const deleteClub = async (club: unknown) => {
               formType: 'siteAdmin',
             },
             });
+            return
           }
         },
       }"

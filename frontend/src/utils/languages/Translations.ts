@@ -166,6 +166,7 @@ export interface Translation {
     uploadFileH1Header: string;
     myProfileLabel: string;
     personalInformationLabel: string;
+    districtClubsLabel: string;
   };
   uploadFileLabel: string;
   submit: string;
@@ -354,6 +355,7 @@ export const translations: Record<string, Translation> = {
       uploadFileH1Header: "Change Rotary Logo",
       myProfileLabel: "Profile",
       personalInformationLabel: "Personal Information",
+      districtClubsLabel: "District Clubs",
     },
     uploadFileLabel: "Upload File",
     submit: "Submit",
@@ -543,6 +545,7 @@ export const translations: Record<string, Translation> = {
       uploadFileH1Header: "Changer le logo du Rotary",
       myProfileLabel: "Profil",
       personalInformationLabel: "Informations personnelles",
+      districtClubsLabel: "Clubs de district",
     },
     uploadFileLabel: "Télécharger le fichier",
     submit: "Soumettre",

@@ -132,6 +132,15 @@ const sideBarItems: Record<
       "clubadmin-clubmembers-view"
     ),
   },
+  districtAdminClubMembers: {
+    label: langTranslations.value.adminDash.districtClubsLabel,
+    icon: ResourceList.sidebarIcons.clubAdminViewIcon,
+    link: "ClubsAdmin",
+    hasAccess: hasAccess(
+      loggedinRole.value as AllUserRoles,
+      "districtadmin-clubadmin-view"
+    ),
+  },
 };
 
 /* Hooks */

@@ -27,7 +27,7 @@ import { useRoute } from "vue-router";
 import BaseSelect from "@/components/form/BaseSelect.vue";
 
 /* Data */
-type formType = "siteAdmin" | "clubAdmin" | undefined;
+type formType = "siteAdmin" | "clubAdmin" | "districtAdmin" | undefined;
 const route = useRoute();
 const districtApi = new DistrictApi(new ApiClient());
 const { langTranslations, languagePref } = useLanguage();
@@ -148,6 +148,9 @@ const redirect = () => {
   }
   if (formType === "clubAdmin") {
     router.go(0);
+  }
+  if (formType === "districtAdmin") {
+    router.push({ name: "ClubsAdmin" });
   }
 };
 </script>
