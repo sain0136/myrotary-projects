@@ -108,8 +108,8 @@ export default class ErrorHandler {
         };
       default:
         return {
-          en: "Something went wrong",
-          fr: "Quelque chose s'est mal passé",
+          en: "Something went wrong. Contact us at your earliest convenience",
+          fr: "Quelque chose s'est mal passé. Contactez-nous au plus vite",
         };
     }
   }

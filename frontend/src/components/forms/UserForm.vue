@@ -35,7 +35,12 @@ import type { IClub } from "@/utils/interfaces/IClub";
 
 /* Data */
 type UserType = "districtAdmin" | "clubUser" | null;
-type formType = "siteAdminClub" | "siteAdminDistrict" | "myProfile" | null;
+type formType =
+  | "siteAdminClub"
+  | "siteAdminDistrict"
+  | "myProfile"
+  | "clubAdmin"
+  | null;
 const route = useRoute();
 const { langTranslations, languagePref } = useLanguage();
 // Required for form
@@ -45,6 +50,9 @@ const userType = ref(
 );
 
 const clubId = ref(route.query.clubId ?? null);
+// const districtId = ref(
+//   route.query.districtId ? Number(route.query.districtId) : null
+// );
 const formType = ref(
   route.query.formType ? (route.query.formType as formType) : null
 );
@@ -318,13 +326,23 @@ const validateAndSubmit = async () => {
 };
 
 const redirect = () => {
-  if (formType.value === "siteAdminClub") {
-    router.push({ name: "Club" });
-    return;
-  }
-  if (formType.value === "siteAdminDistrict") {
-    router.push({ name: "District" });
-    return;
+  switch (formType.value) {
+    case "siteAdminClub":
+      router.push({ name: "Club" });
+      return;
+    case "siteAdminDistrict":
+      router.push({ name: "District" });
+      return;
+    case "clubAdmin":
+      router.push({
+        name: "ClubMembers",
+        query: {
+          tableView: "clubAdmins",
+        },
+      });
+      return;
+    default:
+      router.go(-1);
   }
 };
 </script>
@@ -369,7 +387,7 @@ const redirect = () => {
         :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined "
       />
       <BaseSelect
-        v-if="formType === 'siteAdminClub'"
+        v-if="formType === 'siteAdminClub' || formType === 'clubAdmin'"
         class="w-1/2"
         v-model="user.role_type"
         :label="langTranslations.roleLabel"

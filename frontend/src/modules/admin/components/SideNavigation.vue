@@ -44,12 +44,7 @@ const sideBarItems: Record<
 > = {
   profile: {
     label: langTranslations.value.adminDash.myProfileLabel,
-    icon: `
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor"
-    class="iconify-icon w-8 h-8 text-gray-500 transition duration-75 group-hover:text-nearBlack"
-     fill-rule="evenodd" d="M8 7a4 4 0 1 1 8 0a4 4 0 0 1-8 0Zm0 6a5 5 0 0 0-5 5a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3a5 5 0 0 0-5-5H8Z"
-     clip-rule="evenodd"/>
-    `,
+    icon: ResourceList.sidebarIcons.myProfileIcon,
     link: "MyProfile",
     hasAccess: hasAccess(loggedinRole.value as AllUserRoles, "myprofile-view"),
   },
@@ -82,11 +77,7 @@ const sideBarItems: Record<
   },
   clubs: {
     label: langTranslations.value.adminDash.clubLabel,
-    icon: `
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 15 15"><path fill="currentColor"
-      class="iconify-icon w-8 h-8 text-gray-500 transition duration-75 group-hover:text-nearBlack"
-      d="M7.724.053a.5.5 0 0 0-.448 0l-6 3l.448.894L7.5 1.06l5.776 2.888l.448-.894l-6-3ZM14 6h1V5H0v1h1v8H0v1h4V8h5v7h6v-1h-1V6Z"/><path fill="currentColor"
-    `,
+    icon: ResourceList.sidebarIcons.clubIcon,
     link: "Club",
     hasAccess: hasAccess(
       loggedinRole.value as AllUserRoles,
@@ -109,6 +100,36 @@ const sideBarItems: Record<
     hasAccess: hasAccess(
       loggedinRole.value as AllUserRoles,
       "districtadmin-district-settings-view"
+    ),
+  },
+  clubAdminsSettings: {
+    label:
+      langTranslations.value.clubLabel +
+      " " +
+      langTranslations.value.settingsLabel,
+    icon: ResourceList.sidebarIcons.clubIcon,
+    link: "ClubAddEdit",
+    params: {
+      clubId: userStore.loggedInUser?.club_id?.toString() || "0",
+    },
+    query: {
+      formType: "clubAdmin",
+    },
+    hasAccess: hasAccess(
+      loggedinRole.value as AllUserRoles,
+      "clubadmin-club-settings-view"
+    ),
+  },
+  clubAdminClubMembers: {
+    label: langTranslations.value.clubsView.clubMembersLabel,
+    icon: ResourceList.sidebarIcons.clubMembers,
+    link: "ClubMembers",
+    query: {
+      tableView: "clubAdmins",
+    },
+    hasAccess: hasAccess(
+      loggedinRole.value as AllUserRoles,
+      "clubadmin-clubmembers-view"
     ),
   },
 };

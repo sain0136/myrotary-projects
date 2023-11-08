@@ -22,6 +22,7 @@ type tailwindWidths = "w-2/12" | "w-1/12" | "w-1/6";
 type ButtonOptions = {
   show: boolean;
   callBack: (row?: unknown) => void;
+  hide?: ((row?: unknown) => boolean) | undefined;
 };
 
 /* Data */
@@ -199,7 +200,7 @@ const handlehandleDeleteMultiple = () => {
             <div class="flex justify-between">
               <a
                 @click="editButton?.callBack({ ...row })"
-                v-if="editButton?.show"
+                v-if="editButton?.show && !editButton?.hide?.(row)"
                 :title="langTranslations.editLabel"
                 href="#"
                 class="font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
@@ -207,7 +208,7 @@ const handlehandleDeleteMultiple = () => {
               /></a>
               <a
                 @click="deleteButton?.callBack({ ...row })"
-                v-if="deleteButton?.show"
+                v-if="deleteButton?.show && !deleteButton?.hide?.(row)"
                 :title="langTranslations.deleteLabel"
                 href="#"
                 class="font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
