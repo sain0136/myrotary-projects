@@ -63,4 +63,29 @@ export default class ProjectsController {
       throw new CustomException(error as CustomErrorType);
     }
   }
+
+  public async fetchConditionalProjects({
+    request,
+    response,
+  }: HttpContextContract) {
+    try {
+      const conditional: number | string = request.input("conditional", "");
+      const value: number | string | boolean = request.input("value", "");
+      const currentPage: number = request.input("current_page", 1);
+      const limit: number = request.input("limit", 10);
+      const adminTable: boolean = request.input("project_admin_table", false);
+      const { projectsService } = this.initializeServices();
+      const conditionalProjects =
+        await projectsService.fetchConditionalProjects(
+          conditional,
+          value,
+          currentPage,
+          limit,
+          adminTable
+        );
+      return response.json(conditionalProjects);
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
+  }
 }

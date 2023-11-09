@@ -48,4 +48,33 @@ export class ProjectsApi {
   ): Promise<IDsgProject | IDmProject | IClubProject> {
     return await this.apiClient.fetchWrapper("GET", `${BASE_ROUTE}/${id}`);
   }
+
+  /**
+   * Fetches conditional projects based on the given parameters.
+   * @param value - The value to use for the conditional query.
+   * @param current_page - The current page of results to fetch.
+   * @param limit - The maximum number of results to fetch.
+   * @param conditional - The conditional query to use.
+   * @param project_admin_table - Optional. Whether to fetch from the project admin table.
+   * @returns A Promise that resolves to a PaginationResult object.
+   */
+  public async fetchConditionalProjects(
+    value: number | string | boolean,
+    current_page: number,
+    limit: number,
+    conditional: string,
+    project_admin_table?: boolean
+  ): Promise<PaginationResult> {
+    return await this.apiClient.fetchWrapper(
+      "POST",
+      `${BASE_ROUTE}/fetchConditionalProjects`,
+      {
+        value,
+        current_page,
+        limit,
+        conditional,
+        project_admin_table,
+      }
+    );
+  }
 }

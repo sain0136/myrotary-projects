@@ -84,6 +84,11 @@ const routes = [
         props: true,
       },
       {
+        path: "my-projects",
+        name: "MyProjects",
+        component: () => import("@/modules/admin/views/MyProjects.vue"),
+      },
+      {
         path: "district-clubs",
         name: "ClubsAdmin",
         component: () => import("@/modules/admin/views/ClubsAdmin.vue"),

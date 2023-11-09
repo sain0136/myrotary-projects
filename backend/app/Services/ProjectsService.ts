@@ -39,4 +39,26 @@ export default class UserService {
     );
     return project;
   }
+
+  public async fetchConditionalProjects(
+    conditional: number | string,
+    value: string | number | boolean,
+    currentPage: number,
+    limit: number,
+    adminTable?: boolean
+  ) {
+    if (adminTable) {
+      return await this.projectsRepositories.fetchAdminAssociated(
+        value,
+        limit,
+        currentPage
+      );
+    }
+    return await this.projectsRepositories.fetchConditionalProjects(
+      value,
+      limit,
+      currentPage,
+      conditional
+    );
+  }
 }
