@@ -78,7 +78,7 @@ export class ProjectsApi {
     );
   }
 
-  public async createClubProject(project: IClubProject) {
+  public async createClubProject(project: IClubProject): Promise<IClubProject> {
     return await this.apiClient.fetchWrapper(
       "POST",
       `${BASE_ROUTE}/createClubProject`,
@@ -91,6 +91,17 @@ export class ProjectsApi {
       "POST",
       `${BASE_ROUTE}/updateClubProject`,
       project
+    );
+  }
+
+  public async deleteProject(id: number, override?: boolean) {
+    return await this.apiClient.fetchWrapper(
+      "POST",
+      `${BASE_ROUTE}/deleteProject`,
+      {
+        id,
+        override,
+      }
     );
   }
 }

@@ -88,8 +88,7 @@ const rules = {
         const amountInCents = Dinero({
           amount: parseFloat(amountString) * 100,
         });
-        console.log("amount" + amountInCents.getAmount());
-        console.log("max" + maxAmountThatCanBePledge.value);
+
         return amountInCents.getAmount() <= maxAmountThatCanBePledge.value;
       }
     ),

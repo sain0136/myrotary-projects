@@ -16,3 +16,5 @@ Route.post(
   "projects/updateClubProject",
   "ProjectsController.updateClubProject"
 );
+
+Route.post("projects/deleteProject", "ProjectsController.deleteProject");

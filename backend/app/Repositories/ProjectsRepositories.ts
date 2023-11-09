@@ -207,6 +207,7 @@ export default class ProjectsRepositories {
     updatedProject.project_name = updatedProject.project_name.trim();
     const anticipated = Dinero({ amount: updatedProject.anticipated_funding });
     const fundingGoal = Dinero({ amount: updatedProject.funding_goal });
+    //  user manuly updated anticipated funding in form and not from pledgs
     const nonPledgeFullyFunded = anticipated.equalsTo(fundingGoal)
       ? true
       : false;
@@ -233,5 +234,22 @@ export default class ProjectsRepositories {
       })
       .save();
     return databaseUpdatedProject;
+  }
+
+  public async deleteProject(id: number, override?: boolean) {
+    const projectToBeDeleted = await Projects.findOrFail(id);
+    const pledgesAssociated = await this.pledgesAsscoiated(
+      projectToBeDeleted.projectId
+    );
+    if (override) {
+      await projectToBeDeleted.delete();
+      return true;
+    }
+    if (pledgesAssociated.length < 1) {
+      await projectToBeDeleted.delete();
+      return true;
+    } else {
+      return false;
+    }
   }
 }

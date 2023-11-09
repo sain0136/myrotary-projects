@@ -14,6 +14,8 @@ import H3 from "@/components/headings/H3.vue";
 import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
 import { DateTime } from "luxon";
 import { useLoggedInClub } from "@/stores/LoggedInClub";
+import router from "@/router";
+import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 
 /* Data */
 const startDate =
@@ -96,8 +98,19 @@ const setActiveTab = (tabName: string) => {
         closeDate
       )
     }}</span>
-    <H3 :content="langTranslations.projectTypeLabel + ':'" />
     <div class="buttons-container flex justify-center">
+      <RotaryButton
+        :label="langTranslations.clubLabel"
+        :theme="'primary'"
+        class="w-48"
+        @click="
+          () => {
+            router.push({
+              name: 'ClubProjectForm',
+            });
+          }
+        "
+      />
       <RotaryButton
         :label="langTranslations.myprojectsView.dsgProjectsLabel"
         :theme="'primary'"
@@ -115,11 +128,6 @@ const setActiveTab = (tabName: string) => {
           isProjectsOpen === true &&
           !useLoggedInClub().loggedInClub?.settings?.disableDM
         "
-      />
-      <RotaryButton
-        :label="langTranslations.clubLabel"
-        :theme="'primary'"
-        class="w-48"
       />
     </div>
   </div>
