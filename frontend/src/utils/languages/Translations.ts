@@ -1,4 +1,13 @@
 export interface Translation {
+  projectFormLabels: {
+    projectNameLabel: string;
+    fundingGoalLabel: string;
+    anticipatedAmountLabel: string;
+    startDateLabel: string;
+    completionDateLabel: string;
+    projectGenericErrorMessage: string;
+  };
+  formLabel: string;
   projectTypeLabel: string;
   projectsLabel: string;
   myprojectsView: {
@@ -165,6 +174,10 @@ export interface Translation {
     noFilesUpload: string;
     maxLength: string;
     numeric: string;
+    areaOfFocus: string;
+    lowerThanFundingGoal: string;
+    lowerThanPledgesTotal: string;
+    startAfterStartDate: string;
   };
   adminDash: {
     footerCopyright: string;
@@ -192,6 +205,16 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    projectFormLabels: {
+      projectNameLabel: "Project Name",
+      fundingGoalLabel: "Funding Goal",
+      anticipatedAmountLabel: "Anticipated Amount",
+      startDateLabel: "Start Date",
+      completionDateLabel: "Completion Date",
+      projectGenericErrorMessage:
+        "Something went wrong, please contact support and try again later.",
+    },
+    formLabel: "Form",
     projectTypeLabel: "Project Types",
     projectsLabel: "Projects",
     myprojectsView: {
@@ -368,6 +391,11 @@ export const translations: Record<string, Translation> = {
       noFilesUpload: "Please upload file/files",
       maxLength: "Maximum length is {length} characters",
       numeric: "Only numbers are allowed",
+      areaOfFocus: "Please select at least one area of focus",
+      lowerThanFundingGoal: "Please enter a value lower than the funding goal",
+      lowerThanPledgesTotal:
+        "Please enter a value lower than the total pledged amount",
+      startAfterStartDate: "Please enter a date after the start date",
     },
     adminDash: {
       footerCopyright: "Copyright ©",
@@ -394,6 +422,16 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    projectFormLabels: {
+      projectNameLabel: "Nom du projet",
+      fundingGoalLabel: "Objectif de financement",
+      anticipatedAmountLabel: "Montant anticipé",
+      startDateLabel: "Date de début",
+      completionDateLabel: "Date d'achèvement",
+      projectGenericErrorMessage:
+        "Quelque chose s'est mal passé, veuillez contacter le support et réessayer plus tard.",
+    },
+    formLabel: "Formulaire",
     projectTypeLabel: "Types de projets",
     projectsLabel: "Projets",
     myprojectsView: {
@@ -570,9 +608,15 @@ export const translations: Record<string, Translation> = {
       required: "Ce champ est obligatoire",
       emailFormat: "Veuillez entrer un email valide",
       minLength: "La longueur minimale est de 6 caractères",
-      noFilesUpload: "Veuillez télécharger des fichiers",
+      noFilesUpload: "Veuillez télécharger des fichiers",
       maxLength: "La longueur maximale est de {longueur} caractères.",
       numeric: "Seuls les chiffres sont autorisés",
+      areaOfFocus: "Veuillez sélectionner au moins un domaine d'intérêt",
+      lowerThanFundingGoal:
+        "Veuillez entrer une valeur inférieure à l'objectif de financement",
+      lowerThanPledgesTotal:
+        "Veuillez entrer une valeur inférieure au montant total des promesses de dons",
+      startAfterStartDate: "Veuillez entrer une date après la date de début",
     },
     adminDash: {
       footerCopyright: "Copyright ©",

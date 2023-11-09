@@ -107,6 +107,16 @@ export default class ResourceList {
     return reverseTermConversionMap;
   }
 
+  static areaFocusImages: Array<string> = [
+    "/1-Peace-and-Conflict.png",
+    "/2-Disease_Prevention.png",
+    "/3-Water_and_Sanitation.png",
+    "/4-Maternal_and_Child_Health.png",
+    "/5-Basic_Education_and_Literacy.png",
+    "/6-Economic_and_Community.png",
+    "/7-Environment.png",
+  ];
+
   static regionList = [
     "Africa",
     "Central America",

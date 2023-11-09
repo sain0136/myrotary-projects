@@ -84,6 +84,12 @@ const routes = [
         props: true,
       },
       {
+        path: "club-project-form/:projectId?",
+        name: "ClubProjectForm",
+        component: () => import("@/components/forms/ClubProjectForm.vue"),
+        props: true,
+      },
+      {
         path: "my-projects",
         name: "MyProjects",
         component: () => import("@/modules/admin/views/MyProjects.vue"),

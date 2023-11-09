@@ -111,4 +111,16 @@ export default class ProjectsController {
       throw new CustomException(error as CustomErrorType);
     }
   }
+
+  public async deleteProject({ request, response }: HttpContextContract) {
+    try {
+      const id: number = request.input("id", 0);
+      const override: boolean = request.input("override", false);
+      const { projectsService } = this.initializeServices();
+      await projectsService.deleteProject(id, override);
+      return response.json(true);
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
+  }
 }

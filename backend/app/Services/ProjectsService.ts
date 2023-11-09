@@ -77,4 +77,8 @@ export default class UserService {
   ): Promise<Projects> {
     return await this.projectsRepositories.updateClubProject(updatedProject);
   }
+
+  public async deleteProject(id: number, override?: boolean) {
+    return await this.projectsRepositories.deleteProject(id, override);
+  }
 }

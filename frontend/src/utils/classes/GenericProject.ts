@@ -1,8 +1,6 @@
-import type {
-  IStorageInformation,
-  IGenericProject,
-} from "@/utils/interfaces/IProjects";
+import type { IGenericProject } from "@/utils/interfaces/IProjects";
 import type { IUser } from "@/utils/interfaces/IUser";
+import type { uploadFileData } from "@/utils/types/commonTypes";
 
 export default class GenericProject implements IGenericProject {
   project_id = 0;
@@ -30,15 +28,12 @@ export default class GenericProject implements IGenericProject {
   anticipated_funding = 0;
   total_pledges = 0;
   file_uploads = {
-    project_image: {
-      url: "",
-      location: "",
-    },
-    reports_files: [] as IStorageInformation[],
-    evidence_files: [] as IStorageInformation[],
+    project_image: {} as uploadFileData,
+    reports_files: [] as uploadFileData[],
+    evidence_files: [] as uploadFileData[],
   };
   rotary_year = "";
-  image_link = {} as IStorageInformation;
+  image_link = {} as uploadFileData;
   created_by = 0;
   club_id = 0;
   district_id = 0;

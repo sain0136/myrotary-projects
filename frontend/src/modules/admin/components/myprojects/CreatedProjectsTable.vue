@@ -15,14 +15,17 @@ import type {
   IDmProject,
   IDsgProject,
 } from "@/utils/interfaces/IProjects";
-import type { CustomError } from "@/utils/classes/CustomError";
+import { CustomError } from "@/utils/classes/CustomError";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
 import BaseDisplayTable from "@/components/tables/BaseDisplayTable.vue";
 import type { IUser } from "@/utils/interfaces/IUser";
 import H3 from "@/components/headings/H3.vue";
+import router from "@/router";
+import { modalHandler } from "@/utils/composables/ModalHandler";
 
 /* Data */
+const { changeShowModal, setModal } = modalHandler();
 const { langTranslations } = useLanguage();
 const { handleError, handleSuccess } = errorHandler();
 const projectsApi = new ProjectsApi(new ApiClient());
@@ -83,7 +86,50 @@ const deleteProject = async (
   project: IDsgProject | IDmProject | IClubProject
 ) => {
   try {
-  } catch (error) {}
+    const id = project.project_id ?? null;
+    setModal(
+      langTranslations.value.deleteLabel,
+      langTranslations.value.confirmationDelete + " " + project.project_name
+    );
+    const confirmed = await changeShowModal(true);
+    if (id && confirmed) {
+      await projectsApi.deleteProject(id, false);
+      handleSuccess(langTranslations.value.succssDeleteToast);
+    }
+    getMyProjects();
+  } catch (error) {
+    handleError(error as CustomError);
+  }
+};
+
+const editProject = (project: IDsgProject | IDmProject | IClubProject) => {
+  try {
+    const id = project.project_id ?? null;
+    if (id) {
+      switch (project.grant_type) {
+        case "Club Project":
+          router.push({
+            path: `club-project-form/${id}`,
+            query: {
+              formType: "normalView",
+            },
+          });
+          return;
+        default:
+          throw new CustomError(900, "Project not found", {
+            en: "Project not found",
+            fr: "Projet introuvable",
+          });
+      }
+    } else {
+      throw new CustomError(900, "Project not found", {
+        en: "Project not found",
+        fr: "Projet introuvable",
+      });
+    }
+  } catch (error) {
+    handleError(error as CustomError);
+  }
 };
 </script>
 
@@ -106,7 +152,9 @@ const deleteProject = async (
       }"
         :edit-button="{
           show: true,
-          callBack: (project) => {},
+          callBack: (project) => {
+              editProject(project as IDsgProject | IDmProject | IClubProject);
+          },
         }"
         :table-data="projects"
         :columns="[
@@ -123,12 +171,12 @@ const deleteProject = async (
           {
             name: langTranslations.landingPage.grantTypeLabel,
             lgScreenCollapsable: true,
-            colName: 'project_type',
+            colName: 'grant_type',
           },
           {
             name: langTranslations.statusLabel,
             lgScreenCollapsable: true,
-            colName: 'grant_type',
+            colName: 'project_status',
           },
         ]"
       />

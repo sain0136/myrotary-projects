@@ -1,5 +1,6 @@
 import type { IUser } from "@/utils/interfaces/IUser";
 import type { IPledge } from "@/utils/interfaces/IPledge";
+import type { uploadFileData } from "@/utils/types/commonTypes";
 
 // common
 interface IContactSection {
@@ -125,17 +126,10 @@ export interface IProjectDetails {
   projectAdmins: Array<IUser>;
 }
 
-export interface IStorageInformation {
-  id: number;
-  fileType: string;
-  url: string;
-  location: string;
-  extraLabel?: string;
-}
-
 export interface IUploads {
-  reports_files: Array<IStorageInformation>;
-  evidence_files: Array<IStorageInformation>;
+  project_image: uploadFileData;
+  reports_files: Array<uploadFileData>;
+  evidence_files: Array<uploadFileData>;
 }
 
 export interface IGenericProject {
@@ -164,7 +158,7 @@ export interface IGenericProject {
   total_pledges: number;
   file_uploads: IUploads;
   rotary_year: string;
-  image_link: IStorageInformation;
+  image_link: uploadFileData;
   created_by: number;
   club_id: number;
   district_id: number;
@@ -179,6 +173,10 @@ export interface IGenericProject {
 
 export interface IClubProject extends IGenericProject {
   extra_descriptions: IClubProjectExtraDescriptions;
+}
+
+export interface ClubProjectExtraDescriptions {
+  extra: string;
 }
 
 export interface IDsgProject extends IGenericProject {
