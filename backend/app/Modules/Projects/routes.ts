@@ -8,3 +8,11 @@ Route.post(
   "projects/fetchConditionalProjects",
   "ProjectsController.fetchConditionalProjects"
 );
+Route.post(
+  "projects/createClubProject",
+  "ProjectsController.createClubProject"
+);
+Route.post(
+  "projects/updateClubProject",
+  "ProjectsController.updateClubProject"
+);

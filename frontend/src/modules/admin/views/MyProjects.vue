@@ -11,8 +11,28 @@ import { errorHandler } from "@/utils/composables/ErrorHandler";
 import CreatedProjectsTable from "@/modules/admin/components/myprojects/CreatedProjectsTable.vue";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import H3 from "@/components/headings/H3.vue";
+import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
+import { DateTime } from "luxon";
+import { useLoggedInClub } from "@/stores/LoggedInClub";
+
 /* Data */
-const { langTranslations } = useLanguage();
+const startDate =
+  useLoggedInDistrict().loggedInDistrict.district_details?.dates
+    ?.grant_submission_startdate || "";
+const closeDate =
+  useLoggedInDistrict().loggedInDistrict.district_details?.dates
+    ?.grant_submission_closedate || "";
+const isProjectsOpen = ref(true);
+if (!startDate || !closeDate) {
+  isProjectsOpen.value = false;
+}
+const todaysDate = new Date(DateTime.now().toLocaleString());
+const closeDateLuxon = new Date(closeDate);
+const startDateLuxon = new Date(startDate);
+if (todaysDate < startDateLuxon || todaysDate > closeDateLuxon) {
+  isProjectsOpen.value = false;
+}
+const { langTranslations, customPrintf } = useLanguage();
 const { handleError } = errorHandler();
 const activeTab = ref(
   sessionStorage.getItem("myprojectsViewLastTab") || "created"
@@ -68,17 +88,33 @@ const setActiveTab = (tabName: string) => {
     class="py-8 flex flex-col items-center gap-4"
     v-if="activeTab === 'newProject'"
   >
+    <span class="text-secondary">{{
+      "*" +
+      customPrintf(
+        langTranslations.myprojectsView.submissionDatesLabel,
+        startDate,
+        closeDate
+      )
+    }}</span>
     <H3 :content="langTranslations.projectTypeLabel + ':'" />
     <div class="buttons-container flex justify-center">
       <RotaryButton
         :label="langTranslations.myprojectsView.dsgProjectsLabel"
         :theme="'primary'"
         class="w-48"
+        v-if="
+          isProjectsOpen === true &&
+          !useLoggedInClub().loggedInClub?.settings?.disableDsg
+        "
       />
       <RotaryButton
         :label="langTranslations.myprojectsView.dmProjectsLabel"
         :theme="'primary'"
         class="w-48"
+        v-if="
+          isProjectsOpen === true &&
+          !useLoggedInClub().loggedInClub?.settings?.disableDM
+        "
       />
       <RotaryButton
         :label="langTranslations.clubLabel"
