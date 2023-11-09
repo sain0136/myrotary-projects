@@ -141,6 +141,12 @@ const sideBarItems: Record<
       "districtadmin-clubadmin-view"
     ),
   },
+  myProjects: {
+    label: langTranslations.value.projectsLabel,
+    icon: ResourceList.sidebarIcons.myProjects,
+    link: "MyProjects",
+    hasAccess: hasAccess(loggedinRole.value as AllUserRoles, "myprojects-view"),
+  },
 };
 
 /* Hooks */

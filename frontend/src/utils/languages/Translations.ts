@@ -1,4 +1,17 @@
 export interface Translation {
+  projectTypeLabel: string;
+  projectsLabel: string;
+  myprojectsView: {
+    createdProjectsLabel: string;
+    administratingProjectsLabel: string;
+    createdProjectsHelpText: string;
+    administratingProjectsHelpText: string;
+    openForSubmissionLabel: string;
+    noProjectsFoundLabel: string;
+    dsgProjectsLabel: string;
+    dmProjectsLabel: string;
+    newProjectsLabel: string;
+  };
   pledgeProcess: {
     bulletPoint1: string;
     bulletPoint2: string;
@@ -178,6 +191,19 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    projectTypeLabel: "Project Types",
+    projectsLabel: "Projects",
+    myprojectsView: {
+      createdProjectsLabel: "Created Projects",
+      administratingProjectsLabel: "Administrating Projects",
+      createdProjectsHelpText: "Projects you have created",
+      administratingProjectsHelpText: "Projects you are administrating",
+      openForSubmissionLabel: "Open for Submission",
+      noProjectsFoundLabel: "No projects found",
+      dsgProjectsLabel: "District Simplified",
+      dmProjectsLabel: "District Matching",
+      newProjectsLabel: "New Project",
+    },
     loginLabel: "Login",
     pledgeProcess: {
       maxLimitLabel: "Cannot exceed the max pledge limit",
@@ -365,6 +391,19 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    projectTypeLabel: "Types de projets",
+    projectsLabel: "Projets",
+    myprojectsView: {
+      createdProjectsLabel: "Projets Créés",
+      administratingProjectsLabel: "Projets Administrés",
+      createdProjectsHelpText: "Projets que vous avez créés",
+      administratingProjectsHelpText: "Projets que vous administrez",
+      openForSubmissionLabel: "Ouverts aux Soumissions",
+      noProjectsFoundLabel: "Aucun projet trouvé",
+      dsgProjectsLabel: "District Simplified",
+      dmProjectsLabel: "District Matching",
+      newProjectsLabel: "Nouveaux Projet",
+    },
     loginLabel: "Connexion",
     pledgeProcess: {
       maxLimitLabel: "Ne peut pas dépasser le plafond des promesses de dons",

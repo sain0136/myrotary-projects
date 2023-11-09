@@ -114,4 +114,28 @@ export default class ProjectsRepositories {
     const project = await Projects.findOrFail(id);
     return project;
   }
+
+  public async fetchAdminAssociated(
+    value: number | string | boolean,
+    limit: number,
+    currentPage: number
+  ) {
+    return await Database.from("project_roles")
+      .where({ user_id: value })
+      .orderBy("project_id", "desc")
+      .paginate(currentPage, limit);
+  }
+
+  public async fetchConditionalProjects(
+    value: number | string | boolean,
+    limit: number,
+    currentPage: number,
+    conditional: number | string
+  ) {
+    return await Projects.query()
+      .select()
+      .where({ [conditional]: value })
+      .orderBy("project_id", "desc")
+      .paginate(currentPage, limit);
+  }
 }
