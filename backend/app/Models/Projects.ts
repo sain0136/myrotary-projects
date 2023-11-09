@@ -56,7 +56,7 @@ export default class Projects extends BaseModel {
   public completionDate: DateTime;
 
   @column()
-  public areaFocus: object;
+  public areaFocus: object | string;
 
   @column()
   public fundingGoal: number;
@@ -98,7 +98,7 @@ export default class Projects extends BaseModel {
   public rotaryYear: string;
 
   @column()
-  public imageLink: object;
+  public imageLink: object | string;
 
   @column()
   public createdBy: number;

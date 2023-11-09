@@ -77,4 +77,20 @@ export class ProjectsApi {
       }
     );
   }
+
+  public async createClubProject(project: IClubProject) {
+    return await this.apiClient.fetchWrapper(
+      "POST",
+      `${BASE_ROUTE}/createClubProject`,
+      project
+    );
+  }
+
+  public async updateClubProject(project: IClubProject) {
+    return await this.apiClient.fetchWrapper(
+      "POST",
+      `${BASE_ROUTE}/updateClubProject`,
+      project
+    );
+  }
 }

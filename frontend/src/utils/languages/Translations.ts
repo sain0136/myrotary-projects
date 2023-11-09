@@ -11,6 +11,7 @@ export interface Translation {
     dsgProjectsLabel: string;
     dmProjectsLabel: string;
     newProjectsLabel: string;
+    submissionDatesLabel: string;
   };
   pledgeProcess: {
     bulletPoint1: string;
@@ -194,6 +195,8 @@ export const translations: Record<string, Translation> = {
     projectTypeLabel: "Project Types",
     projectsLabel: "Projects",
     myprojectsView: {
+      submissionDatesLabel:
+        "District Matching and District Simplified Projects will be open for submission from {startDate} to {endDate}",
       createdProjectsLabel: "Created Projects",
       administratingProjectsLabel: "Administrating Projects",
       createdProjectsHelpText: "Projects you have created",
@@ -394,6 +397,8 @@ export const translations: Record<string, Translation> = {
     projectTypeLabel: "Types de projets",
     projectsLabel: "Projets",
     myprojectsView: {
+      submissionDatesLabel:
+        "Les projets District Matching et District Simplified seront ouverts pour soumission du {startDate} au {endDate}",
       createdProjectsLabel: "Projets Créés",
       administratingProjectsLabel: "Projets Administrés",
       createdProjectsHelpText: "Projets que vous avez créés",
