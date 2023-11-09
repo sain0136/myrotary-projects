@@ -51,15 +51,17 @@ const filters: ProjectFilters = reactive({
 });
 type viewmodes = "list" | "grid";
 const viewmode = ref<viewmodes>("grid");
+const loaded = ref(false);
 
 /* Hooks */
-onMounted(() => {
+onMounted(async () => {
   const savedview = sessionStorage.getItem("landingViewMode");
   if (savedview) {
     viewmode.value = savedview === "list" ? "list" : "grid";
   }
   try {
-    getAllProjects();
+    await getAllProjects();
+    loaded.value = true;
   } catch (error) {
     handleError(error as CustomError);
   }
@@ -201,7 +203,10 @@ const chooseViewMode = () => {
         :projects="projects"
         v-else-if="viewmode === 'list' && projects.length > 0"
       />
-      <div class="no-results-container" v-else-if="projects.length === 0">
+      <div
+        class="no-results-container"
+        v-else-if="projects.length === 0 && loaded"
+      >
         <div
           class="no-results-box m-auto flex flex-col items-center gap-4 pt-20"
         >
