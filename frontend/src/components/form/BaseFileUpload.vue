@@ -9,7 +9,7 @@ import { ref, reactive, defineProps } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { helpers, required } from "@vuelidate/validators";
 import type { uploadFileData } from "@/utils/types/commonTypes";
-import type { CustomError } from "@/utils/classes/CustomError";
+import { CustomError } from "@/utils/classes/CustomError";
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import H3 from "@/components/headings/H3.vue";
 import { ApiClient } from "@/api/ApiClient";
@@ -27,6 +27,11 @@ const siteAssetsStore = useSiteAssets();
 const uploadsApi = new UploadsApi(new ApiClient());
 const { handleError, handleSuccess } = errorHandler();
 const userStore = useLoggedInUserStore();
+type acceptedUploadFileTypes =
+  | "image/png"
+  | "image/jpeg"
+  | "image/jpg"
+  | "/image/*";
 
 interface ValidationData {
   file: File | null;
@@ -39,7 +44,7 @@ const {
   projectId,
   userId,
 } = defineProps<{
-  acceptedFileTypes?: string;
+  acceptedFileTypes?: acceptedUploadFileTypes;
   fileUploadLabelFormats?: string;
   title?: string;
   submitLabel: string;
@@ -90,6 +95,11 @@ const submit = async () => {
       handleSuccess(langTranslations.value.toastSuccess);
       resetInput();
     } catch (error) {
+      const failUpload = new CustomError(500, "Failed to upload file", {
+        en: "Failed to upload file",
+        fr: "Echec du telechargement du fichier",
+      });
+      handleError(failUpload);
       console.error(error as CustomError);
     }
   }

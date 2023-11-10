@@ -16,6 +16,7 @@ import type {
 import type { CustomError } from "@/utils/classes/CustomError";
 import { useCurrencyFormatter } from "@/utils/composables/CurrencyFormatter";
 import router from "@/router";
+import type { uploadedFile } from "@/utils/types/commonTypes";
 
 /* Data */
 const show = ref(false);
@@ -34,7 +35,9 @@ const imageLoaded = ref(false);
 /* Hooks */
 onMounted(async () => {
   show.value = true;
-  imageLink.value = await generateRandomImage();
+  imageLink.value =
+    (project.file_uploads?.project_image as uploadedFile)?.s3UrlLink ??
+    (await generateRandomImage());
   let truncated = escapeHTML(project.project_description.slice(0, 150));
   if (!truncated.endsWith(".")) {
     truncated = truncated + "...";

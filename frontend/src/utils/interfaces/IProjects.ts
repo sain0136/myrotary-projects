@@ -1,6 +1,6 @@
 import type { IUser } from "@/utils/interfaces/IUser";
 import type { IPledge } from "@/utils/interfaces/IPledge";
-import type { uploadFileData } from "@/utils/types/commonTypes";
+import type { uploadFileData, uploadedFile } from "@/utils/types/commonTypes";
 
 // common
 interface IContactSection {
@@ -127,9 +127,9 @@ export interface IProjectDetails {
 }
 
 export interface IUploads {
-  project_image: uploadFileData;
-  reports_files: Array<uploadFileData>;
-  evidence_files: Array<uploadFileData>;
+  project_image: uploadFileData | uploadedFile;
+  reports_files: Array<uploadFileData | uploadedFile>;
+  evidence_files: Array<uploadFileData | uploadedFile>;
 }
 
 export interface IGenericProject {

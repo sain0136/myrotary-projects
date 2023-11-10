@@ -45,10 +45,16 @@ export default class ProjectsRepositories {
   }
 
   public async pledgesAsscoiated(id: number): Promise<Pledges[]> {
-    return await Database.query()
-      .from("pledges")
+    return await Pledges.query()
       .select("*")
-      .where({ project_id: id });
+      .where({ project_id: id })
+      .orderBy("created_at", "desc");
+    // }
+    //   return await Database.query()
+    //     .from("pledges")
+    //     .select("*")
+    //     .where({ project_id: id });
+    //
   }
 
   public async index() {
@@ -59,6 +65,7 @@ export default class ProjectsRepositories {
   public async getAllProjects(currentPage: number, limit: number) {
     const allProjects = await Projects.query()
       .select("*")
+      .orderBy("project_id", "desc")
       .paginate(currentPage, limit);
     return allProjects;
   }
@@ -251,5 +258,19 @@ export default class ProjectsRepositories {
     } else {
       return false;
     }
+  }
+
+  public async addProjectAdmins(userId: number, projectId: number) {
+    const projectToBeUpdated = await Projects.findOrFail(projectId);
+    await projectToBeUpdated.related("projectRole").attach([userId]);
+  }
+
+  public async updateProjectStatus(projectStatus: string, projectId: number) {
+    const oldProjectImformation = await Projects.findOrFail(projectId);
+    await oldProjectImformation
+      .merge({
+        projectStatus: projectStatus,
+      })
+      .save();
   }
 }

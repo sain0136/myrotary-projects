@@ -18,7 +18,8 @@ export default class UploadsService {
     storagePath = "./",
     databaseTarget: databaseTarget,
     fileTypes: uploadedFiletypes,
-    userId?: number
+    userId?: number,
+    projectId?: number
   ) {
     // TODO : ENV variable for cdn ?
     const cdnEndpoint = "https://rotary-s3.nyc3.cdn.digitaloceanspaces.com/";
@@ -26,6 +27,9 @@ export default class UploadsService {
     for await (const file of files) {
       if (userId) {
         const filePath = `${storagePath}/${userId}`;
+        await file.moveToDisk(filePath);
+      } else if (projectId) {
+        const filePath = `${storagePath}/${projectId}`;
         await file.moveToDisk(filePath);
       } else {
         await file.moveToDisk(storagePath);
@@ -48,7 +52,8 @@ export default class UploadsService {
     const response = await this.uploadsRepositories.uploadFiles(
       postUploadedFiles,
       databaseTarget,
-      userId
+      userId,
+      projectId
     );
     if (response && Array.isArray(response) && response.length === 1) {
       return response[0];

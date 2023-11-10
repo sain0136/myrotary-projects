@@ -6,6 +6,20 @@ export interface Translation {
     startDateLabel: string;
     completionDateLabel: string;
     projectGenericErrorMessage: string;
+    coverImageUploadHeader: string;
+    pdfLabel: string;
+    exportToPdfLabel: string;
+    pledgesLabel: string;
+    noPedgesLabel: string;
+    vueSocialSharingLabel: string;
+    shareLabel: string;
+    adminsLabel: string;
+    addProjectAdminsLabel: string;
+    noProjectAdminsLabel: string;
+    approvalLabel: string;
+    projectApprovalLabel: string;
+    projectApprovalHelpText: string;
+    projectApprovalError: string;
   };
   formLabel: string;
   projectTypeLabel: string;
@@ -213,6 +227,22 @@ export const translations: Record<string, Translation> = {
       completionDateLabel: "Completion Date",
       projectGenericErrorMessage:
         "Something went wrong, please contact support and try again later.",
+      coverImageUploadHeader: "Upload Cover Image",
+      pdfLabel: "PDF",
+      exportToPdfLabel: "Export to PDF",
+      pledgesLabel: "Pledges",
+      noPedgesLabel: "No Pledges yet",
+      vueSocialSharingLabel: "Share this Project On Facebook",
+      shareLabel: "Share",
+      adminsLabel: "Admins",
+      addProjectAdminsLabel: "Add Project Admins",
+      noProjectAdminsLabel: "No Project Admins",
+      approvalLabel: "Project Approval",
+      projectApprovalLabel: "Project Administrator",
+      projectApprovalHelpText:
+        "Must be a District Admin / Grants Chair to approve",
+      projectApprovalError:
+        "Project must be in pending approval state to be approved",
     },
     formLabel: "Form",
     projectTypeLabel: "Project Types",
@@ -430,6 +460,22 @@ export const translations: Record<string, Translation> = {
       completionDateLabel: "Date d'achèvement",
       projectGenericErrorMessage:
         "Quelque chose s'est mal passé, veuillez contacter le support et réessayer plus tard.",
+      coverImageUploadHeader: "Télécharger l'image de couverture",
+      pdfLabel: "PDF",
+      exportToPdfLabel: "Exporter au format PDF",
+      pledgesLabel: "Promesses de dons",
+      noPedgesLabel: "Aucune promesse de dons",
+      vueSocialSharingLabel: "Partager ce projet sur Facebook",
+      shareLabel: "Partager",
+      adminsLabel: "Administrateurs",
+      addProjectAdminsLabel: "Ajouter des administrateurs",
+      noProjectAdminsLabel: "Aucun administrateur de projet",
+      approvalLabel: "Approbation",
+      projectApprovalLabel: "Administrateur de projet",
+      projectApprovalHelpText:
+        "Il faut être un administrateur de district ou un président de commission chargé des subventions pour approuver une demande.",
+      projectApprovalError:
+        "Le projet doit être en attente d'approbation pour être approuvé",
     },
     formLabel: "Formulaire",
     projectTypeLabel: "Types de projets",
