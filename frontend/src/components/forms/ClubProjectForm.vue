@@ -34,6 +34,13 @@ import { useCurrencyFormatter } from "@/utils/composables/CurrencyFormatter";
 import { grantType } from "@/utils/types/commonTypes";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
+import ProjectUploads from "@/components/forms/tabs/ProjectUploads.vue";
+import ClubProjectPdf from "@/components/forms/tabs/ClubProjectPdf.vue";
+import { useActiveProjectStore } from "@/stores/ActiveProjectStore";
+import AllPledgesTable from "@/components/forms/tabs/AllPledgesTable.vue";
+import SocialShareButton from "@/components/forms/tabs/SocialShareButton.vue";
+import ProjectAdminsForm from "@/components/forms/tabs/ProjectAdminsForm.vue";
+import ProjectApproval from "@/components/forms/tabs/ProjectApproval.vue";
 
 /* Data */
 type formType = "normalView" | "readOnlyView";
@@ -71,6 +78,31 @@ const tabs = ref([
     label: langTranslations.value.uploadFileLabel,
     hidden: !projectId ? true : false,
   },
+  {
+    name: "pdf",
+    label: langTranslations.value.projectFormLabels.pdfLabel,
+    hidden: !projectId ? true : false,
+  },
+  {
+    name: "pledges",
+    label: langTranslations.value.projectFormLabels.pledgesLabel,
+    hidden: !projectId ? true : false,
+  },
+  {
+    name: "share",
+    label: langTranslations.value.projectFormLabels.shareLabel,
+    hidden: !projectId ? true : false,
+  },
+  {
+    name: "admins",
+    label: langTranslations.value.projectFormLabels.adminsLabel,
+    hidden: !projectId ? true : false,
+  },
+  {
+    name: "approval",
+    label: langTranslations.value.projectFormLabels.approvalLabel,
+    hidden: !projectId ? true : false,
+  },
 ]);
 const project = reactive(new ClubProject());
 const activeTab = ref("form");
@@ -83,6 +115,7 @@ const maxLengthMessage = {
   en: "Must be at most 1000 characters",
   fr: "Doit contenir au plus 1000 caractères",
 };
+
 /* Hooks */
 onMounted(async () => {
   try {
@@ -278,6 +311,7 @@ const getProject = async () => {
     );
     response.total_pledges = convertCentsToFloat(response.total_pledges);
     Object.assign(project, response);
+    useActiveProjectStore().setActiveProject(project);
   }
 };
 const validateAndSubmit = async () => {
@@ -518,6 +552,30 @@ const setActiveTab = (tabName: string) => {
         />
       </div>
     </form>
+    <div v-if="activeTab === 'uploads'">
+      <ProjectUploads :project-type="'club'" />
+    </div>
+    <div v-if="activeTab === 'pdf'"><ClubProjectPdf /></div>
+    <div v-if="activeTab === 'pledges'">
+      <AllPledgesTable />
+    </div>
+    <div v-if="activeTab === 'share'">
+      <SocialShareButton />
+    </div>
+    <div v-if="activeTab === 'admins'">
+      <ProjectAdminsForm />
+    </div>
+    <div v-if="activeTab === 'approval'">
+      <ProjectApproval />
+    </div>
+    <div class="flex justify-center">
+      <RotaryButton
+        v-if="activeTab !== 'form'"
+        :theme="'primary'"
+        :label="langTranslations.cancelLabel"
+        @click="redirect()"
+      />
+    </div>
   </div>
 </template>
 

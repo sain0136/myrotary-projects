@@ -3,7 +3,7 @@ import CustomException from "App/Exceptions/CustomException";
 import { CustomErrorType } from "App/Utils/CommonTypes";
 import PledgesRepositories from "App/Repositories/PledgesRepositories";
 import PledgesService from "App/Services/PledgesService";
-import { IPledge } from "App/Shared/Interfaces/IProjects";
+import { IPledge } from "App/Shared/Interfaces/IPledge";
 
 export default class PledgesController {
   private initializeServices() {

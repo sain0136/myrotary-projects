@@ -5,6 +5,8 @@ import Assets from "App/Models/Assets";
 import Users from "App/Models/Users";
 import { IUser, uploadedFile } from "App/Shared/Interfaces/IUser";
 import { databaseTarget } from "App/Shared/Types/commonTypes";
+import Projects from "App/Models/Projects";
+import { IUploads } from "App/Shared/Interfaces/IProjects";
 
 export default class UploadsController {
   public async test(file: any) {
@@ -19,7 +21,8 @@ export default class UploadsController {
   public async uploadFiles(
     uploadedFiles: Array<uploadedFile>,
     databaseTarget: databaseTarget,
-    userId?: number
+    userId?: number,
+    projectId?: number
   ): Promise<Array<uploadedFile> | undefined | Users> {
     try {
       switch (databaseTarget) {
@@ -81,6 +84,24 @@ export default class UploadsController {
           }
           const updatedUser = await Users.findOrFail(userId);
           return updatedUser ?? [];
+        case "project-media":
+          const project = await Projects.findOrFail(projectId);
+          const projectMedia = project.fileUploads as IUploads;
+          for await (const file of uploadedFiles) {
+            const toDeleteName =
+              (projectMedia?.project_image as uploadedFile)?.s3Name || null;
+            if (toDeleteName) {
+              await Drive.delete(toDeleteName);
+            }
+            if (file.fileType === "project-coverImage") {
+              projectMedia.project_image = file as uploadedFile;
+            }
+          }
+          await project
+            .merge({
+              fileUploads: JSON.stringify(projectMedia),
+            })
+            .save();
         default:
           return [];
       }

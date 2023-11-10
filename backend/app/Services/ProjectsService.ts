@@ -81,4 +81,15 @@ export default class UserService {
   public async deleteProject(id: number, override?: boolean) {
     return await this.projectsRepositories.deleteProject(id, override);
   }
+
+  public async addProjectAdmins(userId: number, projectId: number) {
+    return await this.projectsRepositories.addProjectAdmins(userId, projectId);
+  }
+
+  public async updateProjectStatus(projectStatus: string, projectId: number) {
+    return await this.projectsRepositories.updateProjectStatus(
+      projectStatus,
+      projectId
+    );
+  }
 }

@@ -104,4 +104,26 @@ export class ProjectsApi {
       }
     );
   }
+
+  public async addProjectAdmins(userId: number, projectId: number) {
+    return await this.apiClient.fetchWrapper(
+      "POST",
+      `${BASE_ROUTE}/addProjectAdmins`,
+      {
+        userId,
+        projectId,
+      }
+    );
+  }
+
+  public async updateProjectStatus(projectStatus: string, projectId: number) {
+    return await this.apiClient.fetchWrapper(
+      "POST",
+      `${BASE_ROUTE}/updateProjectStatus`,
+      {
+        projectStatus,
+        projectId,
+      }
+    );
+  }
 }

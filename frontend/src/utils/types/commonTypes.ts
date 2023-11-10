@@ -20,17 +20,28 @@ export type ClubRole = "Club Admin" | "Standard Member" | "Guest";
 
 export type UserType = "CLUB" | "DISTRICT";
 
-export type storagePath = "./siteadmin" | "./users";
+export type storagePath = "./siteadmin" | "./users" | "./projects";
 
 export type databaseTarget =
   | "assets"
   | "profile-picture"
-  | "profile-picture-user";
+  | "profile-picture-user"
+  | "project-media";
 
 export type uploadedFiletypes =
   | "profile-picture"
   | "main-logo"
-  | "project-coverImage";
+  | "project-coverImage"
+  | "project-document-report-images"
+  | "project-document-report-files"
+  | "project-document-evidence-files";
+
+export type uploadedFile = {
+  databaseTarget: databaseTarget;
+  fileType: uploadedFiletypes;
+  s3UrlLink: string;
+  s3Name: string;
+};
 
 export type uploadFileData = {
   databaseTarget: databaseTarget;

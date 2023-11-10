@@ -9,6 +9,7 @@ import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted, ref, watch, provide, reactive } from "vue";
 import { Icon } from "@iconify/vue";
 import RotaryButton from "../buttons/RotaryButton.vue";
+import { useCurrencyFormatter } from "@/utils/composables/CurrencyFormatter";
 
 /* Types */
 type ColumnOptions = {
@@ -17,6 +18,7 @@ type ColumnOptions = {
   collapsable?: boolean;
   colName: string;
   columnWidth?: tailwindWidths;
+  isCurrency?: boolean;
 };
 type tailwindWidths = "w-2/12" | "w-1/12" | "w-1/6";
 type ButtonOptions = {
@@ -26,7 +28,8 @@ type ButtonOptions = {
 };
 
 /* Data */
-
+const { currencyFormatterFunding, convertCentsToFloat, convertFloatToCents } =
+  useCurrencyFormatter();
 let checkedItems = reactive<unknown[]>([]);
 const isAllSelected = ref(false);
 
@@ -191,7 +194,13 @@ const handlehandleDeleteMultiple = () => {
               'hidden lg:table-cell': column.lgScreenCollapsable,
             }"
           >
-            <span> {{ row[column.colName] }} </span>
+            <span>
+              {{
+                column.isCurrency
+                  ? currencyFormatterFunding(row[column.colName])
+                  : row[column.colName]
+              }}
+            </span>
           </td>
           <td
             v-if="hideActionsColumn != true"

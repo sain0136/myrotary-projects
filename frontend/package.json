@@ -21,13 +21,15 @@
     "chart.js": "^3.9.1",
     "dinero.js": "^1.9.1",
     "flowbite": "^1.8.1",
+    "html2pdf.js": "^0.10.1",
     "luxon": "^3.4.3",
     "pinia": "^2.1.6",
     "pinia-plugin-persistedstate": "^3.2.0",
     "primevue": "^3.34.1",
     "vue": "^3.3.4",
     "vue-chart-3": "^3.1.8",
-    "vue-router": "^4.2.4"
+    "vue-router": "^4.2.4",
+    "vue-social-sharing": "^4.0.0-alpha4"
   },
   "devDependencies": {
     "@iconify/vue": "^4.1.1",

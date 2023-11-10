@@ -2,8 +2,8 @@ import Database from "@ioc:Adonis/Lucid/Database";
 import Pledges from "App/Models/Pledges";
 import Projects from "App/Models/Projects";
 import Dinero from "dinero.js";
-import { IPledge } from "App/Shared/Interfaces/IProjects";
 import { ProjectStatus } from "App/Shared/Types/commonTypes";
+import { IPledge } from "App/Shared/Interfaces/IPledge";
 
 export default class PledgesRepositories {
   public async storePledge(pledge: IPledge) {

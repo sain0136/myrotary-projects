@@ -1,3 +1,5 @@
+import { uploadedFile } from "./IUser";
+
 export interface IContentManagement {
   myRotaryEmail: string;
   myRotaryPhone: string;
@@ -14,17 +16,6 @@ export interface IContentManagement {
   TwitterUrl: string;
   InstagramUrl: string;
 }
-
-type databaseTarget = "assets" | "profile-picture" | "profile-picture-user";
-
-type uploadedFiletypes = "main-logo" | "profile-picture" | "projectCoverImage";
-
-type uploadedFile = {
-  databaseTarget: databaseTarget;
-  fileType: uploadedFiletypes;
-  s3UrlLink: string;
-  s3Name: string;
-};
 
 export interface IAssets {
   id: number;
