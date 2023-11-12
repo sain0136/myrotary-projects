@@ -94,6 +94,41 @@ export class ProjectsApi {
     );
   }
 
+  public async createSimplifiedProject(
+    project: IDsgProject
+  ): Promise<IDsgProject> {
+    return await this.apiClient.fetchWrapper(
+      "POST",
+      `${BASE_ROUTE}/createSimplifiedProject`,
+      project
+    );
+  }
+
+  public async updateSimplifiedProject(
+    project: IDsgProject
+  ): Promise<IDsgProject> {
+    return await this.apiClient.fetchWrapper(
+      "POST",
+      `${BASE_ROUTE}/updateSimplifiedProject`,
+      project
+    );
+  }
+  public async createMatchingProject(project: IDmProject): Promise<IDmProject> {
+    return await this.apiClient.fetchWrapper(
+      "POST",
+      `${BASE_ROUTE}/createMatchingProject`,
+      project
+    );
+  }
+
+  public async updateMatchingProject(project: IDmProject): Promise<IDmProject> {
+    return await this.apiClient.fetchWrapper(
+      "POST",
+      `${BASE_ROUTE}/updateMatchingProject`,
+      project
+    );
+  }
+
   public async deleteProject(id: number, override?: boolean) {
     return await this.apiClient.fetchWrapper(
       "POST",

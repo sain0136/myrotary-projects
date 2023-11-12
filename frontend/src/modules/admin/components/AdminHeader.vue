@@ -111,7 +111,7 @@ const logoutAdmin = async () => {
           <span class="sr-only">Toggle sidebar</span>
         </button>
         <router-link
-          :to="{ name: 'Landing' }"
+          :to="{ name: 'Home' }"
           class="flex items-center justify-between mr-4"
         >
           <img src="/rotary-logo.svg" class="mr-3 h-8" alt="Flowbite Logo" />

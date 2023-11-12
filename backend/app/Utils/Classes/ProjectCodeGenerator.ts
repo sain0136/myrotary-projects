@@ -1,13 +1,13 @@
 import Assets from "App/Models/Assets";
+type projectType = "dmInitial" | "dsgInitial" | "clubInitial" | "globalInitial";
 
 export default class ProjectCodeGenerator {
   constructor() {}
-
   /**
    * @param  {string} type
    * @returns Promise
    */
-  public static async getProjectCode(type: string): Promise<number> {
+  public static async getProjectCode(type: projectType): Promise<number> {
     let assets = await Assets.findOrFail(1);
     let code: number = 0;
     Object.entries(assets.$attributes).forEach((k: string | any): void => {
@@ -26,7 +26,7 @@ export default class ProjectCodeGenerator {
    * @param  {string} type
    * @param  {number} code
    */
-  public static async setProjectCode(type: string, code: number) {
+  public static async setProjectCode(type: projectType, code: number) {
     let assets = await Assets.findOrFail(1);
     try {
       if (

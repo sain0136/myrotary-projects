@@ -1,6 +1,10 @@
 import Projects from "App/Models/Projects";
 import ProjectsRepositories from "App/Repositories/ProjectsRepositories";
-import { IClubProject } from "App/Shared/Interfaces/IProjects";
+import {
+  IClubProject,
+  IDmProject,
+  IDsgProject,
+} from "App/Shared/Interfaces/IProjects";
 import { ProjectFilters } from "App/Utils/CommonTypes";
 
 export default class UserService {
@@ -50,9 +54,7 @@ export default class UserService {
     currentPage: number,
     limit: number,
     adminTable?: boolean
-  ): Promise<
-    import("@ioc:Adonis/Lucid/Database").SimplePaginatorContract<any>
-  > {
+  ) {
     if (adminTable) {
       return await this.projectsRepositories.fetchAdminAssociated(
         value,
@@ -76,6 +78,26 @@ export default class UserService {
     updatedProject: IClubProject
   ): Promise<Projects> {
     return await this.projectsRepositories.updateClubProject(updatedProject);
+  }
+
+  public async createSimplifiedProject(
+    project: IDsgProject
+  ): Promise<Projects> {
+    return await this.projectsRepositories.createSimplifiedProject(project);
+  }
+
+  public async updateSimplifiedProject(
+    project: IDsgProject
+  ): Promise<Projects> {
+    return await this.projectsRepositories.updateSimplifiedProject(project);
+  }
+
+  public async createMatchingProject(project: IDmProject): Promise<Projects> {
+    return await this.projectsRepositories.createMatchingProject(project);
+  }
+
+  public async updateMatchingProject(project: IDmProject): Promise<Projects> {
+    return await this.projectsRepositories.updateMatchingProject(project);
   }
 
   public async deleteProject(id: number, override?: boolean) {

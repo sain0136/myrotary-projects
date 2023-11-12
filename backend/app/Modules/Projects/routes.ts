@@ -23,3 +23,21 @@ Route.post(
   "projects/updateProjectStatus",
   "ProjectsController.updateProjectStatus"
 );
+
+Route.post(
+  "projects/createSimplifiedProject",
+  "ProjectsController.createSimplifiedProject"
+);
+Route.post(
+  "projects/updateSimplifiedProject",
+  "ProjectsController.updateSimplifiedProject"
+);
+
+Route.post(
+  "projects/createMatchingProject",
+  "ProjectsController.createMatchingProject"
+);
+Route.post(
+  "projects/updateMatchingProject",
+  "ProjectsController.updateMatchingProject"
+);

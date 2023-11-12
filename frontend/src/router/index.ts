@@ -90,6 +90,18 @@ const routes = [
         props: true,
       },
       {
+        path: "simplified-project-form/:projectId?",
+        name: "SimplifiedProjectForm",
+        component: () => import("@/components/forms/SimplifiedProjectForm.vue"),
+        props: true,
+      },
+      {
+        path: "matching-project-form/:projectId?",
+        name: "MatchingProjectForm",
+        component: () => import("@/components/forms/MatchingProjectForm.vue"),
+        props: true,
+      },
+      {
         path: "my-projects",
         name: "MyProjects",
         component: () => import("@/modules/admin/views/MyProjects.vue"),

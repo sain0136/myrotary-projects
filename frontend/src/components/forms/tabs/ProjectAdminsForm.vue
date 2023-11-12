@@ -67,16 +67,10 @@ onMounted(async () => {
       pagination.currentPage,
       pagination.limit
     );
-    const clubMembersList = (response.data as IUser[])
-      .filter((member: IUser) => {
-        return member.user_type === "CLUB";
-      })
-      .map((member: IUser) => {
-        return member.fullName;
-      });
-    const clubMembers = (response.data as IUser[]).filter((member: IUser) => {
-      return member.user_type === "CLUB";
+    const clubMembersList = (response.data as IUser[]).map((member: IUser) => {
+      return member.fullName;
     });
+    const clubMembers = response.data as IUser[];
     Object.assign(allClubMembersNameList, clubMembersList);
     Object.assign(allClubMembers, clubMembers);
     pagination.currentPage = response.meta.current_page;
