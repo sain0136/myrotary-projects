@@ -10,12 +10,17 @@ import { onMounted, ref } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import { useSiteAssets } from "@/stores/SiteAssets";
 import { Icon } from "@iconify/vue";
+import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 
 /* Data */
 const { langTranslations } = useLanguage();
 const assetsStore = useSiteAssets();
 const showMenu = ref(false);
-const navLinks: Array<{ label: string; link: string }> = [
+const navLinks: Array<{
+  label: string;
+  link: string;
+  disabled?: boolean;
+}> = [
   {
     label: langTranslations.value.home,
     link: "Home",
@@ -23,10 +28,6 @@ const navLinks: Array<{ label: string; link: string }> = [
   {
     label: langTranslations.value.aboutLabel,
     link: "About",
-  },
-  {
-    label: langTranslations.value.loginLabel,
-    link: "UserLogin",
   },
 ];
 
@@ -142,12 +143,41 @@ onMounted(async () => {});
           class="font-medium flex flex-col p-4 md:p-0 mt-4 border rounded-lg bg-nearWhite md:flex-row md:space-x-8 md:mt-0 md:border-0"
         >
           <li v-for="item in navLinks" :key="item.link">
-            <router-link :to="{ name: item.link }">
+            <router-link v-if="!item.disabled" :to="{ name: item.link }">
               <span
                 href="#"
                 class="block py-2 pl-3 pr-4 font-bold text-gray-900 rounded hover:text-primary"
                 aria-current="page"
                 >{{ item.label }}</span
+              >
+            </router-link>
+          </li>
+          <li v-if="!useLoggedInUserStore().isUserLoggedIn">
+            <router-link :to="{ name: 'UserLogin' }">
+              <span
+                href="#"
+                class="block py-2 pl-3 pr-4 font-bold text-gray-900 rounded hover:text-primary"
+                aria-current="page"
+                >{{ langTranslations.loginLabel }}</span
+              >
+            </router-link>
+          </li>
+          <li v-if="useLoggedInUserStore().isUserLoggedIn">
+            <a
+              class="block py-2 pl-3 pr-4 font-bold text-gray-900 rounded hover:text-primary"
+              href=""
+              @click="useLoggedInUserStore().logOut()"
+            >
+              {{ langTranslations.logoutLabel }}
+            </a>
+          </li>
+          <li v-if="useLoggedInUserStore().isUserLoggedIn">
+            <router-link :to="{ name: 'AdminWelcome' }">
+              <span
+                href="#"
+                class="block py-2 pl-3 pr-4 font-bold text-gray-900 rounded hover:text-primary"
+                aria-current="page"
+                >{{ langTranslations.adminDash.headerDashboard }}</span
               >
             </router-link>
           </li>

@@ -1,4 +1,4 @@
-import type { IStorageInformation } from "@/utils/interfaces/IProjects";
+import type { uploadedFile } from "@/utils/types/commonTypes";
 
 export interface IDistrictDetails {
   ddfCalculation: Array<String>;
@@ -12,7 +12,7 @@ export interface IDistrictDetails {
     grant_submission_closedate: string;
     grant_submission_startdate: string;
   };
-  reportLinks: Array<IStorageInformation>;
+  reportLinks: Array<uploadedFile>;
 }
 
 export interface IDistrict {

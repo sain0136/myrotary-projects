@@ -20,6 +20,31 @@ export interface Translation {
     projectApprovalLabel: string;
     projectApprovalHelpText: string;
     projectApprovalError: string;
+    clubProjectHeader: string;
+    dsgProjectsHeader: string;
+    dmProjectsHeader: string;
+    benefit_community_description: string;
+    non_financial_participation: string;
+    co_operating_organisation_letter: string;
+    contactsHeader: string;
+    primaryContactLabel: string;
+    secondaryContactLabel: string;
+    budgetLabel: string;
+    budgetHeader1: string;
+    budgetHeader2: string;
+    costLabel: string;
+    totalBudgetLabel: string;
+    budgetErorrMessage: string;
+    ddfStatement: string;
+    ddfCalculationStatement: string;
+    ddfRequestLimit: string;
+    fundingSourcesLabel: string;
+    detailsLabel: string;
+    totalFundingLabel: string;
+    currentAnticipationLabel: string;
+    currentFundingLabel: string;
+    pledgeAmountLabel: string;
+    dsgRequestLabel: string;
   };
   formLabel: string;
   projectTypeLabel: string;
@@ -243,6 +268,38 @@ export const translations: Record<string, Translation> = {
         "Must be a District Admin / Grants Chair to approve",
       projectApprovalError:
         "Project must be in pending approval state to be approved",
+      clubProjectHeader: "Club Project",
+      dsgProjectsHeader: "District Simplified Project",
+      dmProjectsHeader: "District Matching Project",
+      benefit_community_description:
+        "Describe how the project will benefit the community or address a community need.",
+      non_financial_participation:
+        "Describe the non-financial participation by Rotarians in the project.",
+      co_operating_organisation_letter:
+        "If a co-operating organisation will be involved in the project, provide a letter stating its role in the project and how Rotarians will interface with the organisation.",
+      contactsHeader: "Primary and Optional Seconday contacts",
+      primaryContactLabel: "Primary Contact",
+      secondaryContactLabel: "Secondary Contact",
+      budgetLabel: "Budget",
+      budgetHeader1:
+        "Provide a complete, detailed and itemised budget for the entire project. \n (Supporting documents may be requested)",
+      budgetHeader2:
+        "*All Budget Items and Funding Sources will be recorded in USD!",
+      costLabel: "Cost",
+      totalBudgetLabel: "Total Budget: USD ",
+      budgetErorrMessage: "Budget item must be greater than zero",
+      ddfStatement:
+        "{districtName} will match District club contributions ({ddfFraction} : 1 ) up to a maximum of USD ${ddfCap} on a first come basis depending upon availability of DDF",
+      ddfCalculationStatement:
+        "{districtName} calculates District Designated Funds from these types of funding sources:",
+      ddfRequestLimit: "DDF request limit:",
+      fundingSourcesLabel: "Funding Sources",
+      detailsLabel: "Details",
+      totalFundingLabel: "Total Funding: USD",
+      currentAnticipationLabel: "Current Anticipated Funding:",
+      currentFundingLabel: "Current Funding Goal:",
+      pledgeAmountLabel: "Pledge Amount To Date:",
+      dsgRequestLabel: "District Simplified Grant Request",
     },
     formLabel: "Form",
     projectTypeLabel: "Project Types",
@@ -424,7 +481,7 @@ export const translations: Record<string, Translation> = {
       areaOfFocus: "Please select at least one area of focus",
       lowerThanFundingGoal: "Please enter a value lower than the funding goal",
       lowerThanPledgesTotal:
-        "Please enter a value lower than the total pledged amount",
+        "Anticipated funding must be greater or equal to the pledges total",
       startAfterStartDate: "Please enter a date after the start date",
     },
     adminDash: {
@@ -476,6 +533,38 @@ export const translations: Record<string, Translation> = {
         "Il faut être un administrateur de district ou un président de commission chargé des subventions pour approuver une demande.",
       projectApprovalError:
         "Le projet doit être en attente d'approbation pour être approuvé",
+      clubProjectHeader: "Projet du club",
+      dsgProjectsHeader: "Projet simplifié du district",
+      dmProjectsHeader: "Projet de contrepartie du district",
+      benefit_community_description:
+        "Décrivez comment le projet bénéficiera à la communauté ou répondra à un besoin communautaire.",
+      non_financial_participation:
+        "Décrivez la participation non financière des Rotariens dans le projet.",
+      co_operating_organisation_letter:
+        "Si une organisation coopérante sera impliquée dans le projet, fournissez une lettre indiquant son rôle dans le projet et comment les Rotariens interagiront avec l'organisation.",
+      contactsHeader: "Contacts Primaires et Secondaires Optionnels",
+      primaryContactLabel: "Contact Principal",
+      secondaryContactLabel: "Contact Secondaire",
+      budgetLabel: "Budget",
+      budgetHeader1:
+        "Fournissez un budget complet, détaillé et décomposé pour l'ensemble du projet.\n (Des documents justificatifs peuvent être demandés)",
+      budgetHeader2:
+        "*Tous les éléments du budget et les sources de financement seront enregistrés en USD!",
+      costLabel: "Coût",
+      totalBudgetLabel: "Budget Total : USD ",
+      budgetErorrMessage: "L'élément du budget doit être supérieur à zéro",
+      ddfStatement:
+        "{districtName} correspondra aux contributions des clubs de district ({ddfFraction} : 1) jusqu'à un maximum de USD ${ddfCap} sur une base du premier arrivé selon la disponibilité des FDD de district",
+      ddfCalculationStatement:
+        "{districtName} calcule les Fonds Désignés de District à partir de ces types de sources de financement :",
+      ddfRequestLimit: "Limite de demande de FDD :",
+      fundingSourcesLabel: "Sources de Financement",
+      detailsLabel: "Détails",
+      totalFundingLabel: "Financement Total : USD",
+      currentAnticipationLabel: "Financement Anticipé Actuel :",
+      currentFundingLabel: "Objectif de Financement Actuel :",
+      pledgeAmountLabel: "Montant des Promesses à ce Jour :",
+      dsgRequestLabel: "Demande de subvention simplifiée du district",
     },
     formLabel: "Formulaire",
     projectTypeLabel: "Types de projets",
@@ -661,7 +750,7 @@ export const translations: Record<string, Translation> = {
       lowerThanFundingGoal:
         "Veuillez entrer une valeur inférieure à l'objectif de financement",
       lowerThanPledgesTotal:
-        "Veuillez entrer une valeur inférieure au montant total des promesses de dons",
+        "Le financement prévu doit être supérieur ou égal au total des promesses de dons.",
       startAfterStartDate: "Veuillez entrer une date après la date de début",
     },
     adminDash: {

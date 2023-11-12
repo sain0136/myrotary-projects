@@ -115,6 +115,22 @@ const editProject = (project: IDsgProject | IDmProject | IClubProject) => {
             },
           });
           return;
+        case "District Simplified Project":
+          router.push({
+            path: `simplified-project-form/${id}`,
+            query: {
+              formType: "normalView",
+            },
+          });
+          return;
+        case "District Matching Project":
+          router.push({
+            path: `matching-project-form/${id}`,
+            query: {
+              formType: "normalView",
+            },
+          });
+          return;
         default:
           throw new CustomError(900, "Project not found", {
             en: "Project not found",

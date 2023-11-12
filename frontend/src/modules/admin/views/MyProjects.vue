@@ -115,6 +115,13 @@ const setActiveTab = (tabName: string) => {
         :label="langTranslations.myprojectsView.dsgProjectsLabel"
         :theme="'primary'"
         class="w-48"
+        @click="
+          () => {
+            router.push({
+              name: 'SimplifiedProjectForm',
+            });
+          }
+        "
         v-if="
           isProjectsOpen === true &&
           !useLoggedInClub().loggedInClub?.settings?.disableDsg
@@ -124,6 +131,13 @@ const setActiveTab = (tabName: string) => {
         :label="langTranslations.myprojectsView.dmProjectsLabel"
         :theme="'primary'"
         class="w-48"
+        @click="
+          () => {
+            router.push({
+              name: 'MatchingProjectForm',
+            });
+          }
+        "
         v-if="
           isProjectsOpen === true &&
           !useLoggedInClub().loggedInClub?.settings?.disableDM

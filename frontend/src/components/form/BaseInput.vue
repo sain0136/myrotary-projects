@@ -27,7 +27,7 @@ const {
   inputmode,
 } = defineProps<{
   modelValue: string | number | Date;
-  label: string;
+  label?: string;
   type: inputType;
   id?: string;
   required?: boolean;

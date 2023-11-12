@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: "ClubProjectForm",
+  name: "MatchingProjectForm",
 };
 </script>
 
@@ -364,7 +364,7 @@ const setActiveTab = (tabName: string) => {
   <div>
     <H1
       class="text-center my-4"
-      :content="langTranslations.projectFormLabels.clubProjectHeader"
+      :content="langTranslations.projectFormLabels.dmProjectsHeader"
     />
     <ul
       class="tabs flex flex-wrap text-sm font-medium text-center justify-center text-gray-500 border-b border-gray-200"

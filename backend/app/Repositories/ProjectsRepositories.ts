@@ -7,12 +7,41 @@ import Users from "App/Models/Users";
 import { IProjectDetails } from "App/Shared/Interfaces/ProjectInterface";
 import { IUser } from "App/Shared/Interfaces/IUser";
 import { ProjectFilters } from "App/Utils/CommonTypes";
-import { IClubProject } from "App/Shared/Interfaces/IProjects";
+import {
+  IClubProject,
+  IDmProject,
+  IDsgProject,
+  IGenericProject,
+} from "App/Shared/Interfaces/IProjects";
 import { DateTime } from "luxon";
 import ProjectCodeGenerator from "App/Utils/Classes/ProjectCodeGenerator";
 import RotaryYear from "App/Utils/Classes/RotaryYear";
 import Dinero from "dinero.js";
 import { ProjectStatus } from "App/Shared/Types/commonTypes";
+
+function processProjectData(updatedProject) {
+  const convertedStartDate = DateTime.fromFormat(
+    updatedProject.start_date,
+    "yyyy-MM-dd"
+  );
+  const convertedCompletionDate = DateTime.fromFormat(
+    updatedProject.completion_date,
+    "yyyy-MM-dd"
+  );
+
+  updatedProject.project_name = updatedProject.project_name.trim();
+
+  const anticipated = Dinero({ amount: updatedProject.anticipated_funding });
+  const fundingGoal = Dinero({ amount: updatedProject.funding_goal });
+
+  const nonPledgeFullyFunded = anticipated.equalsTo(fundingGoal);
+
+  return {
+    convertedStartDate,
+    convertedCompletionDate,
+    nonPledgeFullyFunded,
+  };
+}
 
 export default class ProjectsRepositories {
   public async getProjectDetails(id: number) {
@@ -133,10 +162,33 @@ export default class ProjectsRepositories {
     limit: number,
     currentPage: number
   ) {
-    return await Database.from("project_roles")
+    const projectRolesRepositories = await Database.from("project_roles")
       .where({ user_id: value })
       .orderBy("project_id", "desc")
       .paginate(currentPage, limit);
+    const allProjectsAssociated = {
+      data: [] as IGenericProject[],
+      meta: {
+        current_page: projectRolesRepositories.currentPage,
+        first_page: projectRolesRepositories.firstPage,
+        total: projectRolesRepositories.total,
+        per_page: projectRolesRepositories.perPage,
+        last_page: projectRolesRepositories.lastPage,
+      },
+    };
+    // TODO : Refactor Hackish
+    for await (const project of projectRolesRepositories) {
+      const associatedProject = await Projects.query()
+        .select()
+        .where({ project_id: (project as IGenericProject).project_id })
+        .first();
+      if (associatedProject) {
+        allProjectsAssociated.data.push(
+          associatedProject as unknown as IGenericProject
+        );
+      }
+    }
+    return allProjectsAssociated;
   }
 
   public async fetchConditionalProjects(
@@ -153,15 +205,11 @@ export default class ProjectsRepositories {
   }
 
   public async createClubProject(newProject: IClubProject): Promise<Projects> {
-    const convertedStartDate = DateTime.fromFormat(
-      newProject.start_date,
-      "yyyy-MM-dd"
-    );
-    const convertedCompletionDate = DateTime.fromFormat(
-      newProject.completion_date,
-      "yyyy-MM-dd"
-    );
-    newProject.project_name = newProject.project_name.trim();
+    const {
+      convertedStartDate,
+      convertedCompletionDate,
+      nonPledgeFullyFunded,
+    } = processProjectData(newProject);
     const projectNumber = await ProjectCodeGenerator.getProjectCode(
       "clubInitial"
     );
@@ -180,7 +228,9 @@ export default class ProjectsRepositories {
       clubId: newProject.club_id,
       country: newProject.country,
       districtId: newProject.district_id,
-      projectStatus: newProject.project_status,
+      projectStatus: nonPledgeFullyFunded
+        ? ProjectStatus.FULLYFUNDED
+        : ProjectStatus.LOOKINGFORFUNDING,
       imageLink: JSON.stringify(newProject.image_link),
       totalPledges: newProject.total_pledges,
       projectNumber: projectNumber,
@@ -203,21 +253,11 @@ export default class ProjectsRepositories {
     const projectToBeUpdated = await Projects.findOrFail(
       updatedProject.project_id
     );
-    const convertedStartDate = DateTime.fromFormat(
-      updatedProject.start_date,
-      "yyyy-MM-dd"
-    );
-    const convertedCompletionDate = DateTime.fromFormat(
-      updatedProject.completion_date,
-      "yyyy-MM-dd"
-    );
-    updatedProject.project_name = updatedProject.project_name.trim();
-    const anticipated = Dinero({ amount: updatedProject.anticipated_funding });
-    const fundingGoal = Dinero({ amount: updatedProject.funding_goal });
-    //  user manuly updated anticipated funding in form and not from pledgs
-    const nonPledgeFullyFunded = anticipated.equalsTo(fundingGoal)
-      ? true
-      : false;
+    const {
+      convertedStartDate,
+      convertedCompletionDate,
+      nonPledgeFullyFunded,
+    } = processProjectData(updatedProject);
     const databaseUpdatedProject = await projectToBeUpdated
       .merge({
         projectName: updatedProject.project_name,
@@ -233,11 +273,220 @@ export default class ProjectsRepositories {
         country: updatedProject.country,
         projectStatus: nonPledgeFullyFunded
           ? ProjectStatus.FULLYFUNDED
-          : updatedProject.project_status,
+          : ProjectStatus.LOOKINGFORFUNDING,
         imageLink: JSON.stringify(updatedProject.image_link),
         totalPledges: updatedProject.total_pledges,
         extraDescriptions: JSON.stringify(updatedProject.extra_descriptions),
         fileUploads: JSON.stringify(updatedProject.file_uploads),
+      })
+      .save();
+    return databaseUpdatedProject;
+  }
+
+  public async createSimplifiedProject(
+    newProject: IDsgProject
+  ): Promise<Projects> {
+    const {
+      convertedStartDate,
+      convertedCompletionDate,
+      nonPledgeFullyFunded,
+    } = processProjectData(newProject);
+    const projectNumber = await ProjectCodeGenerator.getProjectCode(
+      "dsgInitial"
+    );
+    const createdProject = await Projects.create({
+      projectName: newProject.project_name,
+      projectDescription: newProject.project_description,
+      grantType: newProject.grant_type,
+      areaFocus: JSON.stringify(newProject.area_focus),
+      completionDate: convertedCompletionDate,
+      startDate: convertedStartDate,
+      fundingGoal: newProject.funding_goal,
+      anticipatedFunding: newProject.anticipated_funding,
+      createdBy: newProject.created_by,
+      region: newProject.region,
+      rotaryYear: RotaryYear.getCurrentYear(),
+      clubId: newProject.club_id,
+      country: newProject.country,
+      districtId: newProject.district_id,
+      projectStatus: nonPledgeFullyFunded
+        ? ProjectStatus.FULLYFUNDED
+        : ProjectStatus.LOOKINGFORFUNDING,
+      imageLink: JSON.stringify(newProject.image_link),
+      totalPledges: newProject.total_pledges,
+      projectNumber: projectNumber,
+      projectCode: "DS-" + projectNumber.toString(),
+      coOperatingOrganisationContribution: (newProject as IDsgProject)
+        .co_operating_organisation_contribution,
+      districtSimplifiedGrantRequest: (newProject as IDsgProject)
+        .district_simplified_grant_request,
+      intialSponsorClubContribution: (newProject as IDsgProject)
+        .intial_sponsor_club_contribution,
+      extraDescriptions: JSON.stringify(newProject.extra_descriptions),
+      itemizedBudget: JSON.stringify(
+        (newProject as IDsgProject).itemized_budget
+      ),
+      fileUploads: JSON.stringify(newProject.file_uploads),
+    });
+    if (createdProject.projectId) {
+      await ProjectCodeGenerator.setProjectCode(
+        "dsgInitial",
+        createdProject.projectNumber
+      );
+    }
+    return createdProject;
+  }
+  public async updateSimplifiedProject(
+    updatedProject: IDsgProject
+  ): Promise<Projects> {
+    const projectToBeUpdated = await Projects.findOrFail(
+      updatedProject.project_id
+    );
+    const {
+      convertedStartDate,
+      convertedCompletionDate,
+      nonPledgeFullyFunded,
+    } = processProjectData(updatedProject);
+    const databaseUpdatedProject = await projectToBeUpdated
+      .merge({
+        projectName: updatedProject.project_name,
+        projectDescription: updatedProject.project_description,
+        grantType: updatedProject.grant_type,
+        areaFocus: JSON.stringify(updatedProject.area_focus),
+        completionDate: convertedCompletionDate,
+        startDate: convertedStartDate,
+        fundingGoal: updatedProject.funding_goal,
+        anticipatedFunding: updatedProject.anticipated_funding,
+        region: updatedProject.region,
+        rotaryYear: updatedProject.rotary_year,
+
+        country: updatedProject.country,
+
+        projectStatus: nonPledgeFullyFunded
+          ? ProjectStatus.FULLYFUNDED
+          : ProjectStatus.LOOKINGFORFUNDING,
+        imageLink: JSON.stringify(updatedProject.image_link),
+        totalPledges: updatedProject.total_pledges,
+
+        coOperatingOrganisationContribution: (updatedProject as IDsgProject)
+          .co_operating_organisation_contribution,
+        districtSimplifiedGrantRequest: (updatedProject as IDsgProject)
+          .district_simplified_grant_request,
+        intialSponsorClubContribution: (updatedProject as IDsgProject)
+          .intial_sponsor_club_contribution,
+        extraDescriptions: JSON.stringify(updatedProject.extra_descriptions),
+        itemizedBudget: JSON.stringify(
+          (updatedProject as IDsgProject).itemized_budget
+        ),
+        fileUploads: JSON.stringify(
+          (updatedProject as IDsgProject).file_uploads
+        ),
+      })
+      .save();
+    return databaseUpdatedProject;
+  }
+
+  public async createMatchingProject(
+    newProject: IDmProject
+  ): Promise<Projects> {
+    const {
+      convertedStartDate,
+      convertedCompletionDate,
+      nonPledgeFullyFunded,
+    } = processProjectData(newProject);
+    const projectNumber = await ProjectCodeGenerator.getProjectCode(
+      "dmInitial"
+    );
+    const createdProject = await Projects.create({
+      projectName: newProject.project_name,
+      projectDescription: newProject.project_description,
+      grantType: newProject.grant_type,
+      areaFocus: JSON.stringify(newProject.area_focus),
+      completionDate: convertedCompletionDate,
+      startDate: convertedStartDate,
+      fundingGoal: newProject.funding_goal,
+      anticipatedFunding: newProject.anticipated_funding,
+      createdBy: newProject.created_by,
+      region: newProject.region,
+      rotaryYear: RotaryYear.getCurrentYear(),
+      clubId: newProject.club_id,
+      country: newProject.country,
+      districtId: newProject.district_id,
+      projectStatus: nonPledgeFullyFunded
+        ? ProjectStatus.FULLYFUNDED
+        : ProjectStatus.LOOKINGFORFUNDING,
+      imageLink: JSON.stringify(newProject.image_link),
+      totalPledges: newProject.total_pledges,
+      projectNumber: projectNumber,
+      projectCode: "DM-" + projectNumber.toString(),
+      coOperatingOrganisationContribution: (newProject as IDmProject)
+        .co_operating_organisation_contribution,
+      districtMatchingGrantRequest: (newProject as IDmProject)
+        .district_matching_grant_request,
+      intialSponsorClubContribution: (newProject as IDmProject)
+        .intial_sponsor_club_contribution,
+      extraDescriptions: JSON.stringify(newProject.extra_descriptions),
+      itemizedBudget: JSON.stringify(
+        (newProject as IDmProject).itemized_budget
+      ),
+      fileUploads: JSON.stringify(newProject.file_uploads),
+      hostclubInformation: JSON.stringify(
+        (newProject as IDmProject).hostclub_information
+      ),
+    });
+    if (createdProject.projectId) {
+      await ProjectCodeGenerator.setProjectCode(
+        "dmInitial",
+        createdProject.projectNumber
+      );
+    }
+    return createdProject;
+  }
+  public async updateMatchingProject(
+    updatedProject: IDmProject
+  ): Promise<Projects> {
+    const projectToBeUpdated = await Projects.findOrFail(
+      updatedProject.project_id
+    );
+    const {
+      convertedStartDate,
+      convertedCompletionDate,
+      nonPledgeFullyFunded,
+    } = processProjectData(updatedProject);
+    const databaseUpdatedProject = await projectToBeUpdated
+      .merge({
+        projectName: updatedProject.project_name,
+        projectDescription: updatedProject.project_description,
+        grantType: updatedProject.grant_type,
+        areaFocus: JSON.stringify(updatedProject.area_focus),
+        completionDate: convertedCompletionDate,
+        startDate: convertedStartDate,
+        fundingGoal: updatedProject.funding_goal,
+        anticipatedFunding: updatedProject.anticipated_funding,
+        region: updatedProject.region,
+        rotaryYear: updatedProject.rotary_year,
+        country: updatedProject.country,
+        projectStatus: nonPledgeFullyFunded
+          ? ProjectStatus.FULLYFUNDED
+          : updatedProject.project_status,
+        imageLink: JSON.stringify(updatedProject.image_link),
+        totalPledges: updatedProject.total_pledges,
+        coOperatingOrganisationContribution: (updatedProject as IDmProject)
+          .co_operating_organisation_contribution,
+        districtSimplifiedGrantRequest: (updatedProject as IDmProject)
+          .district_simplified_grant_request,
+        intialSponsorClubContribution: (updatedProject as IDmProject)
+          .intial_sponsor_club_contribution,
+        extraDescriptions: JSON.stringify(
+          (updatedProject as IDmProject).extra_descriptions
+        ),
+        itemizedBudget: JSON.stringify(
+          (updatedProject as IDmProject).itemized_budget
+        ),
+        fileUploads: JSON.stringify(updatedProject.file_uploads),
+        hostclubInformation: JSON.stringify(
+          (updatedProject as IDmProject).hostclub_information
+        ),
       })
       .save();
     return databaseUpdatedProject;
@@ -266,8 +515,8 @@ export default class ProjectsRepositories {
   }
 
   public async updateProjectStatus(projectStatus: string, projectId: number) {
-    const oldProjectImformation = await Projects.findOrFail(projectId);
-    await oldProjectImformation
+    const updatedProject = await Projects.findOrFail(projectId);
+    await updatedProject
       .merge({
         projectStatus: projectStatus,
       })

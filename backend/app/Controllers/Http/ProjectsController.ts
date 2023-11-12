@@ -2,7 +2,11 @@ import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import CustomException from "App/Exceptions/CustomException";
 import ProjectsRepositories from "App/Repositories/ProjectsRepositories";
 import ProjectsService from "App/Services/ProjectsService";
-import { IClubProject } from "App/Shared/Interfaces/IProjects";
+import {
+  IClubProject,
+  IDmProject,
+  IDsgProject,
+} from "App/Shared/Interfaces/IProjects";
 import RotaryYear from "App/Utils/Classes/RotaryYear";
 import { CustomErrorType, ProjectFilters } from "App/Utils/CommonTypes";
 
@@ -106,6 +110,66 @@ export default class ProjectsController {
       const project = request.body() as IClubProject;
       const { projectsService } = this.initializeServices();
       const updatedProject = await projectsService.updateClubProject(project);
+      return response.json(updatedProject);
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
+  }
+
+  public async createSimplifiedProject({
+    request,
+    response,
+  }: HttpContextContract) {
+    try {
+      const project = request.body() as IDsgProject;
+      const { projectsService } = this.initializeServices();
+      const newProject = await projectsService.createSimplifiedProject(project);
+      return response.json(newProject);
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
+  }
+
+  public async updateSimplifiedProject({
+    request,
+    response,
+  }: HttpContextContract) {
+    try {
+      const project = request.body() as IDsgProject;
+      const { projectsService } = this.initializeServices();
+      const updatedProject = await projectsService.updateSimplifiedProject(
+        project
+      );
+      return response.json(updatedProject);
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
+  }
+
+  public async createMatchingProject({
+    request,
+    response,
+  }: HttpContextContract) {
+    try {
+      const project = request.body() as IDmProject;
+      const { projectsService } = this.initializeServices();
+      const newProject = await projectsService.createMatchingProject(project);
+      return response.json(newProject);
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
+  }
+
+  public async updateMatchingProject({
+    request,
+    response,
+  }: HttpContextContract) {
+    try {
+      const project = request.body() as IDmProject;
+      const { projectsService } = this.initializeServices();
+      const updatedProject = await projectsService.updateMatchingProject(
+        project
+      );
       return response.json(updatedProject);
     } catch (error) {
       throw new CustomException(error as CustomErrorType);

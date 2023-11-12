@@ -456,4 +456,37 @@ export default class ResourceList {
     "Zimbabwe",
     "Åland Islands",
   ];
+
+  static districtSimplifiedCriteria: Array<string> = [
+    "	Projects should be short-term with the expectation of completion within the year the grant is received.",
+    "	Priority will be given to local community projects and to International projects that are ineligible for TRF Matching Grants.",
+    "	The project supported by this grant must respect the wishes, traditions and culture of the receiving community.",
+    "	The project must promote the active and personal participation of Rotarians from all clubs involved in its implementation.",
+    "	Project funds must not directly benefit a Rotarian, his/her spouse, a living Rotarian’s lineal descendant or ancestor or his/her spouse or an employee of a club, district or other Rotary entity or of Rotary International.",
+    "	Project funds may not be used for salaries, travel or administrative overhead costs.",
+    "	Project funds may not be used to reimburse applicants for projects already initiated or completed.",
+    "	Project funds may not be used to purchase land or construct substantial buildings.",
+    "	Project funds may not be used to fund a Rotary club’s on-going projects, but may be used to replicate successful projects that will benefit additional communities.",
+    "	Projects must be sponsored by a Rotary club and/or district and publicly identified as such.",
+    "	The stewardship of the DSG grant funds shall conform to the District Memorandum of Understanding.",
+    "	The sponsor club shall appoint two Rotarians who will provide oversight and management of the project funds and who will serve as contacts for the District 7040 Rotary Foundation Committee.",
+    "	Projects must adhere to Rotary’s seven areas of focus",
+  ];
+
+  static districtMatchingCriteria: Array<string> = [
+    "	Priority will be given to International projects that are ineligible for TRF Global Grants.",
+    "	Projects must be short-term with the expectation of completion within the year the grant is received.",
+    " The project supported by this grant must respect the wishes, traditions and culture of the receiving community.",
+    " The project must promote the active and personal participation of Rotarians from all clubs involved in its implementation.",
+    " Project funds must not directly benefit a Rotarian, his/her spouse, a living Rotarian’s lineal descendant or ancestor or his/her spouse or an employee of a club, district or other Rotary entity or of Rotary International.",
+    " Project funds may not be used for salaries, travel or administrative overhead costs.",
+    " Project funds may not be used to reimburse applicants for projects already initiated or completed.",
+    " Project funds may not be used to purchase land or construct substantial buildings.",
+    " Project funds may not be used to fund a Rotary club’s on-going projects, but may be used to replicate successful projects that will benefit additional communities.",
+    " Projects must be sponsored by a Rotary club and/or district and publicly identified as such.",
+    " The stewardship of the Matching Grant funds shall conform to District Memorandum of Understanding.",
+    " The sponsor club shall appoint two Rotarians who will provide oversight and management of the project funds and who will serve as contacts for the District 7040 Rotary Foundation Committee.",
+    " Projects must adhere to Rotary’s six areas of focus.",
+    " Participating clubs/districts must be certified.",
+  ];
 }
