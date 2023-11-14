@@ -23,7 +23,6 @@ Route.post(
   "projects/updateProjectStatus",
   "ProjectsController.updateProjectStatus"
 );
-
 Route.post(
   "projects/createSimplifiedProject",
   "ProjectsController.createSimplifiedProject"

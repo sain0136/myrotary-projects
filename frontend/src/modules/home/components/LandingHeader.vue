@@ -166,7 +166,12 @@ onMounted(async () => {});
             <a
               class="block py-2 pl-3 pr-4 font-bold text-gray-900 rounded hover:text-primary"
               href=""
-              @click="useLoggedInUserStore().logOut()"
+              @click="
+                () => {
+                  useLoggedInUserStore().logOut();
+                  $router.push({ name: 'Home' });
+                }
+              "
             >
               {{ langTranslations.logoutLabel }}
             </a>
