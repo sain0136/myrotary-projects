@@ -23,6 +23,8 @@ import type { IUser } from "@/utils/interfaces/IUser";
 import H3 from "@/components/headings/H3.vue";
 import router from "@/router";
 import { modalHandler } from "@/utils/composables/ModalHandler";
+import { projectStatus } from "@/utils/types/commonTypes";
+import { useActiveProjectStore } from "@/stores/ActiveProjectStore";
 
 /* Data */
 const { changeShowModal, setModal } = modalHandler();
@@ -57,6 +59,35 @@ onMounted(async () => {
 });
 
 /* Methods */
+const changeProjectStatus = async (
+  project: IDsgProject | IDmProject | IClubProject,
+  report?: boolean,
+  complete?: boolean
+) => {
+  try {
+    if (!report) {
+      await projectsApi.updateProjectStatus(
+        projectStatus.PENDINGAPPROVAL,
+        project.project_id
+      );
+    }
+    if (report) {
+      await projectsApi.updateProjectStatus(
+        projectStatus.REPORTSDUE,
+        project.project_id
+      );
+    }
+    if (complete) {
+      await projectsApi.updateProjectStatus(
+        projectStatus.COMPLETED,
+        project.project_id
+      );
+    }
+    router.go(0);
+  } catch (error) {
+    handleError(error as CustomError);
+  }
+};
 const getMyProjects = async () => {
   loaded.value = false;
   projects.splice(0, projects.length);
@@ -160,6 +191,26 @@ const editProject = (project: IDsgProject | IDmProject | IClubProject) => {
         :total-results="pagination.total"
         :limit="pagination.limit"
         @update:limit="pagination.limit = $event"
+        :project-complete-button="{
+          show: true,
+          callBack: (project) => {
+            changeProjectStatus(project as IDsgProject | IDmProject | IClubProject, false, true);
+          }
+        }"
+        :submit-for-reports-button="
+          {
+            show: true,
+            callBack: (project) => {
+              changeProjectStatus(project as IDsgProject | IDmProject | IClubProject, true);
+            }
+          }
+        "
+        :send-for-approval-button="{
+          show: true,
+          callBack: (project) => {
+            changeProjectStatus(project as IDsgProject | IDmProject | IClubProject, false);
+          },
+        }"
         :delete-button="{
         show: true,
         callBack: (project) => {
@@ -181,7 +232,6 @@ const editProject = (project: IDsgProject | IDmProject | IClubProject) => {
           },
           {
             name: langTranslations.projectCodeLabel,
-            lgScreenCollapsable: true,
             colName: 'project_code',
           },
           {

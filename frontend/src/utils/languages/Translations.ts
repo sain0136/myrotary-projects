@@ -1,4 +1,6 @@
 export interface Translation {
+  submitReportLabel: string;
+  submitForApprovalLabel: string;
   projectFormLabels: {
     cellWhatsAppLabel: string;
     projectNameLabel: string;
@@ -275,6 +277,8 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    submitReportLabel: "Submit Reports",
+    submitForApprovalLabel: "Submit for Approval",
     projectFormLabels: {
       cellWhatsAppLabel: "Cell / WhatsApp",
       projectNameLabel: "Project Name",
@@ -587,6 +591,8 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    submitReportLabel: "Soumettre des rapports",
+    submitForApprovalLabel: "Soumettre pour approbation",
     projectFormLabels: {
       cellWhatsAppLabel: "Cellulaire / WhatsApp",
       projectNameLabel: "Nom du projet",

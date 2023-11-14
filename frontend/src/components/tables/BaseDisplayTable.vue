@@ -10,6 +10,12 @@ import { onMounted, ref, watch, provide, reactive } from "vue";
 import { Icon } from "@iconify/vue";
 import RotaryButton from "../buttons/RotaryButton.vue";
 import { useCurrencyFormatter } from "@/utils/composables/CurrencyFormatter";
+import type {
+  IClubProject,
+  IDmProject,
+  IDsgProject,
+} from "@/utils/interfaces/IProjects";
+import { grantType, projectStatus } from "@/utils/types/commonTypes";
 
 /* Types */
 type ColumnOptions = {
@@ -50,6 +56,10 @@ const {
   disablePagination,
   multiSelectDelete,
   hideActionsColumn,
+  sendForApprovalButton,
+  submitForReportsButton,
+  projectCompleteButton,
+  rowEvents,
 } = defineProps<{
   currentPage: number;
   tableData: any[];
@@ -60,6 +70,9 @@ const {
   limit: number;
   showCheckboxes: Boolean;
   editButton?: ButtonOptions;
+  sendForApprovalButton?: ButtonOptions;
+  submitForReportsButton?: ButtonOptions;
+  projectCompleteButton?: ButtonOptions;
   deleteButton?: ButtonOptions;
   disablePagination?: Boolean;
   hideActionsColumn?: boolean;
@@ -202,11 +215,45 @@ const handlehandleDeleteMultiple = () => {
               }}
             </span>
           </td>
-          <td
-            v-if="hideActionsColumn != true"
-            class="actions-col px-6 py-4 :lg: w-1/12"
-          >
-            <div class="flex justify-between">
+          <td v-if="hideActionsColumn != true" class="actions-col px-6 py-4">
+            <div class="flex justify-center items-center gap-1">
+              <a
+                @click="projectCompleteButton?.callBack({ ...row })"
+                v-if="projectCompleteButton?.show && !projectCompleteButton?.hide?.(row) 
+                && (row as IDsgProject | IDmProject | IClubProject).project_status
+                === projectStatus.APPROVED && 
+                (row as IDsgProject | IDmProject | IClubProject).grant_type ===
+                grantType.CLUBPROJECT
+                "
+                :title="langTranslations.submitReportLabel"
+                href="#"
+                class="font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
+                ><Icon icon="carbon:task-complete"
+              /></a>
+              <a
+                @click="submitForReportsButton?.callBack({ ...row })"
+                v-if="submitForReportsButton?.show && !submitForReportsButton?.hide?.(row) 
+                && (row as IDsgProject | IDmProject | IClubProject).project_status
+                === projectStatus.APPROVED && 
+                (row as IDsgProject | IDmProject | IClubProject).grant_type !==
+                grantType.CLUBPROJECT
+                "
+                :title="langTranslations.submitReportLabel"
+                href="#"
+                class="font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
+                ><Icon icon="carbon:report"
+              /></a>
+              <a
+                @click="sendForApprovalButton?.callBack({ ...row })"
+                v-if="sendForApprovalButton?.show && !sendForApprovalButton?.hide?.(row) 
+                && (row as IDsgProject | IDmProject | IClubProject).project_status
+                === projectStatus.FULLYFUNDED
+                "
+                :title="langTranslations.submitForApprovalLabel"
+                href="#"
+                class="font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
+                ><Icon icon="formkit:submit"
+              /></a>
               <a
                 @click="editButton?.callBack({ ...row })"
                 v-if="editButton?.show && !editButton?.hide?.(row)"
