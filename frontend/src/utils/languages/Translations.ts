@@ -1,5 +1,6 @@
 export interface Translation {
   projectFormLabels: {
+    cellWhatsAppLabel: string;
     projectNameLabel: string;
     fundingGoalLabel: string;
     anticipatedAmountLabel: string;
@@ -45,6 +46,36 @@ export interface Translation {
     currentFundingLabel: string;
     pledgeAmountLabel: string;
     dsgRequestLabel: string;
+    sectionAHeader: string;
+    hostclubInfoHeader: string;
+    hostClubDistrictLabel: string;
+    hostClubIdLabel: string;
+    locationLabel: string;
+    hostClubLabel: string;
+    itemizedListHeader: string;
+    objectiveText: string;
+    sectionBHeader: string;
+    host_sponsor_planned_project_description: string;
+    host_commit_description: string;
+    international_commit_description: string;
+    sponsor_publicize_description: string;
+    sectionCHeader: string;
+    cooperating_organizations_roles_description: string;
+    cooperating_organizations_identify_members: string;
+    sectionDHeader: string;
+    project_accountability: string;
+    ownership_project: string;
+    inventory_project: string;
+    customs_clearance: string;
+    sectionEHeader: string;
+    project_capacity: string;
+    project_sustainment: string;
+    progressText: string;
+    sectionFHeader: string;
+    local_currency_name: string;
+    exchange_rate: string;
+    dmRequestLabel: string;
+    maxDmLabel: string;
   };
   formLabel: string;
   projectTypeLabel: string;
@@ -245,6 +276,7 @@ export interface Translation {
 export const translations: Record<string, Translation> = {
   en: {
     projectFormLabels: {
+      cellWhatsAppLabel: "Cell / WhatsApp",
       projectNameLabel: "Project Name",
       fundingGoalLabel: "Funding Goal",
       anticipatedAmountLabel: "Anticipated Amount",
@@ -300,6 +332,52 @@ export const translations: Record<string, Translation> = {
       currentFundingLabel: "Current Funding Goal:",
       pledgeAmountLabel: "Pledge Amount To Date:",
       dsgRequestLabel: "District Simplified Grant Request",
+      sectionAHeader: "Section A - Project Summary",
+      hostclubInfoHeader:
+        "Host Club Information (this is the partner outside of your district)",
+      hostClubDistrictLabel: "Host Clubs' District Number",
+      hostClubIdLabel: "Host Club ID",
+      locationLabel: "City / Community / Village",
+      hostClubLabel: "Host Club",
+      itemizedListHeader:
+        "Provide a list of specific objectives for this project",
+      objectiveText: "Objective",
+      sectionBHeader: "Section B – Rotarian Participation",
+      host_sponsor_planned_project_description:
+        "Describe how the Host sponsor (in other country) planned this project.*",
+      host_commit_description:
+        "Describe how the host sponsor will commit their time and expertise during the implementation of the project to ensure success. Provide specific examples of activities or tasks for which the host sponsor will be responsibility.*",
+      international_commit_description:
+        "Describe how the international sponsor will commit their time and expertise during the implementation of the project to ensure success. Provide specific examples of activities or tasks for which the international sponsor will be responsibility.*",
+      sponsor_publicize_description:
+        "How do the sponsors plan to publicize this project?*",
+      sectionCHeader:
+        "Section C – Cooperating Organization(s) – Upload a copy of the MOU",
+      cooperating_organizations_roles_description:
+        "Provide background information about the cooperating organization(s) including the role they will play in the project activity.",
+      cooperating_organizations_identify_members:
+        "Identify any members of the host or international sponsors who are project committee members, employees, board members or officers of one of the cooperating organizations.",
+      sectionDHeader: "Section D – Project Planning",
+      project_accountability:
+        "Who will operate, secure and maintain the items purchased with grant funds and ensure the items are properly maintained and repaired so they continue to function? This includes equipment, assets and materials.*",
+      ownership_project:
+        "At the end of the project, who will own the items purchased with grant funds? This includes equipment, assets and materials.Items cannot be owned by a Rotary Club or Rotarian(s).*",
+      inventory_project:
+        "Who will maintain an inventory of the items purchased with grant funds including location after distribution?*",
+      customs_clearance:
+        "What arrangements have been made for customs clearance if items will be purchased and shipped from outside the project country?*",
+      sectionEHeader: "Section E – Sustainability and Measurement",
+      project_capacity:
+        "How will the project build capacity in the host community?*",
+      project_sustainment:
+        "How will the outcomes of the project be sustained over time after the funding has been expended?*",
+      progressText:
+        "Identify how the progress toward the objectives will be measured? Check all that apply & upload samples if applicable.*",
+      sectionFHeader: "Section F - Budget Summary and Financing Summary",
+      local_currency_name: "Name of Local Currency*",
+      exchange_rate: "Exchange Rate to 1 USD*",
+      dmRequestLabel: "District Matching Grant Request",
+      maxDmLabel: "Maximum amount exceeded for District Matching Grant Request",
     },
     formLabel: "Form",
     projectTypeLabel: "Project Types",
@@ -510,6 +588,7 @@ export const translations: Record<string, Translation> = {
   },
   fr: {
     projectFormLabels: {
+      cellWhatsAppLabel: "Cellulaire / WhatsApp",
       projectNameLabel: "Nom du projet",
       fundingGoalLabel: "Objectif de financement",
       anticipatedAmountLabel: "Montant anticipé",
@@ -565,6 +644,53 @@ export const translations: Record<string, Translation> = {
       currentFundingLabel: "Objectif de Financement Actuel :",
       pledgeAmountLabel: "Montant des Promesses à ce Jour :",
       dsgRequestLabel: "Demande de subvention simplifiée du district",
+      sectionAHeader: "Section A - Résumé du Projet",
+      hostclubInfoHeader:
+        "Informations sur le Club Hôte (ceci est le partenaire extérieur à votre district)",
+      hostClubDistrictLabel: "Numéro de District du Club Hôte",
+      hostClubIdLabel: "ID du Club Hôte",
+      locationLabel: "Ville / Communauté / Village",
+      hostClubLabel: "Club Hôte",
+      itemizedListHeader:
+        "Fournir une liste d'objectifs spécifiques pour ce projet",
+      objectiveText: "Objectif",
+      sectionBHeader: "Section B – Participation Rotarienne",
+      host_sponsor_planned_project_description:
+        "Décrivez comment le sponsor hôte (dans un autre pays) a planifié ce projet.*",
+      host_commit_description:
+        "Décrivez comment le sponsor hôte s'engagera dans son temps et son expertise pendant la mise en œuvre du projet pour garantir son succès. Fournissez des exemples spécifiques d'activités ou de tâches dont le sponsor hôte sera responsable.*",
+      international_commit_description:
+        "Décrivez comment le sponsor international s'engagera dans son temps et son expertise pendant la mise en œuvre du projet pour garantir son succès. Fournissez des exemples spécifiques d'activités ou de tâches dont le sponsor international sera responsable.*",
+      sponsor_publicize_description:
+        "Comment les sponsors prévoient-ils de publiciser ce projet ?*",
+      sectionCHeader:
+        "Section C – Organisation(s) Coopérative(s) – Télécharger une copie du MOU",
+      cooperating_organizations_roles_description:
+        "Fournir des informations de fond sur l'organisation(s) coopérative(s) y compris le rôle qu'elle jouera dans l'activité du projet.",
+      cooperating_organizations_identify_members:
+        "Identifier tout membre des sponsors hôte ou international qui sont membres du comité de projet, employés, membres du conseil ou dirigeants de l'une des organisations coopératives.",
+      sectionDHeader: "Section D – Planification du Projet",
+      project_accountability:
+        "Qui exploitera, sécurisera et entretiendra les articles achetés avec les fonds de subvention et s'assurera que les articles sont correctement entretenus et réparés pour qu'ils continuent à fonctionner ? Cela inclut l'équipement, les actifs et les matériaux.*",
+      ownership_project:
+        "À la fin du projet, qui possédera les articles achetés avec les fonds de subvention ? Cela inclut l'équipement, les actifs et les matériaux. Les articles ne peuvent pas être possédés par un Club Rotary ou des Rotariens.*",
+      inventory_project:
+        "Qui maintiendra un inventaire des articles achetés avec les fonds de subvention y compris l'emplacement après la distribution ?*",
+      customs_clearance:
+        "Quels arrangements ont été pris pour le dédouanement si des articles seront achetés et expédiés depuis l'extérieur du pays du projet ?*",
+      sectionEHeader: "Section E – Durabilité et Mesure",
+      project_capacity:
+        "Comment le projet renforcera-t-il les capacités dans la communauté hôte ?*",
+      project_sustainment:
+        "Comment les résultats du projet seront-ils maintenus dans le temps après l'épuisement des fonds ?*",
+      progressText:
+        "Identifier comment les progrès vers les objectifs seront mesurés ? Cochez tout ce qui s'applique et téléchargez des échantillons si applicable.*",
+      sectionFHeader: "Section F - Résumé du Budget et Résumé du Financement",
+      local_currency_name: "Nom de la Monnaie Locale*",
+      exchange_rate: "Taux de Change pour 1 USD*",
+      dmRequestLabel: "Demande de Subvention de Correspondance de District",
+      maxDmLabel:
+        "Montant maximum dépassé pour la demande de subvention de contrepartie du district",
     },
     formLabel: "Formulaire",
     projectTypeLabel: "Types de projets",
