@@ -18,6 +18,8 @@ import ProjectCodeGenerator from "App/Utils/Classes/ProjectCodeGenerator";
 import RotaryYear from "App/Utils/Classes/RotaryYear";
 import Dinero from "dinero.js";
 import { ProjectStatus } from "App/Shared/Types/commonTypes";
+import CustomException from "App/Exceptions/CustomException";
+import { errorTranslations } from "App/Translations/Translations";
 
 function processProjectData(updatedProject) {
   const convertedStartDate = DateTime.fromFormat(
@@ -505,7 +507,11 @@ export default class ProjectsRepositories {
       await projectToBeDeleted.delete();
       return true;
     } else {
-      return false;
+      throw new CustomException({
+        message: "Project has pledges",
+        status: 401,
+        translatedMessage: errorTranslations["projectHasPledges"],
+      });
     }
   }
 

@@ -6,15 +6,15 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import Dinero from "dinero.js";
 import { ApiClient } from "@/api/ApiClient";
 import { ProjectsApi } from "@/api/services/ProjectsApi";
 import { CustomError } from "@/utils/classes/CustomError";
-import ClubProject from "@/utils/classes/ClubProject";
 import useVuelidate from "@vuelidate/core";
 import {
+  email,
   helpers,
   maxLength,
   minLength,
@@ -42,6 +42,13 @@ import SocialShareButton from "@/components/forms/tabs/SocialShareButton.vue";
 import ProjectAdminsForm from "@/components/forms/tabs/ProjectAdminsForm.vue";
 import ProjectApproval from "@/components/forms/tabs/ProjectApproval.vue";
 import H1 from "@/components/headings/H1.vue";
+import H2 from "@/components/headings/H2.vue";
+import H3 from "@/components/headings/H3.vue";
+import H4 from "@/components/headings/H4.vue";
+import DistrictMatchingProject from "@/utils/classes/DistrictMatchingProject";
+import { Icon } from "@iconify/vue";
+import type { IFundingSource } from "@/utils/interfaces/IProjects";
+import ErrorValidation from "@/components/forms/ErrorValidation.vue";
 
 /* Data */
 type formType = "normalView" | "readOnlyView";
@@ -65,8 +72,10 @@ const submitLabel: { [key: string]: string } = projectId
       fr: "Soumettre",
     };
 const FUNDING_GOAL_LIMIT = 1000000000;
+const budgetItemName = ref("");
+const budgetItemCost = ref("");
 const projectsApi = new ProjectsApi(new ApiClient());
-const { langTranslations, languagePref } = useLanguage();
+const { langTranslations, languagePref, customPrintf } = useLanguage();
 const { handleError, handleSuccess } = errorHandler();
 const tabs = ref([
   {
@@ -105,7 +114,8 @@ const tabs = ref([
     hidden: !projectId ? true : false,
   },
 ]);
-const project = reactive(new ClubProject());
+const objectiveItem = ref("");
+const project = reactive(new DistrictMatchingProject());
 const activeTab = ref("form");
 // TODO
 const minLengthMessage = {
@@ -116,6 +126,28 @@ const maxLengthMessage = {
   en: "Must be at most 1000 characters",
   fr: "Doit contenir au plus 1000 caractères",
 };
+const fundingSources = ref<IFundingSource>({
+  sourceName: "",
+  typeOfFunding: "",
+  amount: 0,
+} as IFundingSource);
+const addFundingSource = [
+  "District Designated Funds Request (DDF)",
+  "District Club Contribution",
+  "Non-District Club Contribution",
+  "Co-operating Organization Contribution",
+  "Other sources",
+];
+const matchingGrantRequestLimitAsDinero = ref(Dinero({ amount: 0 }));
+const fundingGoalErrors = ref({
+  messages: "",
+  error: false,
+});
+const anticipatedFundingErrors = ref({
+  messages: "",
+  error: false,
+});
+const originalAmountofAnitcipated = ref(Dinero({ amount: 0 }));
 
 /* Hooks */
 onMounted(async () => {
@@ -124,12 +156,15 @@ onMounted(async () => {
       await getProject();
     } else {
       try {
-        project.grant_type = grantType.CLUBPROJECT;
+        project.grant_type = grantType.DISTRICTMATCHINGPROJECT;
         project.created_by = useLoggedInUserStore().loggedInUser.user_id;
         project.club_id = useLoggedInUserStore().loggedInUser.club_id;
         project.district_id =
           useLoggedInUserStore().loggedInUser.district_id ||
           useLoggedInDistrict().loggedInDistrict.district_id;
+        originalAmountofAnitcipated.value = Dinero({
+          amount: project.anticipated_funding + project.total_pledges,
+        });
       } catch (error) {
         throw new CustomError(900, "Project Erorr", {
           en: langTranslations.value.projectFormLabels
@@ -143,6 +178,66 @@ onMounted(async () => {
     handleError(error as CustomError);
   }
 });
+
+watch(
+  () => project.funding_goal,
+  () => {
+    const anticipatedAmount = Dinero({
+      amount: project.anticipated_funding,
+    });
+    const fundingGoal = Dinero({
+      amount: project.funding_goal,
+    });
+    if (anticipatedAmount.lessThanOrEqual(fundingGoal)) {
+      anticipatedFundingErrors.value.error = false;
+      return;
+    }
+
+    if (
+      Dinero({
+        amount: project.funding_goal,
+      }).greaterThan(
+        Dinero({
+          amount: FUNDING_GOAL_LIMIT,
+        })
+      )
+    ) {
+      fundingGoalErrors.value.messages =
+        langTranslations.value.pledgeProcess.maxLimitLabel;
+      fundingGoalErrors.value.error = true;
+      return;
+    }
+    fundingGoalErrors.value.error = false;
+  }
+);
+
+watch(
+  () => project.anticipated_funding,
+  () => {
+    const anticipatedAmount = Dinero({
+      amount: project.anticipated_funding,
+    });
+    const fundingGoal = Dinero({
+      amount: project.funding_goal,
+    });
+    const pledgesAmount = Dinero({
+      amount: project.total_pledges,
+    });
+    if (anticipatedAmount.greaterThan(fundingGoal)) {
+      anticipatedFundingErrors.value.messages =
+        langTranslations.value.formErorrText.lowerThanFundingGoal;
+      anticipatedFundingErrors.value.error = true;
+      return;
+    }
+    if (anticipatedAmount.lessThan(Dinero({ amount: project.total_pledges }))) {
+      anticipatedFundingErrors.value.messages =
+        langTranslations.value.formErorrText.lowerThanPledgesTotal;
+      anticipatedFundingErrors.value.error = true;
+      return;
+    }
+    anticipatedFundingErrors.value.error = false;
+  }
+);
 
 /* Validations */
 const rules = {
@@ -183,24 +278,12 @@ const rules = {
       langTranslations.value.formErorrText.required,
       required
     ),
-    maxAmount: helpers.withMessage(
-      langTranslations.value.pledgeProcess.maxLimitLabel,
-      () => {
-        // Convert string amount to number
-        let amount = parseFloat(project.funding_goal.toString());
-
-        // Truncate any decimals
-        amount = Math.trunc(amount);
-
-        // Append '.00' to it
-        const amountString = amount.toFixed(2);
-        const amountInCents = Dinero({
-          amount: parseFloat(amountString) * 100,
-        });
-        console.log("amount" + amountInCents.getAmount());
-        return amountInCents.getAmount() <= FUNDING_GOAL_LIMIT;
-      }
-    ),
+    // maxAmount: helpers.withMessage(
+    //   langTranslations.value.pledgeProcess.maxLimitLabel,
+    //   () => {
+    //     return project.funding_goal <= FUNDING_GOAL_LIMIT;
+    //   }
+    // ),
     numeric: helpers.withMessage(
       langTranslations.value.formErorrText.numeric,
       numeric
@@ -214,59 +297,7 @@ const rules = {
     maxAmount: helpers.withMessage(
       langTranslations.value.pledgeProcess.maxLimitLabel,
       () => {
-        // Convert string amount to number
-        let amount = parseFloat(project.anticipated_funding.toString());
-
-        // Truncate any decimals
-        amount = Math.trunc(amount);
-
-        // Append '.00' to it
-        const amountString = amount.toFixed(2);
-        const amountInCents = Dinero({
-          amount: parseFloat(amountString) * 100,
-        });
-        console.log("amount anticipated" + amountInCents.getAmount());
-        return amountInCents.getAmount() <= FUNDING_GOAL_LIMIT;
-      }
-    ),
-    lowerThanFundingGoal: helpers.withMessage(
-      langTranslations.value.formErorrText.lowerThanFundingGoal,
-      () => {
-        let anticipatedAmount = parseFloat(
-          project.anticipated_funding.toString()
-        );
-        let fundingGoal = parseFloat(project.funding_goal.toString());
-        anticipatedAmount = Math.trunc(anticipatedAmount);
-        fundingGoal = Math.trunc(fundingGoal);
-        const anticipatedAmountString = anticipatedAmount.toFixed(2);
-        const fundingGoalString = fundingGoal.toFixed(2);
-        const anticipatedAmountInCents = Dinero({
-          amount: parseFloat(anticipatedAmountString) * 100,
-        });
-        const fundingGoalInCents = Dinero({
-          amount: parseFloat(fundingGoalString) * 100,
-        });
-        return anticipatedAmountInCents.lessThanOrEqual(fundingGoalInCents);
-      }
-    ),
-    cantBelowerThanPledgesTotal: helpers.withMessage(
-      langTranslations.value.formErorrText.lowerThanPledgesTotal,
-      () => {
-        let anticipatedAmount = parseFloat(
-          project.anticipated_funding.toString()
-        );
-        let pledgeTotal = parseFloat(project.total_pledges.toString());
-        anticipatedAmount = Math.trunc(anticipatedAmount);
-        pledgeTotal = Math.trunc(pledgeTotal);
-        const anticipatedAmountString = anticipatedAmount.toFixed(2);
-        const pledgeTotalString = pledgeTotal.toFixed(2);
-        const anticipatedAmountInCents = Dinero({
-          amount: parseFloat(anticipatedAmountString) * 100,
-        });
-        const pledgeTotalInCents = Dinero({
-          amount: parseFloat(pledgeTotalString) * 100,
-        });
-        return anticipatedAmountInCents.greaterThanOrEqual(pledgeTotalInCents);
+        return project.anticipated_funding <= FUNDING_GOAL_LIMIT;
       }
     ),
   },
@@ -299,37 +330,455 @@ const rules = {
       }
     ),
   },
+  extra_descriptions: {
+    benefit_community_description: {
+      required: helpers.withMessage(
+        langTranslations.value.formErorrText.required,
+        required
+      ),
+      maxLength: helpers.withMessage(
+        maxLengthMessage[languagePref.value],
+        maxLength(3000)
+      ),
+      minLength: helpers.withMessage(
+        minLengthMessage[languagePref.value],
+        minLength(150)
+      ),
+    },
+    primary_contact: {
+      address: { required },
+      email: { required, email },
+      name: { required },
+      phone: { required },
+    },
+  },
+  district_matching_grant_request: {
+    validateRequest: helpers.withMessage(
+      langTranslations.value.projectFormLabels.maxDmLabel,
+      () => {
+        const grantRequestAsDinero = Dinero({
+          amount: project.district_matching_grant_request,
+        });
+        if (
+          grantRequestAsDinero.greaterThan(
+            matchingGrantRequestLimitAsDinero.value
+          )
+        ) {
+          return false;
+        } else {
+          return true;
+        }
+      }
+    ),
+  },
+  hostclub_information: {
+    host_club_name: {
+      required: helpers.withMessage(
+        langTranslations.value.formErorrText.required,
+        required
+      ),
+    },
+    district_number: {
+      required: helpers.withMessage(
+        langTranslations.value.formErorrText.required,
+        required
+      ),
+    },
+    district_country: {
+      required: helpers.withMessage(
+        langTranslations.value.formErorrText.required,
+        required
+      ),
+    },
+    host_primary_contact: {
+      name: {
+        required: helpers.withMessage(
+          langTranslations.value.formErorrText.required,
+          required
+        ),
+      },
+      address: {
+        required: helpers.withMessage(
+          langTranslations.value.formErorrText.required,
+          required
+        ),
+      },
+      email: {
+        required: helpers.withMessage(
+          langTranslations.value.formErorrText.required,
+          required
+        ),
+        email: helpers.withMessage(
+          langTranslations.value.formErorrText.emailFormat,
+          email
+        ),
+      },
+      phone: {
+        required: helpers.withMessage(
+          langTranslations.value.formErorrText.required,
+          required
+        ),
+      },
+    },
+    location_city: {
+      required: helpers.withMessage(
+        langTranslations.value.formErorrText.required,
+        required
+      ),
+    },
+    host_sponsor_planned_project_description: {
+      required: helpers.withMessage(
+        langTranslations.value.formErorrText.required,
+        required
+      ),
+      maxLength: maxLength(3000),
+      minLength: minLength(100),
+    },
+    host_commit_description: {
+      required: helpers.withMessage(
+        langTranslations.value.formErorrText.required,
+        required
+      ),
+      maxLength: maxLength(3000),
+      minLength: minLength(100),
+    },
+    international_commit_description: {
+      required: helpers.withMessage(
+        langTranslations.value.formErorrText.required,
+        required
+      ),
+      maxLength: maxLength(3000),
+      minLength: minLength(100),
+    },
+    sponsor_publicize_description: {
+      required: helpers.withMessage(
+        langTranslations.value.formErorrText.required,
+        required
+      ),
+      maxLength: maxLength(3000),
+      minLength: minLength(100),
+    },
+    sectionF: {
+      // required:helpers.withMessage(langTranslations.value.formErorrText.required, required),
+    },
+  },
 };
+
 const v$ = useVuelidate(rules, project);
 
+/*Computed*/
+const formattedFundingGoal = computed(() => {
+  return currencyFormatterFunding(project.funding_goal);
+});
+
+/**
+ * Computed property that returns the funding request limit.
+ * @returns {number} The funding request limit.
+ */
+const matchingGrantRequestLimit = computed(() => {
+  const cap = Dinero({
+    amount: convertFloatToCents(
+      useLoggedInDistrict().loggedInDistrict.district_details.ddfCapes.dmCap
+    ),
+  });
+  const fraction =
+    useLoggedInDistrict().loggedInDistrict.district_details.ddfCapes.dmFraction;
+
+  let total = Dinero({
+    amount: 0,
+  });
+  useLoggedInDistrict().loggedInDistrict.district_details.ddfCalculation.forEach(
+    (sourceType) => {
+      project.extra_descriptions.fundingSourceArray.forEach(
+        (el: { sourceName: string; amount: number }) => {
+          if (el.sourceName === sourceType) {
+            total.add(
+              Dinero({
+                amount: el.amount,
+              })
+            );
+          }
+        }
+      );
+    }
+  );
+  const limit = total.greaterThan(cap)
+    ? currencyFormatterFunding(total.multiply(fraction).getAmount())
+    : currencyFormatterFunding(cap.getAmount());
+  matchingGrantRequestLimitAsDinero.value = total.greaterThan(cap)
+    ? total.multiply(fraction)
+    : cap;
+  return limit;
+});
+
+const sumOfAnticipatedFunding = computed(() => {
+  let fundingSourceSum = Dinero({
+    amount: 0,
+  });
+  project.extra_descriptions.fundingSourceArray.forEach(
+    (el: { amount: number }) => {
+      fundingSourceSum.add(
+        Dinero({
+          amount: el.amount,
+        })
+      );
+      fundingSourceSum = fundingSourceSum.add(
+        Dinero({
+          amount: el.amount,
+        })
+      );
+    }
+  );
+  const combinedSum = fundingSourceSum.add(
+    Dinero({
+      amount: project.total_pledges,
+    })
+  );
+  return currencyFormatterFunding(combinedSum.getAmount());
+});
+
 /* Methods */
+const deleteObjectiveByIndex = (index: number) => {
+  project.hostclub_information.listOfObjectives.splice(index, 1);
+};
+
+const addToObjectives = () => {
+  project.hostclub_information.listOfObjectives.push(objectiveItem.value);
+  objectiveItem.value = "";
+};
+
+const deleteFromFundsArray = (index: number) => {
+  try {
+    const fundingSource = project.extra_descriptions.fundingSourceArray[index];
+    const dinaroFunds = Dinero({
+      amount: fundingSource.amount,
+    });
+    let newAmount = Dinero({ amount: 0 });
+    switch (fundingSource.sourceName) {
+      case "District Club Contribution":
+        newAmount = Dinero({
+          amount: project.intial_sponsor_club_contribution,
+        }).subtract(dinaroFunds);
+        project.intial_sponsor_club_contribution = newAmount.getAmount();
+        break;
+
+      case "Non-District Club Contribution":
+        newAmount = Dinero({
+          amount: project.extra_descriptions.other_club_contribution,
+        }).subtract(dinaroFunds);
+        project.extra_descriptions.other_club_contribution =
+          newAmount.getAmount();
+        break;
+
+      case "District Designated Funds Request (DDF)":
+        newAmount = Dinero({
+          amount: project.district_matching_grant_request,
+        }).subtract(dinaroFunds);
+        project.district_matching_grant_request = newAmount.getAmount();
+        break;
+
+      case "Co-operating Organization Contribution":
+        newAmount = Dinero({
+          amount: project.co_operating_organisation_contribution,
+        }).subtract(dinaroFunds);
+        project.co_operating_organisation_contribution = newAmount.getAmount();
+        break;
+
+      case "Other sources":
+        newAmount = Dinero({
+          amount: project.extra_descriptions.other_sources,
+        }).subtract(dinaroFunds);
+        project.extra_descriptions.other_sources = newAmount.getAmount();
+        break;
+      default:
+        break;
+    }
+    project.anticipated_funding -= dinaroFunds.getAmount();
+    project.extra_descriptions.fundingSourceArray.splice(index, 1);
+  } catch (error) {
+    handleError(error as CustomError);
+  }
+};
+
+const fundingTableErrors = () => {
+  if (fundingSources.value.amount < 0.01) {
+    throw new CustomError("Amount must be greater than 0", "dm form error", {
+      en: "Amount must be greater than 0",
+      fr: "Le montant doit être supérieur à 0",
+    });
+  }
+  if (fundingSources.value.sourceName === "") {
+    throw new CustomError("Please select a funding source", "dm form error", {
+      en: "Please select a funding source",
+      fr: "Veuillez sélectionner une source de financement",
+    });
+  }
+  if (!fundingSources.value.amount) {
+    throw new CustomError("Please enter an amount", "dm form error", {
+      en: "Please enter an amount",
+      fr: "Veuillez entrer un montant",
+    });
+  }
+};
+
+const addToFundsArray = () => {
+  try {
+    fundingTableErrors();
+    const formattedAmountInCents = convertFloatToCents(
+      fundingSources.value.amount
+    );
+    const dinaroFunds = Dinero({
+      amount: formattedAmountInCents,
+    });
+
+    let newAmount = Dinero({ amount: 0 });
+    switch (fundingSources.value.sourceName) {
+      case "District Club Contribution":
+        newAmount = Dinero({
+          amount: project.intial_sponsor_club_contribution,
+        }).add(dinaroFunds);
+        project.intial_sponsor_club_contribution = newAmount.getAmount();
+        break;
+      case "Non-District Club Contribution":
+        newAmount = Dinero({
+          amount: project.extra_descriptions.other_club_contribution,
+        }).add(dinaroFunds);
+        project.extra_descriptions.other_club_contribution =
+          newAmount.getAmount();
+        break;
+
+      case "District Designated Funds Request (DDF)":
+        newAmount = Dinero({
+          amount: project.district_matching_grant_request,
+        }).add(dinaroFunds);
+        if (
+          dinaroFunds.greaterThan(matchingGrantRequestLimitAsDinero.value) ||
+          newAmount.greaterThan(matchingGrantRequestLimitAsDinero.value)
+        ) {
+          fundingSources.value = {
+            sourceName: "",
+            typeOfFunding: "",
+            amount: 0,
+          } as IFundingSource;
+          throw new CustomError(900, "Grant Request Exceeded", {
+            en: "The maximum amount for a Grant Request exceeded. Please adjust the amount.",
+            fr: "Le montant maximum pour une demande de financement est dépassé. Veuillez le modifier.",
+          });
+        } else {
+          project.district_matching_grant_request = newAmount.getAmount();
+        }
+        break;
+
+      case "Co-operating Organization Contribution":
+        newAmount = Dinero({
+          amount: project.co_operating_organisation_contribution,
+        }).add(dinaroFunds);
+        project.co_operating_organisation_contribution = newAmount.getAmount();
+        break;
+
+      case "Other sources":
+        newAmount = Dinero({
+          amount: project.extra_descriptions.other_sources,
+        }).add(dinaroFunds);
+        project.extra_descriptions.other_sources = newAmount.getAmount();
+        break;
+      default:
+        break;
+    }
+    project.anticipated_funding += dinaroFunds.getAmount();
+    project.extra_descriptions.fundingSourceArray.push({
+      sourceName: fundingSources.value.sourceName,
+      typeOfFunding: fundingSources.value.typeOfFunding,
+      amount: formattedAmountInCents,
+    });
+    fundingSources.value = {
+      sourceName: "",
+      typeOfFunding: "",
+      amount: 0,
+    } as IFundingSource;
+  } catch (error) {
+    handleError(error as CustomError);
+  }
+};
+
+const addToBudget = (itemName: string, itemCost: string) => {
+  try {
+    const formattedCostInCents = convertFloatToCents(itemCost);
+    if (formattedCostInCents < 1) {
+      langTranslations.value.projectFormLabels.budgetErorrMessage;
+    }
+    if (
+      formattedCostInCents > FUNDING_GOAL_LIMIT ||
+      project.funding_goal + formattedCostInCents > FUNDING_GOAL_LIMIT
+    ) {
+      throw new CustomError(900, "Budget Exceeded", {
+        en: "The maximum amount for a budget exceeded. Please adjust the amount.",
+        fr: "Le montant maximum pour un budget est dépassé. Veuillez le modifier.",
+      });
+    }
+    const budgetItemObject = {
+      itemCost: formattedCostInCents,
+      itemName: itemName,
+    };
+    project.funding_goal += budgetItemObject.itemCost;
+    project.itemized_budget.push(budgetItemObject);
+    budgetItemName.value = "";
+    budgetItemCost.value = "";
+  } catch (error) {
+    handleError(error as CustomError);
+  }
+};
+
+const deleteFromBudget = (index: number) => {
+  try {
+    const item = project.itemized_budget[index];
+    const dinaroItemCost = Dinero({
+      amount: item.itemCost,
+    });
+    const dinaroProjectFundingGoal = Dinero({
+      amount: project.funding_goal,
+    });
+    const subtracted = dinaroProjectFundingGoal.subtract(dinaroItemCost);
+    project.funding_goal = subtracted.getAmount();
+    project.itemized_budget.splice(index, 1);
+  } catch (error) {
+    handleError(error as CustomError);
+  }
+};
+
 const getProject = async () => {
   if (projectId) {
     const response = await projectsApi.getProject(projectId);
-    response.funding_goal = convertCentsToFloat(response.funding_goal);
-    response.anticipated_funding = convertCentsToFloat(
-      response.anticipated_funding
-    );
-    response.total_pledges = convertCentsToFloat(response.total_pledges);
     Object.assign(project, response);
+    originalAmountofAnitcipated.value = Dinero({
+      amount: project.anticipated_funding + project.total_pledges,
+    });
     useActiveProjectStore().setActiveProject(project);
   }
 };
 const validateAndSubmit = async () => {
   try {
     const isFormCorrect = await v$.value.$validate();
-    if (!isFormCorrect) {
-      return;
+    if (
+      !isFormCorrect ||
+      anticipatedFundingErrors.value.error ||
+      fundingGoalErrors.value.error
+    ) {
+      window.scrollTo(0, 0);
+      throw new CustomError(900, "Form Error", {
+        en: "Form errors. Please correct.",
+        fr: "Erreurs de formulaire. Veuillez les corriger.",
+      });
     }
-    project.funding_goal = convertFloatToCents(project.funding_goal);
-    project.anticipated_funding = convertFloatToCents(
-      project.anticipated_funding
-    );
+    // project.funding_goal = convertFloatToCents(project.funding_goal);
+    // project.anticipated_funding = convertFloatToCents(
+    //   project.anticipated_funding
+    // );
     if (projectId) {
-      await projectsApi.updateClubProject(project);
+      await projectsApi.updateMatchingProject(project);
       handleSuccess(langTranslations.value.toastSuccess);
     } else {
-      const response = await projectsApi.createClubProject(project);
+      const response = await projectsApi.createMatchingProject(project);
       if (response) {
         handleSuccess(langTranslations.value.toastSuccess);
       } else {
@@ -387,159 +836,914 @@ const setActiveTab = (tabName: string) => {
       class="fluid-container pt-8 p-2"
       v-if="activeTab === 'form'"
     >
-      <div class="form-block">
+      <ul class="my-8 px-4">
+        <li
+          class="list-disc"
+          v-for="listItem in ResourceList.districtMatchingCriteria"
+          :key="listItem"
+        >
+          {{ listItem }}
+        </li>
+      </ul>
+      <Hr />
+      <!-- Section A -->
+      <div class="section-a">
+        <H3
+          class="text-center underline py-8"
+          :content="langTranslations.projectFormLabels.sectionAHeader"
+        />
+        <div class="form-block">
+          <BaseInput
+            v-model="project.project_name"
+            :label="langTranslations.projectFormLabels.projectNameLabel"
+            :type="'text'"
+            :errorMessage="v$.project_name.$errors[0]?.$message as string | undefined"
+          />
+        </div>
+
+        <div class="form-block">
+          <BaseSelect
+            v-model="project.country"
+            :label="langTranslations.countryLabel"
+            :options="ResourceList.countryList"
+            :errorMessage="v$.country?.$errors[0]?.$message as string | undefined "
+          />
+          <BaseSelect
+            v-model="project.region"
+            :label="langTranslations.landingPage.regionLabel"
+            :options="ResourceList.regionList"
+            :errorMessage="v$.region?.$errors[0]?.$message as string | undefined "
+          />
+          <BaseInput
+            v-model="project.start_date"
+            :label="langTranslations.projectFormLabels.startDateLabel"
+            :type="'date'"
+            :errorMessage="v$.start_date?.$errors[0]?.$message as string | undefined "
+          />
+          <BaseInput
+            v-model="project.completion_date"
+            :label="langTranslations.projectFormLabels.completionDateLabel"
+            :type="'date'"
+            :errorMessage="v$.completion_date?.$errors[0]?.$message as string | undefined "
+          />
+        </div>
+        <div class="area-of-focus-section form-block">
+          <div class="flex">
+            <img
+              class="w-2/12"
+              :src="'/area-focus/' + ResourceList.areaFocusImages[0]"
+              alt=""
+            />
+            <BaseCheckBox
+              v-model="project.area_focus.Peace_Conflict_Prevention"
+              :label="Object.keys(project.area_focus)[0].replace(/_/g, ' ')"
+              class="mb-0"
+            />
+          </div>
+          <div class="flex">
+            <img
+              class="w-2/12"
+              :src="'/area-focus/' + ResourceList.areaFocusImages[1]"
+              alt=""
+            />
+            <BaseCheckBox
+              v-model="project.area_focus.Disease_Prevention_And_Treatment"
+              :label="Object.keys(project.area_focus)[1].replace(/_/g, ' ')"
+              class="mb-0"
+            />
+          </div>
+          <div class="flex">
+            <img
+              class="w-2/12"
+              :src="'/area-focus/' + ResourceList.areaFocusImages[2]"
+              alt=""
+            />
+            <BaseCheckBox
+              v-model="project.area_focus.Water_And_Sanitation"
+              :label="Object.keys(project.area_focus)[2].replace(/_/g, ' ')"
+              class="mb-0"
+            />
+          </div>
+          <div class="flex">
+            <img
+              class="w-2/12"
+              :src="'/area-focus/' + ResourceList.areaFocusImages[3]"
+              alt=""
+            />
+            <BaseCheckBox
+              v-model="project.area_focus.Maternal_And_Child_Health"
+              :label="Object.keys(project.area_focus)[3].replace(/_/g, ' ')"
+              class="mb-0"
+            />
+          </div>
+          <div class="flex">
+            <img
+              class="w-2/12"
+              :src="'/area-focus/' + ResourceList.areaFocusImages[4]"
+              alt=""
+            />
+            <BaseCheckBox
+              v-model="project.area_focus.Basic_Education_And_Literacy"
+              :label="Object.keys(project.area_focus)[4].replace(/_/g, ' ')"
+              class="mb-0"
+            />
+          </div>
+          <div class="flex">
+            <img
+              class="w-2/12"
+              :src="'/area-focus/' + ResourceList.areaFocusImages[5]"
+              alt=""
+            />
+            <BaseCheckBox
+              v-model="project.area_focus.Economic_And_Community_Development"
+              :label="Object.keys(project.area_focus)[5].replace(/_/g, ' ')"
+              class="mb-0"
+            />
+          </div>
+          <div class="flex">
+            <img
+              class="w-2/12"
+              :src="'/area-focus/' + ResourceList.areaFocusImages[6]"
+              alt=""
+            />
+            <BaseCheckBox
+              v-model="project.area_focus.Environment"
+              :label="Object.keys(project.area_focus)[6].replace(/_/g, ' ')"
+              class="mb-0"
+            />
+          </div>
+          <p
+            v-if="v$.area_focus?.$errors[0]?.$message as string | undefined"
+            id="error"
+            class="my-4 text-sm text-red-600 text-center"
+          >
+            <span class="font-medium">{{
+              v$.area_focus?.$errors[0]?.$message as string | undefined
+            }}</span>
+          </p>
+        </div>
+        <H4
+          class="text-center py-8"
+          :content="langTranslations.projectFormLabels.contactsHeader"
+        />
+        <Hr />
+        <H4 :content="langTranslations.projectFormLabels.primaryContactLabel" />
+        <div class="form-block">
+          <BaseInput
+            v-model="project.extra_descriptions.primary_contact.name"
+            :label="langTranslations.nameLabel"
+            :type="'text'"
+            :errorMessage="v$.extra_descriptions.primary_contact.name.$errors[0]?.$message as string | undefined"
+          />
+          <BaseInput
+            v-model="project.extra_descriptions.primary_contact.address"
+            :label="langTranslations.addressLabel"
+            :type="'text'"
+            :errorMessage="v$.extra_descriptions.primary_contact.address.$errors[0]?.$message as string | undefined"
+          />
+          <BaseInput
+            v-model="project.extra_descriptions.primary_contact.email"
+            :label="langTranslations.email"
+            :type="'email'"
+            :errorMessage="v$.extra_descriptions.primary_contact.email.$errors[0]?.$message as string | undefined"
+          />
+          <BaseInput
+            v-model="project.extra_descriptions.primary_contact.phone"
+            :label="langTranslations.phone"
+            :type="'text'"
+            :errorMessage="v$.extra_descriptions.primary_contact.phone.$errors[0]?.$message as string | undefined"
+          />
+        </div>
+        <Hr />
+        <H4
+          :content="langTranslations.projectFormLabels.secondaryContactLabel"
+        />
+        <div class="form-block">
+          <BaseInput
+            v-model="project.extra_descriptions.secondary_contact.name"
+            :label="langTranslations.nameLabel"
+            :type="'text'"
+          />
+          <BaseInput
+            v-model="project.extra_descriptions.secondary_contact.address"
+            :label="langTranslations.addressLabel"
+            :type="'text'"
+          />
+          <BaseInput
+            v-model="project.extra_descriptions.secondary_contact.email"
+            :label="langTranslations.email"
+            :type="'email'"
+          />
+          <BaseInput
+            v-model="project.extra_descriptions.secondary_contact.phone"
+            :label="langTranslations.phone"
+            :type="'text'"
+          />
+        </div>
+        <H4
+          class="text-center py-4"
+          :content="langTranslations.projectFormLabels.hostclubInfoHeader"
+        />
+        <div class="form-block">
+          <BaseInput
+            v-model="project.hostclub_information.host_club_name"
+            :label="langTranslations.projectFormLabels.hostClubDistrictLabel"
+            :type="'text'"
+            :errorMessage="v$.hostclub_information.host_club_name.$errors[0]?.$message as string | undefined"
+          />
+          <BaseInput
+            v-model="project.hostclub_information.district_number"
+            :label="langTranslations.projectFormLabels.hostClubIdLabel"
+            :type="'text'"
+            :errorMessage="v$.hostclub_information.district_number.$errors[0]?.$message as string | undefined"
+          />
+          <BaseSelect
+            v-model="project.hostclub_information.district_country"
+            :label="
+              langTranslations.projectFormLabels.hostClubLabel +
+              ' ' +
+              langTranslations.countryLabel
+            "
+            :options="ResourceList.countryList"
+            :errorMessage="v$.hostclub_information.district_country?.$errors[0]?.$message as string | undefined "
+          />
+          <BaseInput
+            v-model="project.hostclub_information.location_city"
+            :label="langTranslations.projectFormLabels.locationLabel"
+            :type="'text'"
+            :errorMessage="v$.hostclub_information.location_city.$errors[0]?.$message as string | undefined"
+          />
+        </div>
+        <Hr />
+        <H4
+          class="text-center py-4"
+          :content="
+            langTranslations.projectFormLabels.hostClubLabel +
+            ' ' +
+            langTranslations.projectFormLabels.primaryContactLabel
+          "
+        />
+        <div class="form-block">
+          <BaseInput
+            v-model="project.hostclub_information.host_primary_contact.name"
+            :label="langTranslations.nameLabel"
+            :type="'text'"
+            :errorMessage="v$.hostclub_information.host_primary_contact
+            .name.$errors[0]?.$message as string | undefined"
+          />
+          <BaseInput
+            v-model="project.hostclub_information.host_primary_contact.address"
+            :label="langTranslations.addressLabel"
+            :type="'text'"
+            :errorMessage="v$.hostclub_information.host_primary_contact
+            .address.$errors[0]?.$message as string | undefined"
+          />
+          <BaseInput
+            v-model="project.hostclub_information.host_primary_contact.email"
+            :label="langTranslations.email"
+            :type="'email'"
+            :errorMessage="v$.hostclub_information.host_primary_contact
+            .email.$errors[0]?.$message as string | undefined"
+          />
+          <BaseInput
+            v-model="project.hostclub_information.host_primary_contact.phone"
+            :label="langTranslations.phone"
+            :type="'text'"
+            :errorMessage="v$.hostclub_information.host_primary_contact
+            .phone.$errors[0]?.$message as string | undefined"
+          />
+        </div>
+        <H4
+          class="text-center py-4"
+          :content="langTranslations.projectFormLabels.itemizedListHeader"
+        />
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+          <table class="w-full text-sm text-left text-nearWhite">
+            <thead
+              class="objective-table text-xs text-nearWhite uppercase bg-gray-500"
+            >
+              <tr>
+                <th scope="col" class="px-6 py-3">
+                  {{ "#" }}
+                </th>
+                <th scope="col" class="px-6 py-3">
+                  {{ langTranslations.projectFormLabels.objectiveText }}
+                </th>
+                <th scope="col" class="px-6 py-3">
+                  {{ langTranslations.actionsLabel }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="row border-b bg-nearBlack border-gray-700">
+                <td class="px-6 py-4">#</td>
+                <td class="px-6 py-4">
+                  <BaseInput :type="'text'" v-model="objectiveItem" />
+                </td>
+                <td class="whitespace-nowrap :lg:whitespace-normal text-center">
+                  <button
+                    title="Delete item"
+                    class="crud-buttons plus_icon hover:text-primary-color"
+                    @click="addToObjectives()"
+                  >
+                    <Icon class="text-2xl" icon="ic:baseline-plus" />
+                  </button>
+                </td>
+              </tr>
+              <tr
+                class="row border-b bg-nearBlack border-gray-700"
+                id="objective_list"
+                v-for="(item, index) in project.hostclub_information
+                  .listOfObjectives"
+                :key="index"
+              >
+                <td class="px-6 py-4">{{ index + 1 }}</td>
+                <td class="px-6 py-4">{{ item }}</td>
+                <td class="text-center">
+                  <button
+                    title="Delete item"
+                    class="crud-buttons plus_icon hover:text-primary-color"
+                    @click="deleteObjectiveByIndex(index)"
+                  >
+                    <Icon class="text-2xl" icon="material-symbols:delete" />
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="textarea-block">
+          <BaseTextarea
+            v-model="project.project_description"
+            :rows="7"
+            :label="
+              langTranslations.projectLabel +
+              ' ' +
+              langTranslations.desciptionLabel
+            "
+            :errorMessage="v$.project_description?.$errors[0]?.$message as string | undefined "
+          />
+        </div>
+      </div>
+      <!-- Section B -->
+      <div class="section-b">
+        <H3
+          class="text-center underline py-8"
+          :content="langTranslations.projectFormLabels.sectionBHeader"
+        />
+        <div class="textarea-block">
+          <BaseTextarea
+            v-model="
+              project.hostclub_information
+                .host_sponsor_planned_project_description
+            "
+            :rows="7"
+            :label="
+              '1. ' +
+              langTranslations.projectFormLabels
+                .host_sponsor_planned_project_description
+            "
+            :errorMessage="v$.hostclub_information
+            .host_sponsor_planned_project_description?.$errors[0]?.$message as string | undefined "
+          />
+          <BaseTextarea
+            v-model="project.hostclub_information.host_commit_description"
+            :rows="7"
+            :label="
+              '2. ' + langTranslations.projectFormLabels.host_commit_description
+            "
+            :errorMessage="v$.hostclub_information
+            .host_commit_description?.$errors[0]?.$message as string | undefined "
+          />
+          <BaseTextarea
+            v-model="
+              project.hostclub_information.international_commit_description
+            "
+            :rows="7"
+            :label="
+              '3. ' +
+              langTranslations.projectFormLabels
+                .international_commit_description
+            "
+            :errorMessage="v$.hostclub_information
+            .international_commit_description?.$errors[0]?.$message as string | undefined "
+          />
+          <BaseTextarea
+            v-model="project.hostclub_information.sponsor_publicize_description"
+            :rows="7"
+            :label="
+              '4. ' +
+              langTranslations.projectFormLabels.sponsor_publicize_description
+            "
+            :errorMessage="v$.hostclub_information
+            .sponsor_publicize_description?.$errors[0]?.$message as string | undefined "
+          />
+        </div>
+      </div>
+      <!-- Section C -->
+      <div class="section-c">
+        <H3
+          :content="langTranslations.projectFormLabels.sectionCHeader"
+          class="text-center py-8 underline"
+        />
+        <div class="form-block">
+          <BaseInput
+            v-model="
+              project.hostclub_information.sectionC.cooperating_organizations[0]
+                .organization_name
+            "
+            :label="langTranslations.nameLabel"
+            :type="'text'"
+          />
+          <BaseInput
+            v-model="
+              project.hostclub_information.sectionC.cooperating_organizations[0]
+                .address
+            "
+            :label="langTranslations.addressLabel"
+            :type="'text'"
+          />
+          <BaseInput
+            v-model="
+              project.hostclub_information.sectionC.cooperating_organizations[0]
+                .contact_person.email
+            "
+            :label="langTranslations.email"
+            :type="'email'"
+          />
+          <BaseInput
+            v-model="
+              project.hostclub_information.sectionC.cooperating_organizations[0]
+                .contact_person.phone
+            "
+            :label="langTranslations.phone"
+            :type="'text'"
+          />
+          <BaseInput
+            v-model="
+              project.hostclub_information.sectionC.cooperating_organizations[0]
+                .contact_person.cell
+            "
+            :label="langTranslations.projectFormLabels.cellWhatsAppLabel"
+            :type="'text'"
+          />
+        </div>
+        <div class="textarea-block">
+          <BaseTextarea
+            v-model="
+              project.hostclub_information.sectionC
+                .cooperating_organizations_roles_description
+            "
+            :rows="7"
+            :label="
+              '1. ' +
+              langTranslations.projectFormLabels
+                .cooperating_organizations_roles_description
+            "
+          />
+          <BaseTextarea
+            v-model="
+              project.hostclub_information.sectionC
+                .cooperating_organizations_identify_members
+            "
+            :rows="7"
+            :label="
+              '2. ' +
+              langTranslations.projectFormLabels
+                .cooperating_organizations_identify_members
+            "
+          />
+        </div>
+      </div>
+      <!-- Section D -->
+      <div class="section-d">
+        <H3
+          :content="langTranslations.projectFormLabels.sectionDHeader"
+          class="text-center py-8 underline"
+        />
+        <div class="textarea-block">
+          <BaseTextarea
+            v-model="project.extra_descriptions.benefit_community_description"
+            :rows="7"
+            :label="
+              '1.' +
+              langTranslations.projectFormLabels.benefit_community_description
+            "
+            :errorMessage="v$.extra_descriptions
+                .benefit_community_description?.$errors[0]?.$message as string | undefined "
+          />
+          <BaseTextarea
+            v-model="project.extra_descriptions.sectionD.project_accountability"
+            :rows="7"
+            :label="
+              '2. ' + langTranslations.projectFormLabels.project_accountability
+            "
+          />
+          <BaseTextarea
+            v-model="project.extra_descriptions.sectionD.ownership_project"
+            :rows="7"
+            :label="
+              '3. ' + langTranslations.projectFormLabels.ownership_project
+            "
+          />
+          <BaseTextarea
+            v-model="project.extra_descriptions.sectionD.inventory_project"
+            :rows="7"
+            :label="
+              '4. ' + langTranslations.projectFormLabels.inventory_project
+            "
+          />
+          <BaseTextarea
+            v-model="project.extra_descriptions.sectionD.customs_clearance"
+            :rows="7"
+            :label="
+              '5. ' + langTranslations.projectFormLabels.customs_clearance
+            "
+          />
+        </div>
+      </div>
+      <!-- Section E -->
+      <div class="section-e">
+        <H3
+          :content="langTranslations.projectFormLabels.sectionEHeader"
+          class="text-center py-8 underline"
+        />
+        <div class="textarea-block">
+          <BaseTextarea
+            v-model="project.extra_descriptions.sectionE.project_capacity"
+            :rows="7"
+            :label="'1.' + langTranslations.projectFormLabels.project_capacity"
+            :errorMessage="v$.extra_descriptions
+                .benefit_community_description?.$errors[0]?.$message as string | undefined "
+          />
+          <BaseTextarea
+            v-model="project.extra_descriptions.sectionE.project_sustainment"
+            :rows="7"
+            :label="
+              '2. ' + langTranslations.projectFormLabels.project_sustainment
+            "
+          />
+          <span class="text-center my-4 font-bold">
+            {{ langTranslations.projectFormLabels.progressText }}
+          </span>
+          <div class="flex flex-col gap-4 items-center justify-center">
+            <BaseCheckBox
+              v-model="project.extra_descriptions.sectionE.e.Surveys"
+              :label="ResourceList.measurableList[0]"
+              class="mb-0"
+            />
+            <BaseCheckBox
+              v-model="project.extra_descriptions.sectionE.e.Questionnaires"
+              :label="ResourceList.measurableList[1]"
+              class="mb-0"
+            />
+            <BaseCheckBox
+              v-model="project.extra_descriptions.sectionE.e.Observations"
+              :label="ResourceList.measurableList[2]"
+              class="mb-0"
+            />
+            <BaseCheckBox
+              v-model="project.extra_descriptions.sectionE.e.Tests_Of_Knowledge"
+              :label="ResourceList.measurableList[3]"
+              class="mb-0"
+            />
+            <BaseCheckBox
+              v-model="project.extra_descriptions.sectionE.e.Interviews"
+              :label="ResourceList.measurableList[4]"
+              class="mb-0"
+            />
+            <BaseCheckBox
+              v-model="project.extra_descriptions.sectionE.e.Focus_Groups"
+              :label="ResourceList.measurableList[5]"
+              class="mb-0"
+            />
+            <BaseCheckBox
+              v-model="project.extra_descriptions.sectionE.e.Video_Media"
+              :label="ResourceList.measurableList[6]"
+              class="mb-0"
+            />
+            <BaseCheckBox
+              v-model="
+                project.extra_descriptions.sectionE.e
+                  .Documents_Materials_Collections
+              "
+              :label="ResourceList.measurableList[7]"
+              class="mb-0"
+            />
+          </div>
+        </div>
+      </div>
+      <!-- Section F -->
+      <div class="section-f">
+        <H3
+          :content="langTranslations.projectFormLabels.sectionFHeader"
+          class="text-center py-8 underline"
+        />
         <BaseInput
-          v-model="project.project_name"
-          :label="langTranslations.projectFormLabels.projectNameLabel"
+          v-model="project.hostclub_information.sectionF.local_currency_name"
+          :label="langTranslations.projectFormLabels.local_currency_name"
           :type="'text'"
-          :errorMessage="v$.project_name.$errors[0]?.$message as string | undefined"
-        />
-      </div>
-      <div class="textarea-block">
-        <BaseTextarea
-          v-model="project.project_description"
-          :rows="7"
-          :label="langTranslations.desciptionLabel"
-          :errorMessage="v$.project_description?.$errors[0]?.$message as string | undefined "
-        />
-      </div>
-      <div class="form-block">
-        <BaseSelect
-          v-model="project.country"
-          :label="langTranslations.countryLabel"
-          :options="ResourceList.countryList"
-          :errorMessage="v$.country?.$errors[0]?.$message as string | undefined "
-        />
-        <BaseSelect
-          v-model="project.region"
-          :label="langTranslations.landingPage.regionLabel"
-          :options="ResourceList.regionList"
-          :errorMessage="v$.region?.$errors[0]?.$message as string | undefined "
         />
         <BaseInput
-          v-model="project.funding_goal"
-          :label="langTranslations.projectFormLabels.fundingGoalLabel"
-          :type="'number'"
-          :inputmode="'numeric'"
-          :min="0"
-          :errorMessage="v$.funding_goal?.$errors[0]?.$message as string | undefined"
+          v-model="project.hostclub_information.sectionF.exchange_rate"
+          :label="langTranslations.projectFormLabels.exchange_rate"
+          :type="'text'"
         />
-        <BaseInput
-          v-model="project.anticipated_funding"
-          :label="langTranslations.projectFormLabels.anticipatedAmountLabel"
-          :type="'number'"
-          :inputmode="'numeric'"
-          :min="0"
-          :errorMessage="v$.anticipated_funding?.$errors[0]?.$message as string | undefined"
+        <H3
+          class="text-center"
+          :content="langTranslations.projectFormLabels.budgetLabel"
         />
-        <BaseInput
-          v-model="project.start_date"
-          :label="langTranslations.projectFormLabels.startDateLabel"
-          :type="'date'"
-          :errorMessage="v$.start_date?.$errors[0]?.$message as string | undefined "
+        <div class="budget-headers flex py-8 flex-col gap-4">
+          <p class="text-center font-bold">
+            {{ langTranslations.projectFormLabels.budgetHeader1 }}
+          </p>
+          <p class="text-center font-bold">
+            {{ langTranslations.projectFormLabels.budgetHeader2 }}
+          </p>
+        </div>
+        <div class="budget-table">
+          <div
+            class="relative overflow-x-auto shadow-md sm:rounded-lg"
+            id="item_table"
+          >
+            <table class="w-full text-sm text-left text-nearWhite">
+              <thead class="text-xs text-nearWhite uppercase bg-gray-500">
+                <tr>
+                  <th scope="col" class="px-6 py-3">
+                    {{ langTranslations.nameLabel }}
+                  </th>
+                  <th scope="col" class="px-6 py-3">
+                    {{ langTranslations.projectFormLabels.costLabel }}
+                  </th>
+                  <th scope="col" class="px-6 py-3">
+                    {{ langTranslations.actionsLabel }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="row border-b bg-nearBlack border-gray-700">
+                  <td class="px-6 py-4">
+                    <BaseInput
+                      v-model="budgetItemName"
+                      :label="'Item Name'"
+                      :type="'text'"
+                    />
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap :lg:whitespace-normal">
+                    <BaseInput
+                      v-model="budgetItemCost"
+                      :label="'Cost'"
+                      :inputmode="'numeric'"
+                      :type="'number'"
+                    />
+                  </td>
+                  <td
+                    class="px-6 py-4 text-center whitespace-nowrap :lg:whitespace-normal"
+                  >
+                    <button
+                      title="Add item"
+                      class="plus_icon hover:text-primary-color"
+                      @click="addToBudget(budgetItemName, budgetItemCost)"
+                    >
+                      <Icon class="text-2xl" icon="ic:baseline-plus" />
+                    </button>
+                  </td>
+                </tr>
+                <tr
+                  class="row border-b bg-nearBlack border-gray-700"
+                  id="funding_source"
+                  v-for="(item, index) in project.itemized_budget"
+                  :key="index"
+                >
+                  <td class="px-6 py-4 font-medium text-nearWhite">
+                    {{ item.itemName }}
+                  </td>
+                  <td class="px-6 py-4 font-medium text-nearWhite">
+                    {{ currencyFormatterFunding(item.itemCost) }}
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <button
+                      title="Delete item"
+                      class="crud-buttons plus_icon hover:text-primary-color"
+                      @click="deleteFromBudget(index)"
+                    >
+                      <Icon class="text-2xl" icon="material-symbols:delete" />
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td
+                    colspan="3"
+                    class="border-2 border-primary-color px-6 py-4 text-center font-bold text-gray-900"
+                  >
+                    {{ langTranslations.projectFormLabels.totalBudgetLabel }}
+                    {{ formattedFundingGoal }}
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+        <Hr />
+        <div class="flex flex-col justify-center items-center">
+          <H4
+            class="text-center"
+            :content="
+              customPrintf(
+                langTranslations.projectFormLabels.ddfStatement,
+                useLoggedInDistrict().loggedInDistrict.district_name,
+                useLoggedInDistrict().loggedInDistrict.district_details.ddfCapes.dmFraction.toString(),
+                useLoggedInDistrict().loggedInDistrict.district_details.ddfCapes.dmCap.toString()
+              )
+            "
+          />
+          <p class="text-center text-secondary py-4">
+            {{
+              customPrintf(
+                langTranslations.projectFormLabels.ddfCalculationStatement,
+                useLoggedInDistrict().loggedInDistrict.district_name
+              )
+            }}
+          </p>
+          <strong class="text-center">
+            {{
+              useLoggedInDistrict()
+                .loggedInDistrict.district_details.ddfCalculation.map(
+                  (ele) => ` ${ele.toString()}`
+                )
+                .join(",")
+            }}</strong
+          >
+          <H4
+            class="text-center p-4 mt-4 border-solid border-primary border"
+            :content="
+              langTranslations.projectFormLabels.ddfRequestLimit +
+              ' ' +
+              matchingGrantRequestLimit
+            "
+          />
+        </div>
+        <Hr />
+        <H4
+          class="text-center py-8"
+          :content="langTranslations.projectFormLabels.fundingSourcesLabel"
         />
-        <BaseInput
-          v-model="project.completion_date"
-          :label="langTranslations.projectFormLabels.completionDateLabel"
-          :type="'date'"
-          :errorMessage="v$.completion_date?.$errors[0]?.$message as string | undefined "
-        />
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+          <table
+            id="funding-source-table"
+            class="w-full text-sm text-left text-nearWhite"
+          >
+            <thead class="text-xs text-nearWhite uppercase bg-gray-500">
+              <tr>
+                <th scope="col" class="px-6 py-3">#</th>
+                <th scope="col" class="px-6 py-3">
+                  {{ langTranslations.sourceLabel }}
+                </th>
+                <th scope="col" class="px-6 py-3">
+                  {{ langTranslations.projectFormLabels.detailsLabel }}
+                </th>
+                <th scope="col" class="px-6 py-3">
+                  {{ langTranslations.pledgeProcess.amountLabel }}
+                </th>
+                <th scope="col" class="px-6 py-3">
+                  {{ langTranslations.actionsLabel }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="row border-b bg-nearBlack border-gray-700">
+                <td class="px-6 py-4">*</td>
+                <td class="px-6 py-4">
+                  <BaseSelect
+                    v-model="fundingSources.sourceName"
+                    :options="addFundingSource"
+                    class="mb-2"
+                  />
+                </td>
+                <td class="px-6 py-4">
+                  <BaseInput
+                    :label="''"
+                    v-model="fundingSources.typeOfFunding"
+                    :type="'text'"
+                  />
+                </td>
+                <td class="px-6 py-4">
+                  <BaseInput
+                    :label="''"
+                    v-model="fundingSources.amount"
+                    :type="'number'"
+                  />
+                </td>
+                <td
+                  class="px-6 py-4 text-center whitespace-nowrap :lg:whitespace-normal"
+                >
+                  <button
+                    title="Add item"
+                    class="plus_icon hover:text-primary-color"
+                    @click="addToFundsArray()"
+                  >
+                    <Icon class="text-2xl" icon="ic:baseline-plus" />
+                  </button>
+                </td>
+              </tr>
+              <tr
+                class="row border-b bg-nearBlack border-gray-700"
+                id="funding_source"
+                v-for="(item, index) in project.extra_descriptions
+                  .fundingSourceArray"
+                :key="index"
+              >
+                <td class="px-6 py-4 font-medium text-nearWhite">
+                  {{ index + 1 }}
+                </td>
+                <td class="px-6 py-4 font-medium text-nearWhite">
+                  {{ item.sourceName }}
+                </td>
+                <td class="px-6 py-4 font-medium text-nearWhite">
+                  {{ item.typeOfFunding }}
+                </td>
+                <td class="px-6 py-4 font-medium text-nearWhite">
+                  {{ currencyFormatterFunding(item.amount) }}
+                </td>
+                <td class="px-6 py-4 text-center">
+                  <button
+                    title="Delete item"
+                    class="crud-buttons plus_icon hover:text-primary-color"
+                    @click="deleteFromFundsArray(index)"
+                  >
+                    <Icon class="text-2xl" icon="material-symbols:delete" />
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td
+                  colspan="5"
+                  class="border-2 border-primary-color px-6 py-4 text-center font-bold text-gray-900"
+                >
+                  {{ langTranslations.projectFormLabels.totalFundingLabel }}
+                  {{ sumOfAnticipatedFunding }}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <div class="stats">
+          <div class="border-primary border-solid border my-8">
+            <H4
+              class="my-4 text-center font-bold underline-offset-8"
+              :content="
+                langTranslations.projectFormLabels.currentAnticipationLabel +
+                ' ' +
+                sumOfAnticipatedFunding
+              "
+            >
+            </H4>
+            <H4
+              class="my-4 text-center font-bold underline-offset-8"
+              :content="
+                langTranslations.projectFormLabels.currentFundingLabel +
+                ' ' +
+                formattedFundingGoal
+              "
+            >
+            </H4>
+            <H4
+              class="my-4 text-center font-bold underline-offset-8"
+              :content="
+                langTranslations.projectFormLabels.pledgeAmountLabel +
+                ' ' +
+                currencyFormatterFunding(project.total_pledges)
+              "
+            >
+            </H4>
+            <H4
+              class="my-4 text-center font-bold underline-offset-8"
+              :content="
+                langTranslations.projectFormLabels.dmRequestLabel +
+                ' ' +
+                currencyFormatterFunding(
+                  project.district_matching_grant_request
+                )
+              "
+            >
+            </H4>
+            <ErrorValidation
+              class="text-center"
+              v-if="anticipatedFundingErrors.error"
+              :errorMsg="anticipatedFundingErrors.messages as string | undefined"
+            />
+            <ErrorValidation
+              class="text-center"
+              v-if="v$.anticipated_funding.$error"
+              :errorMsg="v$.anticipated_funding?.$errors[0]?.$message  as string | undefined"
+            />
+          </div>
+        </div>
       </div>
-      <div class="area-of-focus-section form-block">
-        <div class="flex">
-          <img
-            class="w-2/12"
-            :src="'/area-focus/' + ResourceList.areaFocusImages[0]"
-            alt=""
-          />
-          <BaseCheckBox
-            v-model="project.area_focus.Peace_Conflict_Prevention"
-            :label="Object.keys(project.area_focus)[0].replace(/_/g, ' ')"
-            class="mb-0"
-          />
-        </div>
-        <div class="flex">
-          <img
-            class="w-2/12"
-            :src="'/area-focus/' + ResourceList.areaFocusImages[1]"
-            alt=""
-          />
-          <BaseCheckBox
-            v-model="project.area_focus.Disease_Prevention_And_Treatment"
-            :label="Object.keys(project.area_focus)[1].replace(/_/g, ' ')"
-            class="mb-0"
-          />
-        </div>
-        <div class="flex">
-          <img
-            class="w-2/12"
-            :src="'/area-focus/' + ResourceList.areaFocusImages[2]"
-            alt=""
-          />
-          <BaseCheckBox
-            v-model="project.area_focus.Water_And_Sanitation"
-            :label="Object.keys(project.area_focus)[2].replace(/_/g, ' ')"
-            class="mb-0"
-          />
-        </div>
-        <div class="flex">
-          <img
-            class="w-2/12"
-            :src="'/area-focus/' + ResourceList.areaFocusImages[3]"
-            alt=""
-          />
-          <BaseCheckBox
-            v-model="project.area_focus.Maternal_And_Child_Health"
-            :label="Object.keys(project.area_focus)[3].replace(/_/g, ' ')"
-            class="mb-0"
-          />
-        </div>
-        <div class="flex">
-          <img
-            class="w-2/12"
-            :src="'/area-focus/' + ResourceList.areaFocusImages[4]"
-            alt=""
-          />
-          <BaseCheckBox
-            v-model="project.area_focus.Basic_Education_And_Literacy"
-            :label="Object.keys(project.area_focus)[4].replace(/_/g, ' ')"
-            class="mb-0"
-          />
-        </div>
-        <div class="flex">
-          <img
-            class="w-2/12"
-            :src="'/area-focus/' + ResourceList.areaFocusImages[5]"
-            alt=""
-          />
-          <BaseCheckBox
-            v-model="project.area_focus.Economic_And_Community_Development"
-            :label="Object.keys(project.area_focus)[5].replace(/_/g, ' ')"
-            class="mb-0"
-          />
-        </div>
-        <div class="flex">
-          <img
-            class="w-2/12"
-            :src="'/area-focus/' + ResourceList.areaFocusImages[6]"
-            alt=""
-          />
-          <BaseCheckBox
-            v-model="project.area_focus.Environment"
-            :label="Object.keys(project.area_focus)[6].replace(/_/g, ' ')"
-            class="mb-0"
-          />
-        </div>
-      </div>
-      <p
-        v-if="v$.area_focus?.$errors[0]?.$message as string | undefined"
-        id="error"
-        class="my-4 text-sm text-red-600 text-center"
-      >
-        <span class="font-medium">{{
-          v$.area_focus?.$errors[0]?.$message as string | undefined
-        }}</span>
-      </p>
       <div class="button_row mt-8 flex justify-center gap-4">
         <RotaryButton
           :theme="'primary'"

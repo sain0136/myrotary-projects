@@ -430,9 +430,9 @@ const simplifiedGrantRequestLimit = computed(() => {
       useLoggedInDistrict().loggedInDistrict.district_details.ddfCapes.dsgCap
     ),
   });
-  const fraction = convertFloatToCents(
-    useLoggedInDistrict().loggedInDistrict.district_details.ddfCapes.dsgFraction
-  );
+  const fraction =
+    useLoggedInDistrict().loggedInDistrict.district_details.ddfCapes
+      .dsgFraction;
 
   let total = Dinero({
     amount: 0,

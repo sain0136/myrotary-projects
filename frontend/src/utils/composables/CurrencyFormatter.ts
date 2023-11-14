@@ -16,7 +16,7 @@ const convertFloatToCents = (amountInFloat: number | string) => {
   parsedFloat = parseFloat(parsedFloat.toFixed(2)) * 100;
   const dineroAmount = Dinero({ amount: parsedFloat });
   const amountInCents = dineroAmount.getAmount();
-  if (amountInCents) {
+  if (amountInCents || amountInCents === 0) {
     return amountInCents;
   } else {
     throw new CustomError(900, "Failed conversion ", {
