@@ -30,6 +30,7 @@ import { Icon } from "@iconify/vue";
 import { useRouter } from "vue-router";
 import { useActiveProjectStore } from "@/stores/ActiveProjectStore";
 import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
+
 /* Data */
 const router = useRouter();
 const { currencyFormatterFunding } = useCurrencyFormatter();
