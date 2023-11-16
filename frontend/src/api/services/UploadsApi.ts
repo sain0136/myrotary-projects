@@ -1,7 +1,7 @@
 import { ApiClient } from "@/api/ApiClient";
 import type { uploadFileData } from "@/utils/types/commonTypes";
 import { CustomErrors } from "@/utils/classes/CustomErrors";
-import type { ICustomErrors } from "@/utils/interfaces/ICustomErrors";
+import type { ICustomError } from "@/utils/interfaces/ICustomError";
 import type { IUser } from "@/utils/interfaces/IUser";
 export class UploadsApi {
   constructor(private apiClient: ApiClient) {}
