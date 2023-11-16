@@ -42,7 +42,7 @@ jobs:
           npm ci --production
           
           # Manage PM2 processes
-          pm2 delete all
+          pm2 delete TestApi
           pm2 save --force
           pm2 start /home/appadmin/TestMyRotaryProject/myrotary-projects/backend/build/server.js -i -f --name TestApi
           pm2 save
