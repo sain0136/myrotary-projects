@@ -52,6 +52,7 @@ const corsConfig: CorsConfig = {
     "http://localhost:5173",
     "http://127.0.0.1:3333",
     "https://test2.myrotaryprojects.org",
+    "https://test1.myrotaryprojects.org",
   ],
 
   /* 
