@@ -26,15 +26,15 @@ jobs:
           # Stash and pull latest code
           git stash
           git pull
-          cd Backend
-          BUILD_DIR="/home/appadmin/TestMyRotaryProject/myrotary-projects/Backend/build"
+          cd backend
+          BUILD_DIR="/home/appadmin/TestMyRotaryProject/myrotary-projects/backend/build"
           if [ -d "$BUILD_DIR" ]; then
             rm -r "$BUILD_DIR"
           fi
           npm install
           node ace build --production --ignore-ts-errors
           # Copy environment file to build directory
-          cp /home/appadmin/testfiles/.env /home/appadmin/TestMyRotaryProject/myrotary-projects/Backend/build
+          cp /home/appadmin/testfiles/.env /home/appadmin/TestMyRotaryProject/myrotary-projects/backend/build
           
           # Navigate to build directory and install production dependencies
           cd build
@@ -44,12 +44,12 @@ jobs:
           # Manage PM2 processes
           pm2 delete all
           pm2 save --force
-          pm2 start /home/appadmin/TestMyRotaryProject/myrotary-projects/Backend/build/server.js -i -f --name TestApi
+          pm2 start /home/appadmin/TestMyRotaryProject/myrotary-projects/backend/build/server.js -i -f --name TestApi
           pm2 save
           pm2 list
           
           # Frontend Deployment
-          cd /home/appadmin/TestMyRotaryProject/myrotary-projects/Frontend
+          cd /home/appadmin/TestMyRotaryProject/myrotary-projects/frontend
           npm install
           chmod -R a+x node_modules
           npm run build-only
@@ -62,7 +62,7 @@ jobs:
           fi
           
           # Move new frontend build to web directory
-          mv /home/appadmin/TestMyRotaryProject/myrotary-projects/Frontend/dist /var/www/test
+          mv /home/appadmin/TestMyRotaryProject/myrotary-projects/frontend/dist /var/www/test
           # Add more sudo commands here if needed
           '
         ENDSSH
