@@ -48,7 +48,11 @@ const corsConfig: CorsConfig = {
 
   /* origin: '*' allows any domain to access your API. 
   This is fine for development but not recommended for production */
-  origin: ["http://localhost:5173", "http://127.0.0.1:3333"],
+  origin: [
+    "http://localhost:5173",
+    "http://127.0.0.1:3333",
+    "https://test2.myrotaryprojects.org",
+  ],
 
   /* 
   |--------------------------------------------------------------------------
@@ -60,7 +64,7 @@ const corsConfig: CorsConfig = {
   |
   | Following is the list of default methods. Feel free to add more.
   */
-  methods: ["GET", "HEAD", "POST", "PUT", "DELETE"],
+  methods: ["GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"],
 
   /*
   |--------------------------------------------------------------------------
