@@ -5,7 +5,7 @@ import type {
   IDmProject,
   IDsgProject,
 } from "@/utils/interfaces/IProjects";
-import type { IUser } from "../interfaces/IUser";
+import type { IUser } from "@/utils/interfaces/IUser";
 
 export type theme = "primary" | "black" | "secondary";
 
