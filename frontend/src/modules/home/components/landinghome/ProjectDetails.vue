@@ -18,7 +18,7 @@ import Banners from "@/components/banners/Banners.vue";
 import { useRoute } from "vue-router";
 import { ProjectsApi } from "@/api/services/ProjectsApi";
 import { ApiClient } from "@/api/ApiClient";
-// import { CustomError } from "@/utils/classes/CustomError";
+import { CustomErrors } from "@/utils/classes/CustomErrors";
 import H1 from "@/components/headings/H1.vue";
 import H3 from "@/components/headings/H3.vue";
 import { useCurrencyFormatter } from "@/utils/composables/CurrencyFormatter";
@@ -61,13 +61,13 @@ onMounted(async () => {
       }
       loaded.value = true;
     } else {
-      // throw new CustomError(900, "Project not found", {
-      //   en: "Project not found",
-      //   fr: "Projet non trouvé",
-      // });
+      throw new CustomErrors(900, "Project not found", {
+        en: "Project not found",
+        fr: "Projet non trouvé",
+      });
     }
   } catch (error) {
-    // handleError(error as CustomError, true);
+    handleError(error as CustomErrors, true);
   }
 });
 

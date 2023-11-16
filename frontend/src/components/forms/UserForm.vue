@@ -24,7 +24,7 @@ import {
 } from "@vuelidate/validators/dist/index.mjs";
 import { UsersApi } from "@/api/services/UserApi";
 import { ApiClient } from "@/api/ApiClient";
-import { CustomError } from "@/utils/classes/CustomError";
+import { CustomErrors } from "@/utils/classes/CustomErrors";
 import { useRoute } from "vue-router";
 import User from "@/utils/classes/User";
 import BaseSelect from "@/components/form/BaseSelect.vue";
@@ -245,7 +245,7 @@ watch(chosenDistrict, async () => {
       clubMap.set(club.club_name, club.club_id as number);
     });
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 });
 
@@ -272,7 +272,7 @@ onMounted(async () => {
       }
     }
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 });
 
@@ -302,7 +302,7 @@ const validateAndSubmit = async () => {
             user.district_id = districtMap.get(chosenDistrict.value) as number;
           }
         } else {
-          throw new CustomError(900, "District not found", {
+          throw new CustomErrors(900, "District not found", {
             en: "District not found",
             fr: "District non trouvé",
           });
@@ -310,7 +310,7 @@ const validateAndSubmit = async () => {
         if (typeof clubMap.get(chosenClub.value) !== "undefined") {
           user.club_id = clubMap.get(chosenClub.value) as number;
         } else {
-          throw new CustomError(900, "Club not found", {
+          throw new CustomErrors(900, "Club not found", {
             en: "Club not found",
             fr: "Club non trouvé",
           });
@@ -321,7 +321,7 @@ const validateAndSubmit = async () => {
     handleSuccess(langTranslations.value.toastSuccess);
     redirect();
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 };
 

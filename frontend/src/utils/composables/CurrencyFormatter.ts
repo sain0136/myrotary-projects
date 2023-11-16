@@ -1,6 +1,6 @@
 import { ref, computed, reactive } from "vue";
 import Dinero from "dinero.js";
-import { CustomError } from "@/utils/classes/CustomError";
+import { CustomErrors } from "@/utils/classes/CustomErrors";
 
 const currencyFormatterFunding = (amountInCents: number) => {
   // Should come in as cents already
@@ -19,7 +19,7 @@ const convertFloatToCents = (amountInFloat: number | string) => {
   if (amountInCents || amountInCents === 0) {
     return amountInCents;
   } else {
-    throw new CustomError(900, "Failed conversion ", {
+    throw new CustomErrors(900, "Failed conversion ", {
       en: "Failed conversion, contact support and try again later",
       fr: "Echec de conversion, contactez le support et reessayez plus tard",
     });

@@ -11,7 +11,7 @@ import { errorHandler } from "@/utils/composables/ErrorHandler";
 import Dinero from "dinero.js";
 import { ApiClient } from "@/api/ApiClient";
 import { ProjectsApi } from "@/api/services/ProjectsApi";
-import { CustomError } from "@/utils/classes/CustomError";
+import { CustomErrors } from "@/utils/classes/CustomErrors";
 import ClubProject from "@/utils/classes/ClubProject";
 import useVuelidate from "@vuelidate/core";
 import {
@@ -131,7 +131,7 @@ onMounted(async () => {
           useLoggedInUserStore().loggedInUser.district_id ||
           useLoggedInDistrict().loggedInDistrict.district_id;
       } catch (error) {
-        throw new CustomError(900, "Project Erorr", {
+        throw new CustomErrors(900, "Project Erorr", {
           en: langTranslations.value.projectFormLabels
             .projectGenericErrorMessage,
           fr: langTranslations.value.projectFormLabels
@@ -140,7 +140,7 @@ onMounted(async () => {
       }
     }
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 });
 
@@ -338,7 +338,7 @@ const validateAndSubmit = async () => {
     }
     redirect();
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 };
 

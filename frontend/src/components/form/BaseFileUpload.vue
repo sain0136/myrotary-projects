@@ -9,7 +9,7 @@ import { ref, reactive, defineProps } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { helpers, required } from "@vuelidate/validators";
 import type { uploadFileData } from "@/utils/types/commonTypes";
-import { CustomError } from "@/utils/classes/CustomError";
+import { CustomErrors } from "@/utils/classes/CustomErrors";
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import H3 from "@/components/headings/H3.vue";
 import { ApiClient } from "@/api/ApiClient";
@@ -95,12 +95,12 @@ const submit = async () => {
       handleSuccess(langTranslations.value.toastSuccess);
       resetInput();
     } catch (error) {
-      const failUpload = new CustomError(500, "Failed to upload file", {
+      const failUpload = new CustomErrors(500, "Failed to upload file", {
         en: "Failed to upload file",
         fr: "Echec du telechargement du fichier",
       });
       handleError(failUpload);
-      console.error(error as CustomError);
+      console.error(error as CustomErrors);
     }
   }
 };

@@ -8,7 +8,7 @@ export default {
 import { ApiClient } from "@/api/ApiClient";
 import { DistrictApi } from "@/api/services/DistrictsApi";
 import BaseDisplayTable from "@/components/tables/BaseDisplayTable.vue";
-import { CustomError } from "@/utils/classes/CustomError";
+import { CustomErrors } from "@/utils/classes/CustomErrors";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import type { IDistrict } from "@/utils/interfaces/IDistrict";
 import { onMounted, reactive, ref, watch } from "vue";
@@ -57,7 +57,7 @@ const getAllDistricts = async () => {
     pagination.lastPage = response.meta.last_page;
     pagination.total = response.meta.total;
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 };
 
@@ -92,7 +92,7 @@ const confirmMultiDelete = async (selectedItems: unknown[]) => {
     }
     throw new Error();
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 };
 
@@ -111,7 +111,7 @@ const deleteDistrict = async (district: unknown) => {
     }
     await getAllDistricts();
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 };
 </script>

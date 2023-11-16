@@ -1,4 +1,4 @@
-import { CustomError } from "@/utils/classes/CustomError";
+import { CustomErrors } from "@/utils/classes/CustomErrors";
 import type { ICustomError } from "@/utils/interfaces/ICustomError";
 import axios from "axios";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
@@ -50,7 +50,7 @@ export class ApiClient {
     }
     if (response.status !== 200) {
       const partialError = jsonData as unknown as ICustomError;
-      throw new CustomError(
+      throw new CustomErrors(
         partialError.statusCode,
         partialError.rawMessage,
         partialError.translatedMessage
@@ -74,7 +74,7 @@ export class ApiClient {
     });
     if (response.status !== 200) {
       const partialError = response.data as unknown as ICustomError;
-      throw new CustomError(
+      throw new CustomErrors(
         partialError.statusCode,
         partialError.rawMessage,
         partialError.translatedMessage

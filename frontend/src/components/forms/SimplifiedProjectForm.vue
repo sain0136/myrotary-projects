@@ -11,7 +11,7 @@ import { errorHandler } from "@/utils/composables/ErrorHandler";
 import Dinero from "dinero.js";
 import { ApiClient } from "@/api/ApiClient";
 import { ProjectsApi } from "@/api/services/ProjectsApi";
-import { CustomError } from "@/utils/classes/CustomError";
+import { CustomErrors } from "@/utils/classes/CustomErrors";
 import ClubProject from "@/utils/classes/ClubProject";
 import useVuelidate from "@vuelidate/core";
 import {
@@ -166,7 +166,7 @@ onMounted(async () => {
           amount: project.anticipated_funding + project.total_pledges,
         });
       } catch (error) {
-        throw new CustomError(900, "Project Erorr", {
+        throw new CustomErrors(900, "Project Erorr", {
           en: langTranslations.value.projectFormLabels
             .projectGenericErrorMessage,
           fr: langTranslations.value.projectFormLabels
@@ -175,7 +175,7 @@ onMounted(async () => {
       }
     }
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 });
 
@@ -537,13 +537,13 @@ const deleteFromFundsArray = (index: number) => {
     project.anticipated_funding -= dinaroFunds.getAmount();
     project.extra_descriptions.fundingSourceArray.splice(index, 1);
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 };
 
 const fundingTableErrors = () => {
   if (fundingSources.value.amount < 0.01) {
-    throw new CustomError(
+    throw new CustomErrors(
       "Amount must be greater than 0",
       "SimplifiedProjectForm",
       {
@@ -553,7 +553,7 @@ const fundingTableErrors = () => {
     );
   }
   if (fundingSources.value.sourceName === "") {
-    throw new CustomError(
+    throw new CustomErrors(
       "Please select a funding source",
       "SimplifiedProjectForm",
       {
@@ -563,7 +563,7 @@ const fundingTableErrors = () => {
     );
   }
   if (!fundingSources.value.amount) {
-    throw new CustomError("Please enter an amount", "SimplifiedProjectForm", {
+    throw new CustomErrors("Please enter an amount", "SimplifiedProjectForm", {
       en: "Please enter an amount",
       fr: "Veuillez entrer un montant",
     });
@@ -609,7 +609,7 @@ const addToFundsArray = () => {
             typeOfFunding: "",
             amount: 0,
           } as IFundingSource;
-          throw new CustomError(900, "Simplified Grant Request Exceeded", {
+          throw new CustomErrors(900, "Simplified Grant Request Exceeded", {
             en: "The maximum amount for a Grant Request exceeded. Please adjust the amount.",
             fr: "Le montant maximum pour une demande de financement est dépassé. Veuillez le modifier.",
           });
@@ -646,7 +646,7 @@ const addToFundsArray = () => {
       amount: 0,
     } as IFundingSource;
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 };
 
@@ -660,7 +660,7 @@ const addToBudget = (itemName: string, itemCost: string) => {
       formattedCostInCents > FUNDING_GOAL_LIMIT ||
       project.funding_goal + formattedCostInCents > FUNDING_GOAL_LIMIT
     ) {
-      throw new CustomError(900, "Budget Exceeded", {
+      throw new CustomErrors(900, "Budget Exceeded", {
         en: "The maximum amount for a budget exceeded. Please adjust the amount.",
         fr: "Le montant maximum pour un budget est dépassé. Veuillez le modifier.",
       });
@@ -674,7 +674,7 @@ const addToBudget = (itemName: string, itemCost: string) => {
     budgetItemName.value = "";
     budgetItemCost.value = "";
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 };
 
@@ -691,7 +691,7 @@ const deleteFromBudget = (index: number) => {
     project.funding_goal = subtracted.getAmount();
     project.itemized_budget.splice(index, 1);
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 };
 
@@ -715,7 +715,7 @@ const validateAndSubmit = async () => {
       fundingGoalErrors.value.error
     ) {
       window.scrollTo(0, 0);
-      throw new CustomError(900, "Form Error", {
+      throw new CustomErrors(900, "Form Error", {
         en: "Form errors. Please correct.",
         fr: "Erreurs de formulaire. Veuillez les corriger.",
       });
@@ -737,7 +737,7 @@ const validateAndSubmit = async () => {
     }
     redirect();
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 };
 

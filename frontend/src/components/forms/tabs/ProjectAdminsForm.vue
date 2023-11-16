@@ -14,7 +14,7 @@ import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import BaseInput from "@/components/form/BaseInput.vue";
 import H3 from "@/components/headings/H3.vue";
 import ResourceList from "@/utils/classes/ResourceList";
-import { CustomError } from "@/utils/classes/CustomError";
+import { CustomErrors } from "@/utils/classes/CustomErrors";
 import { ApiClient } from "@/api/ApiClient";
 import { ClubApi } from "@/api/services/ClubApi";
 import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
@@ -78,7 +78,7 @@ onMounted(async () => {
     pagination.total = response.meta.total;
     loaded.value = true;
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 });
 
@@ -86,7 +86,7 @@ onMounted(async () => {
 const isUserAlreadyAdmin = () => {
   if (adminUsers.includes(chosenUser.value)) {
     handleError(
-      new CustomError(500, "User already admin", {
+      new CustomErrors(500, "User already admin", {
         en: "User already admin",
         fr: "Utilisateur déjà administrateur",
       })
@@ -111,13 +111,13 @@ const addUserToProject = async () => {
       adminUsers.push({ fullName: chosenUser.value });
       chosenUser.value = "";
     } else {
-      throw new CustomError(500, "User not found", {
+      throw new CustomErrors(500, "User not found", {
         en: "User not found",
         fr: "Utilisateur introuvable",
       });
     }
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 };
 </script>

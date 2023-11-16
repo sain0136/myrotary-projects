@@ -34,7 +34,7 @@ import router from "@/router";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import { PledgesApi } from "@/api/services/PledgesApi";
 import { ApiClient } from "@/api/ApiClient";
-import { CustomError } from "@/utils/classes/CustomError";
+import { CustomErrors } from "@/utils/classes/CustomErrors";
 import type { IPledge } from "@/utils/interfaces/IPledge";
 import Dinero from "dinero.js";
 
@@ -47,6 +47,7 @@ const project: IDsgProject | IDmProject | IClubProject | IGenericProject =
 const { activeProject } = useActiveProjectStore();
 const assetsStore = useSiteAssets();
 const pledgeObject: IPledge = reactive({
+  fullName: "",
   pledge_amount: "",
   firstname: "",
   lastname: "",
@@ -229,7 +230,7 @@ const validateAndSubmit = async () => {
     // Now send the updated pledgeObjectCopy to the backend
     const response = await pledgeApi.storePledge(pledgeObjectCopy);
     if (!response) {
-      throw new CustomError(900, "Error", {
+      throw new CustomErrors(900, "Error", {
         en: "Please try again later",
         fr: "Veuillez reessayer plus tard",
       });
@@ -238,7 +239,7 @@ const validateAndSubmit = async () => {
       path: "Home",
     });
   } catch (error) {
-    handleError(error as CustomError, undefined, {
+    handleError(error as CustomErrors, undefined, {
       path: "",
       goback: true,
     });

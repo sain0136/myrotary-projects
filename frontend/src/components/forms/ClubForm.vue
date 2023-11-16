@@ -20,7 +20,7 @@ import BaseInput from "@/components/form/BaseInput.vue";
 import { email, helpers, required } from "@vuelidate/validators/dist/index.mjs";
 import { DistrictApi } from "@/api/services/DistrictsApi";
 import { ApiClient } from "@/api/ApiClient";
-import { CustomError } from "@/utils/classes/CustomError";
+import { CustomErrors } from "@/utils/classes/CustomErrors";
 import Club from "@/utils/classes/Club";
 import { ClubApi } from "@/api/services/ClubApi";
 import { useRoute } from "vue-router";
@@ -105,7 +105,7 @@ onMounted(async () => {
       Object.assign(club, response);
     }
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 });
 
@@ -124,7 +124,7 @@ const validateAndSubmit = async () => {
   }
   try {
     if (formType === "siteAdmin" && !clubId && chosenDistrict.value === "") {
-      throw new CustomError(900, "Must chose a district", {
+      throw new CustomErrors(900, "Must chose a district", {
         en: "Must assign club to a district",
         fr: "Doit assigner le club a un district",
       });
@@ -139,7 +139,7 @@ const validateAndSubmit = async () => {
     });
     redirect();
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 };
 const redirect = () => {

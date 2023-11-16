@@ -15,7 +15,7 @@ import type {
   IDmProject,
   IDsgProject,
 } from "@/utils/interfaces/IProjects";
-import { CustomError } from "@/utils/classes/CustomError";
+import { CustomErrors } from "@/utils/classes/CustomErrors";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
 import BaseDisplayTable from "@/components/tables/BaseDisplayTable.vue";
@@ -54,7 +54,7 @@ onMounted(async () => {
   try {
     await getMyProjects();
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 });
 
@@ -85,7 +85,7 @@ const changeProjectStatus = async (
     }
     router.go(0);
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 };
 const getMyProjects = async () => {
@@ -129,7 +129,7 @@ const deleteProject = async (
     }
     getMyProjects();
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 };
 
@@ -163,19 +163,19 @@ const editProject = (project: IDsgProject | IDmProject | IClubProject) => {
           });
           return;
         default:
-          throw new CustomError(900, "Project not found", {
+          throw new CustomErrors(900, "Project not found", {
             en: "Project not found",
             fr: "Projet introuvable",
           });
       }
     } else {
-      throw new CustomError(900, "Project not found", {
+      throw new CustomErrors(900, "Project not found", {
         en: "Project not found",
         fr: "Projet introuvable",
       });
     }
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 };
 </script>
