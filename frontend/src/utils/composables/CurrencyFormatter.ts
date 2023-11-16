@@ -1,6 +1,6 @@
 import { ref, computed, reactive } from "vue";
 import Dinero from "dinero.js";
-import { CustomError } from "../classes/CustomError";
+import { CustomError } from "@/utils/classes/CustomError";
 
 const currencyFormatterFunding = (amountInCents: number) => {
   // Should come in as cents already

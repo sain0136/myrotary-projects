@@ -8,7 +8,7 @@ export default {
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted, ref, watch, provide, reactive } from "vue";
 import { Icon } from "@iconify/vue";
-import RotaryButton from "../buttons/RotaryButton.vue";
+import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import { useCurrencyFormatter } from "@/utils/composables/CurrencyFormatter";
 import type {
   IClubProject,
