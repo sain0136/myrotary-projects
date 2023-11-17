@@ -149,6 +149,12 @@ const sideBarItems: Record<
     link: "MyProjects",
     hasAccess: hasAccess(loggedinRole.value as AllUserRoles, "myprojects-view"),
   },
+  approvals: {
+    label: langTranslations.value.approvalsLabel,
+    icon: ResourceList.sidebarIcons.approvals,
+    link: "Approvals",
+    hasAccess: hasAccess(loggedinRole.value as AllUserRoles, "approvals-view"),
+  },
 };
 
 /* Hooks */

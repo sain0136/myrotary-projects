@@ -10,7 +10,8 @@ type PermissionTypes =
   | "clubadmin-club-settings-view"
   | "clubadmin-clubmembers-view"
   | "myprojects-view"
-  | "districtadmin-clubadmin-view";
+  | "districtadmin-clubadmin-view"
+  | "approvals-view";
 
 export type AllUserRoles = DistrictRole | ClubRole;
 
@@ -27,16 +28,30 @@ const rolePermissions: RolePermissions = {
     "webadmin-district-settings-view",
     "myprofile-view",
     "myprojects-view",
+    "approvals-view",
   ],
   "District Admin": [
     "myprofile-view",
     "districtadmin-district-settings-view",
     "districtadmin-clubadmin-view",
     "myprojects-view",
+    "approvals-view",
   ],
-  "District Grants Chair": ["myprofile-view"],
-  "District Foundations Chair": ["myprofile-view"],
-  "District International Chair": ["myprofile-view"],
+  "District Grants Chair": [
+    "myprofile-view",
+    "myprojects-view",
+    "approvals-view",
+  ],
+  "District Foundations Chair": [
+    "myprofile-view",
+    "myprojects-view",
+    "approvals-view",
+  ],
+  "District International Chair": [
+    "myprofile-view",
+    "myprojects-view",
+    "approvals-view",
+  ],
   "Club Admin": [
     "myprojects-view",
     "myprofile-view",

@@ -63,7 +63,9 @@ export class ProjectsApi {
     current_page: number,
     limit: number,
     conditional: string,
-    project_admin_table?: boolean
+    project_admin_table?: boolean,
+    andVal?: number | string | boolean,
+    andConditional1?: number | string
   ): Promise<PaginationResult> {
     return await this.apiClient.fetchWrapper(
       "POST",
@@ -74,6 +76,8 @@ export class ProjectsApi {
         limit,
         conditional,
         project_admin_table,
+        and_val: andVal,
+        and_conditional1: andConditional1,
       }
     );
   }

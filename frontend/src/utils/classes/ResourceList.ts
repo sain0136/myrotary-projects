@@ -45,6 +45,10 @@ export default class ResourceList {
     myProjects: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
     class="iconify-icon text-gray-500 transition duration-75 group-hover:text-nearBlack"
     " viewBox="0 0 20 20"><path fill="currentColor" d="M5 2a2 2 0 0 0-2 2h-.5a.5.5 0 0 0 0 1H3v3h-.5a.5.5 0 0 0 0 1H3v3h-.5a.5.5 0 0 0 0 1H3a2 2 0 0 0 2 2h1.354L14 5.896V4a2 2 0 0 0-2-2H5Zm1.5 4h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1 0-1Zm10.173-1.73c.45-.537 1.324-.219 1.324.482V16a2 2 0 0 1-2 2H6.751a.75.75 0 0 1-.574-1.233L16.673 4.27Zm-1.672 9.985l.002-2.645a.25.25 0 0 0-.441-.161l-2.64 3.145a.25.25 0 0 0 .192.41h2.137a.75.75 0 0 0 .75-.75Z"/></svg>`,
+    approvals: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+    class="iconify-icon text-gray-500 transition duration-75 group-hover:text-nearBlack"
+     viewBox="0 0 32 32"><path fill="currentColor" d="m22 27.18l-2.59-2.59L18 26l4 4l8-8l-1.41-1.41L22 27.18z"/><path fill="currentColor" d="M25 5h-3V4a2.006 2.006 0 0 0-2-2h-8a2.006 2.006 0 0 0-2 2v1H7a2.006 2.006 0 0 0-2 2v21a2.006 2.006 0 0 0 2 2h9v-2H7V7h3v3h12V7h3v11h2V7a2.006 2.006 0 0 0-2-2Zm-5 3h-8V4h8Z"/></svg>
+    `,
   };
 
   static statusList = Object.values(projectStatus);
