@@ -1,5 +1,5 @@
 import type { IDistrict } from "@/utils/interfaces/IDistrict";
-import type { IStorageInformation } from "@/utils/interfaces/IProjects";
+import type { uploadedFile } from "@/utils/types/commonTypes";
 
 export default class District implements IDistrict {
   district_id = 0;
@@ -22,7 +22,7 @@ export default class District implements IDistrict {
       grant_submission_closedate: "",
       grant_submission_startdate: "",
     },
-    reportLinks: [] as IStorageInformation[],
+    reportLinks: [] as uploadedFile[],
   };
   report = null;
   socialMedia = [] as string[];

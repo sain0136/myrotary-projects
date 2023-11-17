@@ -53,7 +53,9 @@ export default class UserService {
     value: string | number | boolean,
     currentPage: number,
     limit: number,
-    adminTable?: boolean
+    adminTable?: boolean,
+    andVal?: number | string | boolean,
+    andConditional1?: number | string
   ) {
     if (adminTable) {
       return await this.projectsRepositories.fetchAdminAssociated(
@@ -66,7 +68,9 @@ export default class UserService {
       value,
       limit,
       currentPage,
-      conditional
+      conditional,
+      andVal,
+      andConditional1
     );
   }
 

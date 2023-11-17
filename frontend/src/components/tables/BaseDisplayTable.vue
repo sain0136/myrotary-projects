@@ -78,7 +78,7 @@ const {
   hideActionsColumn?: boolean;
   //TODO perhaps make expict union type  selectedItems typed ? like allow a select types that can be passed in
   multiSelectDelete?: (selectedItems: unknown[]) => void;
-  // TODO all these unknowns into types
+  // TODO transform all these unknowns into types
   rowEvents?: (row: unknown) => void;
 }>();
 /* Hooks */

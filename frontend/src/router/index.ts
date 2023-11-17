@@ -107,6 +107,11 @@ const routes = [
         component: () => import("@/modules/admin/views/MyProjects.vue"),
       },
       {
+        path: "approvals",
+        name: "Approvals",
+        component: () => import("@/modules/admin/views/Approvals.vue"),
+      },
+      {
         path: "district-clubs",
         name: "ClubsAdmin",
         component: () => import("@/modules/admin/views/ClubsAdmin.vue"),

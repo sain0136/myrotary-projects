@@ -1,4 +1,7 @@
 export interface Translation {
+  noProjectsFoundForApproval: string;
+  reportsLabel: string;
+  approvalsLabel: string;
   submitReportLabel: string;
   submitForApprovalLabel: string;
   projectFormLabels: {
@@ -277,6 +280,9 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    noProjectsFoundForApproval: "No projects found for approval.",
+    reportsLabel: "Reports",
+    approvalsLabel: "Approvals",
     submitReportLabel: "Submit Reports",
     submitForApprovalLabel: "Submit for Approval",
     projectFormLabels: {
@@ -591,6 +597,9 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    noProjectsFoundForApproval: "Aucun projet trouvé pour approbation.",
+    reportsLabel: "Rapports",
+    approvalsLabel: "Approbation",
     submitReportLabel: "Soumettre des rapports",
     submitForApprovalLabel: "Soumettre pour approbation",
     projectFormLabels: {

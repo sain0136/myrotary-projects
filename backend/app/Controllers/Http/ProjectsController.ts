@@ -79,6 +79,8 @@ export default class ProjectsController {
       const currentPage: number = request.input("current_page", 1);
       const limit: number = request.input("limit", 10);
       const adminTable: boolean = request.input("project_admin_table", false);
+      const andVal: string = request.input("and_val", null);
+      const andConditional1: string = request.input("and_conditional1", null);
       const { projectsService } = this.initializeServices();
       const conditionalProjects =
         await projectsService.fetchConditionalProjects(
@@ -86,7 +88,9 @@ export default class ProjectsController {
           value,
           currentPage,
           limit,
-          adminTable
+          adminTable,
+          andVal,
+          andConditional1
         );
       return response.json(conditionalProjects);
     } catch (error) {

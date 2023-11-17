@@ -197,13 +197,24 @@ export default class ProjectsRepositories {
     value: number | string | boolean,
     limit: number,
     currentPage: number,
-    conditional: number | string
+    conditional: number | string,
+    andVal?: number | string | boolean,
+    andConditional1?: number | string
   ) {
-    return await Projects.query()
-      .select()
-      .where({ [conditional]: value })
-      .orderBy("project_id", "desc")
-      .paginate(currentPage, limit);
+    if (andConditional1) {
+      return await Projects.query()
+        .select()
+        .where({ [conditional]: value })
+        .andWhere({ [andConditional1]: andVal })
+        .orderBy("project_id", "desc")
+        .paginate(currentPage, limit);
+    } else {
+      return await Projects.query()
+        .select()
+        .where({ [conditional]: value })
+        .orderBy("project_id", "desc")
+        .paginate(currentPage, limit);
+    }
   }
 
   public async createClubProject(newProject: IClubProject): Promise<Projects> {
