@@ -12,7 +12,7 @@ import H4 from "@/components/headings/H3.vue";
 import BaseDisplayTable from "@/components/tables/BaseDisplayTable.vue";
 import { ApiClient } from "@/api/ApiClient";
 import { ProjectsApi } from "@/api/services/ProjectsApi";
-import { CustomError } from "@/utils/classes/CustomError";
+import { CustomErrors } from "@/utils/classes/CustomErrors";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
 import type {
@@ -50,7 +50,7 @@ onMounted(async () => {
   try {
     await getProjects();
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 });
 
@@ -116,19 +116,19 @@ const editProject = (project: IDsgProject | IDmProject | IClubProject) => {
           });
           return;
         default:
-          throw new CustomError(900, "Project not found", {
+          throw new CustomErrors(900, "Project not found", {
             en: "Project not found",
             fr: "Projet introuvable",
           });
       }
     } else {
-      throw new CustomError(900, "Project not found", {
+      throw new CustomErrors(900, "Project not found", {
         en: "Project not found",
         fr: "Projet introuvable",
       });
     }
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 };
 </script>

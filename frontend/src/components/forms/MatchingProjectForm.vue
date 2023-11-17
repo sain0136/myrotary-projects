@@ -839,7 +839,9 @@ const setActiveTab = (tabName: string) => {
       <ul class="my-8 px-4">
         <li
           class="list-disc"
-          v-for="listItem in ResourceList.districtMatchingCriteria"
+          v-for="listItem in ResourceList.districtMatchingCriteria[
+            languagePref
+          ]"
           :key="listItem"
         >
           {{ listItem }}
