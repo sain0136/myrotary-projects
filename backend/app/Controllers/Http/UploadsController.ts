@@ -50,8 +50,10 @@ export default class UploadsController {
   public async delete({ request, response }: HttpContextContract) {
     try {
       const filenames: Array<string> = request.input("filenames");
+      const projectId = request.input("projectId", null);
+
       const { uploadsService } = this.initializeServices();
-      await uploadsService.delete(filenames);
+      await uploadsService.delete(filenames, projectId);
       return response.json({});
     } catch (error) {
       throw new CustomException(error as CustomErrorType);

@@ -8,7 +8,8 @@ export default {
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted, reactive, ref, watch } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
-import H4 from "@/components/headings/H3.vue";
+import H3 from "@/components/headings/H3.vue";
+import H4 from "@/components/headings/H4.vue";
 import BaseDisplayTable from "@/components/tables/BaseDisplayTable.vue";
 import { ApiClient } from "@/api/ApiClient";
 import { ProjectsApi } from "@/api/services/ProjectsApi";

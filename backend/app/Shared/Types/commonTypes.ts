@@ -30,9 +30,8 @@ export type uploadedFiletypes =
   | "profile-picture"
   | "main-logo"
   | "project-coverImage"
-  | "project-document-report-images"
-  | "project-document-report-files"
-  | "project-document-evidence-files";
+  | "project-document-evidence"
+  | "project-report-files";
 
 export type uploadFileData = {
   databaseTarget: databaseTarget;

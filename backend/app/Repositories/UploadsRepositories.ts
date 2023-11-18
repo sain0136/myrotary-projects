@@ -88,13 +88,19 @@ export default class UploadsController {
           const project = await Projects.findOrFail(projectId);
           const projectMedia = project.fileUploads as IUploads;
           for await (const file of uploadedFiles) {
-            const toDeleteName =
-              (projectMedia?.project_image as uploadedFile)?.s3Name || null;
-            if (toDeleteName) {
-              await Drive.delete(toDeleteName);
-            }
             if (file.fileType === "project-coverImage") {
+              const toDeleteName =
+                (projectMedia?.project_image as uploadedFile)?.s3Name || null;
+              if (toDeleteName) {
+                await Drive.delete(toDeleteName);
+              }
               projectMedia.project_image = file as uploadedFile;
+            }
+            if (file.fileType === "project-document-evidence") {
+              projectMedia.evidence_files.push(file as uploadedFile);
+            }
+            if (file.fileType === "project-report-files") {
+              projectMedia.reports_files.push(file as uploadedFile);
             }
           }
           await project

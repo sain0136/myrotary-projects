@@ -1335,7 +1335,7 @@ const setActiveTab = (tabName: string) => {
       </div>
     </form>
     <div v-if="activeTab === 'uploads'">
-      <ProjectUploads :project-type="'club'" />
+      <ProjectUploads :project-type="'dsg'" />
     </div>
     <div v-if="activeTab === 'pdf'"><ClubProjectPdf /></div>
     <div v-if="activeTab === 'pledges'">
