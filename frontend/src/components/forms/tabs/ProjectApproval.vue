@@ -86,7 +86,7 @@ const approveProject = async () => {
         useLoggedInUserStore().loggedInUser.role === 'District Admin' ||
         useLoggedInUserStore().loggedInUser.role === 'District Grants Chair'
       "
-      :label="langTranslations.saveLabel"
+      :label="langTranslations.approveLabel"
       :theme="'black'"
       @click="approveProject()"
     />

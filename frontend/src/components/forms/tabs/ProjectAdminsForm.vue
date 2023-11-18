@@ -17,7 +17,6 @@ import ResourceList from "@/utils/classes/ResourceList";
 import { CustomErrors } from "@/utils/classes/CustomErrors";
 import { ApiClient } from "@/api/ApiClient";
 import { ClubApi } from "@/api/services/ClubApi";
-import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
 import BaseDisplayTable from "@/components/tables/BaseDisplayTable.vue";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import { useLoggedInClub } from "@/stores/LoggedInClub";

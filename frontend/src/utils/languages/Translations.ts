@@ -1,4 +1,11 @@
 export interface Translation {
+  approveLabel: string;
+  clickToUpload: string;
+  dragAndDropLabel: string;
+  filesSelectedLabel: string;
+  clearLabel: string;
+  uploadEvidenceLabel: string;
+  uploadreportsLabel: string;
   noProjectsFoundForApproval: string;
   reportsLabel: string;
   approvalsLabel: string;
@@ -280,6 +287,13 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    approveLabel: "Approve",
+    clickToUpload: "Click to upload",
+    dragAndDropLabel: "or drag and drop",
+    filesSelectedLabel: "files selected",
+    clearLabel: "Clear",
+    uploadEvidenceLabel: "Upload Evidence",
+    uploadreportsLabel: "Upload Reports",
     noProjectsFoundForApproval: "No projects found for approval.",
     reportsLabel: "Reports",
     approvalsLabel: "Approvals",
@@ -597,6 +611,13 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    approveLabel: "Approuver",
+    clickToUpload: "Cliquez pour télécharger",
+    dragAndDropLabel: "ou glissez et déposez",
+    filesSelectedLabel: "fichiers sélectionnés",
+    clearLabel: "Effacer",
+    uploadEvidenceLabel: "Télécharger des preuves",
+    uploadreportsLabel: "Télécharger des rapports",
     noProjectsFoundForApproval: "Aucun projet trouvé pour approbation.",
     reportsLabel: "Rapports",
     approvalsLabel: "Approbation",
