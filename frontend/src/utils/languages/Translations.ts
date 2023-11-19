@@ -1,4 +1,9 @@
 export interface Translation {
+  noReportFormsFound: string;
+  downloadDistrictReports: string;
+  districtReportsUploadLabel: string;
+  viewLabel: string;
+  fileLabel: string;
   approveLabel: string;
   clickToUpload: string;
   dragAndDropLabel: string;
@@ -287,6 +292,12 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    noReportFormsFound:
+      "No report forms found for your district contact your district administrator for more information",
+    downloadDistrictReports: "Download District Report Forms",
+    districtReportsUploadLabel: "Upload District Reports",
+    viewLabel: "View",
+    fileLabel: "File",
     approveLabel: "Approve",
     clickToUpload: "Click to upload",
     dragAndDropLabel: "or drag and drop",
@@ -611,6 +622,13 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    noReportFormsFound:
+      "Aucun formulaire de rapport trouvé pour votre district. Contactez votre administrateur de district pour plus d'informations",
+    downloadDistrictReports:
+      "Télécharger les formulaires de rapport de district",
+    districtReportsUploadLabel: "Télécharger les rapports de district",
+    viewLabel: "Voir",
+    fileLabel: "Fichiers",
     approveLabel: "Approuver",
     clickToUpload: "Cliquez pour télécharger",
     dragAndDropLabel: "ou glissez et déposez",

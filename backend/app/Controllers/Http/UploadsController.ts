@@ -2,6 +2,7 @@ import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import CustomException from "App/Exceptions/CustomException";
 import UploadsRepositories from "App/Repositories/UploadsRepositories";
 import UploadsService from "App/Services/UploadsService";
+import { uploadedFile } from "App/Shared/Interfaces/IUser";
 import { CustomErrorType } from "App/Utils/CommonTypes";
 
 export default class UploadsController {
@@ -30,6 +31,8 @@ export default class UploadsController {
       const fileTypes = request.input("fileTypes");
       const userId = request.input("userId", null);
       const projectId = request.input("projectId", null);
+      const districtId = request.input("districtId", null);
+      const customIdentifier = request.input("customIdentifier", null);
 
       const { uploadsService } = this.initializeServices();
       const result = await uploadsService.uploadFiles(
@@ -38,7 +41,9 @@ export default class UploadsController {
         databaseTarget,
         fileTypes,
         userId,
-        projectId
+        projectId,
+        districtId,
+        customIdentifier
       );
       return response.json(result);
     } catch (error) {
@@ -49,11 +54,18 @@ export default class UploadsController {
 
   public async delete({ request, response }: HttpContextContract) {
     try {
-      const filenames: Array<string> = request.input("filenames");
+      const toDeleteUploads: Array<uploadedFile> =
+        request.input("toDeleteUploads");
+      const districtId = request.input("districtId", null);
       const projectId = request.input("projectId", null);
-
+      const userId = request.input("projectId", null);
       const { uploadsService } = this.initializeServices();
-      await uploadsService.delete(filenames, projectId);
+      await uploadsService.delete(
+        toDeleteUploads,
+        districtId,
+        projectId,
+        userId
+      );
       return response.json({});
     } catch (error) {
       throw new CustomException(error as CustomErrorType);

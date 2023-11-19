@@ -21,6 +21,7 @@ import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import { ProjectsApi } from "@/api/services/ProjectsApi";
 import { useActiveProjectStore } from "@/stores/ActiveProjectStore";
+import { Icon } from "@iconify/vue";
 
 /* Data */
 const projectsApi = new ProjectsApi(new ApiClient());
@@ -30,6 +31,7 @@ const siteAssetsStore = useSiteAssets();
 const uploadsApi = new UploadsApi(new ApiClient());
 const { handleError, handleSuccess } = errorHandler();
 const userStore = useLoggedInUserStore();
+const fileInput = ref(null);
 
 const allowedDoctypesMap = {
   docsOnly: {
@@ -60,6 +62,11 @@ const {
   projectId,
   userId,
   dropzoneMode,
+  districtId,
+  dropzoneAcceptedFileTypes,
+  customIdentifier,
+  postUploadCallback,
+  iconMode,
 } = defineProps<{
   acceptedFileTypes?: "allTypes" | "docsOnly" | "imageOnly";
   fileUploadLabelFormats?: string;
@@ -68,8 +75,12 @@ const {
   reqData: uploadFileData;
   userId?: number;
   projectId?: number;
+  districtId?: number;
   dropzoneMode?: boolean;
   dropzoneAcceptedFileTypes?: "allTypes" | "docsOnly";
+  customIdentifier?: string;
+  postUploadCallback?: Function;
+  iconMode?: boolean;
 }>();
 const validationData: ValidationData = reactive({
   file: null,
@@ -78,7 +89,14 @@ const validationRules = {
   file: {
     required: helpers.withMessage(
       langTranslations.value.formErorrText.noFilesUpload,
-      required
+      (value) => {
+        if (iconMode) {
+          // If iconMode   is true, skip validation by returning true
+          return true;
+        }
+        // Otherwise, perform the required validation
+        return !!value;
+      }
     ),
   },
 };
@@ -92,6 +110,9 @@ const handleFileChange = (event: Event, multiple: boolean) => {
     validationData.file = [...files];
   } else {
     validationData.file = files[0];
+  }
+  if (iconMode) {
+    submit();
   }
 };
 
@@ -127,16 +148,27 @@ const submit = async () => {
         storagePath: reqData.storagePath,
         fileTypes: reqData.fileTypes,
       };
-      const response = await uploadsApi.uploadFile(req, userId, projectId);
+      const response = await uploadsApi.uploadFile(
+        req,
+        userId,
+        projectId,
+        districtId,
+        customIdentifier
+      );
       if (response && "user_id" in response) {
         userStore.setLoggedInUser(response);
       }
       const updateResponse = await assetsApi.getMainAssets();
       siteAssetsStore.setSiteAssets(updateResponse);
+      if (projectId) {
+        const response3 = await projectsApi.getProject(projectId ?? 0);
+        useActiveProjectStore().setActiveProject(response3);
+      }
       handleSuccess(langTranslations.value.toastSuccess);
-      const response3 = await projectsApi.getProject(projectId ?? 0);
-      useActiveProjectStore().setActiveProject(response3);
       resetInput();
+      if (postUploadCallback) {
+        postUploadCallback();
+      }
     } catch (error) {
       const failUpload = new CustomErrors(500, "Failed to upload file", {
         en: "Failed to upload file",
@@ -170,10 +202,35 @@ const clear = () => {
   const fileInput = document.getElementById("file_input") as HTMLInputElement;
   fileInput.value = "";
 };
+
+const triggerFileInput = () => {
+  (fileInput.value as unknown as HTMLInputElement).click();
+};
 </script>
 
 <template>
-  <div v-if="!dropzoneMode" class="flex flex-col items-center gap-2">
+  <div
+    class="flex items-center gap-2"
+    @click="triggerFileInput"
+    v-if="iconMode"
+  >
+    <Icon icon="material-symbols:upload-sharp" />
+    <input
+      @event.preventDefault()
+      class="hidden w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none"
+      aria-describedby="file_input_help"
+      id="file_input"
+      type="file"
+      @change="handleFileChange($event, false)"
+      :accept="getFileTypes()"
+      ref="fileInput"
+      style="display: none"
+    />
+  </div>
+  <div
+    v-if="!dropzoneMode && !iconMode"
+    class="flex flex-col items-center gap-2"
+  >
     <div class="py-8"></div>
     <H3 v-if="title" :content="title" />
     <input
