@@ -1,5 +1,5 @@
 import { ApiClient } from "@/api/ApiClient";
-import type { uploadFileData } from "@/utils/types/commonTypes";
+import type { uploadFileData, uploadedFile } from "@/utils/types/commonTypes";
 import { CustomErrors } from "@/utils/classes/CustomErrors";
 import type { ICustomError } from "@/utils/interfaces/ICustomError";
 import type { IUser } from "@/utils/interfaces/IUser";
@@ -11,7 +11,9 @@ export class UploadsApi {
   public async uploadFile(
     uploadFileData: uploadFileData,
     userId?: number,
-    projectId?: number
+    projectId?: number,
+    districtId?: number,
+    customIdentifier?: string
   ): Promise<object | undefined | IUser> {
     let fd = new FormData();
     if (uploadFileData.fileTypes) {
@@ -31,15 +33,28 @@ export class UploadsApi {
       if (projectId) {
         fd.append("projectId", projectId.toString());
       }
+      if (districtId) {
+        fd.append("districtId", districtId.toString());
+      }
+      if (customIdentifier) {
+        fd.append("customIdentifier", customIdentifier);
+      }
       const response = await this.apiClient.axiosWrapper("/uploadFiles", fd);
       return response;
     }
   }
 
-  public async deleteFiles(s3NamesToDelete: string[], projectId: number) {
+  public async deleteFiles(
+    toDeleteUploads: uploadedFile[],
+    projectId?: number,
+    districtId?: number,
+    userId?: number
+  ) {
     return await this.apiClient.fetchWrapper("POST", `${BASE_ROUTE}/delete`, {
-      filenames: s3NamesToDelete,
-      projectId: projectId,
+      toDeleteUploads,
+      projectId,
+      districtId,
+      userId,
     });
   }
 }

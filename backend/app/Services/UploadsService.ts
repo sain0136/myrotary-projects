@@ -9,6 +9,8 @@ import type {
 import { uploadedFile } from "App/Shared/Interfaces/IUser";
 import Projects from "App/Models/Projects";
 import { IUploads } from "App/Shared/Interfaces/IProjects";
+import Districts from "App/Models/Districts";
+import { IDistrictDetails } from "App/Shared/Interfaces/IDistrict";
 
 export default class UploadsService {
   constructor(private uploadsRepositories: UploadsRepositories) {}
@@ -23,7 +25,9 @@ export default class UploadsService {
     databaseTarget: databaseTarget,
     fileTypes: uploadedFiletypes,
     userId?: number,
-    projectId?: number
+    projectId?: number,
+    districtId?: number,
+    customIdentifier?: string
   ) {
     // TODO : ENV variable for cdn ?
 
@@ -31,15 +35,24 @@ export default class UploadsService {
     const postUploadedFiles: Array<uploadedFile> = [];
     for await (const file of files) {
       const uniqueId = uuidv4();
-      const uniqueFileName = `${fileTypes}-${uniqueId}_${file.clientName}`;
-      const filePath = `${storagePath}/${userId}`;
+      let uniqueFileName = `
+      ${
+        customIdentifier ? customIdentifier + "~" : ""
+      }${fileTypes}-${uniqueId}_${file.clientName}`;
+      uniqueFileName = uniqueFileName.replace(/\s+/g, "");
       if (userId) {
+        const filePath = `${storagePath}/${userId}`;
         // const filenameWithoutExtension = file.clientName.replace(/\.[^/.]+$/, "");
         await file.moveToDisk(filePath, {
           name: uniqueFileName,
         });
       } else if (projectId) {
         const filePath = `${storagePath}/${projectId}`;
+        await file.moveToDisk(filePath, {
+          name: uniqueFileName,
+        });
+      } else if (districtId) {
+        const filePath = `${storagePath}/${districtId}`;
         await file.moveToDisk(filePath, {
           name: uniqueFileName,
         });
@@ -67,7 +80,8 @@ export default class UploadsService {
       postUploadedFiles,
       databaseTarget,
       userId,
-      projectId
+      projectId,
+      districtId
     );
     if (response && Array.isArray(response) && response.length === 1) {
       return response[0];
@@ -76,22 +90,64 @@ export default class UploadsService {
     }
   }
 
-  public async delete(filesToDelete: Array<string>, projectId: number) {
-    for await (const filename of filesToDelete) {
-      const project = await Projects.findOrFail(projectId);
-      const projectMedia = project.fileUploads as IUploads;
-      projectMedia.evidence_files = projectMedia.evidence_files.filter(
-        (file: uploadedFile) => file.s3Name !== filename
-      );
-      projectMedia.reports_files = projectMedia.reports_files.filter(
-        (file: uploadedFile) => file.s3Name !== filename
-      );
-      await project
-        .merge({
-          fileUploads: JSON.stringify(projectMedia),
-        })
-        .save();
-      await Drive.delete(filename);
+  public async delete(
+    toDeleteUploads: Array<uploadedFile>,
+    districtId?: number,
+    projectId?: number,
+    userId?: number
+  ) {
+    for await (const file of toDeleteUploads) {
+      switch (file.fileType) {
+        case "district-report-files":
+          await Drive.delete(file.s3Name);
+          if (districtId) {
+            const district = await Districts.findOrFail(districtId);
+            const districtDetails =
+              district.districtDetails as unknown as IDistrictDetails;
+            const index = districtDetails.reportLinks.findIndex(
+              (storedFile: uploadedFile) => storedFile.s3Name === file.s3Name
+            );
+            if (index > -1) {
+              districtDetails.reportLinks.splice(index, 1);
+              await district
+                .merge({ districtDetails: JSON.stringify(districtDetails) })
+                .save();
+            }
+          }
+          return true;
+        case "project-document-evidence":
+          if (projectId) {
+            const project = await Projects.findOrFail(projectId);
+            const projectMedia = project.fileUploads as IUploads;
+            const index = projectMedia.evidence_files.findIndex(
+              (storedFile: uploadedFile) => storedFile.s3Name === file.s3Name
+            );
+            if (index > -1) {
+              projectMedia.evidence_files.splice(index, 1);
+              await project
+                .merge({ fileUploads: JSON.stringify(projectMedia) })
+                .save();
+              await Drive.delete(file.s3Name);
+            }
+          }
+          return true;
+        case "project-report-files":
+          if (projectId) {
+            const project = await Projects.findOrFail(projectId);
+            const projectMedia = project.fileUploads as IUploads;
+            const index = projectMedia.reports_files.findIndex(
+              (storedFile: uploadedFile) => storedFile.s3Name === file.s3Name
+            );
+            if (index > -1) {
+              projectMedia.reports_files.splice(index, 1);
+              await project
+                .merge({ fileUploads: JSON.stringify(projectMedia) })
+                .save();
+              await Drive.delete(file.s3Name);
+            }
+          }
+      }
+      console.log(userId);
     }
   }
 }

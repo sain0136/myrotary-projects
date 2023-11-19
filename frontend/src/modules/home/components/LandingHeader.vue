@@ -99,7 +99,7 @@ onMounted(async () => {});
     <div
       class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4"
     >
-      <a href="https://flowbite.com/" class="flex items-center">
+      <div class="flex items-center">
         <img
           :src="
             assetsStore.siteAssets.main_logo.s3UrlLink ||
@@ -108,7 +108,7 @@ onMounted(async () => {});
           class="h-14 mr-3"
           alt="Flowbite Logo"
         />
-      </a>
+      </div>
       <button
         @click="showMenu = !showMenu"
         data-collapse-toggle="navbar-default"

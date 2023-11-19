@@ -7,6 +7,8 @@ import { IUser, uploadedFile } from "App/Shared/Interfaces/IUser";
 import { databaseTarget } from "App/Shared/Types/commonTypes";
 import Projects from "App/Models/Projects";
 import { IUploads } from "App/Shared/Interfaces/IProjects";
+import { IDistrictDetails } from "App/Shared/Interfaces/IDistrict";
+import Districts from "App/Models/Districts";
 
 export default class UploadsController {
   public async test(file: any) {
@@ -22,7 +24,8 @@ export default class UploadsController {
     uploadedFiles: Array<uploadedFile>,
     databaseTarget: databaseTarget,
     userId?: number,
-    projectId?: number
+    projectId?: number,
+    districtId?: number
   ): Promise<Array<uploadedFile> | undefined | Users> {
     try {
       switch (databaseTarget) {
@@ -108,6 +111,20 @@ export default class UploadsController {
               fileUploads: JSON.stringify(projectMedia),
             })
             .save();
+          return [];
+        case "district-report-files":
+          const district = await Districts.findOrFail(districtId);
+          const districtDetails =
+            district.districtDetails as unknown as IDistrictDetails;
+          for await (const file of uploadedFiles) {
+            districtDetails.reportLinks.push(file as uploadedFile);
+          }
+          await district
+            .merge({
+              districtDetails: JSON.stringify(districtDetails),
+            })
+            .save();
+          return [];
         default:
           return [];
       }

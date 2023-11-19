@@ -19,6 +19,8 @@ import { ApiClient } from "@/api/ApiClient";
 import { UploadsApi } from "@/api/services/UploadsApi";
 import type { CustomErrors } from "@/utils/classes/CustomErrors";
 import { ProjectsApi } from "@/api/services/ProjectsApi";
+import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
+import Hr from "@/components/hr/Hr.vue";
 
 /* Data */
 const projectsApi = new ProjectsApi(new ApiClient());
@@ -70,7 +72,7 @@ const fetchUpdatedData = async () => {
 
 const deleteFiles = async (file: uploadedFile) => {
   try {
-    await uploadsApi.deleteFiles([file.s3Name], projectId ?? 0);
+    await uploadsApi.deleteFiles([file], projectId ?? 0);
     fetchUpdatedData();
   } catch (error) {
     handleError(error as CustomErrors);
@@ -89,6 +91,41 @@ const stripUrlPart = (url: string) => {
 
 <template>
   <div class="flex flex-col gap-8 justify-center items-center py-8">
+    <div>
+      <H4
+        class="text-center mb-4"
+        :content="
+          useLoggedInDistrict().loggedInDistrict.district_details.reportLinks
+            .length > 0
+            ? langTranslations.downloadDistrictReports
+            : langTranslations.noReportFormsFound
+        "
+      />
+      <ul
+        class="rounded-lg border border-primary p-4"
+        v-if="
+          useLoggedInDistrict().loggedInDistrict.district_details.reportLinks
+            .length > 0
+        "
+      >
+        <li
+          v-for="report in useLoggedInDistrict().loggedInDistrict
+            .district_details.reportLinks"
+          :key="report.s3Name"
+          class="flex gap-2 justify-center items-center"
+        >
+          <div class="flex">
+            <a
+              class="hover:text-primary hover:underline"
+              :href="report.s3UrlLink"
+              target="_blank"
+              >{{ stripUrlPart(report.s3Name) }}</a
+            >
+          </div>
+        </li>
+      </ul>
+    </div>
+
     <!-- Cover Image Upload -->
     <H4
       class="text-center"
@@ -156,13 +193,13 @@ const stripUrlPart = (url: string) => {
               </a>
             </th>
             <td class="px-6 py-4 flex justify-center">
-              <a
+              <div
                 @click="deleteFiles(file)"
                 :title="langTranslations.deleteLabel"
-                href=""
-                class="font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
-                ><Icon icon="tabler:trash"
-              /></a>
+                class="cursor-pointer font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
+              >
+                <Icon icon="tabler:trash" />
+              </div>
             </td>
           </tr>
         </tbody>
@@ -194,7 +231,7 @@ const stripUrlPart = (url: string) => {
       <table class="w-full text-sm text-left text-nearWhite">
         <thead class="text-xs text-nearWhite uppercase bg-gray-500">
           <th scope="col" class="px-6 py-3">
-            {{ "File" }}
+            {{ langTranslations.fileLabel }}
           </th>
           <th scope="col" class="px-6 py-3">
             {{ langTranslations.deleteLabel }}
@@ -213,13 +250,13 @@ const stripUrlPart = (url: string) => {
               </a>
             </th>
             <td class="px-6 py-4 flex justify-center">
-              <a
+              <div
                 @click="deleteFiles(file)"
                 :title="langTranslations.deleteLabel"
-                href=""
-                class="font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
-                ><Icon icon="tabler:trash"
-              /></a>
+                class="cursor-pointer font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
+              >
+                <Icon icon="tabler:trash" />
+              </div>
             </td>
           </tr>
         </tbody>
