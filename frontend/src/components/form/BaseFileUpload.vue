@@ -22,6 +22,7 @@ import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import { ProjectsApi } from "@/api/services/ProjectsApi";
 import { useActiveProjectStore } from "@/stores/ActiveProjectStore";
 import { Icon } from "@iconify/vue";
+import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
 
 /* Data */
 const projectsApi = new ProjectsApi(new ApiClient());
@@ -32,7 +33,7 @@ const uploadsApi = new UploadsApi(new ApiClient());
 const { handleError, handleSuccess } = errorHandler();
 const userStore = useLoggedInUserStore();
 const fileInput = ref(null);
-
+const loading = ref(false);
 const allowedDoctypesMap = {
   docsOnly: {
     acceptsString:
@@ -148,6 +149,7 @@ const submit = async () => {
         storagePath: reqData.storagePath,
         fileTypes: reqData.fileTypes,
       };
+      loading.value = true;
       const response = await uploadsApi.uploadFile(
         req,
         userId,
@@ -155,6 +157,7 @@ const submit = async () => {
         districtId,
         customIdentifier
       );
+      loading.value = false;
       if (response && "user_id" in response) {
         userStore.setLoggedInUser(response);
       }
@@ -233,33 +236,36 @@ const triggerFileInput = () => {
   >
     <div class="py-8"></div>
     <H3 v-if="title" :content="title" />
-    <input
-      class="block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none"
-      aria-describedby="file_input_help"
-      id="file_input"
-      type="file"
-      @change="handleFileChange($event, false)"
-      :accept="getFileTypes()"
-    />
-    <p v-if="v$.file.$error" class="text-red-500">
-      {{ v$.file.$errors[0].$message }}
-    </p>
-    <p class="font-bold" id="file_input_help">
-      {{ fileUploadLabelFormats }}
-    </p>
-    <div>
-      <RotaryButton :label="submitLabel" :theme="'black'" @click="submit">
-      </RotaryButton>
-      <RotaryButton
-        :disable="!validationData.file"
-        :label="langTranslations.clearLabel"
-        :theme="'secondary'"
-        @click="clear"
-      >
-      </RotaryButton>
+    <div class="flex flex-col items-center gap-2" v-if="!loading">
+      <input
+        class="block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none"
+        aria-describedby="file_input_help"
+        id="file_input"
+        type="file"
+        @change="handleFileChange($event, false)"
+        :accept="getFileTypes()"
+      />
+      <p v-if="v$.file.$error" class="text-red-500">
+        {{ v$.file.$errors[0].$message }}
+      </p>
+      <p class="font-bold" id="file_input_help">
+        {{ fileUploadLabelFormats }}
+      </p>
+      <div>
+        <RotaryButton :label="submitLabel" :theme="'black'" @click="submit">
+        </RotaryButton>
+        <RotaryButton
+          :disable="!validationData.file"
+          :label="langTranslations.clearLabel"
+          :theme="'secondary'"
+          @click="clear"
+        >
+        </RotaryButton>
+      </div>
     </div>
+    <LoadingSpinner v-if="loading" />
   </div>
-  <div v-if="dropzoneMode" class="flex flex-col items-center gap-4">
+  <div v-if="dropzoneMode && !loading" class="flex flex-col items-center gap-4">
     <div class="flex items-center justify-center w-full">
       <label
         @dragover.prevent
@@ -334,6 +340,7 @@ const triggerFileInput = () => {
       </RotaryButton>
     </div>
   </div>
+  <LoadingSpinner v-if="loading && !iconMode" />
 </template>
 
 <style lang="scss" scoped>
