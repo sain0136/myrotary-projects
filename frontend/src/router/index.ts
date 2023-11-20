@@ -45,6 +45,11 @@ const routes = [
         name: "UserLogin",
         component: () => import("@/modules/home/views/UserLogin.vue"),
       },
+      {
+        path: "stats",
+        name: "Stats",
+        component: () => import("@/modules/home/views/Stats.vue"),
+      },
     ],
   },
   // Admin Routes

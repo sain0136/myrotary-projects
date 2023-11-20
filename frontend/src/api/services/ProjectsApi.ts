@@ -16,7 +16,7 @@ export class ProjectsApi {
     allRotaryYears: string[];
   }> {
     return await this.apiClient.fetchWrapper(
-      "GET",
+      "POST",
       `${BASE_ROUTE}/getRotaryYears`
     );
   }
