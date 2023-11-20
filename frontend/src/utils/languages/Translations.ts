@@ -1,4 +1,12 @@
 export interface Translation {
+  alltimesLabel: string;
+  statsByDistrict: string;
+  selectDistrictLabel: string;
+  totalBudgetAmount: string;
+  totalFundsRaised: string;
+  selectLabelRotaryYear: string;
+  statsHeaderLabel: string;
+  statsLabel: string;
   noReportFormsFound: string;
   downloadDistrictReports: string;
   districtReportsUploadLabel: string;
@@ -292,6 +300,14 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    alltimesLabel: "All Time Project Types",
+    statsByDistrict: "District Project Types ",
+    selectDistrictLabel: "Select a district",
+    totalFundsRaised: "Funds Raised:",
+    totalBudgetAmount: "Projects Budget:",
+    selectLabelRotaryYear: "Select Rotary Year",
+    statsHeaderLabel: "All Projects Statistics",
+    statsLabel: "Stats",
     noReportFormsFound:
       "No report forms found for your district contact your district administrator for more information",
     downloadDistrictReports: "Download District Report Forms",
@@ -622,6 +638,14 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    alltimesLabel: "Tous les types de projets",
+    statsByDistrict: "Types de projets District",
+    selectDistrictLabel: "Sélectionner un district",
+    totalBudgetAmount: "Budget des Projets:",
+    totalFundsRaised: "Fonds collectés :",
+    selectLabelRotaryYear: "Sélectionnez l'année Rotary",
+    statsHeaderLabel: "Tous les projets Statistiques",
+    statsLabel: "Statistiques",
     noReportFormsFound:
       "Aucun formulaire de rapport trouvé pour votre district. Contactez votre administrateur de district pour plus d'informations",
     downloadDistrictReports:
