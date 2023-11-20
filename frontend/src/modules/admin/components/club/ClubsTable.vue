@@ -21,6 +21,7 @@ import { ClubApi } from "@/api/services/ClubApi";
 import H3 from "@/components/headings/H3.vue";
 import type { IClub } from "@/utils/interfaces/IClub";
 import type District from "@/utils/classes/District";
+import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
 
 /* Data */
 type tableView = "districtAdmin";
@@ -44,6 +45,7 @@ const { tableView, districtId } = defineProps<{
   tableView?: tableView;
   districtId?: number;
 }>();
+const loaded = ref(false);
 
 /* Hooks */
 watch(chosenDistrict, () => {
@@ -61,6 +63,7 @@ watch(chosenDistrict, () => {
 
 onMounted(async () => {
   try {
+    loaded.value = false;
     if (!tableView) {
       const response = (await districtApi.getAllDistricts(
         false,
@@ -77,6 +80,7 @@ onMounted(async () => {
       chosenDistrictId.value = districtId;
       getClubsByDistrict();
     }
+    loaded.value = true;
   } catch (error) {
     handleError(error as CustomError);
   }
@@ -91,6 +95,7 @@ watch(
 /* Methods */
 const getClubsByDistrict = async () => {
   try {
+    loaded.value = false;
     const response = (await clubApi.clubsInDistrict(
       chosenDistrictId.value,
       pagination.currentPage,
@@ -101,6 +106,7 @@ const getClubsByDistrict = async () => {
     pagination.currentPage = response.meta.current_page;
     pagination.lastPage = response.meta.last_page;
     pagination.total = response.meta.total;
+    loaded.value = true;
   } catch (error) {
     handleError(error as CustomError);
   }
@@ -137,7 +143,7 @@ const deleteClub = async (club: unknown) => {
 <template>
   <div class="flex flex-col mt-8 gap-8">
     <div
-      v-if="tableView !== 'districtAdmin'"
+      v-if="tableView !== 'districtAdmin' && loaded"
       class="flex mt-8 justify-center flex-col gap-4 items-center"
     >
       <H3 :content="langTranslations.clubsView.choseDistrictForClubs" />
@@ -194,7 +200,12 @@ const deleteClub = async (club: unknown) => {
         },
       ]"
     />
-    <div class="flex justify-center" v-else>
+    <LoadingSpinner v-if="!loaded" />
+
+    <div
+      class="flex justify-center"
+      v-else-if="allClubsInDistrict.length === 0 && loaded"
+    >
       <H3 :content="langTranslations.clubsView.noClubsInDistrict" />
     </div>
     <div class="flex justify-center">

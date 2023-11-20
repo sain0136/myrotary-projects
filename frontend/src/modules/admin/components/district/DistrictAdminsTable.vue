@@ -11,6 +11,7 @@ import BaseDisplayTable from "@/components/tables/BaseDisplayTable.vue";
 import type { CustomError } from "@/utils/classes/CustomError";
 import BaseSelect from "@/components/form/BaseSelect.vue";
 import H3 from "@/components/headings/H3.vue";
+import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
 
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import type { IDistrict } from "@/utils/interfaces/IDistrict";
@@ -32,6 +33,7 @@ const districtApi = new DistrictApi(new ApiClient());
 const allDistricts = reactive<Map<string, number>>(new Map());
 const { changeShowModal, setModal } = modalHandler();
 const allDistrictsinDistrict = reactive<IDistrict[]>([]);
+const loaded = ref(false);
 
 const chosenDistrict = ref("");
 const chosenDistrictId = ref(0);
@@ -60,6 +62,7 @@ watch(chosenDistrict, () => {
 
 onMounted(async () => {
   try {
+    loaded.value = false;
     const response = (await districtApi.getAllDistricts(
       false,
       1,
@@ -71,6 +74,7 @@ onMounted(async () => {
         district.district_id as number
       );
     });
+    loaded.value = true;
   } catch (error) {
     handleError(error as CustomError);
   }
@@ -89,6 +93,7 @@ watch(
 
 const getDistrictAdmin = async () => {
   try {
+    loaded.value = false;
     allDistrictsinDistrict.splice(0, allDistrictsinDistrict.length);
     const response = (await districtApi.getDistrictAdmins(
       pagination.currentPage,
@@ -117,6 +122,7 @@ const getDistrictAdmin = async () => {
     pagination.currentPage = response.meta.current_page;
     pagination.lastPage = response.meta.last_page;
     pagination.total = response.meta.total;
+    loaded.value = true;
   } catch (error) {
     handleError(error as CustomError);
   }
@@ -181,7 +187,7 @@ const handlePageChange = (nextOrPrevious: "next" | "previous") => {
       />
     </div>
     <BaseDisplayTable
-      v-if="allDistrictsinDistrict.length > 0"
+      v-if="allDistrictsinDistrict.length > 0 && loaded"
       :multi-select-delete="(selectedItems) => {}"
       :show-checkboxes="false"
       :handle-page-change="handlePageChange"
@@ -221,7 +227,11 @@ const handlePageChange = (nextOrPrevious: "next" | "previous") => {
         },
       ]"
     />
-    <div class="flex justify-center" v-else>
+    <LoadingSpinner v-if="!loaded" />
+    <div
+      class="flex justify-center"
+      v-else-if="allDistrictsinDistrict.length === 0 && loaded"
+    >
       <H3 :content="langTranslations.districtView.noAdminsInDistrict" />
     </div>
     <div class="flex justify-center">

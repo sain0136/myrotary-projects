@@ -1,4 +1,5 @@
 export interface Translation {
+  langPrefrenceLabel: string;
   alltimesLabel: string;
   statsByDistrict: string;
   selectDistrictLabel: string;
@@ -300,6 +301,7 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    langPrefrenceLabel: "Language Preference",
     alltimesLabel: "All Time Project Types",
     statsByDistrict: "District Project Types ",
     selectDistrictLabel: "Select a district",
@@ -638,6 +640,7 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    langPrefrenceLabel: "Préférence linguistique",
     alltimesLabel: "Tous les types de projets",
     statsByDistrict: "Types de projets District",
     selectDistrictLabel: "Sélectionner un district",
@@ -818,8 +821,8 @@ export const translations: Record<string, Translation> = {
     },
     projectCodeLabel: "Code Projet",
     projectNotFoundError: "Projet introuvable",
-    listviewlabel: "List View",
-    gridviewlabel: "Grid View",
+    listviewlabel: "Vue de la liste",
+    gridviewlabel: "Vue en grille",
     noResultsLabel: "Aucun Résultat",
     statusLabel: "Statut",
     filterProjectsLabel: "Filtrer",
