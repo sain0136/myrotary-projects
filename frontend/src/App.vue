@@ -12,9 +12,14 @@ import BaseModal from "./components/modal/BaseModal.vue";
 import { AssetsApi } from "@/api/services/AssestsApi";
 import { ApiClient } from "@/api/ApiClient";
 import { useSiteAssets } from "@/stores/SiteAssets";
+import { useLanguage } from "@/utils/languages/UseLanguage";
 
 const assetsStore = useSiteAssets();
+const { setLocalLanguage } = useLanguage();
 
+onMounted(() => {
+  setLocalLanguage();
+});
 const { toastRecord, refCounter } = toastHandler();
 const toast = useToast();
 const assetsApi = new AssetsApi(new ApiClient());

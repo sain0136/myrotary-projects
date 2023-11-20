@@ -14,6 +14,7 @@ import { useLoggedInClub } from "@/stores/LoggedInClub";
 import { useSiteAssets } from "@/stores/SiteAssets";
 
 /* Data */
+const showSub = ref(false);
 const assetsStore = useSiteAssets();
 const userStore = useLoggedInUserStore();
 const districtStore = useLoggedInDistrict();
@@ -22,7 +23,8 @@ defineEmits(["update:modelValue"]);
 defineProps<{
   drawerVal: boolean;
 }>();
-const { langTranslations, languagePref, setLanguage } = useLanguage();
+const { langTranslations, languagePref, setLanguage, availabileLanguages } =
+  useLanguage();
 const show = ref(false);
 const rootElement = ref<HTMLElement | null>(null);
 
@@ -38,8 +40,10 @@ onBeforeUnmount(() => {
   document.removeEventListener("click", hideDropdown);
 });
 /* Methods */
-const changeLanguage = () => {
-  const lang = languagePref.value === "en" ? "fr" : "en";
+const changeLanguage = (pref: "en" | "fr") => {
+  showSub.value = false;
+  languagePref.value = pref;
+  const lang = pref;
   setLanguage(lang);
 };
 
@@ -122,22 +126,6 @@ const logoutAdmin = async () => {
         </router-link>
       </div>
       <div class="flex items-center lg:order-2">
-        <button
-          type="button"
-          class="buttons flex mx-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300"
-          id="user-menu-button"
-          aria-expanded="false"
-          data-dropdown-toggle="dropdown"
-          :title="title"
-          @click="changeLanguage"
-        >
-          <span class="sr-only">Open user menu</span>
-          <img
-            class="w-10 h-10 rounded-full"
-            src="/canada.svg.png"
-            alt="user photo"
-          />
-        </button>
         <div ref="rootElement" class="flex flex-col">
           <!-- NOTE: By using @click.stop, you're stopping the click event from bubbling up to the document, so the dropdown stays open  -->
           <button
@@ -188,6 +176,67 @@ const logoutAdmin = async () => {
                   >{{ langTranslations.adminDash.myProfileLabel }}</a
                 >
               </li>
+
+              <li>
+                <span
+                  @click="
+                    () => {
+                      toggleDropdown();
+                      router.push({
+                        name: 'MyProfile',
+                        query: { tabNameProp: 'profile' },
+                      });
+                    }
+                  "
+                  href="#"
+                  class="flex items-center py-2 px-4 text-sm hover:bg-gray-100 hover:text-nearBlack"
+                  >{{
+                    langTranslations.langPrefrenceLabel +
+                    ": " +
+                    languagePref.toLocaleUpperCase()
+                  }}
+                  <svg
+                    @click.stop=""
+                    class="w-3.5 h-3.5 ms-2.5 cursor-pointer pl-1"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 10 6"
+                    @click="showSub = !showSub"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="m1 1 4 4 4-4"
+                    />
+                  </svg>
+                </span>
+                <div
+                  :class="showSub ? 'block' : 'hidden'"
+                  id="doubleDropdown"
+                  class="z-60 fixed divide-y divide-gray-100 rounded-lg shadow w-44 text-nearWhite bg-gray-600"
+                >
+                  <ul
+                    class="py-2 text-sm"
+                    aria-labelledby="doubleDropdownButton"
+                  >
+                    <li
+                      v-for="lang in availabileLanguages"
+                      :key="lang"
+                      class="rounded-lg"
+                    >
+                      <a
+                        @click="changeLanguage(lang)"
+                        href="#"
+                        class="block px-4 py-2 hover:text-nearBlack hover:bg-gray-100 rounded-lg"
+                        >{{ lang.toLocaleUpperCase() }}</a
+                      >
+                    </li>
+                  </ul>
+                </div>
+              </li>
               <li>
                 <a
                   @click="logoutAdmin"
@@ -223,5 +272,9 @@ nav {
       display: block;
     }
   }
+}
+#doubleDropdown {
+  right: 5rem;
+  top: 13rem;
 }
 </style>
