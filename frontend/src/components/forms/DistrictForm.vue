@@ -24,6 +24,7 @@ import {
   helpers,
   maxLength,
   minLength,
+  numeric,
   required,
 } from "@vuelidate/validators/dist/index.mjs";
 import { DistrictApi } from "@/api/services/DistrictsApi";
@@ -43,6 +44,7 @@ const districtFilesReqData = {
   files: [],
   fileTypes: "district-report-files",
 } as uploadFileData;
+const { langTranslations, customPrintf, languagePref } = useLanguage();
 
 type formType = "districtAdmin";
 const districtApi = new DistrictApi(new ApiClient());
@@ -78,7 +80,6 @@ const uploadTypes = ref<Array<{
   label: string;
   linkObject: null | uploadedFile;
 }> | null>(null);
-const { langTranslations, languagePref } = useLanguage();
 const sourceList = [
   "District Club Contribution",
   "Non-District Club Contribution",
@@ -91,13 +92,14 @@ const duplicateErrorMsg = ref({
   fr: "",
 });
 const minLengthMessage = {
-  en: "Must be at least 100 characters",
-  fr: "Doit contenir au moins 100 caractères",
+  en: "Must be at least {value} characters",
+  fr: "Doit contenir au moins  {value} caractères",
 };
 const maxLengthMessage = {
-  en: "Must be at most 1000 characters",
-  fr: "Doit contenir au plus 1000 caractères",
+  en: "Must be at most {value} characters",
+  fr: "Doit contenir au plus {value} caractères",
 };
+customPrintf;
 const submitLabel = isEdit
   ? {
       en: "Update",
@@ -114,6 +116,18 @@ const rules = {
     required: helpers.withMessage(
       langTranslations.value.formErorrText.required,
       required
+    ),
+    maxLength: helpers.withMessage(
+      customPrintf(maxLengthMessage[languagePref.value], "10"),
+      maxLength(10)
+    ),
+    minLenght: helpers.withMessage(
+      customPrintf(minLengthMessage[languagePref.value], "4"),
+      minLength(4)
+    ),
+    numeric: helpers.withMessage(
+      langTranslations.value.formErorrText.numeric,
+      numeric
     ),
   },
   district_president: {
