@@ -85,7 +85,7 @@ const submit = async () => {
     <div class="py-8" v-if="session">
       <img
         class="h-24"
-        :src="siteAssetsStore.siteAssets.main_logo.s3UrlLink"
+        :src="siteAssetsStore.siteAssets.assets.main_logo.s3UrlLink"
         alt="brand"
       />
     </div>
