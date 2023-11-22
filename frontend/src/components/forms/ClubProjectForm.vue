@@ -66,7 +66,7 @@ const submitLabel: { [key: string]: string } = projectId
     };
 const FUNDING_GOAL_LIMIT = 1000000000;
 const projectsApi = new ProjectsApi(new ApiClient());
-const { langTranslations, languagePref } = useLanguage();
+const { langTranslations, languagePref, customPrintf } = useLanguage();
 const { handleError, handleSuccess } = errorHandler();
 const tabs = ref([
   {
@@ -158,11 +158,11 @@ const rules = {
       required
     ),
     maxLength: helpers.withMessage(
-      maxLengthMessage[languagePref.value],
+      customPrintf(langTranslations.value.maxLengthMessage, "1000"),
       maxLength(1000)
     ),
     minLenght: helpers.withMessage(
-      minLengthMessage[languagePref.value],
+      customPrintf(langTranslations.value.minLengthMessage, "1000"),
       minLength(100)
     ),
   },

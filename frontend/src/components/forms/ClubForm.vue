@@ -17,7 +17,13 @@ import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import H2 from "@/components/headings/H2.vue";
 import Hr from "@/components/hr/Hr.vue";
 import BaseInput from "@/components/form/BaseInput.vue";
-import { email, helpers, required } from "@vuelidate/validators/dist/index.mjs";
+import {
+  email,
+  helpers,
+  maxLength,
+  minLength,
+  required,
+} from "@vuelidate/validators/dist/index.mjs";
 import { DistrictApi } from "@/api/services/DistrictsApi";
 import { ApiClient } from "@/api/ApiClient";
 import { CustomErrors } from "@/utils/classes/CustomErrors";
@@ -30,7 +36,7 @@ import BaseSelect from "@/components/form/BaseSelect.vue";
 type formType = "siteAdmin" | "clubAdmin" | "districtAdmin" | undefined;
 const route = useRoute();
 const districtApi = new DistrictApi(new ApiClient());
-const { langTranslations, languagePref } = useLanguage();
+const { langTranslations, languagePref, customPrintf } = useLanguage();
 const { handleError, handleSuccess, handleValidationForm } = errorHandler();
 const club = reactive(new Club());
 // required form data
@@ -59,11 +65,23 @@ const rules = {
       langTranslations.value.formErorrText.required,
       required
     ),
+    maxLength: helpers.withMessage(
+      customPrintf(langTranslations.value.maxLengthMessage, "50"),
+      maxLength(50)
+    ),
+    minLenght: helpers.withMessage(
+      customPrintf(langTranslations.value.minLengthMessage, "5"),
+      minLength(5)
+    ),
   },
   club_address: {
     required: helpers.withMessage(
       langTranslations.value.formErorrText.required,
       required
+    ),
+    maxLength: helpers.withMessage(
+      customPrintf(langTranslations.value.maxLengthMessage, "100"),
+      maxLength(100)
     ),
   },
   club_city: {
@@ -71,11 +89,19 @@ const rules = {
       langTranslations.value.formErorrText.required,
       required
     ),
+    maxLength: helpers.withMessage(
+      customPrintf(langTranslations.value.maxLengthMessage, "50"),
+      maxLength(50)
+    ),
   },
   club_country: {
     required: helpers.withMessage(
       langTranslations.value.formErorrText.required,
       required
+    ),
+    maxLength: helpers.withMessage(
+      customPrintf(langTranslations.value.maxLengthMessage, "50"),
+      maxLength(50)
     ),
   },
   club_email: {
@@ -86,6 +112,10 @@ const rules = {
     email: helpers.withMessage(
       langTranslations.value.formErorrText.emailFormat,
       email
+    ),
+    maxLength: helpers.withMessage(
+      customPrintf(langTranslations.value.maxLengthMessage, "254"),
+      maxLength(254)
     ),
   },
 };

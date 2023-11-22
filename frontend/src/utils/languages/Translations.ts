@@ -1,4 +1,6 @@
 export interface Translation {
+  minLengthMessage: string;
+  maxLengthMessage: string;
   langPrefrenceLabel: string;
   alltimesLabel: string;
   statsByDistrict: string;
@@ -301,6 +303,8 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    minLengthMessage: "Must be at least {value} characters",
+    maxLengthMessage: "Must be at most {value} characters",
     langPrefrenceLabel: "Language Preference",
     alltimesLabel: "All Time Project Types",
     statsByDistrict: "District Project Types ",
@@ -640,6 +644,8 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    minLengthMessage: "Doit contenir au moins  {value} caractères",
+    maxLengthMessage: "Doit contenir au plus {value} caractères",
     langPrefrenceLabel: "Préférence linguistique",
     alltimesLabel: "Tous les types de projets",
     statsByDistrict: "Types de projets District",

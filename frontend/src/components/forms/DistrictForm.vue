@@ -91,15 +91,6 @@ const duplicateErrorMsg = ref({
   en: "",
   fr: "",
 });
-const minLengthMessage = {
-  en: "Must be at least {value} characters",
-  fr: "Doit contenir au moins  {value} caractères",
-};
-const maxLengthMessage = {
-  en: "Must be at most {value} characters",
-  fr: "Doit contenir au plus {value} caractères",
-};
-customPrintf;
 const submitLabel = isEdit
   ? {
       en: "Update",
@@ -118,11 +109,11 @@ const rules = {
       required
     ),
     maxLength: helpers.withMessage(
-      customPrintf(maxLengthMessage[languagePref.value], "10"),
+      customPrintf(langTranslations.value.maxLengthMessage, "10"),
       maxLength(10)
     ),
     minLenght: helpers.withMessage(
-      customPrintf(minLengthMessage[languagePref.value], "4"),
+      customPrintf(langTranslations.value.minLengthMessage, "4"),
       minLength(4)
     ),
     numeric: helpers.withMessage(
@@ -152,11 +143,11 @@ const rules = {
       required
     ),
     maxLength: helpers.withMessage(
-      maxLengthMessage[languagePref.value],
+      langTranslations.value.maxLengthMessage,
       maxLength(1000)
     ),
     minLenght: helpers.withMessage(
-      minLengthMessage[languagePref.value],
+      langTranslations.value.minLengthMessage,
       minLength(100)
     ),
   },

@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { handleError, onMounted, reactive, ref, watch } from "vue";
+import { computed, handleError, onMounted, reactive, ref, watch } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import District from "@/utils/classes/District";
 import { useVuelidate } from "@vuelidate/core";
@@ -43,7 +43,7 @@ type formType =
   | "districtAdmin"
   | null;
 const route = useRoute();
-const { langTranslations, languagePref } = useLanguage();
+const { langTranslations, languagePref, customPrintf } = useLanguage();
 // Required for form
 const userId = ref(route.params.userId);
 const userType = ref(
@@ -100,19 +100,11 @@ const maxLengthPostal = {
   en: "Must be at most 32 characters",
   fr: "Doit contenir au plus 32 caractères",
 };
-const maxLenghtAddress = {
-  en: "Must be at most 100 characters",
-  fr: "Doit contenir au plus 100 caractères",
-};
-const maxLengthMessage = {
-  en: "Must be at most 50 characters",
-  fr: "Doit contenir au plus 50 caractères",
-};
 const passwordMinLength = {
   en: "Must be at least 8 characters",
   fr: "Doit contenir au moins 8 caractères",
 };
-
+const submitted = ref(false);
 /* Validations */
 const rules = {
   firstname: {
@@ -121,7 +113,7 @@ const rules = {
       required
     ),
     maxLength: helpers.withMessage(
-      maxLengthMessage[languagePref.value],
+      customPrintf(langTranslations.value.maxLengthMessage, "50"),
       maxLength(50)
     ),
   },
@@ -131,7 +123,7 @@ const rules = {
       required
     ),
     maxLength: helpers.withMessage(
-      maxLengthMessage[languagePref.value],
+      customPrintf(langTranslations.value.maxLengthMessage, "50"),
       maxLength(50)
     ),
   },
@@ -141,7 +133,7 @@ const rules = {
       required
     ),
     maxLength: helpers.withMessage(
-      maxLenghtAddress[languagePref.value],
+      customPrintf(langTranslations.value.maxLengthMessage, "100"),
       maxLength(100)
     ),
   },
@@ -161,7 +153,7 @@ const rules = {
       required
     ),
     maxLength: helpers.withMessage(
-      maxLenghtAddress[languagePref.value],
+      customPrintf(langTranslations.value.maxLengthMessage, "100"),
       maxLength(100)
     ),
   },
@@ -171,7 +163,7 @@ const rules = {
       required
     ),
     maxLength: helpers.withMessage(
-      maxLengthMessage[languagePref.value],
+      customPrintf(langTranslations.value.maxLengthMessage, "50"),
       maxLength(50)
     ),
   },
@@ -181,7 +173,7 @@ const rules = {
       required
     ),
     maxLength: helpers.withMessage(
-      maxLengthMessage[languagePref.value],
+      customPrintf(langTranslations.value.maxLengthMessage, "50"),
       maxLength(50)
     ),
   },
@@ -191,8 +183,8 @@ const rules = {
       required
     ),
     maxLength: helpers.withMessage(
-      maxLengthMessage[languagePref.value],
-      maxLength(50)
+      customPrintf(langTranslations.value.maxLengthMessage, "180"),
+      maxLength(180)
     ),
   },
   role_type: {
@@ -210,6 +202,10 @@ const rules = {
       langTranslations.value.formErorrText.required,
       required
     ),
+    maxLength: helpers.withMessage(
+      customPrintf(langTranslations.value.maxLengthMessage, "254"),
+      maxLength(254)
+    ),
   },
   password: {
     required: helpers.withMessage(
@@ -226,17 +222,17 @@ const v$ = useVuelidate(rules, user);
 
 /* Hooks */
 watch(chosenDistrict, async () => {
-  if (chosenDistrict.value === "") {
-    chosenDistrictError.value = {
-      en: "Must select a district",
-      fr: "Doit sélectionner un district",
-    };
-  } else {
-    chosenDistrictError.value = {
-      en: "",
-      fr: "",
-    };
-  }
+  // if (chosenDistrict.value === "") {
+  //   chosenDistrictError.value = {
+  //     en: "Must select a district",
+  //     fr: "Doit sélectionner un district",
+  //   };
+  // } else {
+  //   chosenDistrictError.value = {
+  //     en: "",
+  //     fr: "",
+  //   };
+  // }
   try {
     const id = districtMap.get(chosenDistrict.value) as number;
     const allClubsInDistrict = await clubApi.clubsInDistrict(id, 1, 10000000);
@@ -278,7 +274,9 @@ onMounted(async () => {
 
 /* Methods */
 const validateAndSubmit = async () => {
-  const isFormCorrect = await v$.value.$validate();
+  submitted.value = true;
+  let isFormCorrect = await v$.value.$validate();
+  isFormCorrect = choosenDistrictError.value !== "" ? false : isFormCorrect;
   if (
     !isFormCorrect ||
     (!userId.value &&
@@ -350,6 +348,17 @@ const redirect = () => {
       router.go(-1);
   }
 };
+
+const choosenDistrictError = computed((): string => {
+  if (
+    (chosenDistrict.value === "" || chosenClub.value === "") &&
+    submitted.value
+  ) {
+    const str = chosenDistrictError.value[languagePref.value];
+    return str;
+  }
+  return "";
+});
 </script>
 
 <template>
@@ -374,6 +383,7 @@ const redirect = () => {
         :label="langTranslations.userForm.districtSelectLabel"
         :options="[...districtMap.keys()]"
         v-model="chosenDistrict"
+        :errorMessage="choosenDistrictError"
       />
       <BaseSelect
         v-if="userType === 'districtAdmin' && !userId"
