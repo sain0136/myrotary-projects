@@ -16,7 +16,7 @@ export type DistrictRole =
 
 export type ClubRole = " Club Admin" | "Standard Member" | "Guest";
 
-export type UserType = "CLUB" | "DISTRICT";
+export type UserType = "CLUB" | "DISTRICT" | "SUPERADMIN";
 
 export type storagePath =
   | "./siteadmin"

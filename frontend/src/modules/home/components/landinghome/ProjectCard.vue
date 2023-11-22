@@ -36,7 +36,8 @@ const imageLoaded = ref(false);
 onMounted(async () => {
   show.value = true;
   imageLink.value =
-    (project.file_uploads?.project_image as uploadedFile)?.s3UrlLink ??
+    (project.file_uploads?.project_image as uploadedFile)?.s3UrlLink ||
+    (project.file_uploads?.project_image as uploadedFile)?.s3BaseUrlLink ||
     (await generateRandomImage());
   let truncated = escapeHTML(project.project_description.slice(0, 150));
   if (!truncated.endsWith(".")) {

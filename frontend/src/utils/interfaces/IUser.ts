@@ -3,6 +3,7 @@ import type {
   DistrictRole,
   UserType,
   databaseTarget,
+  uploadedFile,
   uploadedFiletypes,
 } from "@/utils/types/commonTypes";
 
@@ -16,13 +17,6 @@ export interface IRoles {
   created_at: string;
   updated_at: number;
 }
-
-export type uploadedFile = {
-  databaseTarget: databaseTarget;
-  fileType: uploadedFiletypes;
-  s3UrlLink: string;
-  s3Name: string;
-};
 
 export interface IExtraDetails {
   profilePicture?: uploadedFile;

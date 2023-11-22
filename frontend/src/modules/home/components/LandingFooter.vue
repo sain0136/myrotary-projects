@@ -33,6 +33,7 @@ onMounted(async () => {});
             <img
               :src="
                 assetsStore.siteAssets.assets.main_logo.s3UrlLink ||
+                assetsStore.siteAssets.assets.main_logo.s3BaseUrlLink ||
                 '/rotary-reserve-logo.png'
               "
               class="h-24 mr-3"

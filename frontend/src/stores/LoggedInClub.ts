@@ -13,7 +13,7 @@ export const useLoggedInClub = defineStore(
       Object.assign(loggedInClub, club);
     }
 
-    function resetClub() {
+    async function resetClub() {
       Object.assign(loggedInClub, new Club());
     }
 
