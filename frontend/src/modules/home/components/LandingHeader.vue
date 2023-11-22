@@ -65,6 +65,7 @@ onMounted(async () => {});
       <ul class="social-icon-one flex gap-8 pr-4">
         <li class="li_border">
           <a
+            target="_blank"
             href="https://www.facebook.com/rotary"
             title="Rotary International on Facebook"
           >
@@ -76,10 +77,12 @@ onMounted(async () => {});
         </li>
         <li class="li_border">
           <a
+            target="_blank"
             title="Rotary International on Twitter"
             href="https://twitter.com/Rotary?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor"
           >
             <Icon
+              target="_blank"
               icon="simple-icons:x"
               class="text-3xl hover:text-3xl hover:text-white"
           /></a>
@@ -107,11 +110,11 @@ onMounted(async () => {});
       <div class="flex items-center">
         <img
           :src="
-            assetsStore.siteAssets.main_logo.s3UrlLink ||
+            assetsStore.siteAssets.assets.main_logo.s3UrlLink ||
             '/rotary-reserve-logo.png'
           "
           class="h-14 mr-3"
-          alt="Flowbite Logo"
+          alt="My Rotary Projects Main Logo"
         />
       </div>
       <button

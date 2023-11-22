@@ -36,12 +36,7 @@ export interface IAssets {
   club_intial: number;
   global_intial: number;
   assets: {
-    main_logo: {
-      id: string;
-      url: string;
-      fileType: string;
-      location: string;
-    };
+    main_logo: uploadedFile;
     profilePicture?: uploadedFile;
     contentManagement: IContentManagement;
   };

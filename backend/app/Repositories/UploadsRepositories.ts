@@ -32,18 +32,22 @@ export default class UploadsController {
         case "assets":
           for await (const file of uploadedFiles) {
             const rotaryAssets = await Assets.findOrFail(1);
-            const main = rotaryAssets.$attributes.main_logo as uploadedFile;
-            if (main) {
-              await Drive.delete(main.s3Name);
+            const mainAsses = (rotaryAssets as unknown as IAssets).assets;
+            if (mainAsses.main_logo && mainAsses.main_logo.s3Name) {
+              await Drive.delete(mainAsses.main_logo.s3Name);
             }
+            mainAsses.main_logo = file;
             await rotaryAssets
               .merge({
-                main_logo: JSON.stringify(file),
+                assets: JSON.stringify(mainAsses),
               })
               .save();
           }
           const updatedAssets = await Assets.findOrFail(1);
-          return [updatedAssets.main_logo as unknown as uploadedFile];
+          return [
+            (updatedAssets.assets as unknown as IAssets)
+              .main_logo as unknown as uploadedFile,
+          ];
         case "profile-picture":
           for await (const file of uploadedFiles) {
             const rotaryAssets = await Assets.findOrFail(1);
