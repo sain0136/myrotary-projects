@@ -118,14 +118,7 @@ const tabs = ref([
 const project = reactive(new DistrictSimplifiedProject());
 const activeTab = ref("form");
 // TODO
-const minLengthMessage = {
-  en: "Must be at least 100 characters",
-  fr: "Doit contenir au moins 100 caractères",
-};
-const maxLengthMessage = {
-  en: "Must be at most 1000 characters",
-  fr: "Doit contenir au plus 1000 caractères",
-};
+
 const fundingSources = ref<IFundingSource>({
   sourceName: "",
   typeOfFunding: "",
@@ -247,6 +240,10 @@ const rules = {
       langTranslations.value.formErorrText.required,
       required
     ),
+    maxLength: helpers.withMessage(
+      customPrintf(langTranslations.value.maxLengthMessage, "50"),
+      maxLength(50)
+    ),
   },
   project_description: {
     required: helpers.withMessage(
@@ -254,11 +251,11 @@ const rules = {
       required
     ),
     maxLength: helpers.withMessage(
-      maxLengthMessage[languagePref.value],
+      customPrintf(langTranslations.value.maxLengthMessage, "1000"),
       maxLength(1000)
     ),
     minLenght: helpers.withMessage(
-      minLengthMessage[languagePref.value],
+      customPrintf(langTranslations.value.minLengthMessage, "1000"),
       minLength(100)
     ),
   },
@@ -363,11 +360,11 @@ const rules = {
         required
       ),
       maxLength: helpers.withMessage(
-        maxLengthMessage[languagePref.value],
+        customPrintf(langTranslations.value.maxLengthMessage, "1000"),
         maxLength(3000)
       ),
-      minLength: helpers.withMessage(
-        minLengthMessage[languagePref.value],
+      minLenght: helpers.withMessage(
+        customPrintf(langTranslations.value.minLengthMessage, "1000"),
         minLength(150)
       ),
     },
@@ -377,11 +374,11 @@ const rules = {
         required
       ),
       maxLength: helpers.withMessage(
-        maxLengthMessage[languagePref.value],
+        customPrintf(langTranslations.value.maxLengthMessage, "1000"),
         maxLength(3000)
       ),
-      minLength: helpers.withMessage(
-        minLengthMessage[languagePref.value],
+      minLenght: helpers.withMessage(
+        customPrintf(langTranslations.value.minLengthMessage, "1000"),
         minLength(150)
       ),
     },
