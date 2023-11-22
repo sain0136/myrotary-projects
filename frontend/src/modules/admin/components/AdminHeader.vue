@@ -66,10 +66,10 @@ const hideDropdown = (event: Event): void => {
 };
 
 const logoutAdmin = async () => {
-  await userStore.logOut();
+  router.push({ name: "Home" });
+  userStore.logOut();
   districtStore.resetDistrict();
   clubStore.resetClub();
-  router.push({ name: "Home" });
 };
 </script>
 
@@ -141,7 +141,10 @@ const logoutAdmin = async () => {
               class="w-10 h-10 rounded-full"
               :src="
                 userStore.loggedInUser?.extra_details?.profilePicture
-                  ?.s3UrlLink ?? '/peter.jpg'
+                  ?.s3UrlLink ||
+                userStore.loggedInUser?.extra_details?.profilePicture
+                  ?.s3BaseUrlLink ||
+                '/peter.jpg'
               "
               alt="user photo"
             />

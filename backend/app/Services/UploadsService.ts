@@ -11,6 +11,7 @@ import Projects from "App/Models/Projects";
 import { IUploads } from "App/Shared/Interfaces/IProjects";
 import Districts from "App/Models/Districts";
 import { IDistrictDetails } from "App/Shared/Interfaces/IDistrict";
+import Env from "@ioc:Adonis/Core/Env";
 
 export default class UploadsService {
   constructor(private uploadsRepositories: UploadsRepositories) {}
@@ -29,9 +30,8 @@ export default class UploadsService {
     districtId?: number,
     customIdentifier?: string
   ) {
-    // TODO : ENV variable for cdn ?
-
-    const cdnEndpoint = "https://rotary-s3.nyc3.cdn.digitaloceanspaces.com/";
+    const cdnEndpoint = Env.get("S3_CDN_ENDPOINT_URL");
+    const baseUrl = Env.get("S3_BASE_URL");
     const postUploadedFiles: Array<uploadedFile> = [];
     for await (const file of files) {
       const uniqueId = uuidv4();
@@ -65,11 +65,13 @@ export default class UploadsService {
       const link = path ? await Drive.getUrl(path as string) : null;
       if (link) {
         const cdnFileUrl = cdnEndpoint + file.fileName;
+        const baseUrlFileUrl = baseUrl + file.fileName;
         const upload: uploadedFile = {
           databaseTarget: databaseTarget,
           fileType: fileTypes,
           s3UrlLink: cdnFileUrl,
           s3Name: file.fileName,
+          s3BaseUrlLink: baseUrlFileUrl,
         };
         postUploadedFiles.push(upload);
       } else {

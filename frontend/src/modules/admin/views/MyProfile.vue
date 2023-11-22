@@ -71,7 +71,10 @@ const map = new Map([
           <img
             :src="
               userStore.loggedInUser?.extra_details?.profilePicture
-                ?.s3UrlLink ?? '/peter.jpg'
+                ?.s3UrlLink ||
+              userStore.loggedInUser?.extra_details?.profilePicture
+                ?.s3BaseUrlLink ||
+              '/peter.jpg'
             "
             alt="brand"
           />
