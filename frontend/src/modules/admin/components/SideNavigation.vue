@@ -26,6 +26,8 @@ const { langTranslations } = useLanguage();
 const loggedinRole = ref("");
 if (userStore.loggedInUser.user_id === 2) {
   loggedinRole.value = "Webmaster";
+} else if (userStore.loggedInUser.user_type === "SUPER") {
+  loggedinRole.value = "SuperAdmin";
 } else if (userStore.loggedInUser.role) {
   loggedinRole.value = userStore.loggedInUser.role;
 } else if (userStore.loggedInUser.role) {
@@ -154,6 +156,12 @@ const sideBarItems: Record<
     icon: ResourceList.sidebarIcons.approvals,
     link: "Approvals",
     hasAccess: hasAccess(loggedinRole.value as AllUserRoles, "approvals-view"),
+  },
+  superAdmins: {
+    label: "Super Admin",
+    icon: ResourceList.sidebarIcons.superAdmins,
+    link: "Home",
+    hasAccess: hasAccess(loggedinRole.value as AllUserRoles, "superadmin-view"),
   },
 };
 

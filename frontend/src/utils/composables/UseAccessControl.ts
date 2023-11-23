@@ -11,9 +11,10 @@ type PermissionTypes =
   | "clubadmin-clubmembers-view"
   | "myprojects-view"
   | "districtadmin-clubadmin-view"
-  | "approvals-view";
+  | "approvals-view"
+  | "superadmin-view";
 
-export type AllUserRoles = DistrictRole | ClubRole;
+export type AllUserRoles = DistrictRole | ClubRole | "SuperAdmin";
 
 // Use a mapped type to define RolePermissions
 type RolePermissions = {
@@ -22,6 +23,15 @@ type RolePermissions = {
 
 const rolePermissions: RolePermissions = {
   // Define permissions for each role here
+  SuperAdmin: [
+    "webadmin-settings-view",
+    "webadmin-club-settings-view",
+    "webadmin-district-settings-view",
+    "myprofile-view",
+    "myprojects-view",
+    "approvals-view",
+    "superadmin-view",
+  ],
   Webmaster: [
     "webadmin-settings-view",
     "webadmin-club-settings-view",
