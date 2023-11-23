@@ -6,7 +6,19 @@
  */
 
 import type { CorsConfig } from "@ioc:Adonis/Core/Cors";
+import Env from "@ioc:Adonis/Core/Env";
 
+const environment = Env.get("NODE_ENV");
+const origin =
+  environment === "production"
+    ? [
+        "http://localhost:5173",
+        "http://127.0.0.1:3333",
+        "https://test2.myrotaryprojects.org",
+        "https://test1.myrotaryprojects.org/",
+        "https://test1.myrotaryprojects.org",
+      ]
+    : "*";
 const corsConfig: CorsConfig = {
   /*
   |--------------------------------------------------------------------------
@@ -48,12 +60,7 @@ const corsConfig: CorsConfig = {
 
   /* origin: '*' allows any domain to access your API. 
   This is fine for development but not recommended for production */
-  origin: [
-    "http://localhost:5173",
-    "http://127.0.0.1:3333",
-    "https://test2.myrotaryprojects.org",
-    "https://test1.myrotaryprojects.org",
-  ],
+  origin: origin,
 
   /* 
   |--------------------------------------------------------------------------

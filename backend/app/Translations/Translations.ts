@@ -1,6 +1,6 @@
 import type { Translation } from "App/Utils/CommonTypes";
 
-type apiError = "emailAlreadyExists" | "badCredentials " | "projectHasPledges";
+type apiError = "emailAlreadyExists" | "badCredentials" | "projectHasPledges";
 
 export const errorTranslations: Record<apiError, Translation> = {
   emailAlreadyExists: {
