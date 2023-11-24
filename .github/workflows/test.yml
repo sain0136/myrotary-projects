@@ -24,11 +24,9 @@ jobs:
           echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S sh -c '
           cd /home/servicehost/test-myrotary-projects/myrotary-projects
           git stash
-          git fetch --all
+          
           git checkout test
-          git config --global user.name 'sain0136'
-          git config --global user.password ${{ secrets.GIT_SECRET }}
-          git pull https://github.com/sain0136/myrotary-projects.git test
+          git pull https://sain0136:${{ secrets.GIT_SECRET }}@github.com/sain0136/myrotary-projects.git test
           cd backend
           BUILD_DIR="/home/servicehost/test-myrotary-projects/myrotary-projects/backend/build"
           if [ -d "$BUILD_DIR" ]; then
@@ -37,7 +35,7 @@ jobs:
           npm install
           node ace build --production --ignore-ts-errors
           # Copy environment file to build directory
-          cp /home/servicehost/testfiles/.env /home/servicehost/test-myrotary-projects/backend/build
+          cp /home/servicehost/testfiles/.env /home/servicehost/test-myrotary-projects/myrotary-projects/backend/build
           
           # Navigate to build directory and install production dependencies
           cd build
@@ -47,12 +45,12 @@ jobs:
           # Manage PM2 processes
           pm2 delete TestApi
           pm2 save --force
-          pm2 start /home/servicehost/test-myrotary-projects/backend/build/server.js -i -f --name TestApi
+          pm2 start /home/servicehost/test-myrotary-projects/myrotary-projects/backend/build/server.js -i -f --name TestApi
           pm2 save
           pm2 list
           
           # Frontend Deployment
-          cd /home/servicehost/test-myrotary-projects/frontend
+          cd /home/servicehost/test-myrotary-projects/myrotary-projects/frontend
           npm install
           chmod -R a+x node_modules
           npm run build-only
@@ -65,7 +63,7 @@ jobs:
           fi
           
           # Move new frontend build to web directory
-          mv /home/servicehost/test-myrotary-projects/frontend/dist /var/www/test
+          sudo mv /home/servicehost/test-myrotary-projects/myrotary-projects/frontend/dist /var/www/test
           # Add more sudo commands here if needed
           '
         ENDSSH
