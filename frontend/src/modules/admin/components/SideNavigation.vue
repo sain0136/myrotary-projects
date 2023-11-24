@@ -160,7 +160,7 @@ const sideBarItems: Record<
   superAdmins: {
     label: "Super Admin",
     icon: ResourceList.sidebarIcons.superAdmins,
-    link: "Home",
+    link: "AllProjects",
     hasAccess: hasAccess(loggedinRole.value as AllUserRoles, "superadmin-view"),
   },
 };
