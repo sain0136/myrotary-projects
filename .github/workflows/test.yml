@@ -30,7 +30,7 @@ jobs:
           cd backend
           BUILD_DIR="/home/servicehost/test-myrotary-projects/myrotary-projects/backend/build"
           if [ -d "$BUILD_DIR" ]; then
-            rm -r "$BUILD_DIR"
+            rm -rf "$BUILD_DIR"
           fi
           npm install
           node ace build --production --ignore-ts-errors
