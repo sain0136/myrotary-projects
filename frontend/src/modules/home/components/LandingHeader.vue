@@ -47,7 +47,6 @@ onMounted(async () => {});
     <div
       class="fixed-width-container flex flex-col items-center gap-4 md:flex-row md:justify-between"
     >
-      <p>dfd</p>
       <ul class="flex justify-center pl-4">
         <li class="flex text-primary-white gap-4">
           <a
