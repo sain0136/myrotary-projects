@@ -68,6 +68,5 @@ jobs:
           
           # Move new frontend build to web directory
           sudo mv /home/servicehost/test-myrotary-projects/myrotary-projects/frontend/dist /var/www/test
-          # Add more sudo commands here if needed
-          '
+     
         ENDSSH
