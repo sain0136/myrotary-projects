@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - main
+      - test
 
 jobs:
   deploy:
@@ -22,19 +22,20 @@ jobs:
       run: |
         ssh -i id_rsa ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }} <<'ENDSSH'
           echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S sh -c '
-          cd /home/appadmin/TestMyRotaryProject/myrotary-projects
-          # Stash and pull latest code
+          cd /home/servicehost/myrotary-projects
           git stash
-          git pull
+          git pull https://sain0136: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@github.com/sain0136/myrotary-projects.git main
           cd backend
-          BUILD_DIR="/home/appadmin/TestMyRotaryProject/myrotary-projects/backend/build"
+          BUILD_DIR="/home/servicehost/myrotary-projects/backend/build"
           if [ -d "$BUILD_DIR" ]; then
-            rm -r "$BUILD_DIR"
+            rm -rf "$BUILD_DIR"
           fi
           npm install
           node ace build --production --ignore-ts-errors
+          sudo chown -R servicehost:servicehost /home/servicehost/myrotary-projects/backend/build
+          sudo chmod -R u+rwX /home/servicehost/myrotary-projects/backend/build
           # Copy environment file to build directory
-          cp /home/appadmin/testfiles/.env /home/appadmin/TestMyRotaryProject/myrotary-projects/backend/build
+          cp /home/servicehost/productionfiles/.env /home/servicehost/myrotary-projects/backend/build
           
           # Navigate to build directory and install production dependencies
           cd build
@@ -42,27 +43,25 @@ jobs:
           npm ci --production
           
           # Manage PM2 processes
-          pm2 delete TestApi
+          pm2 delete ProductionApi
           pm2 save --force
-          pm2 start /home/appadmin/TestMyRotaryProject/myrotary-projects/backend/build/server.js -i -f --name TestApi
+          pm2 start /home/servicehost/myrotary-projects/backend/build/server.js -i -f --name ProductionApi
           pm2 save
           pm2 list
           
           # Frontend Deployment
-          cd /home/appadmin/TestMyRotaryProject/myrotary-projects/frontend
+          cd /home/servicehost/myrotary-projects/frontend
           npm install
           chmod -R a+x node_modules
           npm run build-only
           
           # Remove existing frontend build directory if it exists
-          cd /var/www/test
-          BUILD_DIR="/var/www/test/dist"
+          cd /var/www/pro
+          BUILD_DIR="/var/www/pro/dist"
           if [ -d "$BUILD_DIR" ]; then
             sudo rm -r "$BUILD_DIR"
           fi
           
           # Move new frontend build to web directory
-          mv /home/appadmin/TestMyRotaryProject/myrotary-projects/frontend/dist /var/www/test
-          # Add more sudo commands here if needed
-          '
+          sudo mv /home/servicehost/myrotary-projects/frontend/dist /var/www/pro
         ENDSSH
