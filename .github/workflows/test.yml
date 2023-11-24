@@ -26,7 +26,7 @@ jobs:
           git stash
           
           git checkout test
-          git pull https://sain0136:${{ secrets.GIT_SECRET }}@github.com/sain0136/myrotary-projects.git test
+          git pull https://sain0136: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@github.com/sain0136/myrotary-projects.git test
           cd backend
           BUILD_DIR="/home/servicehost/test-myrotary-projects/myrotary-projects/backend/build"
           if [ -d "$BUILD_DIR" ]; then
