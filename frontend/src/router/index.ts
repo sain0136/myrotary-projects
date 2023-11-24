@@ -147,6 +147,11 @@ const routes = [
         name: "MyProfile",
         component: () => import("@/modules/admin/views/MyProfile.vue"),
       },
+      {
+        path: "all-projects",
+        name: "AllProjects",
+        component: () => import("@/modules/admin/views/AllProjects.vue"),
+      },
     ],
   },
 ];
