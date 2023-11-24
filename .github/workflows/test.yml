@@ -23,11 +23,12 @@ jobs:
         ssh -i id_rsa ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }} <<'ENDSSH'
           echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S sh -c '
           cd /home/servicehost/test-myrotary-projects/myrotary-projects
-          # Stash and pull latest code
           git stash
           git fetch --all
           git checkout test
-          git pull origin test
+          git config --global user.name 'sain0136'
+          git config --global user.password ${{ secrets.GIT_SECRET }}
+          git pull https://github.com/sain0136/myrotary-projects.git test
           cd backend
           BUILD_DIR="/home/servicehost/test-myrotary-projects/myrotary-projects/backend/build"
           if [ -d "$BUILD_DIR" ]; then
