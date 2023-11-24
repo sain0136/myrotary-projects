@@ -27,6 +27,8 @@ jobs:
           
           git checkout test
           git pull https://sain0136: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@github.com/sain0136/myrotary-projects.git test
+          
+          
           cd backend
           BUILD_DIR="/home/servicehost/test-myrotary-projects/myrotary-projects/backend/build"
           if [ -d "$BUILD_DIR" ]; then
@@ -34,6 +36,8 @@ jobs:
           fi
           npm install
           node ace build --production --ignore-ts-errors
+          sudo chown -R servicehost:servicehost /home/servicehost/test-myrotary-projects/myrotary-projects/backend/build
+          sudo chmod -R u+rwX /home/servicehost/test-myrotary-projects/myrotary-projects/backend/build
           # Copy environment file to build directory
           cp /home/servicehost/testfiles/.env /home/servicehost/test-myrotary-projects/myrotary-projects/backend/build
           
