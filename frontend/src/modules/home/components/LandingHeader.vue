@@ -44,7 +44,7 @@ onMounted(async () => {});
 
 <template>
   <div class="header_top bg-primary py-4">
-    <h1 class="text-3xl text-center">Watch this fam</h1>
+    <h1 class="text-3xl text-center">Watch</h1>
     <div
       class="fixed-width-container flex flex-col items-center gap-4 md:flex-row md:justify-between"
     >
