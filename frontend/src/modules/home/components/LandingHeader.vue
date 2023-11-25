@@ -13,7 +13,7 @@ import { Icon } from "@iconify/vue";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 
 /* Data */
-const { langTranslations } = useLanguage();
+const { langTranslations, setLanguage, languagePref } = useLanguage();
 const assetsStore = useSiteAssets();
 const showMenu = ref(false);
 const navLinks: Array<{
@@ -40,6 +40,13 @@ const navLinks: Array<{
 onMounted(async () => {});
 
 /* Methods */
+const changeLanguage = () => {
+  if (languagePref.value === "en") {
+    setLanguage("fr");
+  } else {
+    setLanguage("en");
+  }
+};
 </script>
 
 <template>
@@ -194,6 +201,18 @@ onMounted(async () => {});
                 >{{ langTranslations.adminDash.headerDashboard }}</span
               >
             </router-link>
+          </li>
+          <li>
+            <span
+              @click="changeLanguage()"
+              href="#"
+              class="block cursor-pointer py-2 pl-3 pr-4 font-bold text-gray-900 rounded hover:text-primary"
+              >{{
+                languagePref !== "en"
+                  ? langTranslations.french
+                  : langTranslations.english
+              }}</span
+            >
           </li>
         </ul>
       </div>

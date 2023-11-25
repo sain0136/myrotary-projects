@@ -49,7 +49,7 @@ const changeLanguage = (pref: "en" | "fr") => {
 
 const toggleDropdown = () => {
   show.value = !show.value;
-
+  showSub.value = false;
   if (show.value) {
     document.addEventListener("click", hideDropdown);
   } else {
