@@ -23,8 +23,10 @@ import { ProjectsApi } from "@/api/services/ProjectsApi";
 import { useActiveProjectStore } from "@/stores/ActiveProjectStore";
 import { Icon } from "@iconify/vue";
 import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
+import { CustomError } from "@/utils/classes/CustomError";
 
 /* Data */
+const MAXBYTES = 10485760;
 const projectsApi = new ProjectsApi(new ApiClient());
 const { langTranslations, languagePref } = useLanguage();
 const assetsApi = new AssetsApi(new ApiClient());
@@ -143,6 +145,26 @@ const submit = async () => {
           filesArray = [validationData.file];
         }
       }
+      const totalSize =
+        filesArray && filesArray.length > 0
+          ? filesArray.reduce((acc, file) => {
+              return acc + file.size;
+            }, 0)
+          : 0;
+      if (totalSize > MAXBYTES) {
+        handleError(
+          new CustomErrors(
+            400,
+            "Upload file/files size exceeds limit of 10MB",
+            {
+              en: "Upload file/files size exceeds limit of 10MB",
+              fr: "La taille du fichier est supérieure à la limite de 10MB",
+            }
+          )
+        );
+        return;
+      }
+      debugger;
       const req: uploadFileData = {
         files: filesArray as File[],
         databaseTarget: reqData.databaseTarget,
