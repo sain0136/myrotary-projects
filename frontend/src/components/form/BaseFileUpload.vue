@@ -23,7 +23,6 @@ import { ProjectsApi } from "@/api/services/ProjectsApi";
 import { useActiveProjectStore } from "@/stores/ActiveProjectStore";
 import { Icon } from "@iconify/vue";
 import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
-import { CustomError } from "@/utils/classes/CustomError";
 
 /* Data */
 const MAXBYTES = 10485760;
