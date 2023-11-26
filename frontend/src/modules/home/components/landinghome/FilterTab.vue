@@ -23,7 +23,7 @@ import { ProjectsApi } from "@/api/services/ProjectsApi";
 
 /* Data */
 type view = "card" | "table";
-const { langTranslations } = useLanguage();
+const { langTranslations, languagePref } = useLanguage();
 const districtMap = reactive<Map<string, number>>(new Map());
 const clubMap = reactive<Map<string, number>>(new Map());
 const { handleError, handleSuccess, handleValidationForm } = errorHandler();
@@ -181,7 +181,7 @@ const resetSearch = () => {
         />
         <BaseSelect
           :label="langTranslations.landingPage.grantTypeLabel"
-          :options="ResourceList.grantTypeList"
+          :options="ResourceList.grantTypeListLanguage(languagePref)"
           v-model="filterData.grant_type"
         />
         <BaseSelect

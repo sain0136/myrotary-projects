@@ -96,6 +96,13 @@ export const grantType = {
   GLOBALPROJECT: "Global Project",
 };
 
+export const grantTypeFr = {
+  CLUBPROJECT: "Projet de Club",
+  DISTRICTSIMPLIFIEDPROJECT: "Projet Simplifié de District",
+  DISTRICTMATCHINGPROJECT: "Projet d'Appariement de District",
+  GLOBALPROJECT: "Projet Global",
+};
+
 export const projectStatus = {
   LOOKINGFORFUNDING: "Looking For Funding",
   FULLYFUNDED: "Fully Funded",
