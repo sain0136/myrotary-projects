@@ -1,4 +1,8 @@
-import { grantType, projectStatus } from "@/utils/types/commonTypes";
+import {
+  grantType,
+  grantTypeFr,
+  projectStatus,
+} from "@/utils/types/commonTypes";
 
 export default class ResourceList {
   constructor() {}
@@ -60,7 +64,15 @@ export default class ResourceList {
   static statusList = Object.values(projectStatus);
 
   static grantTypeList = Object.values(grantType);
-
+  static grantTypeListLanguage = (lang: "en" | "fr") => {
+    if (lang === "en") {
+      return Object.values(grantType);
+    }
+    if (lang === "fr") {
+      return Object.values(grantTypeFr);
+    }
+    return Object.values(grantType);
+  };
   static areaOfFocusList = [
     "Peace Conflict Prevention",
     "Disease Prevention And Treatment",
