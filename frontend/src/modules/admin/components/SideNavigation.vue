@@ -24,7 +24,10 @@ const userStore = useLoggedInUserStore();
 const { hasAccess } = useAccessControl();
 const { langTranslations } = useLanguage();
 const loggedinRole = ref("");
-if (userStore.loggedInUser.user_id === 2) {
+if (
+  userStore.loggedInUser.user_id === 2 ||
+  userStore.loggedInUser.user_id === 10
+) {
   loggedinRole.value = "Webmaster";
 } else if (userStore.loggedInUser.user_type === "SUPER") {
   loggedinRole.value = "SuperAdmin";
