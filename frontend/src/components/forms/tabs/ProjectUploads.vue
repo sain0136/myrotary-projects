@@ -95,7 +95,12 @@ const stripUrlPart = (url: string) => {
 
 <template>
   <div class="flex flex-col gap-8 justify-center items-center py-8">
-    <div>
+    <div
+      v-if="
+        useLoggedInDistrict().loggedInDistrict.district_details.reportLinks
+          .length > 0
+      "
+    >
       <H4
         class="text-center mb-4"
         :content="
@@ -128,6 +133,12 @@ const stripUrlPart = (url: string) => {
           </div>
         </li>
       </ul>
+      <div v-else>
+        <H4
+          class="text-center"
+          :content="langTranslations.noReportFormsFound"
+        />
+      </div>
     </div>
 
     <!-- Cover Image Upload -->
