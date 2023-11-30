@@ -208,7 +208,7 @@ const changeLanguage = () => {
               href="#"
               class="block cursor-pointer py-2 pl-3 pr-4 font-bold text-gray-900 rounded hover:text-primary"
               >{{
-                languagePref !== "en"
+                languagePref === "en"
                   ? langTranslations.french
                   : langTranslations.english
               }}</span
