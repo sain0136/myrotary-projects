@@ -197,7 +197,6 @@ const rules = {
         const amountInCents = Dinero({
           amount: parseFloat(amountString) * 100,
         });
-        console.log("amount" + amountInCents.getAmount());
         return amountInCents.getAmount() <= FUNDING_GOAL_LIMIT;
       }
     ),
@@ -225,7 +224,6 @@ const rules = {
         const amountInCents = Dinero({
           amount: parseFloat(amountString) * 100,
         });
-        console.log("amount anticipated" + amountInCents.getAmount());
         return amountInCents.getAmount() <= FUNDING_GOAL_LIMIT;
       }
     ),

@@ -699,7 +699,6 @@ const getProject = async () => {
     originalAmountofAnitcipated.value = Dinero({
       amount: project.anticipated_funding + project.total_pledges,
     });
-    console.log(originalAmountofAnitcipated.value.getAmount());
     useActiveProjectStore().setActiveProject(project);
   }
 };

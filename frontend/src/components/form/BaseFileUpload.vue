@@ -163,7 +163,6 @@ const submit = async () => {
         );
         return;
       }
-      debugger;
       const req: uploadFileData = {
         files: filesArray as File[],
         databaseTarget: reqData.databaseTarget,

@@ -263,13 +263,10 @@ const maxAmountThatCanBePledgeFormated = () => {
   const fundingGoalDinero = Dinero({ amount: fundingGoalCents });
   const anticipatedFundingDinero = Dinero({ amount: anticipatedFundingCents });
   const differenceDinero = fundingGoalDinero.subtract(anticipatedFundingDinero);
-  console.log(" Anticipated " + anticipatedFundingDinero.getAmount());
-  console.log(" Goal " + fundingGoalDinero.getAmount());
-  console.log(" Difference " + differenceDinero.getAmount());
+
   maxAmountThatCanBePledge.value = differenceDinero.getAmount();
   // Step 3: Convert to display-friendly USD format
   const differenceUSD = differenceDinero.toFormat("$0,0.00");
-  console.log(" Difference USD " + differenceUSD);
   return differenceUSD;
 };
 

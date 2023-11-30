@@ -82,7 +82,7 @@ const deleteFiles = async (file: uploadedFile) => {
 const stripUrlPart = (url: string) => {
   // Regular expression to match the pattern and capture the filename
 
-  const split = url.split("_");
+  const split = url && url.split("_");
   const filename = split[split.length - 1];
   // If matches are found, return the filename, else return the original URL
   return filename;
