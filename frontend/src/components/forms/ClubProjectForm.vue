@@ -42,6 +42,7 @@ import SocialShareButton from "@/components/forms/tabs/SocialShareButton.vue";
 import ProjectAdminsForm from "@/components/forms/tabs/ProjectAdminsForm.vue";
 import ProjectApproval from "@/components/forms/tabs/ProjectApproval.vue";
 import H1 from "@/components/headings/H1.vue";
+import { hideAprovalTab } from "@/utils/utils";
 
 /* Data */
 type formType = "normalView" | "readOnlyView";
@@ -68,6 +69,7 @@ const FUNDING_GOAL_LIMIT = 1000000000;
 const projectsApi = new ProjectsApi(new ApiClient());
 const { langTranslations, languagePref, customPrintf } = useLanguage();
 const { handleError, handleSuccess } = errorHandler();
+
 const tabs = ref([
   {
     name: "form",
@@ -102,9 +104,10 @@ const tabs = ref([
   {
     name: "approval",
     label: langTranslations.value.projectFormLabels.approvalLabel,
-    hidden: !projectId ? true : false,
+    hidden: hideAprovalTab(projectId),
   },
 ]);
+
 const project = reactive(new ClubProject());
 const activeTab = ref("form");
 // TODO
@@ -317,7 +320,11 @@ const validateAndSubmit = async () => {
   try {
     const isFormCorrect = await v$.value.$validate();
     if (!isFormCorrect) {
-      return;
+      window.scrollTo(0, 0);
+      throw new CustomErrors(900, "Form Error", {
+        en: "Form errors. Please correct.",
+        fr: "Erreurs de formulaire. Veuillez les corriger.",
+      });
     }
     project.funding_goal = convertFloatToCents(project.funding_goal);
     project.anticipated_funding = convertFloatToCents(

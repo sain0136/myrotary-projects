@@ -168,7 +168,11 @@ const handlehandleDeleteMultiple = () => {
           >
             {{ column.name }}
           </th>
-          <th v-if="!hideActionsColumn" scope="col" class="px-6 py-3">
+          <th
+            v-if="!hideActionsColumn"
+            scope="col"
+            class="text-center px-6 py-3"
+          >
             {{ langTranslations.actionsLabel }}
           </th>
         </tr>
@@ -225,7 +229,7 @@ const handlehandleDeleteMultiple = () => {
                 (row as IDsgProject | IDmProject | IClubProject).grant_type ===
                 grantType.CLUBPROJECT
                 "
-                :title="langTranslations.submitReportLabel"
+                :title="langTranslations.completeLabel"
                 href="#"
                 class="font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
                 ><Icon icon="carbon:task-complete"
