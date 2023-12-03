@@ -15,6 +15,7 @@ import type { CustomError } from "@/utils/classes/CustomError";
 import { grantType, projectStatus } from "@/utils/types/commonTypes";
 import { ProjectsApi } from "@/api/services/ProjectsApi";
 import { ApiClient } from "@/api/ApiClient";
+import router from "@/router";
 const projectsApi = new ProjectsApi(new ApiClient());
 
 /* Data */
@@ -43,6 +44,31 @@ const approveProject = async () => {
       useActiveProjectStore().activeProject.project_id
     );
     handleSuccess(langTranslations.value.toastSuccess);
+    router.push({ name: "Approvals" });
+  } catch (error) {
+    handleError(error as CustomError);
+  }
+};
+
+const approveReports = async () => {
+  try {
+    if (
+      useActiveProjectStore().activeProject.project_status !==
+      projectStatus.REPORTSDUE
+    ) {
+      projectApproval.value =
+        langTranslations.value.projectFormLabels.projectApprovalError;
+      setTimeout(() => {
+        projectApproval.value = "";
+      }, 3000);
+      return;
+    }
+    await projectsApi.updateProjectStatus(
+      projectStatus.COMPLETED,
+      useActiveProjectStore().activeProject.project_id
+    );
+    handleSuccess(langTranslations.value.toastSuccess);
+    router.push({ name: "Approvals" });
   } catch (error) {
     handleError(error as CustomError);
   }
@@ -77,21 +103,65 @@ const approveProject = async () => {
     </ul>
     <p
       id="filled_error_help"
-      class="text-xs text-red-600 dark:text-red-400 mb-8"
+      class="text-xs text-red-600 dark:text-red-400 mb-4"
     >
       <span class="font-medium">{{ projectApproval }}</span>
     </p>
-    <RotaryButton
+    <div class="border border-primary p-4 font-bold">
+      <div
+        class="flex flex-col gap-4"
+        v-if="
+          (useLoggedInUserStore().loggedInUser.role === 'District Admin' ||
+            useLoggedInUserStore().loggedInUser.role ===
+              'District Grants Chair') &&
+          useActiveProjectStore().activeProject.project_status ===
+            projectStatus.PENDINGAPPROVAL
+        "
+      >
+        <p>{{ langTranslations.projectFormLabels.approveProjectLabel }}</p>
+        <RotaryButton
+          :label="langTranslations.approveLabel"
+          :theme="'black'"
+          @click="approveProject()"
+        />
+      </div>
+      <h6
+        v-else-if="
+          useActiveProjectStore().activeProject.project_status !==
+          projectStatus.PENDINGAPPROVAL
+        "
+        class="text-center font-bold"
+      >
+        {{ langTranslations.projectFormLabels.projectWasAprrovedLabel }}
+      </h6>
+    </div>
+    <div
+      class="border border-primary p-4 font-bold flex flex-col gap-4"
       v-if="
-        useLoggedInUserStore().loggedInUser.role === 'District Admin' ||
-        useLoggedInUserStore().loggedInUser.role === 'District Grants Chair'
+        (useLoggedInUserStore().loggedInUser.role === 'District Admin' ||
+          useLoggedInUserStore().loggedInUser.role ===
+            'District Grants Chair') &&
+        useActiveProjectStore().activeProject.project_status ===
+          projectStatus.REPORTSDUE
       "
-      :label="langTranslations.approveLabel"
-      :theme="'black'"
-      @click="approveProject()"
-    />
-    <h6 v-else class="mt-4 text-center font-bold">
-      {{ langTranslations.projectFormLabels.projectApprovalHelpText }}
+    >
+      <p>{{ langTranslations.projectFormLabels.approveReportsLabel }}</p>
+      <RotaryButton
+        :label="langTranslations.approveLabel"
+        :theme="'black'"
+        @click="approveReports()"
+      />
+    </div>
+    <h6
+      class="border border-primary p-4 font-bold flex flex-col gap-4"
+      v-else-if="
+        useActiveProjectStore().activeProject.project_status ===
+          projectStatus.COMPLETED &&
+        useActiveProjectStore().activeProject.grant_type !==
+          grantType.CLUBPROJECT
+      "
+    >
+      {{ langTranslations.projectFormLabels.projectReportsAprrovedLabel }}
     </h6>
   </div>
 </template>

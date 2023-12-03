@@ -49,6 +49,7 @@ import DistrictMatchingProject from "@/utils/classes/DistrictMatchingProject";
 import { Icon } from "@iconify/vue";
 import type { IFundingSource } from "@/utils/interfaces/IProjects";
 import ErrorValidation from "@/components/forms/ErrorValidation.vue";
+import { hideAprovalTab } from "@/utils/utils";
 
 /* Data */
 type formType = "normalView" | "readOnlyView";
@@ -111,9 +112,10 @@ const tabs = ref([
   {
     name: "approval",
     label: langTranslations.value.projectFormLabels.approvalLabel,
-    hidden: !projectId ? true : false,
+    hidden: hideAprovalTab(projectId),
   },
 ]);
+
 const objectiveItem = ref("");
 const project = reactive(new DistrictMatchingProject());
 const activeTab = ref("form");

@@ -91,7 +91,7 @@ const handleSubmit = async () => {
   <div class="flex justify-center items-center my-8">
     <form
       @submit.prevent
-      class="bg-nearWhite p-5 rounded-lg border-solid border-primary border-2 w-1/4"
+      class="bg-nearWhite w-4/5 md:w-auto lg:w-1/4 p-5 rounded-lg border-solid border-primary border-2"
     >
       <div class="py-10">
         <BaseInput

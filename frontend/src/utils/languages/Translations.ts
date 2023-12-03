@@ -1,4 +1,5 @@
 export interface Translation {
+  completeLabel: string;
   minLengthMessage: string;
   maxLengthMessage: string;
   langPrefrenceLabel: string;
@@ -28,6 +29,10 @@ export interface Translation {
   submitReportLabel: string;
   submitForApprovalLabel: string;
   projectFormLabels: {
+    projectWasAprrovedLabel: string;
+    projectReportsAprrovedLabel: string;
+    approveProjectLabel: string;
+    approveReportsLabel: string;
     cellWhatsAppLabel: string;
     projectNameLabel: string;
     fundingGoalLabel: string;
@@ -303,6 +308,7 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    completeLabel: "Mark Complete",
     minLengthMessage: "Must be at least {value} characters",
     maxLengthMessage: "Must be at most {value} characters",
     langPrefrenceLabel: "Language Preference",
@@ -333,6 +339,10 @@ export const translations: Record<string, Translation> = {
     submitReportLabel: "Submit Reports",
     submitForApprovalLabel: "Submit for Approval",
     projectFormLabels: {
+      projectWasAprrovedLabel: "Project was approved",
+      projectReportsAprrovedLabel: "Reports were approved",
+      approveProjectLabel: "Project Approval",
+      approveReportsLabel: "Report Approval",
       cellWhatsAppLabel: "Cell / WhatsApp",
       projectNameLabel: "Project Name",
       fundingGoalLabel: "Funding Goal",
@@ -644,6 +654,7 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    completeLabel: "Mark Compléter",
     minLengthMessage: "Doit contenir au moins  {value} caractères",
     maxLengthMessage: "Doit contenir au plus {value} caractères",
     langPrefrenceLabel: "Préférence linguistique",
@@ -675,6 +686,10 @@ export const translations: Record<string, Translation> = {
     submitReportLabel: "Soumettre des rapports",
     submitForApprovalLabel: "Soumettre pour approbation",
     projectFormLabels: {
+      projectWasAprrovedLabel: "Le projet a été approuvé",
+      projectReportsAprrovedLabel: "Les rapports de projet ont été approuvés",
+      approveProjectLabel: "Approbation du projet",
+      approveReportsLabel: "Approbation des rapports",
       cellWhatsAppLabel: "Cellulaire / WhatsApp",
       projectNameLabel: "Nom du projet",
       fundingGoalLabel: "Objectif de financement",

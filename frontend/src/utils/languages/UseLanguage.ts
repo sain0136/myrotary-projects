@@ -1,8 +1,8 @@
 import { ref, computed } from "vue";
 import type { Ref } from "vue";
 import { translations } from "@/utils/languages/Translations";
-import type { ProjectStatus } from "../types/commonTypes";
-import ResourceList from "../classes/ResourceList";
+import type { ProjectStatus } from "@/utils/types/commonTypes";
+import ResourceList from "@/utils/classes/ResourceList";
 
 type lang = "en" | "fr";
 // Reactive variable for the current language
