@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: "",
+  name: "FilterTab",
 };
 </script>
 
@@ -19,19 +19,26 @@ import { errorHandler } from "@/utils/composables/ErrorHandler";
 import type { IClub } from "@/utils/interfaces/IClub";
 import ResourceList from "@/utils/classes/ResourceList";
 import type { ProjectFilters } from "@/utils/types/commonTypes";
-import { ProjectsApi } from "@/api/services/ProjectsApi";
 
 /* Data */
-type view = "card" | "table";
-const { langTranslations, languagePref } = useLanguage();
+const {
+  langTranslations,
+  languagePref,
+  translateProjectTypeList,
+  convertProjectLang,
+  translateProjectStatusList,
+  translateRegionList,
+  convertRegionLang,
+  convertProjectStatusLang,
+  translateAreaOfFocusList,
+  convertAreaOfFocusLang,
+} = useLanguage();
 const districtMap = reactive<Map<string, number>>(new Map());
 const clubMap = reactive<Map<string, number>>(new Map());
-const { handleError, handleSuccess, handleValidationForm } = errorHandler();
+const { handleError } = errorHandler();
 const clubApi = new ClubApi(new ApiClient());
 const districtApi = new DistrictApi(new ApiClient());
 const showFilter = ref(false);
-const projectsApi = new ProjectsApi(new ApiClient());
-const viewType = ref("list");
 const filterData: ProjectFilters = reactive({
   current_page: 1,
   limit: 6,
@@ -68,6 +75,7 @@ watch(chosenDistrict, () => {
     filterData.club_id = 0;
   }
 });
+
 watch(chosenClub, () => {
   const id = clubMap.get(chosenClub.value);
   if (id) {
@@ -98,6 +106,12 @@ watch(
 
 /* Methods */
 const filterProjects = async () => {
+  filterData.grant_type = convertProjectLang(filterData.grant_type);
+  filterData.project_region = convertRegionLang(filterData.project_region);
+  filterData.project_status = convertProjectStatusLang(
+    filterData.project_status
+  );
+  filterData.area_focus = convertAreaOfFocusLang(filterData.area_focus);
   emit("sendFilters", filterData);
   showFilter.value = false;
 };
@@ -181,12 +195,12 @@ const resetSearch = () => {
         />
         <BaseSelect
           :label="langTranslations.landingPage.grantTypeLabel"
-          :options="ResourceList.grantTypeListLanguage(languagePref)"
+          :options="translateProjectTypeList(languagePref)"
           v-model="filterData.grant_type"
         />
         <BaseSelect
           :label="langTranslations.statusLabel"
-          :options="ResourceList.statusList"
+          :options="translateProjectStatusList(languagePref)"
           v-model="filterData.project_status"
         />
         <BaseSelect
@@ -196,12 +210,12 @@ const resetSearch = () => {
         />
         <BaseSelect
           :label="langTranslations.landingPage.areaOfFocusLabel"
-          :options="ResourceList.areaOfFocusList"
+          :options="translateAreaOfFocusList(languagePref)"
           v-model="filterData.area_focus"
         />
         <BaseSelect
           :label="langTranslations.landingPage.regionLabel"
-          :options="ResourceList.regionList"
+          :options="translateRegionList(languagePref)"
           v-model="filterData.project_region"
         />
         <div

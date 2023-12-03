@@ -64,15 +64,26 @@ export default class ResourceList {
   static statusList = Object.values(projectStatus);
 
   static grantTypeList = Object.values(grantType);
-  static grantTypeListLanguage = (lang: "en" | "fr") => {
-    if (lang === "en") {
-      return Object.values(grantType);
-    }
-    if (lang === "fr") {
-      return Object.values(grantTypeFr);
-    }
-    return Object.values(grantType);
+
+  static projectTypeMap = {
+    [grantType.CLUBPROJECT]: {
+      en: "Club Project",
+      fr: "Projet Simplifié de Club",
+    },
+    [grantType.DISTRICTSIMPLIFIEDPROJECT]: {
+      en: "District Simplified Project",
+      fr: "Projet Simplifié de District",
+    },
+    [grantType.DISTRICTMATCHINGPROJECT]: {
+      en: "District Matching Project",
+      fr: "Projet Matching Simplifié de District",
+    },
+    [grantType.GLOBALPROJECT]: {
+      en: "Global Project",
+      fr: "Projet Simplifié Glob",
+    },
   };
+
   static areaOfFocusList = [
     "Peace Conflict Prevention",
     "Disease Prevention And Treatment",
@@ -109,6 +120,37 @@ export default class ResourceList {
     searchTermConversionMap.set("Environment", "Environment");
     return searchTermConversionMap;
   }
+
+  static areaOfFocusMap = {
+    "Peace Conflict Prevention": {
+      en: "Peace Conflict Prevention",
+      fr: "Prevention de conflit de paix",
+    },
+    "Disease Prevention And Treatment": {
+      en: "Disease Prevention And Treatment",
+      fr: "Prevention et Traitement des Maladies",
+    },
+    "Water And Sanitation": {
+      en: "Water And Sanitation",
+      fr: "Eau et Sanitation",
+    },
+    "Maternal And Child Health": {
+      en: "Maternal And Child Health",
+      fr: "Sante Maternelle et Enfant",
+    },
+    "Basic Education And Literacy": {
+      en: "Basic Education And Literacy",
+      fr: "Education de Base et Literatisme",
+    },
+    "Economic And Community Development": {
+      en: "Economic And Community Development",
+      fr: "Economie et Developpement Communal",
+    },
+    Environment: {
+      en: "Environment",
+      fr: "Environnement",
+    },
+  };
 
   static reverseTermConversionMap() {
     const reverseTermConversionMap: Map<string, string> = new Map();
@@ -161,6 +203,45 @@ export default class ResourceList {
     "Western Europe",
     "Middle East",
   ];
+
+  static regionMap = {
+    Africa: {
+      en: "Africa",
+      fr: "Afrique",
+    },
+    "Central America": {
+      en: "Central America",
+      fr: "Amerique Centrale",
+    },
+    "North America": {
+      en: "North America",
+      fr: "Amerique du Nord",
+    },
+    "South America": {
+      en: "South America",
+      fr: "Amerique du Sud",
+    },
+    Asia: {
+      en: "Asia",
+      fr: "Asie",
+    },
+    "South East Asia": {
+      en: "South East Asia",
+      fr: "Asie du Sud-Est",
+    },
+    "Eastern Europe": {
+      en: "Eastern Europe",
+      fr: "Europe Orientale",
+    },
+    "Western Europe": {
+      en: "Western Europe",
+      fr: "Europe Occidentale",
+    },
+    "Middle East": {
+      en: "Middle East",
+      fr: "Moyen-Orient",
+    },
+  };
 
   static clubRolesList = ["Club Admin", "Standard Member", "Guest"];
 
