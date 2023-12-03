@@ -16,11 +16,12 @@ import type {
 import type { CustomError } from "@/utils/classes/CustomError";
 import { useCurrencyFormatter } from "@/utils/composables/CurrencyFormatter";
 import router from "@/router";
-import type { uploadedFile } from "@/utils/types/commonTypes";
+import type { ProjectStatus, uploadedFile } from "@/utils/types/commonTypes";
 
 /* Data */
 const show = ref(false);
-const { langTranslations, languagePref } = useLanguage();
+const { langTranslations, languagePref, translateProjectStatus } =
+  useLanguage();
 const percentage = ref(0);
 const { project } = defineProps<{
   project: IDsgProject | IDmProject | IClubProject;
@@ -179,7 +180,12 @@ const escapeHTML = (unsafe: string) => {
               {{ `${langTranslations.statusLabel}:` }}
             </h3>
             <h3 class="text-base font-bold text-primary-black">
-              {{ project.project_status }}
+              {{
+                translateProjectStatus(
+                  project.project_status as ProjectStatus,
+                  languagePref
+                )
+              }}
             </h3>
           </div>
         </a>
