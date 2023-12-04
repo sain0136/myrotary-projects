@@ -13,6 +13,7 @@ import type { AllUserRoles } from "@/utils/composables/UseAccessControl";
 import { useAccessControl } from "@/utils/composables/UseAccessControl";
 import ResourceList from "@/utils/classes/ResourceList";
 import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
+import { logoutUser } from "@/utils/utils";
 defineProps<{
   drawer: boolean;
 }>();
@@ -172,6 +173,9 @@ const sideBarItems: Record<
 onMounted(async () => {});
 
 /* Methods */
+const logout = () => {
+  logoutUser();
+};
 </script>
 
 <template>
@@ -181,7 +185,7 @@ onMounted(async () => {});
     aria-label="Sidenav"
     id="drawer-navigation"
   >
-    <div class="overflow-y-auto py-5 px-3 h-full bg-nearBlack">
+    <div class="overflow-y-auto py-5 px-3 h-full bg-nearBlack flex flex-col">
       <ul class="space-y-2">
         <li class="pb-3 border-b border-gray-200">
           <router-link
@@ -230,6 +234,14 @@ onMounted(async () => {});
           </div>
         </li>
       </ul>
+      <div class="flex flex-col justify-end h-full">
+        <p
+          class="text-base font-bold text-nearWhite cursor-pointer"
+          @click="logout"
+        >
+          {{ langTranslations.logoutLabel }}
+        </p>
+      </div>
     </div>
   </aside>
 </template>
