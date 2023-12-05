@@ -12,13 +12,14 @@ defineEmits(["update:modelValue"]);
 
 /* Data */
 const { langTranslations } = useLanguage();
-const { options, modelValue, defaultOption, label, errorMessage } =
+const { options, modelValue, defaultOption, label, errorMessage, disabled } =
   defineProps<{
     label?: string;
     errorMessage?: string;
     modelValue: string | number;
     defaultOption?: string;
     options: string[];
+    disabled?: boolean;
   }>();
 /* Hooks */
 onMounted(async () => {});
@@ -35,12 +36,14 @@ onMounted(async () => {});
       >{{ label }}</label
     >
     <select
+      :disabled="disabled ?? false"
       :value="modelValue"
       :id="label"
       @input="
         $emit('update:modelValue', ($event.target as HTMLInputElement).value)
       "
-      class="bg-gray-50 border border-gray-300 text-nearBlack rounded-lg text-sm block w-full p-2.5"
+      :class="[disabled ? 'disabled-input' : 'text-nearBlack']"
+      class="bg-gray-50 border border-gray-300 rounded-lg text-sm block w-full p-2.5"
     >
       <option
         v-for="option in options"

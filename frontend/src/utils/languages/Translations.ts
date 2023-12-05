@@ -1,4 +1,5 @@
 export interface Translation {
+  chooseFileLabel: string;
   completeLabel: string;
   minLengthMessage: string;
   maxLengthMessage: string;
@@ -308,6 +309,7 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    chooseFileLabel: "Choose File",
     completeLabel: "Mark Complete",
     minLengthMessage: "Must be at least {value} characters",
     maxLengthMessage: "Must be at most {value} characters",
@@ -654,6 +656,7 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    chooseFileLabel: "Choisir le fichier",
     completeLabel: "Mark Compléter",
     minLengthMessage: "Doit contenir au moins  {value} caractères",
     maxLengthMessage: "Doit contenir au plus {value} caractères",

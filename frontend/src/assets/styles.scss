@@ -67,4 +67,11 @@
   }
 }
 
+.disabled-input {
+  background-color: #f3f4f6; /* Light grey background */
+  color: #626268; /* Dimmed text color */
+  border: 1px solid #d1d5db; /* Grey border */
+  cursor: not-allowed; /* Show a 'not-allowed' cursor */
+}
+
 /* For regular rows with two columns that wrap on smaller screens */
