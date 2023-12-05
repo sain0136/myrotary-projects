@@ -11,9 +11,10 @@ import { errorHandler } from "@/utils/composables/ErrorHandler";
 
 /* Data */
 const { langTranslations } = useLanguage();
-const { label, modelValue } = defineProps<{
+const { label, modelValue, disabled } = defineProps<{
   label: string;
   modelValue: boolean;
+  disabled?: boolean;
 }>();
 defineEmits(["update:modelValue"]);
 
@@ -28,12 +29,14 @@ onMounted(async () => {});
     <input
       :checked="modelValue"
       id="default-checkbox"
+      :disabled="disabled ?? false"
+      :class="[disabled ? 'disabled-input' : 'text-secondary']"
       type="checkbox"
       @change="
         $emit('update:modelValue', ($event.target as HTMLInputElement).checked)
       "
       value=""
-      class="w-4 h-4 text-secondary bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+      class="w-4 h-4 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
     />
     <label
       for="default-checkbox"

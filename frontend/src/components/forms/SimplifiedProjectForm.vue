@@ -50,9 +50,10 @@ import DistrictSimplifiedProject from "@/utils/classes/DistrictSimplifiedProject
 import { Icon } from "@iconify/vue";
 import type { IFundingSource } from "@/utils/interfaces/IProjects";
 import ErrorValidation from "@/components/forms/ErrorValidation.vue";
-import { hideAprovalTab } from "@/utils/utils";
-
+import { hideAprovalTab, projectDisabledStatus } from "@/utils/utils";
+import { type ProjectStatus } from "@/utils/types/commonTypes";
 /* Data */
+const disabledMode = ref(false);
 type formType = "normalView" | "readOnlyView";
 const route = useRoute();
 // required form data
@@ -702,6 +703,9 @@ const getProject = async () => {
       amount: project.anticipated_funding + project.total_pledges,
     });
     useActiveProjectStore().setActiveProject(project);
+    if (projectDisabledStatus(project.project_status as ProjectStatus)) {
+      disabledMode.value = true;
+    }
   }
 };
 const validateAndSubmit = async () => {
@@ -798,6 +802,7 @@ const setActiveTab = (tabName: string) => {
       <Hr />
       <div class="form-block">
         <BaseInput
+          :disabled="disabledMode"
           v-model="project.project_name"
           :label="langTranslations.projectFormLabels.projectNameLabel"
           :type="'text'"
@@ -806,6 +811,7 @@ const setActiveTab = (tabName: string) => {
       </div>
       <div class="textarea-block">
         <BaseTextarea
+          :disabled="disabledMode"
           v-model="project.project_description"
           :rows="7"
           :label="langTranslations.desciptionLabel"
@@ -814,24 +820,28 @@ const setActiveTab = (tabName: string) => {
       </div>
       <div class="form-block">
         <BaseSelect
+          :disabled="disabledMode"
           v-model="project.country"
           :label="langTranslations.countryLabel"
           :options="ResourceList.countryList"
           :errorMessage="v$.country?.$errors[0]?.$message as string | undefined "
         />
         <BaseSelect
+          :disabled="disabledMode"
           v-model="project.region"
           :label="langTranslations.landingPage.regionLabel"
           :options="ResourceList.regionList"
           :errorMessage="v$.region?.$errors[0]?.$message as string | undefined "
         />
         <BaseInput
+          :disabled="disabledMode"
           v-model="project.start_date"
           :label="langTranslations.projectFormLabels.startDateLabel"
           :type="'date'"
           :errorMessage="v$.start_date?.$errors[0]?.$message as string | undefined "
         />
         <BaseInput
+          :disabled="disabledMode"
           v-model="project.completion_date"
           :label="langTranslations.projectFormLabels.completionDateLabel"
           :type="'date'"
@@ -846,6 +856,7 @@ const setActiveTab = (tabName: string) => {
             alt=""
           />
           <BaseCheckBox
+            :disabled="disabledMode"
             v-model="project.area_focus.Peace_Conflict_Prevention"
             :label="Object.keys(project.area_focus)[0].replace(/_/g, ' ')"
             class="mb-0"
@@ -858,6 +869,7 @@ const setActiveTab = (tabName: string) => {
             alt=""
           />
           <BaseCheckBox
+            :disabled="disabledMode"
             v-model="project.area_focus.Disease_Prevention_And_Treatment"
             :label="Object.keys(project.area_focus)[1].replace(/_/g, ' ')"
             class="mb-0"
@@ -870,6 +882,7 @@ const setActiveTab = (tabName: string) => {
             alt=""
           />
           <BaseCheckBox
+            :disabled="disabledMode"
             v-model="project.area_focus.Water_And_Sanitation"
             :label="Object.keys(project.area_focus)[2].replace(/_/g, ' ')"
             class="mb-0"
@@ -882,6 +895,7 @@ const setActiveTab = (tabName: string) => {
             alt=""
           />
           <BaseCheckBox
+            :disabled="disabledMode"
             v-model="project.area_focus.Maternal_And_Child_Health"
             :label="Object.keys(project.area_focus)[3].replace(/_/g, ' ')"
             class="mb-0"
@@ -894,6 +908,7 @@ const setActiveTab = (tabName: string) => {
             alt=""
           />
           <BaseCheckBox
+            :disabled="disabledMode"
             v-model="project.area_focus.Basic_Education_And_Literacy"
             :label="Object.keys(project.area_focus)[4].replace(/_/g, ' ')"
             class="mb-0"
@@ -906,6 +921,7 @@ const setActiveTab = (tabName: string) => {
             alt=""
           />
           <BaseCheckBox
+            :disabled="disabledMode"
             v-model="project.area_focus.Economic_And_Community_Development"
             :label="Object.keys(project.area_focus)[5].replace(/_/g, ' ')"
             class="mb-0"
@@ -918,6 +934,7 @@ const setActiveTab = (tabName: string) => {
             alt=""
           />
           <BaseCheckBox
+            :disabled="disabledMode"
             v-model="project.area_focus.Environment"
             :label="Object.keys(project.area_focus)[6].replace(/_/g, ' ')"
             class="mb-0"
@@ -937,6 +954,7 @@ const setActiveTab = (tabName: string) => {
 
       <div class="textarea-block">
         <BaseTextarea
+          :disabled="disabledMode"
           v-model="project.extra_descriptions.benefit_community_description"
           :rows="7"
           :label="
@@ -947,6 +965,7 @@ const setActiveTab = (tabName: string) => {
                 .benefit_community_description?.$errors[0]?.$message as string | undefined "
         />
         <BaseTextarea
+          :disabled="disabledMode"
           v-model="project.extra_descriptions.non_financial_participation"
           :rows="7"
           :label="
@@ -956,6 +975,7 @@ const setActiveTab = (tabName: string) => {
           :errorMessage="v$.extra_descriptions.non_financial_participation?.$errors[0]?.$message as string | undefined "
         />
         <BaseTextarea
+          :disabled="disabledMode"
           v-model="project.extra_descriptions.co_operating_organisation_letter"
           :rows="7"
           :label="
@@ -972,24 +992,28 @@ const setActiveTab = (tabName: string) => {
       <H4 :content="langTranslations.projectFormLabels.primaryContactLabel" />
       <div class="form-block">
         <BaseInput
+          :disabled="disabledMode"
           v-model="project.extra_descriptions.primary_contact.name"
           :label="langTranslations.nameLabel"
           :type="'text'"
           :errorMessage="v$.extra_descriptions.primary_contact.name.$errors[0]?.$message as string | undefined"
         />
         <BaseInput
+          :disabled="disabledMode"
           v-model="project.extra_descriptions.primary_contact.address"
           :label="langTranslations.addressLabel"
           :type="'text'"
           :errorMessage="v$.extra_descriptions.primary_contact.address.$errors[0]?.$message as string | undefined"
         />
         <BaseInput
+          :disabled="disabledMode"
           v-model="project.extra_descriptions.primary_contact.email"
           :label="langTranslations.email"
           :type="'email'"
           :errorMessage="v$.extra_descriptions.primary_contact.email.$errors[0]?.$message as string | undefined"
         />
         <BaseInput
+          :disabled="disabledMode"
           v-model="project.extra_descriptions.primary_contact.phone"
           :label="langTranslations.phone"
           :type="'text'"
@@ -1000,21 +1024,25 @@ const setActiveTab = (tabName: string) => {
       <H4 :content="langTranslations.projectFormLabels.secondaryContactLabel" />
       <div class="form-block">
         <BaseInput
+          :disabled="disabledMode"
           v-model="project.extra_descriptions.secondary_contact.name"
           :label="langTranslations.nameLabel"
           :type="'text'"
         />
         <BaseInput
+          :disabled="disabledMode"
           v-model="project.extra_descriptions.secondary_contact.address"
           :label="langTranslations.addressLabel"
           :type="'text'"
         />
         <BaseInput
+          :disabled="disabledMode"
           v-model="project.extra_descriptions.secondary_contact.email"
           :label="langTranslations.email"
           :type="'email'"
         />
         <BaseInput
+          :disabled="disabledMode"
           v-model="project.extra_descriptions.secondary_contact.phone"
           :label="langTranslations.phone"
           :type="'text'"
@@ -1047,15 +1075,19 @@ const setActiveTab = (tabName: string) => {
                 <th scope="col" class="px-6 py-3">
                   {{ langTranslations.projectFormLabels.costLabel }}
                 </th>
-                <th scope="col" class="px-6 py-3">
+                <th v-if="!disabledMode" scope="col" class="px-6 py-3">
                   {{ langTranslations.actionsLabel }}
                 </th>
               </tr>
             </thead>
             <tbody>
-              <tr class="row border-b bg-nearBlack border-gray-700">
+              <tr
+                v-if="!disabledMode"
+                class="row border-b bg-nearBlack border-gray-700"
+              >
                 <td class="px-6 py-4">
                   <BaseInput
+                    :disabled="disabledMode"
                     v-model="budgetItemName"
                     :label="'Item Name'"
                     :type="'text'"
@@ -1063,6 +1095,7 @@ const setActiveTab = (tabName: string) => {
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap :lg:whitespace-normal">
                   <BaseInput
+                    :disabled="disabledMode"
                     v-model="budgetItemCost"
                     :label="'Cost'"
                     :inputmode="'numeric'"
@@ -1070,6 +1103,7 @@ const setActiveTab = (tabName: string) => {
                   />
                 </td>
                 <td
+                  v-if="!disabledMode"
                   class="px-6 py-4 text-center whitespace-nowrap :lg:whitespace-normal"
                 >
                   <button
@@ -1093,7 +1127,7 @@ const setActiveTab = (tabName: string) => {
                 <td class="px-6 py-4 font-medium text-nearWhite">
                   {{ currencyFormatterFunding(item.itemCost) }}
                 </td>
-                <td class="px-6 py-4 text-center">
+                <td v-if="!disabledMode" class="px-6 py-4 text-center">
                   <button
                     title="Delete item"
                     class="crud-buttons plus_icon hover:text-primary-color"
@@ -1179,16 +1213,20 @@ const setActiveTab = (tabName: string) => {
               <th scope="col" class="px-6 py-3">
                 {{ langTranslations.pledgeProcess.amountLabel }}
               </th>
-              <th scope="col" class="px-6 py-3">
+              <th v-if="!disabledMode" scope="col" class="px-6 py-3">
                 {{ langTranslations.actionsLabel }}
               </th>
             </tr>
           </thead>
           <tbody>
-            <tr class="row border-b bg-nearBlack border-gray-700">
+            <tr
+              v-if="!disabledMode"
+              class="row border-b bg-nearBlack border-gray-700"
+            >
               <td class="px-6 py-4">*</td>
               <td class="px-6 py-4">
                 <BaseSelect
+                  :disabled="disabledMode"
                   v-model="fundingSources.sourceName"
                   :options="addFundingSource"
                   class="mb-2"
@@ -1196,6 +1234,7 @@ const setActiveTab = (tabName: string) => {
               </td>
               <td class="px-6 py-4">
                 <BaseInput
+                  :disabled="disabledMode"
                   :label="''"
                   v-model="fundingSources.typeOfFunding"
                   :type="'text'"
@@ -1203,12 +1242,14 @@ const setActiveTab = (tabName: string) => {
               </td>
               <td class="px-6 py-4">
                 <BaseInput
+                  :disabled="disabledMode"
                   :label="''"
                   v-model="fundingSources.amount"
                   :type="'number'"
                 />
               </td>
               <td
+                v-if="!disabledMode"
                 class="px-6 py-4 text-center whitespace-nowrap :lg:whitespace-normal"
               >
                 <button
@@ -1239,7 +1280,7 @@ const setActiveTab = (tabName: string) => {
               <td class="px-6 py-4 font-medium text-nearWhite">
                 {{ currencyFormatterFunding(item.amount) }}
               </td>
-              <td class="px-6 py-4 text-center">
+              <td v-if="!disabledMode" class="px-6 py-4 text-center">
                 <button
                   title="Delete item"
                   class="crud-buttons plus_icon hover:text-primary-color"

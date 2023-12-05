@@ -82,6 +82,10 @@ const randomId =
       :autocomplete="Password ? 'new-password' : 'off'"
       :name="type"
       :type="type"
+      :class="[
+        disabled ? 'disabled-input' : 'enabled-input',
+        'text-nearBlack text-sm rounded-lg block w-full p-2.5',
+      ]"
       class="bg-gray-50 border text-nearBlack text-sm rounded-lg block w-full p-2.5"
       :placeholder="placeholder ?? ''"
       :required="required ?? false"

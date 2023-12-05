@@ -7,12 +7,13 @@ export default {
 <script setup lang="ts">
 defineEmits(["update:modelValue"]);
 
-const { modelValue, label, placeholder, errorMessage } = defineProps<{
+const { modelValue, label, placeholder, errorMessage, disabled } = defineProps<{
   modelValue: string;
   label: string;
   placeholder?: string;
   errorMessage?: string;
   rows?: number;
+  disabled?: boolean;
 }>();
 </script>
 
@@ -27,11 +28,13 @@ const { modelValue, label, placeholder, errorMessage } = defineProps<{
     </label>
     <textarea
       :v-model="modelValue"
+      :disabled="disabled ?? false"
       @input="
         $emit('update:modelValue', ($event.target as HTMLInputElement).value)
       "
       id="message"
       :rows="rows ?? 4"
+      :class="[disabled ? 'disabled-input' : 'text-nearBlack']"
       class="block p-2.5 w-full text-sm text-nearBlack rounded-lg"
       :placeholder="placeholder ?? ''"
       >{{ modelValue }}</textarea

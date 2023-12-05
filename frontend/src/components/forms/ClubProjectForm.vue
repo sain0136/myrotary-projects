@@ -24,14 +24,13 @@ import {
 import BaseInput from "@/components/form/BaseInput.vue";
 import BaseSelect from "@/components/form/BaseSelect.vue";
 import BaseCheckBox from "@/components/form/BaseCheckBox.vue";
-import Hr from "@/components/hr/Hr.vue";
 import BaseTextarea from "@/components/form/BaseTextarea.vue";
 import ResourceList from "@/utils/classes/ResourceList";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import { useRoute } from "vue-router";
 import router from "@/router";
 import { useCurrencyFormatter } from "@/utils/composables/CurrencyFormatter";
-import { grantType } from "@/utils/types/commonTypes";
+import { grantType, type ProjectStatus } from "@/utils/types/commonTypes";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
 import ProjectUploads from "@/components/forms/tabs/ProjectUploads.vue";
@@ -42,20 +41,20 @@ import SocialShareButton from "@/components/forms/tabs/SocialShareButton.vue";
 import ProjectAdminsForm from "@/components/forms/tabs/ProjectAdminsForm.vue";
 import ProjectApproval from "@/components/forms/tabs/ProjectApproval.vue";
 import H1 from "@/components/headings/H1.vue";
-import { hideAprovalTab } from "@/utils/utils";
+import { hideAprovalTab, projectDisabledStatus } from "@/utils/utils";
 
 /* Data */
+const disabledMode = ref(false);
 type formType = "normalView" | "readOnlyView";
 const route = useRoute();
-// required form data
+/* required form data*/
 const projectId =
   route.params.projectId !== "" ? Number(route.params.projectId) : null;
 const formType = route.query.formType
   ? (route.query.formType as formType)
   : "normalView";
-//
-const { currencyFormatterFunding, convertCentsToFloat, convertFloatToCents } =
-  useCurrencyFormatter();
+/**/
+const { convertCentsToFloat, convertFloatToCents } = useCurrencyFormatter();
 const submitLabel: { [key: string]: string } = projectId
   ? {
       en: "Update",
@@ -111,14 +110,6 @@ const tabs = ref([
 const project = reactive(new ClubProject());
 const activeTab = ref("form");
 // TODO
-const minLengthMessage = {
-  en: "Must be at least 100 characters",
-  fr: "Doit contenir au moins 100 caractères",
-};
-const maxLengthMessage = {
-  en: "Must be at most 1000 characters",
-  fr: "Doit contenir au plus 1000 caractères",
-};
 
 /* Hooks */
 onMounted(async () => {
@@ -314,6 +305,9 @@ const getProject = async () => {
     response.total_pledges = convertCentsToFloat(response.total_pledges);
     Object.assign(project, response);
     useActiveProjectStore().setActiveProject(project);
+    if (projectDisabledStatus(project.project_status as ProjectStatus)) {
+      disabledMode.value = true;
+    }
   }
 };
 const validateAndSubmit = async () => {
@@ -398,6 +392,7 @@ const setActiveTab = (tabName: string) => {
           :label="langTranslations.projectFormLabels.projectNameLabel"
           :type="'text'"
           :errorMessage="v$.project_name.$errors[0]?.$message as string | undefined"
+          :disabled="disabledMode"
         />
       </div>
       <div class="textarea-block">
@@ -406,22 +401,26 @@ const setActiveTab = (tabName: string) => {
           :rows="7"
           :label="langTranslations.desciptionLabel"
           :errorMessage="v$.project_description?.$errors[0]?.$message as string | undefined "
+          :disabled="disabledMode"
         />
       </div>
       <div class="form-block">
         <BaseSelect
+          :disabled="disabledMode"
           v-model="project.country"
           :label="langTranslations.countryLabel"
           :options="ResourceList.countryList"
           :errorMessage="v$.country?.$errors[0]?.$message as string | undefined "
         />
         <BaseSelect
+          :disabled="disabledMode"
           v-model="project.region"
           :label="langTranslations.landingPage.regionLabel"
           :options="ResourceList.regionList"
           :errorMessage="v$.region?.$errors[0]?.$message as string | undefined "
         />
         <BaseInput
+          :disabled="disabledMode"
           v-model="project.funding_goal"
           :label="langTranslations.projectFormLabels.fundingGoalLabel"
           :type="'number'"
@@ -430,6 +429,7 @@ const setActiveTab = (tabName: string) => {
           :errorMessage="v$.funding_goal?.$errors[0]?.$message as string | undefined"
         />
         <BaseInput
+          :disabled="disabledMode"
           v-model="project.anticipated_funding"
           :label="langTranslations.projectFormLabels.anticipatedAmountLabel"
           :type="'number'"
@@ -438,12 +438,14 @@ const setActiveTab = (tabName: string) => {
           :errorMessage="v$.anticipated_funding?.$errors[0]?.$message as string | undefined"
         />
         <BaseInput
+          :disabled="disabledMode"
           v-model="project.start_date"
           :label="langTranslations.projectFormLabels.startDateLabel"
           :type="'date'"
           :errorMessage="v$.start_date?.$errors[0]?.$message as string | undefined "
         />
         <BaseInput
+          :disabled="disabledMode"
           v-model="project.completion_date"
           :label="langTranslations.projectFormLabels.completionDateLabel"
           :type="'date'"
@@ -458,6 +460,7 @@ const setActiveTab = (tabName: string) => {
             alt=""
           />
           <BaseCheckBox
+            :disabled="disabledMode"
             v-model="project.area_focus.Peace_Conflict_Prevention"
             :label="Object.keys(project.area_focus)[0].replace(/_/g, ' ')"
             class="mb-0"
@@ -470,6 +473,7 @@ const setActiveTab = (tabName: string) => {
             alt=""
           />
           <BaseCheckBox
+            :disabled="disabledMode"
             v-model="project.area_focus.Disease_Prevention_And_Treatment"
             :label="Object.keys(project.area_focus)[1].replace(/_/g, ' ')"
             class="mb-0"
@@ -482,6 +486,7 @@ const setActiveTab = (tabName: string) => {
             alt=""
           />
           <BaseCheckBox
+            :disabled="disabledMode"
             v-model="project.area_focus.Water_And_Sanitation"
             :label="Object.keys(project.area_focus)[2].replace(/_/g, ' ')"
             class="mb-0"
@@ -494,6 +499,7 @@ const setActiveTab = (tabName: string) => {
             alt=""
           />
           <BaseCheckBox
+            :disabled="disabledMode"
             v-model="project.area_focus.Maternal_And_Child_Health"
             :label="Object.keys(project.area_focus)[3].replace(/_/g, ' ')"
             class="mb-0"
@@ -506,6 +512,7 @@ const setActiveTab = (tabName: string) => {
             alt=""
           />
           <BaseCheckBox
+            :disabled="disabledMode"
             v-model="project.area_focus.Basic_Education_And_Literacy"
             :label="Object.keys(project.area_focus)[4].replace(/_/g, ' ')"
             class="mb-0"
@@ -518,6 +525,7 @@ const setActiveTab = (tabName: string) => {
             alt=""
           />
           <BaseCheckBox
+            :disabled="disabledMode"
             v-model="project.area_focus.Economic_And_Community_Development"
             :label="Object.keys(project.area_focus)[5].replace(/_/g, ' ')"
             class="mb-0"
@@ -530,6 +538,7 @@ const setActiveTab = (tabName: string) => {
             alt=""
           />
           <BaseCheckBox
+            :disabled="disabledMode"
             v-model="project.area_focus.Environment"
             :label="Object.keys(project.area_focus)[6].replace(/_/g, ' ')"
             class="mb-0"
