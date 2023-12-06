@@ -66,7 +66,6 @@ const hideDropdown = (event: Event): void => {
 };
 
 const logoutAdmin = async () => {
-  router.push({ name: "Home" });
   userStore.logOut();
   districtStore.resetDistrict();
   clubStore.resetClub();
@@ -179,16 +178,11 @@ const logoutAdmin = async () => {
                   >{{ langTranslations.adminDash.myProfileLabel }}</a
                 >
               </li>
-
               <li>
                 <span
                   @click="
                     () => {
                       toggleDropdown();
-                      router.push({
-                        name: 'MyProfile',
-                        query: { tabNameProp: 'profile' },
-                      });
                     }
                   "
                   href="#"
@@ -241,12 +235,13 @@ const logoutAdmin = async () => {
                 </div>
               </li>
               <li>
-                <a
+                <router-link
+                  :to="{ name: 'Home' }"
                   @click="logoutAdmin"
                   href="#"
                   class="block py-2 px-4 text-sm hover:bg-gray-100 hover:text-nearBlack"
-                  >{{ langTranslations.logoutLabel }}</a
-                >
+                  >{{ langTranslations.logoutLabel }}
+                </router-link>
               </li>
             </ul>
           </div>

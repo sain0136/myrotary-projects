@@ -222,7 +222,7 @@ const handlehandleDeleteMultiple = () => {
           <td v-if="hideActionsColumn != true" class="actions-col px-6 py-4">
             <div class="flex justify-center items-center gap-1">
               <a
-                @click="projectCompleteButton?.callBack({ ...row })"
+                @click.prevent="projectCompleteButton?.callBack({ ...row })"
                 v-if="projectCompleteButton?.show && !projectCompleteButton?.hide?.(row) 
                 && (row as IDsgProject | IDmProject | IClubProject).project_status
                 === projectStatus.APPROVED && 
@@ -235,7 +235,7 @@ const handlehandleDeleteMultiple = () => {
                 ><Icon icon="carbon:task-complete"
               /></a>
               <a
-                @click="submitForReportsButton?.callBack({ ...row })"
+                @click.prevent="submitForReportsButton?.callBack({ ...row })"
                 v-if="submitForReportsButton?.show && !submitForReportsButton?.hide?.(row) 
                 && (row as IDsgProject | IDmProject | IClubProject).project_status
                 === projectStatus.APPROVED && 
@@ -248,7 +248,7 @@ const handlehandleDeleteMultiple = () => {
                 ><Icon icon="carbon:report"
               /></a>
               <a
-                @click="sendForApprovalButton?.callBack({ ...row })"
+                @click.prevent="sendForApprovalButton?.callBack({ ...row })"
                 v-if="sendForApprovalButton?.show && !sendForApprovalButton?.hide?.(row) 
                 && (row as IDsgProject | IDmProject | IClubProject).project_status
                 === projectStatus.FULLYFUNDED
@@ -259,7 +259,7 @@ const handlehandleDeleteMultiple = () => {
                 ><Icon icon="formkit:submit"
               /></a>
               <a
-                @click="editButton?.callBack({ ...row })"
+                @click.prevent="editButton?.callBack({ ...row })"
                 v-if="editButton?.show && !editButton?.hide?.(row)"
                 :title="langTranslations.editLabel"
                 href="#"
@@ -267,7 +267,7 @@ const handlehandleDeleteMultiple = () => {
                 ><Icon icon="tabler:edit"
               /></a>
               <a
-                @click="deleteButton?.callBack({ ...row })"
+                @click.prevent="deleteButton?.callBack({ ...row })"
                 v-if="deleteButton?.show && !deleteButton?.hide?.(row)"
                 :title="langTranslations.deleteLabel"
                 href="#"

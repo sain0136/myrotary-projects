@@ -60,6 +60,7 @@ onUnmounted(() => {
 
 /* Methods */
 const handleCardClick = () => {
+  console.log("clicked");
   router.push({
     name: "ProjectDetails",
     params: {
@@ -129,20 +130,31 @@ const escapeHTML = (unsafe: string) => {
         :class="{
           hidden: !imageLoaded,
         }"
+        @click.prevent
         href="#"
       >
-        <img
-          @load="onImageLoad"
-          @click="handleCardClick"
-          @error="onImageError"
-          :class="{
-            hidden: !imageLoaded,
-            'aspect-ratio w-full cursor-pointer object-cover': imageLoaded,
+        <router-link
+          :to="{
+            name: 'ProjectDetails',
+            params: {
+              name: project.project_name.replace(/\s/g, '-'),
+            },
+            query: {
+              id: project.project_id,
+            },
           }"
-          class="rounded-t-lg"
-          :src="imageLink || undefined"
-          alt="project image"
-        />
+        >
+          <img
+            @load="onImageLoad"
+            @error="onImageError"
+            :class="{
+              hidden: !imageLoaded,
+              'aspect-ratio w-full cursor-pointer object-cover': imageLoaded,
+            }"
+            class="rounded-t-lg"
+            :src="imageLink || undefined"
+            alt="project image"
+        /></router-link>
       </a>
       <div
         v-if="!imageLoaded"
@@ -168,27 +180,36 @@ const escapeHTML = (unsafe: string) => {
         </div>
       </div>
       <div class="lower-card p-5 flex flex-col">
-        <a href="#">
-          <h5
-            @click="handleCardClick"
-            class="mb-2 text-2xl font-bold tracking-tight text-gray-900"
-          >
-            {{ truncatedTitle }}
-          </h5>
-          <div class="status mt-4 flex gap-1">
-            <h3 class="text-base font-bold text-secondary">
-              {{ `${langTranslations.statusLabel}:` }}
-            </h3>
-            <h3 class="text-base font-bold text-primary-black">
-              {{
-                translateProjectStatus(
-                  project.project_status as ProjectStatus,
-                  languagePref
-                )
-              }}
-            </h3>
-          </div>
-        </a>
+        <router-link
+          :to="{
+            name: 'ProjectDetails',
+            params: {
+              name: project.project_name.replace(/\s/g, '-'),
+            },
+            query: {
+              id: project.project_id,
+            },
+          }"
+        >
+          <a href="#">
+            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">
+              {{ truncatedTitle }}
+            </h5>
+            <div class="status mt-4 flex gap-1">
+              <h3 class="text-base font-bold text-secondary">
+                {{ `${langTranslations.statusLabel}:` }}
+              </h3>
+              <h3 class="text-base font-bold text-primary-black">
+                {{
+                  translateProjectStatus(
+                    project.project_status as ProjectStatus,
+                    languagePref
+                  )
+                }}
+              </h3>
+            </div>
+          </a></router-link
+        >
         <div class="status_bar pt-4">
           <div
             class="donate_bar wow fadeIn animated"
