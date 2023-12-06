@@ -104,10 +104,22 @@ export default class UploadsController {
               projectMedia.project_image = file as uploadedFile;
             }
             if (file.fileType === "project-document-evidence") {
+              if (!projectMedia.evidence_files) {
+                projectMedia.evidence_files = [];
+              }
               projectMedia.evidence_files.push(file as uploadedFile);
             }
             if (file.fileType === "project-report-files") {
+              if (!projectMedia.reports_files) {
+                projectMedia.reports_files = [];
+              }
               projectMedia.reports_files.push(file as uploadedFile);
+            }
+            if (file.fileType === "project-gallery") {
+              if (!projectMedia.project_gallery) {
+                projectMedia.project_gallery = [];
+              }
+              projectMedia.project_gallery.push(file as uploadedFile);
             }
           }
           await project

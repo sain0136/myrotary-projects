@@ -148,6 +148,24 @@ export default class UploadsService {
               await Drive.delete(file.s3Name);
             }
           }
+        case "project-gallery":
+          if (projectId) {
+            const project = await Projects.findOrFail(projectId);
+            const projectMedia = project.fileUploads as IUploads;
+            const index = (
+              projectMedia.project_gallery as uploadedFile[]
+            ).findIndex(
+              (storedFile: uploadedFile) => storedFile.s3Name === file.s3Name
+            );
+            if (index > -1) {
+              (projectMedia.project_gallery as uploadedFile[]).splice(index, 1);
+              await project
+                .merge({ fileUploads: JSON.stringify(projectMedia) })
+                .save();
+              await Drive.delete(file.s3Name);
+            }
+          }
+          return true;
       }
       console.log(userId);
     }
