@@ -232,46 +232,127 @@ const triggerFileInput = () => {
 </script>
 
 <template>
-  <div
-    class="flex items-center gap-2"
-    @click="triggerFileInput"
-    v-if="iconMode"
-  >
-    <Icon icon="material-symbols:upload-sharp" />
-    <input
-      @event.preventDefault()
-      class="hidden w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none"
-      aria-describedby="file_input_help"
-      id="file_input"
-      type="file"
-      @change="handleFileChange($event, false)"
-      :accept="getFileTypes()"
-      ref="fileInput"
-      style="display: none"
-    />
-  </div>
-  <div
-    v-if="!dropzoneMode && !iconMode"
-    class="flex flex-col items-center gap-2"
-  >
-    <div class="py-8"></div>
-    <H3 v-if="title" :content="title" />
-    <div class="flex flex-col items-center gap-2" v-if="!loading">
+  <div>
+    <div
+      class="flex items-center gap-2"
+      @click="triggerFileInput"
+      v-if="iconMode"
+    >
+      <Icon icon="material-symbols:upload-sharp" />
       <input
-        class="block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none"
+        @event.preventDefault()
+        class="hidden w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none"
         aria-describedby="file_input_help"
         id="file_input"
         type="file"
         @change="handleFileChange($event, false)"
         :accept="getFileTypes()"
+        ref="fileInput"
+        style="display: none"
       />
-      <p v-if="v$.file.$error" class="text-red-500">
-        {{ v$.file.$errors[0].$message }}
-      </p>
-      <p class="font-bold" id="file_input_help">
-        {{ fileUploadLabelFormats }}
-      </p>
-      <div>
+    </div>
+    <div
+      v-if="!dropzoneMode && !iconMode"
+      class="flex flex-col items-center gap-2"
+    >
+      <div class="py-8"></div>
+      <H3 v-if="title" :content="title" />
+      <div class="flex flex-col items-center gap-2" v-if="!loading">
+        <input
+          class="block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none"
+          aria-describedby="file_input_help"
+          id="file_input"
+          type="file"
+          @change="handleFileChange($event, false)"
+          :accept="getFileTypes()"
+        />
+        <p v-if="v$.file.$error" class="text-red-500">
+          {{ v$.file.$errors[0].$message }}
+        </p>
+        <p class="font-bold" id="file_input_help">
+          {{ fileUploadLabelFormats }}
+        </p>
+        <div>
+          <RotaryButton :label="submitLabel" :theme="'black'" @click="submit">
+          </RotaryButton>
+          <RotaryButton
+            :disable="!validationData.file"
+            :label="langTranslations.clearLabel"
+            :theme="'secondary'"
+            @click="clear"
+          >
+          </RotaryButton>
+        </div>
+      </div>
+      <LoadingSpinner v-if="loading" />
+    </div>
+    <div
+      v-if="dropzoneMode && !loading"
+      class="flex flex-col items-center gap-4"
+    >
+      <div class="flex items-center justify-center w-full">
+        <label
+          @dragover.prevent
+          @drop="handleDrop"
+          :class="{
+            'pg-bg': validationData.file,
+          }"
+          id="drop_zone"
+          class="flex flex-col items-center justify-center w-full h-64 border-2 border-primary border-dashed rounded-lg cursor-pointer bg-gray-50"
+        >
+          <div class="flex flex-col items-center justify-center pt-5 pb-6">
+            <svg
+              class="w-8 h-8 mb-4 text-nearBlack"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 20 16"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+              />
+            </svg>
+            <strong v-if="(validationData.file as File[])?.length > 0">{{
+              ((validationData.file as File[])?.length > 0
+                ? (validationData.file as File[])?.length
+                : 0) +
+              " " +
+              langTranslations.filesSelectedLabel
+            }}</strong>
+            <p class="mb-2 text-sm">
+              <span class="font-semibold">{{
+                langTranslations.clickToUpload
+              }}</span>
+              {{ langTranslations.dragAndDropLabel }}
+            </p>
+            <p class="text-xs text-gray-500">
+              {{
+                dropzoneAcceptedFileTypes === "allTypes"
+                  ? allowedDoctypesMap.allTypes[languagePref]
+                  : allowedDoctypesMap.docsOnly[languagePref]
+                  ? allowedDoctypesMap.docsOnly[languagePref]
+                  : ""
+              }}
+            </p>
+          </div>
+          <input
+            @change="handleFileChange($event, true)"
+            multiple
+            id="dropzone-file"
+            type="file"
+            class="hidden"
+            :accept="getFileTypes()"
+          />
+        </label>
+      </div>
+      <div class="text-center">
+        <p v-if="v$.file.$error" class="text-red-500 py-4">
+          {{ v$.file.$errors[0].$message }}
+        </p>
         <RotaryButton :label="submitLabel" :theme="'black'" @click="submit">
         </RotaryButton>
         <RotaryButton
@@ -283,84 +364,8 @@ const triggerFileInput = () => {
         </RotaryButton>
       </div>
     </div>
-    <LoadingSpinner v-if="loading" />
+    <LoadingSpinner v-if="loading && !iconMode" />
   </div>
-  <div v-if="dropzoneMode && !loading" class="flex flex-col items-center gap-4">
-    <div class="flex items-center justify-center w-full">
-      <label
-        @dragover.prevent
-        @drop="handleDrop"
-        :class="{
-          'pg-bg': validationData.file,
-        }"
-        id="drop_zone"
-        class="flex flex-col items-center justify-center w-full h-64 border-2 border-primary border-dashed rounded-lg cursor-pointer bg-gray-50"
-      >
-        <div class="flex flex-col items-center justify-center pt-5 pb-6">
-          <svg
-            class="w-8 h-8 mb-4 text-nearBlack"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 20 16"
-          >
-            <path
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
-            />
-          </svg>
-          <strong v-if="(validationData.file as File[])?.length > 0">{{
-            ((validationData.file as File[])?.length > 0
-              ? (validationData.file as File[])?.length
-              : 0) +
-            " " +
-            langTranslations.filesSelectedLabel
-          }}</strong>
-          <p class="mb-2 text-sm">
-            <span class="font-semibold">{{
-              langTranslations.clickToUpload
-            }}</span>
-            {{ langTranslations.dragAndDropLabel }}
-          </p>
-          <p class="text-xs text-gray-500">
-            {{
-              dropzoneAcceptedFileTypes === "allTypes"
-                ? allowedDoctypesMap.allTypes[languagePref]
-                : allowedDoctypesMap.docsOnly[languagePref]
-                ? allowedDoctypesMap.docsOnly[languagePref]
-                : ""
-            }}
-          </p>
-        </div>
-        <input
-          @change="handleFileChange($event, true)"
-          multiple
-          id="dropzone-file"
-          type="file"
-          class="hidden"
-          :accept="getFileTypes()"
-        />
-      </label>
-    </div>
-    <div class="text-center">
-      <p v-if="v$.file.$error" class="text-red-500 py-4">
-        {{ v$.file.$errors[0].$message }}
-      </p>
-      <RotaryButton :label="submitLabel" :theme="'black'" @click="submit">
-      </RotaryButton>
-      <RotaryButton
-        :disable="!validationData.file"
-        :label="langTranslations.clearLabel"
-        :theme="'secondary'"
-        @click="clear"
-      >
-      </RotaryButton>
-    </div>
-  </div>
-  <LoadingSpinner v-if="loading && !iconMode" />
 </template>
 
 <style lang="scss" scoped>
