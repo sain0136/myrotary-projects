@@ -1,4 +1,6 @@
 export interface Translation {
+  maxGalleryUploads: string;
+  uploadGalleryLabel: string;
   chooseFileLabel: string;
   completeLabel: string;
   minLengthMessage: string;
@@ -309,6 +311,8 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    maxGalleryUploads: "Maximum gallery uploads reached",
+    uploadGalleryLabel: "Upload Gallery Images",
     chooseFileLabel: "Choose File",
     completeLabel: "Mark Complete",
     minLengthMessage: "Must be at least {value} characters",
@@ -648,7 +652,7 @@ export const translations: Record<string, Translation> = {
       personalInformationLabel: "Personal Information",
       districtClubsLabel: "District Clubs",
     },
-    uploadFileLabel: "Upload File",
+    uploadFileLabel: "Upload Files",
     submit: "Submit",
     logoutLabel: "Logout",
     sessionTimeoutHeader: "Session Timeout",
@@ -656,6 +660,9 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    maxGalleryUploads:
+      "Nombre maximum de téléchargements de la galerie atteint",
+    uploadGalleryLabel: "Télécharger des images de la galerie",
     chooseFileLabel: "Choisir le fichier",
     completeLabel: "Mark Compléter",
     minLengthMessage: "Doit contenir au moins  {value} caractères",
@@ -1001,7 +1008,7 @@ export const translations: Record<string, Translation> = {
       personalInformationLabel: "Informations personnelles",
       districtClubsLabel: "Clubs de district",
     },
-    uploadFileLabel: "Télécharger le fichier",
+    uploadFileLabel: "Télécharger des fichiers",
     submit: "Soumettre",
     logoutLabel: "Se déconnecter",
     sessionTimeoutHeader: "Délai de session",

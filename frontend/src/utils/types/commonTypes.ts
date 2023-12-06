@@ -37,6 +37,7 @@ export type uploadedFiletypes =
   | "profile-picture"
   | "main-logo"
   | "project-coverImage"
+  | "project-gallery"
   | "project-document-evidence"
   | "project-report-files"
   | "district-report-files";

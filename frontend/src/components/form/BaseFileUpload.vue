@@ -56,6 +56,7 @@ const allowedDoctypesMap = {
 interface ValidationData {
   file: File | File[] | null;
 }
+
 const {
   acceptedFileTypes,
   fileUploadLabelFormats,
@@ -69,6 +70,7 @@ const {
   customIdentifier,
   postUploadCallback,
   iconMode,
+  uploadLimits,
 } = defineProps<{
   acceptedFileTypes?: "allTypes" | "docsOnly" | "imageOnly";
   fileUploadLabelFormats?: string;
@@ -83,10 +85,15 @@ const {
   customIdentifier?: string;
   postUploadCallback?: Function;
   iconMode?: boolean;
+  uploadLimits?: {
+    maxFiles?: number;
+  };
 }>();
+
 const validationData: ValidationData = reactive({
   file: null,
 });
+
 const validationRules = {
   file: {
     required: helpers.withMessage(
@@ -129,10 +136,31 @@ const handleDrop = (event: any) => {
   }
 };
 
+const uploadLimitexceeded = () => {
+  if (uploadLimits && uploadLimits.maxFiles) {
+    if (validationData.file && Array.isArray(validationData.file)) {
+      if (validationData.file.length > uploadLimits.maxFiles) {
+        handleError(
+          new CustomErrors(
+            400,
+            `You can upload a maximum of ${uploadLimits.maxFiles} files`,
+            {
+              en: `You can upload a maximum of ${uploadLimits.maxFiles} files`,
+              fr: `Vous pouvez télécharger un maximum de ${uploadLimits.maxFiles} fichiers`,
+            }
+          )
+        );
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
 const submit = async () => {
   const isFormCorrect = await v$.value.$validate();
   if (!isFormCorrect) return;
-
+  if (uploadLimitexceeded()) return;
   if (!v$.value.$error) {
     try {
       v$.value.$reset();
@@ -212,6 +240,7 @@ const getFileTypes = () => {
     return allowedDoctypesMap.imageOnly.acceptsString;
   }
 };
+
 const resetInput = () => {
   validationData.file = null;
   v$.value.$reset();

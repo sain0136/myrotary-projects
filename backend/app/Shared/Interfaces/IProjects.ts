@@ -138,6 +138,7 @@ export interface IUploads {
   project_image: uploadFileData | uploadedFile;
   reports_files: Array<uploadFileData | uploadedFile>;
   evidence_files: Array<uploadFileData | uploadedFile>;
+  project_gallery?: Array<uploadFileData | uploadedFile>;
 }
 
 export interface IGenericProject {

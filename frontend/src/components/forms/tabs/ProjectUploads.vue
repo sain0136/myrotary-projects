@@ -20,7 +20,6 @@ import { UploadsApi } from "@/api/services/UploadsApi";
 import type { CustomErrors } from "@/utils/classes/CustomErrors";
 import { ProjectsApi } from "@/api/services/ProjectsApi";
 import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
-import Hr from "@/components/hr/Hr.vue";
 
 /* Data */
 const projectsApi = new ProjectsApi(new ApiClient());
@@ -32,6 +31,13 @@ const coverImageReqData = {
   storagePath: "./projects",
   files: [],
   fileTypes: "project-coverImage",
+} as uploadFileData;
+
+const projectGalleryReqData = {
+  databaseTarget: "project-media",
+  storagePath: "./projects",
+  files: [],
+  fileTypes: "project-gallery",
 } as uploadFileData;
 
 const evidenceFlieReqData = {
@@ -163,6 +169,79 @@ const stripUrlPart = (url: string) => {
         :project-id="projectId ?? 0"
       />
     </div>
+    <!-- Gallery Upload -->
+    <div
+      v-if="
+        !useActiveProjectStore().activeProject.file_uploads.project_gallery ||
+        (useActiveProjectStore().activeProject.file_uploads.project_gallery as []).length < 10
+      "
+      class="w-9/12 py-4"
+    >
+      <H4
+        class="text-center pb-4"
+        :content="langTranslations.uploadGalleryLabel"
+      />
+      <BaseFileUpload
+        :submit-label="langTranslations.saveLabel"
+        :req-data="projectGalleryReqData"
+        :acceptedFileTypes="'imageOnly'"
+        :project-id="projectId ?? 0"
+        :dropzone-mode="true"
+        :upload-limits="{
+          maxFiles:
+           ( useActiveProjectStore().activeProject.file_uploads.project_gallery &&
+            (useActiveProjectStore().activeProject.file_uploads.project_gallery as [])
+              .length > 0)
+              ? 10 -
+              (useActiveProjectStore().activeProject.file_uploads.project_gallery as [])
+              .length
+              : 10,
+        }"
+      />
+    </div>
+    <div v-else>
+      {{ langTranslations.maxGalleryUploads }}
+    </div>
+    <table
+      v-if="
+        useActiveProjectStore().activeProject.file_uploads.project_gallery &&
+        (useActiveProjectStore().activeProject.file_uploads.project_gallery as [])
+          .length > 0
+      "
+      class="w-full text-sm text-left text-nearWhite"
+    >
+      <thead class="text-xs text-nearWhite uppercase bg-gray-500">
+        <th scope="col" class="px-6 py-3">
+          {{ "File" }}
+        </th>
+        <th scope="col" class="px-6 py-3 text-center">
+          {{ langTranslations.deleteLabel }}
+        </th>
+      </thead>
+      <tbody>
+        <tr
+          v-for="file in (useActiveProjectStore().activeProject
+              .file_uploads.project_gallery as uploadedFile[])"
+          :key="file.s3Name"
+          class="bg-gray-800 border-b border-gray-700"
+        >
+          <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap">
+            <a target="_blank" :href="file.s3UrlLink">
+              {{ stripUrlPart(file.s3Name) }}
+            </a>
+          </th>
+          <td class="px-6 py-4 flex justify-center">
+            <div
+              @click="deleteFiles(file)"
+              :title="langTranslations.deleteLabel"
+              class="cursor-pointer font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
+            >
+              <Icon icon="tabler:trash" />
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
     <!-- Evidence Upload -->
     <div
       class="w-9/12 py-4"
