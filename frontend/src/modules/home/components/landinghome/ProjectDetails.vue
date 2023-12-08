@@ -30,6 +30,8 @@ import { Icon } from "@iconify/vue";
 import { useRouter } from "vue-router";
 import { useActiveProjectStore } from "@/stores/ActiveProjectStore";
 import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
+import Carousel from "primevue/carousel";
+import type { uploadFileData, uploadedFile } from "@/utils/types/commonTypes";
 
 /* Data */
 const router = useRouter();
@@ -44,7 +46,30 @@ const project: IDsgProject | IDmProject | IClubProject | IGenericProject =
 const areasOfFocus = ref<string[]>([]);
 const { setActiveProject, resetActiveProject } = useActiveProjectStore();
 const loaded = ref(false);
+const galleryImages = ref<Array<uploadFileData | uploadedFile>>([]);
 
+const responsiveOptions = [
+  {
+    breakpoint: "1400px",
+    numVisible: 3,
+    numScroll: 1,
+  },
+  {
+    breakpoint: "1199px",
+    numVisible: 3,
+    numScroll: 1,
+  },
+  {
+    breakpoint: "767px",
+    numVisible: 2,
+    numScroll: 1,
+  },
+  {
+    breakpoint: "575px",
+    numVisible: 1,
+    numScroll: 1,
+  },
+];
 /* Hooks */
 onMounted(async () => {
   try {
@@ -59,6 +84,11 @@ onMounted(async () => {
           areasOfFocus.value.push(conversion().get(key) as string);
         }
       }
+      galleryImages.value = useActiveProjectStore().activeProject.file_uploads
+        .project_gallery
+        ? (useActiveProjectStore().activeProject.file_uploads
+            .project_gallery as Array<uploadFileData | uploadedFile>)
+        : [];
       loaded.value = true;
     } else {
       throw new CustomErrors(900, "Project not found", {
@@ -195,8 +225,31 @@ onMounted(async () => {
           </ul>
         </blockquote>
       </div>
+      <Hr v-if="galleryImages.length > 0" />
+      <div v-if="galleryImages.length > 0" class="flex flex-col gap-8">
+        <H3 :content="langTranslations.projectLabels.galleryLabel" />
+        <Carousel
+          :value="galleryImages"
+          :numVisible="3"
+          :numScroll="3"
+          :responsive-options="responsiveOptions"
+        >
+          <template #item="slotProps: { data: uploadedFile }">
+            <div
+              class="border-1 surface-border border-round m-2 text-center py-5 px-3"
+            >
+              <div class="mb-3">
+                <img
+                  :src="slotProps.data.s3UrlLink"
+                  :alt="slotProps.data.s3BaseUrlLink"
+                  class="aspect-ratio cursor-pointer object-cover shadow-2"
+                />
+              </div>
+            </div>
+          </template>
+        </Carousel>
+      </div>
       <hr class="mt-8 h-px w-full border-0 bg-gray-500" />
-
       <div class="faq-section my-8 flex justify-between">
         <div class="content_column">
           <h1 class="mb-2 text-2xl font-bold">

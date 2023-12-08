@@ -145,6 +145,7 @@ export interface Translation {
   };
   projectLabel: string;
   projectLabels: {
+    galleryLabel: string;
     raisedLabel: string;
     goalLabel: string;
     estimatedLabel: string;
@@ -491,6 +492,7 @@ export const translations: Record<string, Translation> = {
     },
     projectLabel: "Project",
     projectLabels: {
+      galleryLabel: "Gallery",
       raisedLabel: "Raised",
       goalLabel: "Goal",
       estimatedLabel: "Estimated Completion Date",
@@ -844,6 +846,7 @@ export const translations: Record<string, Translation> = {
     },
     projectLabel: "Projet",
     projectLabels: {
+      galleryLabel: "Galerie",
       raisedLabel: "Donné",
       goalLabel: "Objectif",
       estimatedLabel: "Date de fin estimée",
