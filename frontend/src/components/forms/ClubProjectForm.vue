@@ -14,6 +14,8 @@ import { ProjectsApi } from "@/api/services/ProjectsApi";
 import { CustomErrors } from "@/utils/classes/CustomErrors";
 import ClubProject from "@/utils/classes/ClubProject";
 import useVuelidate from "@vuelidate/core";
+import Banners from "@/components/banners/Banners.vue";
+
 import {
   helpers,
   maxLength,
@@ -44,6 +46,7 @@ import H1 from "@/components/headings/H1.vue";
 import { hideAprovalTab, projectDisabledStatus } from "@/utils/utils";
 
 /* Data */
+const viewerMode = ref(false);
 const disabledMode = ref(false);
 type formType = "normalView" | "readOnlyView";
 const route = useRoute();
@@ -114,6 +117,10 @@ const activeTab = ref("form");
 /* Hooks */
 onMounted(async () => {
   try {
+    if (formType === "readOnlyView") {
+      disabledMode.value = true;
+      viewerMode.value = true;
+    }
     if (projectId) {
       await getProject();
     } else {
@@ -361,11 +368,17 @@ const setActiveTab = (tabName: string) => {
 
 <template>
   <div>
+    <Banners
+      v-if="viewerMode"
+      :banner-text="langTranslations.landingpageBannerText"
+    />
     <H1
+      v-if="!viewerMode"
       class="text-center my-4"
       :content="langTranslations.projectFormLabels.clubProjectHeader"
     />
     <ul
+      v-if="!viewerMode"
       class="tabs flex flex-wrap text-sm font-medium text-center justify-center text-gray-500 border-b border-gray-200"
     >
       <li class="mr-2" v-for="tab in tabs" :key="tab.name">
@@ -556,6 +569,7 @@ const setActiveTab = (tabName: string) => {
       </p>
       <div class="button_row mt-8 flex justify-center gap-4">
         <RotaryButton
+          v-if="!viewerMode"
           :theme="'primary'"
           :label="submitLabel[languagePref]"
           @click="
@@ -566,7 +580,11 @@ const setActiveTab = (tabName: string) => {
         />
         <RotaryButton
           :theme="'primary'"
-          :label="langTranslations.cancelLabel"
+          :label="
+            viewerMode
+              ? langTranslations.backLabel
+              : langTranslations.cancelLabel
+          "
           @click="redirect()"
         />
       </div>

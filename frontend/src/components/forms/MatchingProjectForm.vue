@@ -13,6 +13,7 @@ import { ApiClient } from "@/api/ApiClient";
 import { ProjectsApi } from "@/api/services/ProjectsApi";
 import { CustomErrors } from "@/utils/classes/CustomErrors";
 import useVuelidate from "@vuelidate/core";
+import Banners from "@/components/banners/Banners.vue";
 import {
   email,
   helpers,
@@ -51,7 +52,9 @@ import type { IFundingSource } from "@/utils/interfaces/IProjects";
 import ErrorValidation from "@/components/forms/ErrorValidation.vue";
 import { hideAprovalTab, projectDisabledStatus } from "@/utils/utils";
 import { type ProjectStatus } from "@/utils/types/commonTypes";
+
 /* Data */
+const viewerMode = ref(false);
 const disabledMode = ref(false);
 type formType = "normalView" | "readOnlyView";
 const route = useRoute();
@@ -148,6 +151,10 @@ const originalAmountofAnitcipated = ref(Dinero({ amount: 0 }));
 /* Hooks */
 onMounted(async () => {
   try {
+    if (formType === "readOnlyView") {
+      disabledMode.value = true;
+      viewerMode.value = true;
+    }
     if (projectId) {
       await getProject();
     } else {
@@ -810,11 +817,17 @@ const setActiveTab = (tabName: string) => {
 
 <template>
   <div>
+    <Banners
+      v-if="viewerMode"
+      :banner-text="langTranslations.landingpageBannerText"
+    />
     <H1
+      v-if="!viewerMode"
       class="text-center my-4"
       :content="langTranslations.projectFormLabels.dmProjectsHeader"
     />
     <ul
+      v-if="!viewerMode"
       class="tabs flex flex-wrap text-sm font-medium text-center justify-center text-gray-500 border-b border-gray-200"
     >
       <li class="mr-2" v-for="tab in tabs" :key="tab.name">
@@ -835,7 +848,7 @@ const setActiveTab = (tabName: string) => {
       class="fluid-container pt-8 p-2"
       v-if="activeTab === 'form'"
     >
-      <ul class="my-8 px-4">
+      <ul v-if="!viewerMode" class="my-8 px-4">
         <li
           class="list-disc"
           v-for="listItem in ResourceList.districtMatchingCriteria[
@@ -846,7 +859,7 @@ const setActiveTab = (tabName: string) => {
           {{ listItem }}
         </li>
       </ul>
-      <Hr />
+      <Hr v-if="!viewerMode" />
       <!-- Section A -->
       <div class="section-a">
         <H3
@@ -995,71 +1008,75 @@ const setActiveTab = (tabName: string) => {
             }}</span>
           </p>
         </div>
-        <H4
-          class="text-center py-8"
-          :content="langTranslations.projectFormLabels.contactsHeader"
-        />
-        <Hr />
-        <H4 :content="langTranslations.projectFormLabels.primaryContactLabel" />
-        <div class="form-block">
-          <BaseInput
-            :disabled="disabledMode"
-            v-model="project.extra_descriptions.primary_contact.name"
-            :label="langTranslations.nameLabel"
-            :type="'text'"
-            :errorMessage="v$.extra_descriptions.primary_contact.name.$errors[0]?.$message as string | undefined"
+        <div v-if="!viewerMode" class="contacts-block">
+          <H4
+            class="text-center py-8"
+            :content="langTranslations.projectFormLabels.contactsHeader"
           />
-          <BaseInput
-            :disabled="disabledMode"
-            v-model="project.extra_descriptions.primary_contact.address"
-            :label="langTranslations.addressLabel"
-            :type="'text'"
-            :errorMessage="v$.extra_descriptions.primary_contact.address.$errors[0]?.$message as string | undefined"
+          <Hr />
+          <H4
+            :content="langTranslations.projectFormLabels.primaryContactLabel"
           />
-          <BaseInput
-            :disabled="disabledMode"
-            v-model="project.extra_descriptions.primary_contact.email"
-            :label="langTranslations.email"
-            :type="'email'"
-            :errorMessage="v$.extra_descriptions.primary_contact.email.$errors[0]?.$message as string | undefined"
+          <div class="form-block">
+            <BaseInput
+              :disabled="disabledMode"
+              v-model="project.extra_descriptions.primary_contact.name"
+              :label="langTranslations.nameLabel"
+              :type="'text'"
+              :errorMessage="v$.extra_descriptions.primary_contact.name.$errors[0]?.$message as string | undefined"
+            />
+            <BaseInput
+              :disabled="disabledMode"
+              v-model="project.extra_descriptions.primary_contact.address"
+              :label="langTranslations.addressLabel"
+              :type="'text'"
+              :errorMessage="v$.extra_descriptions.primary_contact.address.$errors[0]?.$message as string | undefined"
+            />
+            <BaseInput
+              :disabled="disabledMode"
+              v-model="project.extra_descriptions.primary_contact.email"
+              :label="langTranslations.email"
+              :type="'email'"
+              :errorMessage="v$.extra_descriptions.primary_contact.email.$errors[0]?.$message as string | undefined"
+            />
+            <BaseInput
+              :disabled="disabledMode"
+              v-model="project.extra_descriptions.primary_contact.phone"
+              :label="langTranslations.phone"
+              :type="'text'"
+              :errorMessage="v$.extra_descriptions.primary_contact.phone.$errors[0]?.$message as string | undefined"
+            />
+          </div>
+          <Hr />
+          <H4
+            :content="langTranslations.projectFormLabels.secondaryContactLabel"
           />
-          <BaseInput
-            :disabled="disabledMode"
-            v-model="project.extra_descriptions.primary_contact.phone"
-            :label="langTranslations.phone"
-            :type="'text'"
-            :errorMessage="v$.extra_descriptions.primary_contact.phone.$errors[0]?.$message as string | undefined"
-          />
-        </div>
-        <Hr />
-        <H4
-          :content="langTranslations.projectFormLabels.secondaryContactLabel"
-        />
-        <div class="form-block">
-          <BaseInput
-            :disabled="disabledMode"
-            v-model="project.extra_descriptions.secondary_contact.name"
-            :label="langTranslations.nameLabel"
-            :type="'text'"
-          />
-          <BaseInput
-            :disabled="disabledMode"
-            v-model="project.extra_descriptions.secondary_contact.address"
-            :label="langTranslations.addressLabel"
-            :type="'text'"
-          />
-          <BaseInput
-            :disabled="disabledMode"
-            v-model="project.extra_descriptions.secondary_contact.email"
-            :label="langTranslations.email"
-            :type="'email'"
-          />
-          <BaseInput
-            :disabled="disabledMode"
-            v-model="project.extra_descriptions.secondary_contact.phone"
-            :label="langTranslations.phone"
-            :type="'text'"
-          />
+          <div class="form-block">
+            <BaseInput
+              :disabled="disabledMode"
+              v-model="project.extra_descriptions.secondary_contact.name"
+              :label="langTranslations.nameLabel"
+              :type="'text'"
+            />
+            <BaseInput
+              :disabled="disabledMode"
+              v-model="project.extra_descriptions.secondary_contact.address"
+              :label="langTranslations.addressLabel"
+              :type="'text'"
+            />
+            <BaseInput
+              :disabled="disabledMode"
+              v-model="project.extra_descriptions.secondary_contact.email"
+              :label="langTranslations.email"
+              :type="'email'"
+            />
+            <BaseInput
+              :disabled="disabledMode"
+              v-model="project.extra_descriptions.secondary_contact.phone"
+              :label="langTranslations.phone"
+              :type="'text'"
+            />
+          </div>
         </div>
         <H4
           class="text-center py-4"
@@ -1100,47 +1117,51 @@ const setActiveTab = (tabName: string) => {
           />
         </div>
         <Hr />
-        <H4
-          class="text-center py-4"
-          :content="
-            langTranslations.projectFormLabels.hostClubLabel +
-            ' ' +
-            langTranslations.projectFormLabels.primaryContactLabel
-          "
-        />
-        <div class="form-block">
-          <BaseInput
-            :disabled="disabledMode"
-            v-model="project.hostclub_information.host_primary_contact.name"
-            :label="langTranslations.nameLabel"
-            :type="'text'"
-            :errorMessage="v$.hostclub_information.host_primary_contact
+        <div v-if="!viewerMode" class="contacts-block">
+          <H4
+            class="text-center py-4"
+            :content="
+              langTranslations.projectFormLabels.hostClubLabel +
+              ' ' +
+              langTranslations.projectFormLabels.primaryContactLabel
+            "
+          />
+          <div class="form-block">
+            <BaseInput
+              :disabled="disabledMode"
+              v-model="project.hostclub_information.host_primary_contact.name"
+              :label="langTranslations.nameLabel"
+              :type="'text'"
+              :errorMessage="v$.hostclub_information.host_primary_contact
             .name.$errors[0]?.$message as string | undefined"
-          />
-          <BaseInput
-            :disabled="disabledMode"
-            v-model="project.hostclub_information.host_primary_contact.address"
-            :label="langTranslations.addressLabel"
-            :type="'text'"
-            :errorMessage="v$.hostclub_information.host_primary_contact
+            />
+            <BaseInput
+              :disabled="disabledMode"
+              v-model="
+                project.hostclub_information.host_primary_contact.address
+              "
+              :label="langTranslations.addressLabel"
+              :type="'text'"
+              :errorMessage="v$.hostclub_information.host_primary_contact
             .address.$errors[0]?.$message as string | undefined"
-          />
-          <BaseInput
-            :disabled="disabledMode"
-            v-model="project.hostclub_information.host_primary_contact.email"
-            :label="langTranslations.email"
-            :type="'email'"
-            :errorMessage="v$.hostclub_information.host_primary_contact
+            />
+            <BaseInput
+              :disabled="disabledMode"
+              v-model="project.hostclub_information.host_primary_contact.email"
+              :label="langTranslations.email"
+              :type="'email'"
+              :errorMessage="v$.hostclub_information.host_primary_contact
             .email.$errors[0]?.$message as string | undefined"
-          />
-          <BaseInput
-            :disabled="disabledMode"
-            v-model="project.hostclub_information.host_primary_contact.phone"
-            :label="langTranslations.phone"
-            :type="'text'"
-            :errorMessage="v$.hostclub_information.host_primary_contact
+            />
+            <BaseInput
+              :disabled="disabledMode"
+              v-model="project.hostclub_information.host_primary_contact.phone"
+              :label="langTranslations.phone"
+              :type="'text'"
+              :errorMessage="v$.hostclub_information.host_primary_contact
             .phone.$errors[0]?.$message as string | undefined"
-          />
+            />
+          </div>
         </div>
         <H4
           class="text-center py-4"
@@ -1285,7 +1306,7 @@ const setActiveTab = (tabName: string) => {
         </div>
       </div>
       <!-- Section C -->
-      <div class="section-c">
+      <div v-if="!disabledMode" class="section-c">
         <H3
           :content="langTranslations.projectFormLabels.sectionCHeader"
           class="text-center py-8 underline"
@@ -1827,6 +1848,7 @@ const setActiveTab = (tabName: string) => {
       </div>
       <div class="button_row mt-8 flex justify-center gap-4">
         <RotaryButton
+          v-if="!viewerMode"
           :theme="'primary'"
           :label="submitLabel[languagePref]"
           @click="
@@ -1837,7 +1859,11 @@ const setActiveTab = (tabName: string) => {
         />
         <RotaryButton
           :theme="'primary'"
-          :label="langTranslations.cancelLabel"
+          :label="
+            viewerMode
+              ? langTranslations.backLabel
+              : langTranslations.cancelLabel
+          "
           @click="redirect()"
         />
       </div>

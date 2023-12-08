@@ -1,4 +1,6 @@
 export interface Translation {
+  backLabel: string;
+  viewFullDescriptionLabel: string;
   maxGalleryUploads: string;
   uploadGalleryLabel: string;
   chooseFileLabel: string;
@@ -312,6 +314,8 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    viewFullDescriptionLabel: "View Full Description",
+    backLabel: "Back",
     maxGalleryUploads: "Maximum gallery uploads reached",
     uploadGalleryLabel: "Upload Gallery Images",
     chooseFileLabel: "Choose File",
@@ -662,6 +666,8 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    viewFullDescriptionLabel: "Voir la description",
+    backLabel: "Retour",
     maxGalleryUploads:
       "Nombre maximum de téléchargements de la galerie atteint",
     uploadGalleryLabel: "Télécharger des images de la galerie",

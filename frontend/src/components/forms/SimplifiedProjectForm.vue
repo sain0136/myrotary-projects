@@ -12,7 +12,6 @@ import Dinero from "dinero.js";
 import { ApiClient } from "@/api/ApiClient";
 import { ProjectsApi } from "@/api/services/ProjectsApi";
 import { CustomErrors } from "@/utils/classes/CustomErrors";
-import ClubProject from "@/utils/classes/ClubProject";
 import useVuelidate from "@vuelidate/core";
 import {
   email,
@@ -43,7 +42,7 @@ import SocialShareButton from "@/components/forms/tabs/SocialShareButton.vue";
 import ProjectAdminsForm from "@/components/forms/tabs/ProjectAdminsForm.vue";
 import ProjectApproval from "@/components/forms/tabs/ProjectApproval.vue";
 import H1 from "@/components/headings/H1.vue";
-import H2 from "@/components/headings/H2.vue";
+import Banners from "@/components/banners/Banners.vue";
 import H3 from "@/components/headings/H3.vue";
 import H4 from "@/components/headings/H4.vue";
 import DistrictSimplifiedProject from "@/utils/classes/DistrictSimplifiedProject";
@@ -52,7 +51,9 @@ import type { IFundingSource } from "@/utils/interfaces/IProjects";
 import ErrorValidation from "@/components/forms/ErrorValidation.vue";
 import { hideAprovalTab, projectDisabledStatus } from "@/utils/utils";
 import { type ProjectStatus } from "@/utils/types/commonTypes";
+
 /* Data */
+const viewerMode = ref(false);
 const disabledMode = ref(false);
 type formType = "normalView" | "readOnlyView";
 const route = useRoute();
@@ -148,6 +149,10 @@ const originalAmountofAnitcipated = ref(Dinero({ amount: 0 }));
 /* Hooks */
 onMounted(async () => {
   try {
+    if (formType === "readOnlyView") {
+      disabledMode.value = true;
+      viewerMode.value = true;
+    }
     if (projectId) {
       await getProject();
     } else {
@@ -279,12 +284,6 @@ const rules = {
       langTranslations.value.formErorrText.required,
       required
     ),
-    // maxAmount: helpers.withMessage(
-    //   langTranslations.value.pledgeProcess.maxLimitLabel,
-    //   () => {
-    //     return project.funding_goal <= FUNDING_GOAL_LIMIT;
-    //   }
-    // ),
     numeric: helpers.withMessage(
       langTranslations.value.formErorrText.numeric,
       numeric
@@ -301,31 +300,6 @@ const rules = {
         return project.anticipated_funding <= FUNDING_GOAL_LIMIT;
       }
     ),
-    //   lowerThanFundingGoal: helpers.withMessage(
-    //     langTranslations.value.formErorrText.lowerThanFundingGoal,
-    //     async () => {
-    //       const anticipatedAmount = Dinero({
-    //         amount: project.anticipated_funding,
-    //       });
-    //       const fundingGoal = Dinero({
-    //         amount: project.funding_goal,
-    //       });
-    //       const result = anticipatedAmount.lessThanOrEqual(fundingGoal);
-    //       return result;
-    //     }
-    //   ),
-    //   cantBelowerThanPledgesTotal: helpers.withMessage(
-    //     langTranslations.value.formErorrText.lowerThanPledgesTotal,
-    //     () => {
-    //       const anticipatedAmount = Dinero({
-    //         amount: project.anticipated_funding,
-    //       });
-    //       const pledgesAmount = Dinero({
-    //         amount: project.total_pledges,
-    //       });
-    //       return anticipatedAmount.greaterThanOrEqual(pledgesAmount);
-    //     }
-    //   ),
   },
   start_date: {
     required: helpers.withMessage(
@@ -763,11 +737,17 @@ const setActiveTab = (tabName: string) => {
 
 <template>
   <div>
+    <Banners
+      v-if="viewerMode"
+      :banner-text="langTranslations.landingpageBannerText"
+    />
     <H1
+      v-if="!viewerMode"
       class="text-center my-4"
       :content="langTranslations.projectFormLabels.dsgProjectsHeader"
     />
     <ul
+      v-if="!viewerMode"
       class="tabs flex flex-wrap text-sm font-medium text-center justify-center text-gray-500 border-b border-gray-200"
     >
       <li class="mr-2" v-for="tab in tabs" :key="tab.name">
@@ -788,7 +768,7 @@ const setActiveTab = (tabName: string) => {
       class="fluid-container pt-8 p-2"
       v-if="activeTab === 'form'"
     >
-      <ul class="my-8 px-4">
+      <ul v-if="!viewerMode" class="my-8 px-4">
         <li
           class="list-disc"
           v-for="listItem in ResourceList.districtSimplifiedCriteria[
@@ -799,7 +779,7 @@ const setActiveTab = (tabName: string) => {
           {{ listItem }}
         </li>
       </ul>
-      <Hr />
+      <Hr v-if="!viewerMode" />
       <div class="form-block">
         <BaseInput
           :disabled="disabledMode"
@@ -984,71 +964,76 @@ const setActiveTab = (tabName: string) => {
           "
         />
       </div>
-      <H3
-        class="text-center py-8"
-        :content="langTranslations.projectFormLabels.contactsHeader"
-      />
-      <Hr />
-      <H4 :content="langTranslations.projectFormLabels.primaryContactLabel" />
-      <div class="form-block">
-        <BaseInput
-          :disabled="disabledMode"
-          v-model="project.extra_descriptions.primary_contact.name"
-          :label="langTranslations.nameLabel"
-          :type="'text'"
-          :errorMessage="v$.extra_descriptions.primary_contact.name.$errors[0]?.$message as string | undefined"
+      <div v-if="!viewerMode" class="contacts-block">
+        <H3
+          class="text-center py-8"
+          :content="langTranslations.projectFormLabels.contactsHeader"
         />
-        <BaseInput
-          :disabled="disabledMode"
-          v-model="project.extra_descriptions.primary_contact.address"
-          :label="langTranslations.addressLabel"
-          :type="'text'"
-          :errorMessage="v$.extra_descriptions.primary_contact.address.$errors[0]?.$message as string | undefined"
+        <Hr />
+        <H4 :content="langTranslations.projectFormLabels.primaryContactLabel" />
+        <div class="form-block">
+          <BaseInput
+            :disabled="disabledMode"
+            v-model="project.extra_descriptions.primary_contact.name"
+            :label="langTranslations.nameLabel"
+            :type="'text'"
+            :errorMessage="v$.extra_descriptions.primary_contact.name.$errors[0]?.$message as string | undefined"
+          />
+          <BaseInput
+            :disabled="disabledMode"
+            v-model="project.extra_descriptions.primary_contact.address"
+            :label="langTranslations.addressLabel"
+            :type="'text'"
+            :errorMessage="v$.extra_descriptions.primary_contact.address.$errors[0]?.$message as string | undefined"
+          />
+          <BaseInput
+            :disabled="disabledMode"
+            v-model="project.extra_descriptions.primary_contact.email"
+            :label="langTranslations.email"
+            :type="'email'"
+            :errorMessage="v$.extra_descriptions.primary_contact.email.$errors[0]?.$message as string | undefined"
+          />
+          <BaseInput
+            :disabled="disabledMode"
+            v-model="project.extra_descriptions.primary_contact.phone"
+            :label="langTranslations.phone"
+            :type="'text'"
+            :errorMessage="v$.extra_descriptions.primary_contact.phone.$errors[0]?.$message as string | undefined"
+          />
+        </div>
+        <Hr />
+        <H4
+          :content="langTranslations.projectFormLabels.secondaryContactLabel"
         />
-        <BaseInput
-          :disabled="disabledMode"
-          v-model="project.extra_descriptions.primary_contact.email"
-          :label="langTranslations.email"
-          :type="'email'"
-          :errorMessage="v$.extra_descriptions.primary_contact.email.$errors[0]?.$message as string | undefined"
-        />
-        <BaseInput
-          :disabled="disabledMode"
-          v-model="project.extra_descriptions.primary_contact.phone"
-          :label="langTranslations.phone"
-          :type="'text'"
-          :errorMessage="v$.extra_descriptions.primary_contact.phone.$errors[0]?.$message as string | undefined"
-        />
+        <div class="form-block">
+          <BaseInput
+            :disabled="disabledMode"
+            v-model="project.extra_descriptions.secondary_contact.name"
+            :label="langTranslations.nameLabel"
+            :type="'text'"
+          />
+          <BaseInput
+            :disabled="disabledMode"
+            v-model="project.extra_descriptions.secondary_contact.address"
+            :label="langTranslations.addressLabel"
+            :type="'text'"
+          />
+          <BaseInput
+            :disabled="disabledMode"
+            v-model="project.extra_descriptions.secondary_contact.email"
+            :label="langTranslations.email"
+            :type="'email'"
+          />
+          <BaseInput
+            :disabled="disabledMode"
+            v-model="project.extra_descriptions.secondary_contact.phone"
+            :label="langTranslations.phone"
+            :type="'text'"
+          />
+        </div>
       </div>
       <Hr />
-      <H4 :content="langTranslations.projectFormLabels.secondaryContactLabel" />
-      <div class="form-block">
-        <BaseInput
-          :disabled="disabledMode"
-          v-model="project.extra_descriptions.secondary_contact.name"
-          :label="langTranslations.nameLabel"
-          :type="'text'"
-        />
-        <BaseInput
-          :disabled="disabledMode"
-          v-model="project.extra_descriptions.secondary_contact.address"
-          :label="langTranslations.addressLabel"
-          :type="'text'"
-        />
-        <BaseInput
-          :disabled="disabledMode"
-          v-model="project.extra_descriptions.secondary_contact.email"
-          :label="langTranslations.email"
-          :type="'email'"
-        />
-        <BaseInput
-          :disabled="disabledMode"
-          v-model="project.extra_descriptions.secondary_contact.phone"
-          :label="langTranslations.phone"
-          :type="'text'"
-        />
-      </div>
-      <Hr />
+
       <H3
         class="text-center"
         :content="langTranslations.projectFormLabels.budgetLabel"
@@ -1358,6 +1343,7 @@ const setActiveTab = (tabName: string) => {
       </div>
       <div class="button_row mt-8 flex justify-center gap-4">
         <RotaryButton
+          v-if="!viewerMode"
           :theme="'primary'"
           :label="submitLabel[languagePref]"
           @click="
@@ -1368,7 +1354,11 @@ const setActiveTab = (tabName: string) => {
         />
         <RotaryButton
           :theme="'primary'"
-          :label="langTranslations.cancelLabel"
+          :label="
+            viewerMode
+              ? langTranslations.backLabel
+              : langTranslations.cancelLabel
+          "
           @click="redirect()"
         />
       </div>
