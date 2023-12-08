@@ -46,9 +46,27 @@ const routes = [
         component: () => import("@/modules/home/views/UserLogin.vue"),
       },
       {
-        path: "stats",
+        path: "/stats",
         name: "Stats",
         component: () => import("@/modules/home/views/Stats.vue"),
+      },
+      {
+        path: "club/:projectId?",
+        name: "ClubProjectFormView",
+        component: () => import("@/components/forms/ClubProjectForm.vue"),
+        props: true,
+      },
+      {
+        path: "simplified/:projectId?",
+        name: "SimplifiedProjectFormView",
+        component: () => import("@/components/forms/SimplifiedProjectForm.vue"),
+        props: true,
+      },
+      {
+        path: "matching/:projectId?",
+        name: "MatchingProjectFormView",
+        component: () => import("@/components/forms/MatchingProjectForm.vue"),
+        props: true,
       },
     ],
   },
