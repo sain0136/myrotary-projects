@@ -15,4 +15,11 @@ export class AssetsApi {
       updateAssets
     );
   }
+
+  public async getCurrencies(): Promise<[]> {
+    return await this.apiClient.fetchWrapper(
+      "POST",
+      `${BASE_ROUTE}/getCurrencies`
+    );
+  }
 }
