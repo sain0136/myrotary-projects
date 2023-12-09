@@ -52,8 +52,10 @@ import type { IFundingSource } from "@/utils/interfaces/IProjects";
 import ErrorValidation from "@/components/forms/ErrorValidation.vue";
 import { hideAprovalTab, projectDisabledStatus } from "@/utils/utils";
 import { type ProjectStatus } from "@/utils/types/commonTypes";
+import { AssetsApi } from "@/api/services/AssestsApi";
 
 /* Data */
+const assetsApi = new AssetsApi(new ApiClient());
 const viewerMode = ref(false);
 const disabledMode = ref(false);
 type formType = "normalView" | "readOnlyView";
@@ -123,8 +125,12 @@ const tabs = ref([
 const objectiveItem = ref("");
 const project = reactive(new DistrictMatchingProject());
 const activeTab = ref("form");
-// TODO
-
+const allCurrencies = ref(
+  [] as Array<{
+    shortName: string;
+    name: string;
+  }>
+);
 const fundingSources = ref<IFundingSource>({
   sourceName: "",
   typeOfFunding: "",
@@ -151,6 +157,8 @@ const originalAmountofAnitcipated = ref(Dinero({ amount: 0 }));
 /* Hooks */
 onMounted(async () => {
   try {
+    const res = await assetsApi.getCurrencies();
+    allCurrencies.value = res ? res : [];
     if (formType === "readOnlyView") {
       disabledMode.value = true;
       viewerMode.value = true;
@@ -1465,58 +1473,42 @@ const setActiveTab = (tabName: string) => {
           <span class="text-center my-4 font-bold">
             {{ langTranslations.projectFormLabels.progressText }}
           </span>
-          <div class="flex flex-col gap-4 items-center justify-center">
-            <BaseCheckBox
-              :disabled="disabledMode"
-              v-model="project.extra_descriptions.sectionE.e.Surveys"
-              :label="ResourceList.measurableList[0]"
-              class="mb-0"
-            />
-            <BaseCheckBox
-              :disabled="disabledMode"
-              v-model="project.extra_descriptions.sectionE.e.Questionnaires"
-              :label="ResourceList.measurableList[1]"
-              class="mb-0"
-            />
-            <BaseCheckBox
-              :disabled="disabledMode"
-              v-model="project.extra_descriptions.sectionE.e.Observations"
-              :label="ResourceList.measurableList[2]"
-              class="mb-0"
-            />
-            <BaseCheckBox
-              :disabled="disabledMode"
-              v-model="project.extra_descriptions.sectionE.e.Tests_Of_Knowledge"
-              :label="ResourceList.measurableList[3]"
-              class="mb-0"
-            />
-            <BaseCheckBox
-              :disabled="disabledMode"
-              v-model="project.extra_descriptions.sectionE.e.Interviews"
-              :label="ResourceList.measurableList[4]"
-              class="mb-0"
-            />
-            <BaseCheckBox
-              :disabled="disabledMode"
-              v-model="project.extra_descriptions.sectionE.e.Focus_Groups"
-              :label="ResourceList.measurableList[5]"
-              class="mb-0"
-            />
-            <BaseCheckBox
-              :disabled="disabledMode"
-              v-model="project.extra_descriptions.sectionE.e.Video_Media"
-              :label="ResourceList.measurableList[6]"
-              class="mb-0"
-            />
-            <BaseCheckBox
-              :disabled="disabledMode"
-              v-model="
-                project.extra_descriptions.sectionE.e
-                  .Documents_Materials_Collections
-              "
-              :label="ResourceList.measurableList[7]"
-              class="mb-0"
-            />
+          <div class="objective-table flex justify-center">
+            <div
+              class="relative overflow-x-auto shadow-md sm:rounded-lg md:w-1/2"
+              id="item_table"
+            >
+              <table class="w-full text-sm text-left text-nearWhite">
+                <thead class="text-xs text-nearWhite uppercase bg-gray-500">
+                  <tr>
+                    <th scope="col" class="px-6 py-3">
+                      {{ "Objective" }}
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                      {{ "" }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    class="row border-b bg-nearBlack border-gray-700"
+                    id="funding_source"
+                    v-for="(item, index) in ResourceList.measurableList"
+                    :key="index"
+                  >
+                    <td class="px-6 py-4">{{ item }}</td>
+                    <td class="px-6 py-4">
+                      <BaseCheckBox
+                        :disabled="disabledMode"
+                        v-model="(project.extra_descriptions.sectionE.e as any)[item]"
+                        :label="''"
+                        class="mb-0"
+                      />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -1526,18 +1518,25 @@ const setActiveTab = (tabName: string) => {
           :content="langTranslations.projectFormLabels.sectionFHeader"
           class="text-center py-8 underline"
         />
-        <BaseInput
-          :disabled="disabledMode"
-          v-model="project.hostclub_information.sectionF.local_currency_name"
-          :label="langTranslations.projectFormLabels.local_currency_name"
-          :type="'text'"
-        />
-        <BaseInput
-          :disabled="disabledMode"
-          v-model="project.hostclub_information.sectionF.exchange_rate"
-          :label="langTranslations.projectFormLabels.exchange_rate"
-          :type="'text'"
-        />
+        <div class="form-block">
+          <BaseSelect
+            :label="langTranslations.projectFormLabels.local_currency_name"
+            :disabled="disabledMode"
+            v-model="project.hostclub_information.sectionF.local_currency_name"
+            :options="
+              allCurrencies.map(
+                (currency) => `${currency.shortName}-(${currency.name})`
+              )
+            "
+            class="mb-2"
+          />
+          <BaseInput
+            :disabled="disabledMode"
+            v-model="project.hostclub_information.sectionF.exchange_rate"
+            :label="langTranslations.projectFormLabels.exchange_rate"
+            :type="'text'"
+          />
+        </div>
         <H3
           class="text-center"
           :content="langTranslations.projectFormLabels.budgetLabel"
