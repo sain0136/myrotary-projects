@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { handleError, onMounted, onUnmounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import District from "@/utils/classes/District";
 import { useVuelidate } from "@vuelidate/core";
@@ -32,7 +32,6 @@ import { ApiClient } from "@/api/ApiClient";
 import type { CustomError } from "@/utils/classes/CustomError";
 import { useRoute } from "vue-router";
 import type { uploadFileData, uploadedFile } from "@/utils/types/commonTypes";
-import { useActiveProjectStore } from "@/stores/ActiveProjectStore";
 import type { CustomErrors } from "@/utils/classes/CustomErrors";
 import { UploadsApi } from "@/api/services/UploadsApi";
 const uploadsApi = new UploadsApi(new ApiClient());
@@ -57,14 +56,13 @@ const formType = route.query.formType
 const districtId = isEdit
   ? parseInt(router.currentRoute.value.params.districtId as string)
   : null;
-//
 const { handleError, handleSuccess, handleValidationForm } = errorHandler();
 const district = reactive(new District());
 type uploadValues = "dsg_en" | "dsg_fr" | "dm_en" | "dm_fr";
 const getLink = (fileType: uploadValues): null | uploadedFile => {
   let found = null;
   district.district_details.reportLinks.forEach((link) => {
-    if (link.s3Name.includes(fileType)) {
+    if (link.s3Name?.includes(fileType)) {
       found = link;
     }
   });
@@ -109,8 +107,8 @@ const rules = {
       required
     ),
     maxLength: helpers.withMessage(
-      customPrintf(langTranslations.value.maxLengthMessage, "10"),
-      maxLength(10)
+      customPrintf(langTranslations.value.maxLengthMessage, "4"),
+      maxLength(4)
     ),
     minLenght: helpers.withMessage(
       customPrintf(langTranslations.value.minLengthMessage, "4"),
@@ -335,6 +333,7 @@ const deleteFile = async (linkToDelete: uploadedFile) => {
     <Hr />
     <div class="form-block">
       <BaseInput
+        :disabled="districtId ? true : false"
         v-model="district.district_name"
         :label="langTranslations.districtForm.districtNameLabel"
         :type="'text'"
