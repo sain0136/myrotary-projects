@@ -32,6 +32,7 @@ import { DistrictApi } from "@/api/services/DistrictsApi";
 import ResourceList from "@/utils/classes/ResourceList";
 import { ClubApi } from "@/api/services//ClubApi";
 import type { IClub } from "@/utils/interfaces/IClub";
+import { districtRole } from "@/utils/types/commonTypes";
 
 /* Data */
 type UserType = "districtAdmin" | "clubUser" | null;
@@ -398,7 +399,7 @@ const choosenDistrictError = computed((): string => {
         class="w-1/2"
         v-model="user.role_type"
         :label="langTranslations.roleLabel"
-        :options="ResourceList.districtRolesList"
+        :options="districtRole"
         :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined "
       />
       <BaseSelect
