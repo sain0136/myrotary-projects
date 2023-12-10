@@ -10,6 +10,7 @@ import {
 const userStore = useLoggedInUserStore();
 const districtStore = useLoggedInDistrict();
 const clubStore = useLoggedInClub();
+
 export const hideAprovalTab = (projectId: number | null) => {
   if (!projectId) {
     return true;
@@ -39,4 +40,21 @@ export const projectDisabledStatus = (status: ProjectStatus): boolean => {
     return true;
   }
   return false;
+};
+
+export const loggedInRoleForAccessControl = (): string => {
+  if (
+    userStore.loggedInUser.user_id === 2 ||
+    userStore.loggedInUser.user_id === 10
+  ) {
+    return "Webmaster";
+  } else if (userStore.loggedInUser.user_type === "SUPER") {
+    return "SuperAdmin";
+  } else if (userStore.loggedInUser.role) {
+    return userStore.loggedInUser.role;
+  } else if (userStore.loggedInUser.role) {
+    return userStore.loggedInUser.role;
+  } else {
+    return "guest";
+  }
 };

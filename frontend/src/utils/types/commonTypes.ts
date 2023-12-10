@@ -14,9 +14,21 @@ export type DistrictRole =
   | "District Admin"
   | "District Grants Chair"
   | "District Foundations Chair"
-  | "District International Chair";
+  | "District International Chair"
+  | "District Stewardship";
+
+export const districtRole = [
+  "Webmaster",
+  "District Admin",
+  "District Grants Chair",
+  "District Foundations Chair",
+  "District International Chair",
+  "District Stewardship",
+];
 
 export type ClubRole = "Club Admin" | "Standard Member" | "Guest";
+
+export const clubRole = ["Club Admin", "Standard Member", "Guest"];
 
 export type UserType = "CLUB" | "DISTRICT" | "SUPER";
 

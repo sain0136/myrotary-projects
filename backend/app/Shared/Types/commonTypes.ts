@@ -12,7 +12,8 @@ export type DistrictRole =
   | "District Admin"
   | "District Grants Chair"
   | "District Foundations Chair"
-  | "District International Chair";
+  | "District International Chair"
+  | "District Stewardship";
 
 export type ClubRole = " Club Admin" | "Standard Member" | "Guest";
 

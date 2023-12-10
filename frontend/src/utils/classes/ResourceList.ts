@@ -6,12 +6,13 @@ import {
 
 export default class ResourceList {
   constructor() {}
-  static districtRolesList = [
-    "District Admin",
-    "District Grants Chair",
-    "District Foundations Chair",
-    "District International Chair",
-  ];
+  // static districtRolesList = [
+  //   "District Admin",
+  //   "District Grants Chair",
+  //   "District Foundations Chair",
+  //   "District International Chair",
+  //   "District Stewardship",
+  // ];
 
   static measurableList: Array<string> = [
     "Surveys",

@@ -5,16 +5,35 @@ export default {
 </script>
 
 <script setup lang="ts">
+import {
+  useAccessControl,
+  type AllUserRoles,
+} from "@/utils/composables/UseAccessControl";
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted, ref } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import AprrovalTable from "@/modules/admin/components/approvals/AprrovalTable.vue";
+import { loggedInRoleForAccessControl } from "@/utils/utils";
+
 /* Data */
 const { langTranslations } = useLanguage();
-const { handleError } = errorHandler();
+const { hasAccess } = useAccessControl();
 const activeTab = ref(
   sessionStorage.getItem("approvalsViewLastTab") || "projectApprovals"
 );
+const accessRole = loggedInRoleForAccessControl();
+const access = {
+  projectApprovals: hasAccess(accessRole as AllUserRoles, "approve-projects"),
+  reportsApprovals: hasAccess(
+    accessRole as AllUserRoles,
+    "approve-projects-reports"
+  ),
+};
+if (!access.projectApprovals || !access.reportsApprovals) {
+  if (!access.projectApprovals) {
+    activeTab.value = "reportsApprovals";
+  } else if (!access.reportsApprovals) activeTab.value = "projectApprovals";
+}
 const tabs = ref([
   {
     name: "projectApprovals",
@@ -22,6 +41,7 @@ const tabs = ref([
       langTranslations.value.projectLabel +
       " " +
       langTranslations.value.approvalsLabel,
+    hidden: !access.projectApprovals,
   },
   {
     name: "reportsApprovals",
@@ -29,6 +49,7 @@ const tabs = ref([
       langTranslations.value.reportsLabel +
       " " +
       langTranslations.value.approvalsLabel,
+    hidden: !access.reportsApprovals,
   },
 ]);
 
@@ -45,10 +66,12 @@ const setActiveTab = (tabName: string) => {
 <template>
   <div>
     <ul
+      v-if="access.projectApprovals || access.reportsApprovals"
       class="tabs flex flex-wrap text-sm font-medium text-center justify-center text-gray-500 border-b border-gray-200"
     >
       <li class="mr-2" v-for="tab in tabs" :key="tab.name">
         <a
+          v-if="!tab.hidden"
           @click="setActiveTab(tab.name)"
           class="inline-block cursor-pointer rounded-t-lg p-4 text-2xl hover:bg-gray-300 hover:text-gray-600"
           :class="{
@@ -59,10 +82,10 @@ const setActiveTab = (tabName: string) => {
         </a>
       </li>
     </ul>
-    <div v-if="activeTab === 'projectApprovals'">
+    <div v-if="activeTab === 'projectApprovals' && access.projectApprovals">
       <AprrovalTable :table-type="'projectApproval'" />
     </div>
-    <div v-if="activeTab === 'reportsApprovals'">
+    <div v-if="activeTab === 'reportsApprovals' && access.reportsApprovals">
       <AprrovalTable :table-type="'reportApproval'" />
     </div>
   </div>
