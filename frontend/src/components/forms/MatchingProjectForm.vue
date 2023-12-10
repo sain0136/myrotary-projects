@@ -392,11 +392,35 @@ const rules = {
         langTranslations.value.formErorrText.required,
         required
       ),
+      maxLength: helpers.withMessage(
+        customPrintf(langTranslations.value.maxLengthMessage, "4"),
+        maxLength(4)
+      ),
+      minLenght: helpers.withMessage(
+        customPrintf(langTranslations.value.minLengthMessage, "4"),
+        minLength(4)
+      ),
+      numeric: helpers.withMessage(
+        langTranslations.value.formErorrText.numeric,
+        numeric
+      ),
     },
     district_number: {
       required: helpers.withMessage(
         langTranslations.value.formErorrText.required,
         required
+      ),
+      maxLength: helpers.withMessage(
+        customPrintf(langTranslations.value.maxLengthMessage, "4"),
+        maxLength(4)
+      ),
+      minLenght: helpers.withMessage(
+        customPrintf(langTranslations.value.minLengthMessage, "4"),
+        minLength(4)
+      ),
+      numeric: helpers.withMessage(
+        langTranslations.value.formErorrText.numeric,
+        numeric
       ),
     },
     district_country: {
