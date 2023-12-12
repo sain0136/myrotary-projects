@@ -1,20 +1,62 @@
 import type { uploadedFile } from "@/utils/types/commonTypes";
 
 export interface IContentManagement {
-  myRotaryEmail: string;
-  myRotaryPhone: string;
-  myRotaryAddress: string;
-  myRotaryCountry: string;
-  myRotaryCity: string;
-  myRotaryPostalCode: string;
-  myRotaryProvince: string;
-  myRotaryAbout: string;
-  myRotaryAdminFullName: string;
-  myRotaryAdminEmail: string;
-  myRotaryfooterDescription: string;
-  FaceboolUrl: string;
-  TwitterUrl: string;
-  InstagramUrl: string;
+  myRotaryEmail: {
+    en: string;
+    fr: string;
+  };
+  myRotaryPhone: {
+    en: string;
+    fr: string;
+  };
+  myRotaryAddress: {
+    en: string;
+    fr: string;
+  };
+  myRotaryCountry: {
+    en: string;
+    fr: string;
+  };
+  myRotaryCity: {
+    en: string;
+    fr: string;
+  };
+  myRotaryPostalCode: {
+    en: string;
+    fr: string;
+  };
+  myRotaryProvince: {
+    en: string;
+    fr: string;
+  };
+  myRotaryAbout: {
+    en: string;
+    fr: string;
+  };
+  myRotaryAdminFullName: {
+    en: string;
+    fr: string;
+  };
+  myRotaryAdminEmail: {
+    en: string;
+    fr: string;
+  };
+  myRotaryfooterDescription: {
+    en: string;
+    fr: string;
+  };
+  faceboolUrl: {
+    en: string;
+    fr: string;
+  };
+  twitterUrl: {
+    en: string;
+    fr: string;
+  };
+  instagramUrl: {
+    en: string;
+    fr: string;
+  };
 }
 
 export type databaseTarget = "assets" | "profile-picture";
@@ -32,8 +74,6 @@ export interface IAssets {
   global_intial: number;
   assets: {
     main_logo: uploadedFile;
-    profilePicture?: uploadedFile;
     contentManagement: IContentManagement;
   };
-  main_logo: uploadedFile;
 }

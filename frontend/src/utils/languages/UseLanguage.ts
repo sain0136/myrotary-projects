@@ -4,7 +4,7 @@ import { translations } from "@/utils/languages/Translations";
 import type { ProjectStatus } from "@/utils/types/commonTypes";
 import ResourceList from "@/utils/classes/ResourceList";
 
-type lang = "en" | "fr";
+export type lang = "en" | "fr";
 // Reactive variable for the current language
 const languagePref: Ref<lang> = ref("en");
 const availabileLanguages: lang[] = ["en", "fr"];

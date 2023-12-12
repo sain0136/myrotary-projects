@@ -12,7 +12,7 @@ import { useSiteAssets } from "@/stores/SiteAssets";
 import { Icon } from "@iconify/vue";
 
 /* Data */
-const { langTranslations } = useLanguage();
+const { langTranslations, languagePref } = useLanguage();
 const assetsStore = useSiteAssets();
 
 /* Hooks */
@@ -43,7 +43,7 @@ onMounted(async () => {});
           <div class="mt-4 text-center :md:text-left">
             {{
               assetsStore?.siteAssets?.assets?.contentManagement
-                ?.myRotaryfooterDescription || ""
+                ?.myRotaryfooterDescription[languagePref] || ""
             }}
           </div>
         </div>
@@ -57,24 +57,24 @@ onMounted(async () => {});
             <ul class="text-gray-500 dark:text-gray-400 font-medium">
               <li class="mb-4 flex gap-2 justify-start flex-wrap">
                 <Icon
-                  :href="`mailto:${assetsStore.siteAssets.assets.contentManagement.myRotaryEmail}`"
+                  :href="`mailto:${assetsStore.siteAssets.assets.contentManagement.myRotaryEmail[languagePref]}`"
                   icon="ic:round-email"
                   class="text-2xl text-primary cursor-pointer hover:text-nearWhite"
                 />
                 <span class="flex justify-start">{{
                   assetsStore?.siteAssets?.assets?.contentManagement
-                    ?.myRotaryEmail || ""
+                    ?.myRotaryEmail[languagePref] || ""
                 }}</span>
               </li>
               <li class="mb-4 flex gap-2 justify-start flex-wrap">
                 <Icon
-                  :href="`mailto:${assetsStore.siteAssets.assets.contentManagement.myRotaryEmail}`"
+                  :href="`mailto:${assetsStore.siteAssets.assets.contentManagement.myRotaryEmail[languagePref]}`"
                   icon="ph:phone-fill"
                   class="text-2xl text-primary cursor-pointer hover:text-nearWhite"
                 />
                 <span class="flex justify-start">{{
                   assetsStore?.siteAssets?.assets?.contentManagement
-                    ?.myRotaryPhone || ""
+                    ?.myRotaryPhone[languagePref] || ""
                 }}</span>
               </li>
             </ul>
