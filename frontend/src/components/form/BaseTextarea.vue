@@ -8,7 +8,7 @@ export default {
 defineEmits(["update:modelValue"]);
 
 const { modelValue, label, placeholder, errorMessage, disabled } = defineProps<{
-  modelValue: string;
+  modelValue: string | number | Date;
   label: string;
   placeholder?: string;
   errorMessage?: string;
@@ -32,6 +32,7 @@ const { modelValue, label, placeholder, errorMessage, disabled } = defineProps<{
       @input="
         $emit('update:modelValue', ($event.target as HTMLInputElement).value)
       "
+      inputmode="text"
       id="message"
       :rows="rows ?? 4"
       :class="[disabled ? 'disabled-input' : 'text-nearBlack']"

@@ -17,6 +17,7 @@ import type { uploadFileData } from "@/utils/types/commonTypes";
 import type { CustomError } from "@/utils/classes/CustomError";
 import { useSiteAssets } from "@/stores/SiteAssets";
 import { AssetsApi } from "@/api/services/AssestsApi";
+
 /* Data */
 const assetsApi = new AssetsApi(new ApiClient());
 const siteAssetsStore = useSiteAssets();

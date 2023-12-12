@@ -57,7 +57,7 @@ const changeLanguage = () => {
       <ul class="flex justify-center pl-4">
         <li class="flex text-primary-white gap-4">
           <a
-            :href="`mailto:${assetsStore.siteAssets.assets.contentManagement.myRotaryEmail}`"
+            :href="`mailto:${assetsStore.siteAssets.assets.contentManagement.myRotaryEmail[languagePref]}`"
             :title="langTranslations.sendEmailLabel"
           >
             <Icon
@@ -65,7 +65,9 @@ const changeLanguage = () => {
               class="text-3xl cursor-pointer hover:text-nearWhite"
           /></a>
           <span class="icon fa fa-envelope mr-1 font-bold m-auto">{{
-            assetsStore.siteAssets.assets.contentManagement.myRotaryEmail || ""
+            assetsStore.siteAssets.assets.contentManagement.myRotaryEmail[
+              languagePref
+            ] || ""
           }}</span>
         </li>
       </ul>

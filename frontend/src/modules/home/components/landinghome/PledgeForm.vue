@@ -40,8 +40,8 @@ import Dinero from "dinero.js";
 
 /* Data */
 const pledgeApi = new PledgesApi(new ApiClient());
-const { langTranslations, customPrintf } = useLanguage();
-const { handleError, handleSuccess, handleValidationForm } = errorHandler();
+const { langTranslations, customPrintf, languagePref } = useLanguage();
+const { handleError, handleSuccess } = errorHandler();
 const project: IDsgProject | IDmProject | IClubProject | IGenericProject =
   reactive(new GenericProject());
 const { activeProject } = useActiveProjectStore();
@@ -297,11 +297,13 @@ const redirect = () => {
       <p class="mb-2 text-gray-500">
         {{ langTranslations.pledgeProcess.pledgeFormFillFormLabel }}:
         <a
-          :href="`mailto:${assetsStore.siteAssets.assets.contentManagement.myRotaryEmail}`"
+          :href="`mailto:${assetsStore.siteAssets.assets.contentManagement.myRotaryEmail[languagePref]}`"
           :title="langTranslations.sendEmailLabel"
           class="text-primary"
           >{{
-            assetsStore.siteAssets.assets.contentManagement.myRotaryEmail || ""
+            assetsStore.siteAssets.assets.contentManagement.myRotaryEmail[
+              languagePref
+            ] || ""
           }}</a
         >
       </p>
