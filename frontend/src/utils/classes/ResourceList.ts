@@ -154,32 +154,49 @@ export default class ResourceList {
   };
 
   static reverseTermConversionMap() {
-    const reverseTermConversionMap: Map<string, string> = new Map();
-    reverseTermConversionMap.set(
-      "Peace_Conflict_Prevention",
-      "Peace Conflict Prevention"
-    );
-    reverseTermConversionMap.set(
-      "Disease_Prevention_And_Treatment",
-      "Disease Prevention And Treatment"
-    );
-    reverseTermConversionMap.set(
-      "Water_And_Sanitation",
-      "Water And Sanitation"
-    );
-    reverseTermConversionMap.set(
-      "Maternal_And_Child_Health",
-      "Maternal And Child Health"
-    );
-    reverseTermConversionMap.set(
-      "Basic_Education_And_Literacy",
-      "Basic Education And Literacy"
-    );
-    reverseTermConversionMap.set(
-      "Economic_And_Community_Development",
-      "Economic And Community Development"
-    );
-    reverseTermConversionMap.set("Environment", "Environment");
+    const reverseTermConversionMap: Map<
+      string,
+      {
+        en: string;
+        fr: string;
+        imgLink?: string;
+      }
+    > = new Map();
+    reverseTermConversionMap.set("Peace_Conflict_Prevention", {
+      en: "Peace Conflict Prevention",
+      fr: "Prevention de conflit de paix",
+      imgLink: "/1-Peace-and-Conflict.png",
+    });
+    reverseTermConversionMap.set("Disease_Prevention_And_Treatment", {
+      en: "Disease Prevention And Treatment",
+      fr: "Prevention et Traitement des Maladies",
+      imgLink: "/2-Disease_Prevention.png",
+    });
+    reverseTermConversionMap.set("Water_And_Sanitation", {
+      en: "Water And Sanitation",
+      fr: "Eau et Sanitation",
+      imgLink: "/3-Water_and_Sanitation.png",
+    });
+    reverseTermConversionMap.set("Maternal_And_Child_Health", {
+      en: "Maternal And Child Health",
+      fr: "Sante Maternelle et Enfant",
+      imgLink: "/4-Maternal_and_Child_Health.png",
+    });
+    reverseTermConversionMap.set("Basic_Education_And_Literacy", {
+      en: "Basic Education And Literacy",
+      fr: "Education de Base et Literatisme",
+      imgLink: "/5-Basic_Education_and_Literacy.png",
+    });
+    reverseTermConversionMap.set("Economic_And_Community_Development", {
+      en: "Economic And Community Development",
+      fr: "Economie et Developpement Communal",
+      imgLink: "/6-Economic_and_Community.png",
+    });
+    reverseTermConversionMap.set("Environment", {
+      en: "Environment",
+      fr: "Environnement",
+      imgLink: "/7-Environment.png",
+    });
     return reverseTermConversionMap;
   }
 

@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import type {
   IDsgProject,
@@ -38,12 +38,17 @@ const router = useRouter();
 const { currencyFormatterFunding } = useCurrencyFormatter();
 const projectsApi = new ProjectsApi(new ApiClient());
 const route = useRoute();
-const { langTranslations } = useLanguage();
+const { langTranslations, languagePref } = useLanguage();
 const projectId = route.query.id ? Number(route.query.id as string) : undefined;
 const { handleError } = errorHandler();
 const project: IDsgProject | IDmProject | IClubProject | IGenericProject =
   reactive(new GenericProject());
-const areasOfFocus = ref<string[]>([]);
+const areasOfFocus = ref<
+  Array<{
+    name: string;
+    imgLink: string;
+  }>
+>([]);
 const { setActiveProject, resetActiveProject } = useActiveProjectStore();
 const loaded = ref(false);
 const galleryImages = ref<Array<uploadFileData | uploadedFile>>([]);
@@ -70,7 +75,16 @@ const responsiveOptions = [
     numScroll: 1,
   },
 ];
+const conversion = ref(ResourceList.reverseTermConversionMap());
+
 /* Hooks */
+watch(
+  () => languagePref.value,
+  async () => {
+    setAreaOfFocusLanguage();
+  }
+);
+
 onMounted(async () => {
   try {
     if (projectId) {
@@ -78,12 +92,7 @@ onMounted(async () => {
       Object.assign(project, response);
       resetActiveProject();
       setActiveProject(project);
-      const conversion = ResourceList.reverseTermConversionMap;
-      for (const [key, value] of Object.entries(response.area_focus)) {
-        if (value === true) {
-          areasOfFocus.value.push(conversion().get(key) as string);
-        }
-      }
+      setAreaOfFocusLanguage();
       galleryImages.value = useActiveProjectStore().activeProject.file_uploads
         .project_gallery
         ? (useActiveProjectStore().activeProject.file_uploads
@@ -102,6 +111,22 @@ onMounted(async () => {
 });
 
 /* Methods */
+const setAreaOfFocusLanguage = () => {
+  areasOfFocus.value = [];
+  for (const [key, value] of Object.entries(project.area_focus)) {
+    if (value === true) {
+      const keyOf = conversion.value.get(key) ?? {
+        en: "",
+        fr: "",
+      };
+      areasOfFocus.value.push({
+        name: keyOf[languagePref.value] as string,
+        imgLink: keyOf.imgLink as string,
+      });
+    }
+  }
+};
+
 const viewFullDescription = (
   project: IDsgProject | IDmProject | IClubProject
 ) => {
@@ -265,9 +290,19 @@ const viewFullDescription = (
                     :key="area + 'area_focus'"
                     class="ml-4 flex gap-2 text-xl items-center italic"
                   >
-                    <Icon icon="ep:right" class="text-primary font-bold" />{{
+                    <!-- <Icon icon="ep:right" class="text-primary font-bold" />{{
                       area
-                    }}
+                    }} -->
+                    <div class="flex">
+                      <div class="flex gap-4">
+                        <img
+                          class="w-12"
+                          :src="'/area-focus/' + area.imgLink"
+                          alt=""
+                        />
+                        <p class="flex items-center">{{ area.name }}</p>
+                      </div>
+                    </div>
                   </li>
                 </ul>
               </li>
