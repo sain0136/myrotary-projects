@@ -122,7 +122,7 @@ export default class ResourceList {
     return searchTermConversionMap;
   }
 
-  static areaOfFocusMap = {
+  static areaOfFocusMap: Record<string, { en: string; fr: string }> = {
     "Peace Conflict Prevention": {
       en: "Peace Conflict Prevention",
       fr: "Prevention de conflit de paix",
