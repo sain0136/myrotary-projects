@@ -24,6 +24,10 @@ const navLinks: Array<{ label: string; link: string }> = [
     label: langTranslations.value.aboutLabel,
     link: "About",
   },
+  {
+    label: langTranslations.value.contactUs,
+    link: "Contact"
+  }
 ];
 
 /* Hooks */

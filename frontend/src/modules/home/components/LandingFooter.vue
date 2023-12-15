@@ -46,7 +46,7 @@ onMounted(async () => {});
         <div class="child2 grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-2">
           <div>
             <h2 class="mb-6 text-sm font-semibold text-nearWhite uppercase">
-              {{ langTranslations.landingFooter.followUsLabel }}
+              {{ langTranslations.landingFooter.contactUsLabel }}
             </h2>
             <ul class="text-gray-500 dark:text-gray-400 font-medium">
               <li class="mb-4 flex gap-2">

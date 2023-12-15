@@ -2,6 +2,8 @@ export interface Translation {
   noResultsLabel: string;
   filterProjectsLabel: string;
   landingpageBannerText: string;
+  aboutpageBannerText: string;
+  contactusBannerText: string;
   statusLabel: string;
   landingPage: {
     searchTermsLabel: string;
@@ -18,6 +20,7 @@ export interface Translation {
     termsOfUseLabel: string;
     legalHeaderLabel: string;
     followUsLabel: string;
+    contactUsLabel: string;
   };
   clubForm: {
     clubFormHeader: string;
@@ -46,6 +49,7 @@ export interface Translation {
   editLabel: string;
   actionsLabel: string;
   nameLabel: string;
+  queryLabel: string;
   districtLabel: string;
   createLabel: string;
   yesLabel: string;
@@ -135,6 +139,7 @@ export interface Translation {
     configTabLabel: string;
     uploadFileH1Header: string;
     myProfileLabel: string;
+    aboutLabel: string;
   };
   uploadFileLabel: string;
   submit: string;
@@ -159,12 +164,15 @@ export const translations: Record<string, Translation> = {
       regionLabel: "Region",
     },
     landingpageBannerText: "Our Projects",
+    aboutpageBannerText: "About Us",
+    contactusBannerText: "Contact Us",
     sendEmailLabel: "Send us an email",
     landingFooter: {
       privacyPolicyLabel: "Privacy Policy",
       termsOfUseLabel: "Terms & Conditions",
       legalHeaderLabel: "Legal",
       followUsLabel: "Follow Us",
+      contactUsLabel: "Contact Us"
     },
     clubForm: {
       clubFormHeader: "Club Form",
@@ -190,6 +198,7 @@ export const translations: Record<string, Translation> = {
       districtSelectLabel: "Assign to District",
       firstNameLabel: "First Name",
       lastNameLabel: "Last Name",
+
     },
     userFormHeader: "User Form",
     roleLabel: "Role",
@@ -245,6 +254,7 @@ export const translations: Record<string, Translation> = {
     opps: "Opps!",
     email: "Email",
     password: "Password",
+    queryLabel: "Enter your query",
     phone: "Phone",
     webmasterLabel: "Web Admin",
     cityLabel: "City",
@@ -287,6 +297,7 @@ export const translations: Record<string, Translation> = {
       configTabLabel: "Configure Rotary",
       uploadFileH1Header: "Change Rotary Logo",
       myProfileLabel: "My Profile",
+      aboutLabel: "About Us"
     },
     uploadFileLabel: "Upload File",
     submit: "Submit",
@@ -309,12 +320,15 @@ export const translations: Record<string, Translation> = {
       regionLabel: "Région",
     },
     landingpageBannerText: "Nos Projets",
+    aboutpageBannerText: "À propos de nous",
+    contactusBannerText: "Contactez-nous",
     sendEmailLabel: "Envoyer un email",
     landingFooter: {
       privacyPolicyLabel: "Politique de confidentialité",
       termsOfUseLabel: "Conditions d'utilisation",
       legalHeaderLabel: "Mentions légales",
       followUsLabel: "Suivez-nous",
+      contactUsLabel: "Contactez-nous"
     },
     clubForm: {
       clubFormHeader: "Club Form",
@@ -352,6 +366,7 @@ export const translations: Record<string, Translation> = {
     editLabel: "Modifier",
     actionsLabel: "Actions",
     nameLabel: "Nom",
+    queryLabel: "Entrez votre requête",
     districtLabel: "District",
     desciptionLabel: "Description",
     settingsLabel: "Paramètres",
@@ -439,6 +454,7 @@ export const translations: Record<string, Translation> = {
       configTabLabel: "Configurer le Rotary",
       uploadFileH1Header: "Changer le logo du Rotary",
       myProfileLabel: "Mon profil",
+      aboutLabel: "À propos de nous"
     },
     uploadFileLabel: "Télécharger le fichier",
     submit: "Soumettre",

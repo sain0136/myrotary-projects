@@ -28,6 +28,11 @@ const routes = [
         name: "About",
         component: () => import("@/modules/home/views/About.vue"),
       },
+      {
+        path: "/contact",
+        name: "Contact",
+        component: () => import("@/modules/home/views/Contact.vue")
+      }
     ],
   },
   // Admin Routes
@@ -85,7 +90,7 @@ const routes = [
         path: "profile",
         name: "MyProfile",
         component: () => import("@/modules/admin/views/MyProfile.vue")
-      }
+      },
     ],
   },
 ];
