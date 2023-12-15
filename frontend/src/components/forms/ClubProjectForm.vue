@@ -44,6 +44,7 @@ import ProjectAdminsForm from "@/components/forms/tabs/ProjectAdminsForm.vue";
 import ProjectApproval from "@/components/forms/tabs/ProjectApproval.vue";
 import H1 from "@/components/headings/H1.vue";
 import { hideAprovalTab, projectDisabledStatus } from "@/utils/utils";
+import { processAreaOfFocus } from "@/utils/utils";
 
 /* Data */
 const viewerMode = ref(false);
@@ -466,94 +467,16 @@ const setActiveTab = (tabName: string) => {
         />
       </div>
       <div class="area-of-focus-section form-block">
-        <div class="flex">
-          <img
-            class="w-2/12"
-            :src="'/area-focus/' + ResourceList.areaFocusImages[0]"
-            alt=""
-          />
+        <div
+          v-for="i in processAreaOfFocus(project.area_focus)"
+          :key="i.label"
+          class="flex"
+        >
+          <img class="w-2/12" :src="'/area-focus/' + i.imgLink" alt="" />
           <BaseCheckBox
             :disabled="disabledMode"
-            v-model="project.area_focus.Peace_Conflict_Prevention"
-            :label="Object.keys(project.area_focus)[0].replace(/_/g, ' ')"
-            class="mb-0"
-          />
-        </div>
-        <div class="flex">
-          <img
-            class="w-2/12"
-            :src="'/area-focus/' + ResourceList.areaFocusImages[1]"
-            alt=""
-          />
-          <BaseCheckBox
-            :disabled="disabledMode"
-            v-model="project.area_focus.Disease_Prevention_And_Treatment"
-            :label="Object.keys(project.area_focus)[1].replace(/_/g, ' ')"
-            class="mb-0"
-          />
-        </div>
-        <div class="flex">
-          <img
-            class="w-2/12"
-            :src="'/area-focus/' + ResourceList.areaFocusImages[2]"
-            alt=""
-          />
-          <BaseCheckBox
-            :disabled="disabledMode"
-            v-model="project.area_focus.Water_And_Sanitation"
-            :label="Object.keys(project.area_focus)[2].replace(/_/g, ' ')"
-            class="mb-0"
-          />
-        </div>
-        <div class="flex">
-          <img
-            class="w-2/12"
-            :src="'/area-focus/' + ResourceList.areaFocusImages[3]"
-            alt=""
-          />
-          <BaseCheckBox
-            :disabled="disabledMode"
-            v-model="project.area_focus.Maternal_And_Child_Health"
-            :label="Object.keys(project.area_focus)[3].replace(/_/g, ' ')"
-            class="mb-0"
-          />
-        </div>
-        <div class="flex">
-          <img
-            class="w-2/12"
-            :src="'/area-focus/' + ResourceList.areaFocusImages[4]"
-            alt=""
-          />
-          <BaseCheckBox
-            :disabled="disabledMode"
-            v-model="project.area_focus.Basic_Education_And_Literacy"
-            :label="Object.keys(project.area_focus)[4].replace(/_/g, ' ')"
-            class="mb-0"
-          />
-        </div>
-        <div class="flex">
-          <img
-            class="w-2/12"
-            :src="'/area-focus/' + ResourceList.areaFocusImages[5]"
-            alt=""
-          />
-          <BaseCheckBox
-            :disabled="disabledMode"
-            v-model="project.area_focus.Economic_And_Community_Development"
-            :label="Object.keys(project.area_focus)[5].replace(/_/g, ' ')"
-            class="mb-0"
-          />
-        </div>
-        <div class="flex">
-          <img
-            class="w-2/12"
-            :src="'/area-focus/' + ResourceList.areaFocusImages[6]"
-            alt=""
-          />
-          <BaseCheckBox
-            :disabled="disabledMode"
-            v-model="project.area_focus.Environment"
-            :label="Object.keys(project.area_focus)[6].replace(/_/g, ' ')"
+            v-model="(project.area_focus as any)[i.key]"
+            :label="i.label"
             class="mb-0"
           />
         </div>
