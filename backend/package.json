@@ -37,10 +37,14 @@
     "@adonisjs/lucid": "^18.4.0",
     "@adonisjs/repl": "^3.1.11",
     "@adonisjs/session": "^6.4.0",
+    "@types/dinero.js": "^1.9.2",
+    "@types/uuid": "^9.0.7",
+    "dinero.js": "^1.9.1",
     "luxon": "^3.4.3",
     "mysql2": "^3.6.1",
     "proxy-addr": "^2.0.7",
     "reflect-metadata": "^0.1.13",
-    "source-map-support": "^0.5.21"
+    "source-map-support": "^0.5.21",
+    "uuid": "^9.0.1"
   }
 }

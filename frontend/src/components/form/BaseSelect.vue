@@ -14,7 +14,7 @@ defineEmits(["update:modelValue"]);
 const { langTranslations } = useLanguage();
 const { options, modelValue, defaultOption, label, errorMessage } =
   defineProps<{
-    label: string;
+    label?: string;
     errorMessage?: string;
     modelValue: string | number;
     defaultOption?: string;
@@ -29,6 +29,7 @@ onMounted(async () => {});
 <template>
   <div>
     <label
+      v-if="label"
       :for="label"
       class="block pl-0.5 mb-2 text-sm font-semibold text-nearBlack"
       >{{ label }}</label

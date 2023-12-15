@@ -22,10 +22,12 @@ export type uploadedFile = {
   fileType: uploadedFiletypes;
   s3UrlLink: string;
   s3Name: string;
+  s3BaseUrlLink?: string;
 };
 
 export interface IExtraDetails {
   profilePicture?: uploadedFile;
+  district_name?: string;
 }
 
 export interface IUser {

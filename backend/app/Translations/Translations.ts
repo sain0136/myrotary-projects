@@ -1,6 +1,6 @@
 import type { Translation } from "App/Utils/CommonTypes";
 
-type apiError = "emailAlreadyExists" | "badCredentials";
+type apiError = "emailAlreadyExists" | "badCredentials " | "projectHasPledges";
 
 export const errorTranslations: Record<apiError, Translation> = {
   emailAlreadyExists: {
@@ -10,5 +10,9 @@ export const errorTranslations: Record<apiError, Translation> = {
   badCredentials: {
     en: "Unable to log you in. Please verify your credentials.",
     fr: "Impossible de vous connecter. Veuillez vérifier vos identifiants.",
+  },
+  projectHasPledges: {
+    en: "Cannot delete project, it has pledges associated",
+    fr: "Impossible de supprimer le projet, il y a des engagements associés",
   },
 };

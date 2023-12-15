@@ -1,4 +1,6 @@
-import type { IUser } from "App/Shared/Interfaces/IUser";
+import type { IUser, uploadedFile } from "App/Shared/Interfaces/IUser";
+import { uploadFileData } from "../Types/commonTypes";
+import { IPledge } from "./IPledge";
 
 // common
 interface IContactSection {
@@ -133,8 +135,9 @@ export interface IStorageInformation {
 }
 
 export interface IUploads {
-  reports_files: Array<IStorageInformation>;
-  evidence_files: Array<IStorageInformation>;
+  project_image: uploadFileData | uploadedFile;
+  reports_files: Array<uploadFileData | uploadedFile>;
+  evidence_files: Array<uploadFileData | uploadedFile>;
 }
 
 export interface IGenericProject {
@@ -197,15 +200,3 @@ export interface IGlobalProject
   extends IGenericProject,
     IDsgProject,
     IDmProject {}
-
-export interface IPledge {
-  pledge_amount: number;
-  firstname: string;
-  lastname: string;
-  email: string;
-  phone: string;
-  district_number: string;
-  club_name: string;
-  user_id: number;
-  project_id: number;
-}

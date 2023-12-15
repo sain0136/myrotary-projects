@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import type {
   IDsgProject,
@@ -15,8 +15,11 @@ import type {
 } from "@/utils/interfaces/IProjects";
 import type { CustomError } from "@/utils/classes/CustomError";
 import { useCurrencyFormatter } from "@/utils/composables/CurrencyFormatter";
+import router from "@/router";
+import type { uploadedFile } from "@/utils/types/commonTypes";
 
 /* Data */
+const show = ref(false);
 const { langTranslations, languagePref } = useLanguage();
 const percentage = ref(0);
 const { project } = defineProps<{
@@ -27,9 +30,15 @@ const truncatedTitle = ref("");
 const truncatedDesc = ref("");
 const { handleError, handleSuccess, handleValidationForm } = errorHandler();
 const { currencyFormatterFunding } = useCurrencyFormatter();
+const imageLoaded = ref(false);
+
 /* Hooks */
 onMounted(async () => {
-  imageLink.value = await generateRandomImage();
+  show.value = true;
+  imageLink.value =
+    (project.file_uploads?.project_image as uploadedFile)?.s3UrlLink ||
+    (project.file_uploads?.project_image as uploadedFile)?.s3BaseUrlLink ||
+    (await generateRandomImage());
   let truncated = escapeHTML(project.project_description.slice(0, 150));
   if (!truncated.endsWith(".")) {
     truncated = truncated + "...";
@@ -44,10 +53,30 @@ onMounted(async () => {
       : project.project_name;
 });
 
+onUnmounted(() => {
+  show.value = false;
+});
+
 /* Methods */
+const handleCardClick = () => {
+  router.push({
+    name: "ProjectDetails",
+    params: {
+      name: project.project_name.replace(/\s/g, "-"),
+    },
+    query: {
+      id: project.project_id,
+    },
+  });
+};
+
 const onImageError = (e: Event) => {
   imageLink.value =
     "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=1000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Y2hhcml0eXxlbnwwfHwwfHx8MA%3D%3D";
+};
+
+const onImageLoad = () => {
+  imageLoaded.value = true;
 };
 
 const generateRandomImage = async () => {
@@ -89,72 +118,126 @@ const escapeHTML = (unsafe: string) => {
 </script>
 
 <template>
-  <div
-    class="max-w-md bg-white border border-gray-200 rounded-lg shadow flex flex-col"
-  >
-    <a class="upper-card border-b-gray-900" href="#">
-      <img
-        @error="onImageError"
-        class="rounded-t-lg"
-        :src="imageLink ?? undefined"
-        alt=""
-        :class="'aspect-ratio w-full cursor-pointer object-cover'"
-      />
-    </a>
-    <div class="lower-card p-5 flex flex-col">
-      <a href="#">
-        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">
-          {{ truncatedTitle }}
-        </h5>
-        <div class="status mt-4 flex gap-1">
-          <h3 class="text-base font-bold text-secondary">
-            {{ `${langTranslations.statusLabel}:` }}
-          </h3>
-          <h3 class="text-base font-bold text-primary-black">
-            {{ project.project_status }}
-          </h3>
-        </div>
+  <Transition>
+    <div
+      v-if="show"
+      class="max-w-md bg-white border border-gray-200 rounded-lg shadow flex flex-col"
+    >
+      <a
+        class="upper-card border-b-gray-900"
+        :class="{
+          hidden: !imageLoaded,
+        }"
+        href="#"
+      >
+        <img
+          @load="onImageLoad"
+          @click="handleCardClick"
+          @error="onImageError"
+          :class="{
+            hidden: !imageLoaded,
+            'aspect-ratio w-full cursor-pointer object-cover': imageLoaded,
+          }"
+          class="rounded-t-lg"
+          :src="imageLink || undefined"
+          alt="project image"
+        />
       </a>
-      <div class="status_bar pt-4">
+      <div
+        v-if="!imageLoaded"
+        role="status"
+        class="space-y-8 animate-pulse md:space-y-0 md:space-x-8 md:flex md:items-center"
+      >
         <div
-          class="donate_bar wow fadeIn animated"
-          data-wow-delay="0ms"
-          data-wow-duration="0ms"
+          class="flex items-center justify-center w-full bg-gray-300 rounded"
+          :class="'aspect-ratio w-screencursor-pointer object-cover'"
         >
-          <div class="bar_inner">
-            <div
-              class="bar"
-              :style="{
-                width: percentage + '%',
-              }"
-            >
-              <div class="count_box counted">
-                <span class="count-text" data-speed="2000" data-stop="82">{{
-                  percentage
-                }}</span
-                >%
+          <svg
+            class="w-10 h-10 text-gray-200"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="0 0 20 18"
+          >
+            <path
+              d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"
+            />
+          </svg>
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+      <div class="lower-card p-5 flex flex-col">
+        <a href="#">
+          <h5
+            @click="handleCardClick"
+            class="mb-2 text-2xl font-bold tracking-tight text-gray-900"
+          >
+            {{ truncatedTitle }}
+          </h5>
+          <div class="status mt-4 flex gap-1">
+            <h3 class="text-base font-bold text-secondary">
+              {{ `${langTranslations.statusLabel}:` }}
+            </h3>
+            <h3 class="text-base font-bold text-primary-black">
+              {{ project.project_status }}
+            </h3>
+          </div>
+        </a>
+        <div class="status_bar pt-4">
+          <div
+            class="donate_bar wow fadeIn animated"
+            data-wow-delay="0ms"
+            data-wow-duration="0ms"
+          >
+            <div class="bar_inner">
+              <div
+                class="bar"
+                :style="{
+                  width: percentage + '%',
+                }"
+              >
+                <div class="count_box counted">
+                  <span class="count-text" data-speed="2000" data-stop="82">{{
+                    percentage
+                  }}</span
+                  >%
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="causes-info flex flex-col">
-          <span class="flex justify-between gap-4">
-            <strong class=" ">Raised:</strong>
-            {{ currencyFormatterFunding(project.anticipated_funding) }}</span
-          >
-          <span class="flex justify-between gap-4 text-primary-color"
-            ><strong class="">Goal:</strong
-            >{{ currencyFormatterFunding(project.funding_goal) }}</span
-          >
+          <div class="causes-info flex flex-col">
+            <span class="flex justify-between gap-4">
+              <strong class=" "
+                >{{ langTranslations.projectLabels.raisedLabel }}:</strong
+              >
+              {{ currencyFormatterFunding(project.anticipated_funding) }}</span
+            >
+            <span class="flex justify-between gap-4 text-primary-color"
+              ><strong class=""
+                >{{ langTranslations.projectLabels.goalLabel }}:</strong
+              >{{ currencyFormatterFunding(project.funding_goal) }}</span
+            >
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </Transition>
 </template>
 
 <style lang="scss" scoped>
 @import "@/assets/_variables.scss";
+.v-enter-active {
+  transition: all 2.3s ease-out;
+}
+.v-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
 
+.v-enter-from,
+.v-leave-to {
+  transform: translateX(20px);
+  opacity: 0;
+}
 .upper-card {
   flex: 1;
   flex-shrink: 1;

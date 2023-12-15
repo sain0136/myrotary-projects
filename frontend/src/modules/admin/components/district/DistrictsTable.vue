@@ -8,7 +8,7 @@ export default {
 import { ApiClient } from "@/api/ApiClient";
 import { DistrictApi } from "@/api/services/DistrictsApi";
 import BaseDisplayTable from "@/components/tables/BaseDisplayTable.vue";
-import { CustomError } from "@/utils/classes/CustomError";
+import { CustomErrors } from "@/utils/classes/CustomErrors";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import type { IDistrict } from "@/utils/interfaces/IDistrict";
 import { onMounted, reactive, ref, watch } from "vue";
@@ -18,6 +18,7 @@ import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import { modalHandler } from "@/utils/composables/ModalHandler";
 import type { PaginationResult } from "@/utils/types/commonTypes";
 import type { ICustomError } from "@/utils/interfaces/ICustomError";
+import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
 
 /* Data */
 const { langTranslations } = useLanguage();
@@ -31,6 +32,7 @@ const pagination = reactive({
   total: 0,
   limit: 5,
 });
+const loaded = ref(false);
 /* Hooks */
 onMounted(async () => {
   await getAllDistricts();
@@ -46,6 +48,7 @@ watch(
 /* Methods */
 const getAllDistricts = async () => {
   try {
+    loaded.value = false;
     allDistricts.splice(0, allDistricts.length);
     const response = (await districtApi.getAllDistricts(
       false,
@@ -56,8 +59,9 @@ const getAllDistricts = async () => {
     pagination.currentPage = response.meta.current_page;
     pagination.lastPage = response.meta.last_page;
     pagination.total = response.meta.total;
+    loaded.value = true;
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 };
 
@@ -92,7 +96,7 @@ const confirmMultiDelete = async (selectedItems: unknown[]) => {
     }
     throw new Error();
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 };
 
@@ -111,7 +115,7 @@ const deleteDistrict = async (district: unknown) => {
     }
     await getAllDistricts();
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 };
 </script>
@@ -119,6 +123,7 @@ const deleteDistrict = async (district: unknown) => {
 <template>
   <div class="flex flex-col gap-8">
     <BaseDisplayTable
+      v-if="loaded"
       :multi-select-delete="confirmMultiDelete"
       :show-checkboxes="true"
       :handle-page-change="handlePageChange"
@@ -152,6 +157,8 @@ const deleteDistrict = async (district: unknown) => {
         },
       ]"
     />
+    <LoadingSpinner v-if="!loaded" />
+
     <div class="flex justify-center">
       <RotaryButton
         @click="router.push({ name: 'DistrictAddEdit' })"

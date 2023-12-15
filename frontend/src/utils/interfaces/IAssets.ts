@@ -1,3 +1,5 @@
+import type { uploadedFile } from "@/utils/types/commonTypes";
+
 export interface IContentManagement {
   myRotaryEmail: string;
   myRotaryPhone: string;
@@ -22,13 +24,6 @@ export type uploadedFiletypes =
   | "profile-picture"
   | "projectCoverImage";
 
-export type uploadedFile = {
-  databaseTarget: databaseTarget;
-  fileType: uploadedFiletypes;
-  s3UrlLink: string;
-  s3Name: string;
-};
-
 export interface IAssets {
   id: number;
   dm_initial: number;
@@ -36,12 +31,7 @@ export interface IAssets {
   club_intial: number;
   global_intial: number;
   assets: {
-    main_logo: {
-      id: string;
-      url: string;
-      fileType: string;
-      location: string;
-    };
+    main_logo: uploadedFile;
     profilePicture?: uploadedFile;
     contentManagement: IContentManagement;
   };

@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { handleError, onMounted, reactive, ref, watch } from "vue";
+import { computed, handleError, onMounted, reactive, ref, watch } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import District from "@/utils/classes/District";
 import { useVuelidate } from "@vuelidate/core";
@@ -24,7 +24,7 @@ import {
 } from "@vuelidate/validators/dist/index.mjs";
 import { UsersApi } from "@/api/services/UserApi";
 import { ApiClient } from "@/api/ApiClient";
-import { CustomError } from "@/utils/classes/CustomError";
+import { CustomErrors } from "@/utils/classes/CustomErrors";
 import { useRoute } from "vue-router";
 import User from "@/utils/classes/User";
 import BaseSelect from "@/components/form/BaseSelect.vue";
@@ -35,17 +35,41 @@ import type { IClub } from "@/utils/interfaces/IClub";
 
 /* Data */
 type UserType = "districtAdmin" | "clubUser" | null;
-type formType = "siteAdminClub" | "siteAdminDistrict" | null;
+type formType =
+  | "siteAdminClub"
+  | "siteAdminDistrict"
+  | "myProfile"
+  | "clubAdmin"
+  | "districtAdmin"
+  | null;
 const route = useRoute();
-const { langTranslations, languagePref } = useLanguage();
-const userId = route.params.userId;
-const userType = route.query.userType
-  ? (route.query.userType as UserType)
-  : null;
-const clubId = route.query.clubId ?? null;
-const formType = route.query.formType
-  ? (route.query.formType as formType)
-  : null;
+const { langTranslations, languagePref, customPrintf } = useLanguage();
+// Required for form
+const userId = ref(route.params.userId);
+const userType = ref(
+  route.query.userType ? (route.query.userType as UserType) : null
+);
+
+const clubId = ref(route.query.clubId ?? null);
+// const districtId = ref(
+//   route.query.districtId ? Number(route.query.districtId) : null
+// );
+const formType = ref(
+  route.query.formType ? (route.query.formType as formType) : null
+);
+// not a hack when usign this as component that i want to pass props too
+const { userIdProp, userTypeProp, clubIdProp, formTypeProp } = defineProps<{
+  userIdProp?: string;
+  userTypeProp?: UserType;
+  clubIdProp?: string;
+  formTypeProp?: formType;
+}>();
+
+userId.value = userIdProp ? userIdProp : userId.value;
+userType.value = userTypeProp ? userTypeProp : userType.value;
+clubId.value = clubIdProp ? clubIdProp : clubId.value;
+formType.value = formTypeProp ? formTypeProp : formType.value;
+
 const user = reactive(new User());
 const { handleError, handleSuccess, handleValidationForm } = errorHandler();
 const userApi = new UsersApi(new ApiClient());
@@ -63,7 +87,7 @@ const clubMap = reactive<Map<string, number>>(new Map());
 const userTitle = ref("");
 // const allClubsInDistrict = reactive<string[]>([]);
 const chosenClub = ref("");
-const submitLabel = userId
+const submitLabel = userId.value
   ? {
       en: "Update",
       fr: "Modifier",
@@ -76,18 +100,11 @@ const maxLengthPostal = {
   en: "Must be at most 32 characters",
   fr: "Doit contenir au plus 32 caractères",
 };
-const maxLenghtAddress = {
-  en: "Must be at most 100 characters",
-  fr: "Doit contenir au plus 100 caractères",
-};
-const maxLengthMessage = {
-  en: "Must be at most 50 characters",
-  fr: "Doit contenir au plus 50 caractères",
-};
 const passwordMinLength = {
   en: "Must be at least 8 characters",
   fr: "Doit contenir au moins 8 caractères",
 };
+const submitted = ref(false);
 /* Validations */
 const rules = {
   firstname: {
@@ -96,7 +113,7 @@ const rules = {
       required
     ),
     maxLength: helpers.withMessage(
-      maxLengthMessage[languagePref.value],
+      customPrintf(langTranslations.value.maxLengthMessage, "50"),
       maxLength(50)
     ),
   },
@@ -106,7 +123,7 @@ const rules = {
       required
     ),
     maxLength: helpers.withMessage(
-      maxLengthMessage[languagePref.value],
+      customPrintf(langTranslations.value.maxLengthMessage, "50"),
       maxLength(50)
     ),
   },
@@ -116,7 +133,7 @@ const rules = {
       required
     ),
     maxLength: helpers.withMessage(
-      maxLenghtAddress[languagePref.value],
+      customPrintf(langTranslations.value.maxLengthMessage, "100"),
       maxLength(100)
     ),
   },
@@ -136,7 +153,7 @@ const rules = {
       required
     ),
     maxLength: helpers.withMessage(
-      maxLenghtAddress[languagePref.value],
+      customPrintf(langTranslations.value.maxLengthMessage, "100"),
       maxLength(100)
     ),
   },
@@ -146,7 +163,7 @@ const rules = {
       required
     ),
     maxLength: helpers.withMessage(
-      maxLengthMessage[languagePref.value],
+      customPrintf(langTranslations.value.maxLengthMessage, "50"),
       maxLength(50)
     ),
   },
@@ -156,7 +173,7 @@ const rules = {
       required
     ),
     maxLength: helpers.withMessage(
-      maxLengthMessage[languagePref.value],
+      customPrintf(langTranslations.value.maxLengthMessage, "50"),
       maxLength(50)
     ),
   },
@@ -166,8 +183,8 @@ const rules = {
       required
     ),
     maxLength: helpers.withMessage(
-      maxLengthMessage[languagePref.value],
-      maxLength(50)
+      customPrintf(langTranslations.value.maxLengthMessage, "180"),
+      maxLength(180)
     ),
   },
   role_type: {
@@ -185,6 +202,10 @@ const rules = {
       langTranslations.value.formErorrText.required,
       required
     ),
+    maxLength: helpers.withMessage(
+      customPrintf(langTranslations.value.maxLengthMessage, "254"),
+      maxLength(254)
+    ),
   },
   password: {
     required: helpers.withMessage(
@@ -201,17 +222,17 @@ const v$ = useVuelidate(rules, user);
 
 /* Hooks */
 watch(chosenDistrict, async () => {
-  if (chosenDistrict.value === "") {
-    chosenDistrictError.value = {
-      en: "Must select a district",
-      fr: "Doit sélectionner un district",
-    };
-  } else {
-    chosenDistrictError.value = {
-      en: "",
-      fr: "",
-    };
-  }
+  // if (chosenDistrict.value === "") {
+  //   chosenDistrictError.value = {
+  //     en: "Must select a district",
+  //     fr: "Doit sélectionner un district",
+  //   };
+  // } else {
+  //   chosenDistrictError.value = {
+  //     en: "",
+  //     fr: "",
+  //   };
+  // }
   try {
     const id = districtMap.get(chosenDistrict.value) as number;
     const allClubsInDistrict = await clubApi.clubsInDistrict(id, 1, 10000000);
@@ -220,63 +241,66 @@ watch(chosenDistrict, async () => {
       clubMap.set(club.club_name, club.club_id as number);
     });
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 });
 
 onMounted(async () => {
   try {
-    if (userType === "districtAdmin") {
+    if (userType.value === "districtAdmin") {
       const response = (await districtApi.getAllDistricts(true)) as District[];
       response.forEach((district) => {
         districtMap.set(district.district_name, district.district_id);
       });
       allDistricts.push();
     }
-    if (userId) {
-      const response = await userApi.getUser(parseInt(userId as string));
+    if (userId.value) {
+      const response = await userApi.getUser(parseInt(userId.value as string));
       Object.assign(user, response);
-      if (formType === "siteAdminClub") {
-        userTitle.value =
-          (user.role[0].club_role ?? "") + ": " + user.fullName ??
-          (user.role[0].district_role ?? "") + ": " + user.fullName;
-        user.role_type = user.role[0].club_role ?? "";
+      if (formType.value === "siteAdminClub") {
+        const role = user.role ? user.role : user.role ? user.role : "";
+        userTitle.value = role + ": " + user.fullName;
+        user.role_type = role;
       } else {
-        userTitle.value =
-          (user.role[0].district_role ?? "") + ": " + user.fullName;
-        user.role_type = user.role[0].district_role ?? "";
+        const role = user.role ? user.role : user.role ? user.role : "";
+        userTitle.value = role + ": " + user.fullName;
+        user.role_type = role;
       }
     }
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 });
 
 /* Methods */
 const validateAndSubmit = async () => {
-  const isFormCorrect = await v$.value.$validate();
+  submitted.value = true;
+  let isFormCorrect = await v$.value.$validate();
+  isFormCorrect = choosenDistrictError.value !== "" ? false : isFormCorrect;
   if (
     !isFormCorrect ||
-    (!userId && formType === "siteAdminDistrict" && chosenDistrict.value === "")
+    (!userId.value &&
+      formType.value === "siteAdminDistrict" &&
+      chosenDistrict.value === "")
   ) {
     handleValidationForm();
     return;
   }
   try {
-    if (userId) {
+    if (userId.value) {
       await userApi.updateUser(user);
     } else {
-      if (userType === "clubUser") {
+      if (userType.value === "clubUser") {
         user.user_type = "CLUB";
-        user.club_id = Number(clubId as string);
+        user.club_id = Number(clubId.value as string);
       }
-      if (userType === "districtAdmin") {
+      if (userType.value === "districtAdmin") {
         if (typeof districtMap.get(chosenDistrict.value) !== "undefined") {
           {
             user.district_id = districtMap.get(chosenDistrict.value) as number;
           }
         } else {
-          throw new CustomError(900, "District not found", {
+          throw new CustomErrors(900, "District not found", {
             en: "District not found",
             fr: "District non trouvé",
           });
@@ -284,7 +308,7 @@ const validateAndSubmit = async () => {
         if (typeof clubMap.get(chosenClub.value) !== "undefined") {
           user.club_id = clubMap.get(chosenClub.value) as number;
         } else {
-          throw new CustomError(900, "Club not found", {
+          throw new CustomErrors(900, "Club not found", {
             en: "Club not found",
             fr: "Club non trouvé",
           });
@@ -295,25 +319,55 @@ const validateAndSubmit = async () => {
     handleSuccess(langTranslations.value.toastSuccess);
     redirect();
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 };
 
 const redirect = () => {
-  if (formType === "siteAdminClub") {
-    router.push({ name: "Club" });
-    return;
-  }
-  if (formType === "siteAdminDistrict") {
-    router.push({ name: "District" });
-    return;
+  switch (formType.value) {
+    case "districtAdmin":
+      router.push({
+        name: "ClubsAdmin",
+      });
+      return;
+    case "siteAdminClub":
+      router.push({ name: "Club" });
+      return;
+    case "siteAdminDistrict":
+      router.push({ name: "District" });
+      return;
+    case "clubAdmin":
+      router.push({
+        name: "ClubMembers",
+        query: {
+          tableView: "clubAdmins",
+        },
+      });
+      return;
+    default:
+      router.go(-1);
   }
 };
+
+const choosenDistrictError = computed((): string => {
+  if (
+    (chosenDistrict.value === "" || chosenClub.value === "") &&
+    submitted.value
+  ) {
+    const str = chosenDistrictError.value[languagePref.value];
+    return str;
+  }
+  return "";
+});
 </script>
 
 <template>
   <form @submit.prevent class="">
-    <H2 class="text-center" :content="langTranslations.userFormHeader" />
+    <H2
+      v-if="formType !== 'myProfile'"
+      class="text-center"
+      :content="langTranslations.userFormHeader"
+    />
     <Hr />
     <div class="flex-block flex-col items-center justify-center">
       <p
@@ -329,6 +383,7 @@ const redirect = () => {
         :label="langTranslations.userForm.districtSelectLabel"
         :options="[...districtMap.keys()]"
         v-model="chosenDistrict"
+        :errorMessage="choosenDistrictError"
       />
       <BaseSelect
         v-if="userType === 'districtAdmin' && !userId"
@@ -347,14 +402,24 @@ const redirect = () => {
         :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined "
       />
       <BaseSelect
-        v-if="formType === 'siteAdminClub'"
+        v-if="formType === 'siteAdminClub' || formType === 'clubAdmin'"
         class="w-1/2"
         v-model="user.role_type"
         :label="langTranslations.roleLabel"
         :options="ResourceList.clubRolesList"
         :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined "
       />
-      <H2 :content="userTitle" />
+      <H2 v-if="formType !== 'myProfile'" :content="userTitle" />
+      <div
+        v-else-if="formType === 'myProfile'"
+        class="flex flex-col gap-4 justify-center items-center font-bold"
+      >
+        <H2 :content="langTranslations.adminDash.personalInformationLabel" />
+        <h6>
+          {{ langTranslations.roleLabel }}:
+          {{ user.role ?? user.role }}
+        </h6>
+      </div>
     </div>
     <div class="form-block">
       <BaseInput
@@ -444,6 +509,7 @@ const redirect = () => {
         "
       />
       <RotaryButton
+        v-if="formType !== 'myProfile'"
         :theme="'primary'"
         :label="langTranslations.cancelLabel"
         @click="redirect()"

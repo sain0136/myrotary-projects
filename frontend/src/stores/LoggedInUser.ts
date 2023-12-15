@@ -33,9 +33,9 @@ export const useLoggedInUserStore = defineStore(
         return "Webmaster";
       }
       if (loggedInUser.user_type === "CLUB") {
-        return loggedInUser.role[0].club_role;
+        return loggedInUser.role;
       } else {
-        return loggedInUser.role[0].district_role;
+        return loggedInUser.role;
       }
     }
 

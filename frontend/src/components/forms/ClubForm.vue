@@ -17,23 +17,34 @@ import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import H2 from "@/components/headings/H2.vue";
 import Hr from "@/components/hr/Hr.vue";
 import BaseInput from "@/components/form/BaseInput.vue";
-import { email, helpers, required } from "@vuelidate/validators/dist/index.mjs";
+import {
+  email,
+  helpers,
+  maxLength,
+  minLength,
+  required,
+} from "@vuelidate/validators/dist/index.mjs";
 import { DistrictApi } from "@/api/services/DistrictsApi";
 import { ApiClient } from "@/api/ApiClient";
-import { CustomError } from "@/utils/classes/CustomError";
+import { CustomErrors } from "@/utils/classes/CustomErrors";
 import Club from "@/utils/classes/Club";
 import { ClubApi } from "@/api/services/ClubApi";
 import { useRoute } from "vue-router";
 import BaseSelect from "@/components/form/BaseSelect.vue";
 
 /* Data */
+type formType = "siteAdmin" | "clubAdmin" | "districtAdmin" | undefined;
 const route = useRoute();
 const districtApi = new DistrictApi(new ApiClient());
-const { langTranslations, languagePref } = useLanguage();
+const { langTranslations, languagePref, customPrintf } = useLanguage();
 const { handleError, handleSuccess, handleValidationForm } = errorHandler();
 const club = reactive(new Club());
+// required form data
 const clubId = route.params.clubId ?? null;
-const formType = route.query.formType === "siteAdmin" ? "siteAdmin" : undefined;
+const formType = route.query.formType
+  ? (route.query.formType as formType)
+  : undefined;
+//
 const clubApi = new ClubApi(new ApiClient());
 const districtMap = reactive<Map<string, number>>(new Map());
 const chosenDistrict = ref("");
@@ -46,6 +57,7 @@ const submitLabel: { [key: string]: string } = clubId
       en: "Submit",
       fr: "Soumettre",
     };
+
 /* Validations */
 const rules = {
   club_name: {
@@ -53,11 +65,23 @@ const rules = {
       langTranslations.value.formErorrText.required,
       required
     ),
+    maxLength: helpers.withMessage(
+      customPrintf(langTranslations.value.maxLengthMessage, "50"),
+      maxLength(50)
+    ),
+    minLenght: helpers.withMessage(
+      customPrintf(langTranslations.value.minLengthMessage, "5"),
+      minLength(5)
+    ),
   },
   club_address: {
     required: helpers.withMessage(
       langTranslations.value.formErorrText.required,
       required
+    ),
+    maxLength: helpers.withMessage(
+      customPrintf(langTranslations.value.maxLengthMessage, "100"),
+      maxLength(100)
     ),
   },
   club_city: {
@@ -65,11 +89,19 @@ const rules = {
       langTranslations.value.formErorrText.required,
       required
     ),
+    maxLength: helpers.withMessage(
+      customPrintf(langTranslations.value.maxLengthMessage, "50"),
+      maxLength(50)
+    ),
   },
   club_country: {
     required: helpers.withMessage(
       langTranslations.value.formErorrText.required,
       required
+    ),
+    maxLength: helpers.withMessage(
+      customPrintf(langTranslations.value.maxLengthMessage, "50"),
+      maxLength(50)
     ),
   },
   club_email: {
@@ -80,6 +112,10 @@ const rules = {
     email: helpers.withMessage(
       langTranslations.value.formErorrText.emailFormat,
       email
+    ),
+    maxLength: helpers.withMessage(
+      customPrintf(langTranslations.value.maxLengthMessage, "254"),
+      maxLength(254)
     ),
   },
 };
@@ -99,7 +135,7 @@ onMounted(async () => {
       Object.assign(club, response);
     }
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 });
 
@@ -118,24 +154,34 @@ const validateAndSubmit = async () => {
   }
   try {
     if (formType === "siteAdmin" && !clubId && chosenDistrict.value === "") {
-      throw new CustomError(900, "Must chose a district", {
+      throw new CustomErrors(900, "Must chose a district", {
         en: "Must assign club to a district",
         fr: "Doit assigner le club a un district",
       });
     }
-    if (formType === "siteAdmin" && clubId) {
+    if (clubId) {
       await clubApi.updateClub(club);
     } else if (formType === "siteAdmin" && !clubId) {
       await clubApi.createClub(club);
     }
-    handleSuccess(langTranslations.value.toastSuccess);
+    handleSuccess(langTranslations.value.toastSuccess, {
+      path: "club",
+    });
     redirect();
   } catch (error) {
-    handleError(error as CustomError);
+    handleError(error as CustomErrors);
   }
 };
 const redirect = () => {
-  router.push({ name: "Club" });
+  if (formType === "siteAdmin") {
+    router.push({ name: "Club" });
+  }
+  if (formType === "clubAdmin") {
+    router.go(0);
+  }
+  if (formType === "districtAdmin") {
+    router.push({ name: "ClubsAdmin" });
+  }
 };
 </script>
 
@@ -189,15 +235,15 @@ const redirect = () => {
     </div>
     <div class="form-block">
       <BaseCheckBox
-        v-model="club.settings.disableDsg"
+        v-model="club.settings.disableDsg as boolean"
         :label="langTranslations.clubForm.disableDsgLabel"
       />
       <BaseCheckBox
-        v-model="club.settings.disableDM"
+        v-model="club.settings.disableDM as boolean"
         :label="langTranslations.clubForm.disableDsgLabel"
       />
       <BaseCheckBox
-        v-model="club.settings.disableGlobal"
+        v-model="club.settings.disableGlobal as boolean"
         :label="langTranslations.clubForm.disableGlobalLabel"
       />
     </div>
@@ -215,6 +261,7 @@ const redirect = () => {
         :theme="'primary'"
         :label="langTranslations.cancelLabel"
         @click="redirect()"
+        v-if="formType !== 'clubAdmin'"
       />
     </div>
   </form>

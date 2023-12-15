@@ -8,7 +8,14 @@ export default {
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted, ref, watch, provide, reactive } from "vue";
 import { Icon } from "@iconify/vue";
-import RotaryButton from "../buttons/RotaryButton.vue";
+import RotaryButton from "@/components/buttons/RotaryButton.vue";
+import { useCurrencyFormatter } from "@/utils/composables/CurrencyFormatter";
+import type {
+  IClubProject,
+  IDmProject,
+  IDsgProject,
+} from "@/utils/interfaces/IProjects";
+import { grantType, projectStatus } from "@/utils/types/commonTypes";
 
 /* Types */
 type ColumnOptions = {
@@ -17,15 +24,18 @@ type ColumnOptions = {
   collapsable?: boolean;
   colName: string;
   columnWidth?: tailwindWidths;
+  isCurrency?: boolean;
 };
 type tailwindWidths = "w-2/12" | "w-1/12" | "w-1/6";
 type ButtonOptions = {
   show: boolean;
   callBack: (row?: unknown) => void;
+  hide?: ((row?: unknown) => boolean) | undefined;
 };
 
 /* Data */
-
+const { currencyFormatterFunding, convertCentsToFloat, convertFloatToCents } =
+  useCurrencyFormatter();
 let checkedItems = reactive<unknown[]>([]);
 const isAllSelected = ref(false);
 
@@ -43,20 +53,33 @@ const {
   totalResults,
   limit,
   showCheckboxes,
+  disablePagination,
   multiSelectDelete,
+  hideActionsColumn,
+  sendForApprovalButton,
+  submitForReportsButton,
+  projectCompleteButton,
+  rowEvents,
 } = defineProps<{
   currentPage: number;
   tableData: any[];
   columns: ColumnOptions[];
-  editButton?: ButtonOptions;
-  deleteButton?: ButtonOptions;
   handlePageChange: (nextOrPrevious: "next" | "previous") => void;
   lastPage: number;
   totalResults: number;
   limit: number;
   showCheckboxes: Boolean;
-  // perhaps make expict union type  selectedItems typed ? like allow a select types that can be passed in
+  editButton?: ButtonOptions;
+  sendForApprovalButton?: ButtonOptions;
+  submitForReportsButton?: ButtonOptions;
+  projectCompleteButton?: ButtonOptions;
+  deleteButton?: ButtonOptions;
+  disablePagination?: Boolean;
+  hideActionsColumn?: boolean;
+  //TODO perhaps make expict union type  selectedItems typed ? like allow a select types that can be passed in
   multiSelectDelete?: (selectedItems: unknown[]) => void;
+  // TODO transform all these unknowns into types
+  rowEvents?: (row: unknown) => void;
 }>();
 /* Hooks */
 onMounted(async () => {});
@@ -145,16 +168,20 @@ const handlehandleDeleteMultiple = () => {
           >
             {{ column.name }}
           </th>
-          <th scope="col" class="px-6 py-3">
+          <th v-if="!hideActionsColumn" scope="col" class="px-6 py-3">
             {{ langTranslations.actionsLabel }}
           </th>
         </tr>
       </thead>
       <tbody>
         <tr
+          @click="() => (rowEvents ? rowEvents(row) : undefined)"
           v-for="(row, index) in tableData"
           :key="index"
           class="row border-b bg-nearBlack border-gray-700"
+          :class="{
+            'cursor-pointer': rowEvents,
+          }"
         >
           <td v-if="showCheckboxes" class="w-4 p-4">
             <div class="flex items-center">
@@ -180,13 +207,56 @@ const handlehandleDeleteMultiple = () => {
               'hidden lg:table-cell': column.lgScreenCollapsable,
             }"
           >
-            <span> {{ row[column.colName] }} </span>
+            <span>
+              {{
+                column.isCurrency
+                  ? currencyFormatterFunding(row[column.colName])
+                  : row[column.colName]
+              }}
+            </span>
           </td>
-          <td class="px-6 py-4 :lg: w-1/12">
-            <div class="flex justify-between">
+          <td v-if="hideActionsColumn != true" class="actions-col px-6 py-4">
+            <div class="flex justify-center items-center gap-1">
+              <a
+                @click="projectCompleteButton?.callBack({ ...row })"
+                v-if="projectCompleteButton?.show && !projectCompleteButton?.hide?.(row) 
+                && (row as IDsgProject | IDmProject | IClubProject).project_status
+                === projectStatus.APPROVED && 
+                (row as IDsgProject | IDmProject | IClubProject).grant_type ===
+                grantType.CLUBPROJECT
+                "
+                :title="langTranslations.submitReportLabel"
+                href="#"
+                class="font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
+                ><Icon icon="carbon:task-complete"
+              /></a>
+              <a
+                @click="submitForReportsButton?.callBack({ ...row })"
+                v-if="submitForReportsButton?.show && !submitForReportsButton?.hide?.(row) 
+                && (row as IDsgProject | IDmProject | IClubProject).project_status
+                === projectStatus.APPROVED && 
+                (row as IDsgProject | IDmProject | IClubProject).grant_type !==
+                grantType.CLUBPROJECT
+                "
+                :title="langTranslations.submitReportLabel"
+                href="#"
+                class="font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
+                ><Icon icon="carbon:report"
+              /></a>
+              <a
+                @click="sendForApprovalButton?.callBack({ ...row })"
+                v-if="sendForApprovalButton?.show && !sendForApprovalButton?.hide?.(row) 
+                && (row as IDsgProject | IDmProject | IClubProject).project_status
+                === projectStatus.FULLYFUNDED
+                "
+                :title="langTranslations.submitForApprovalLabel"
+                href="#"
+                class="font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
+                ><Icon icon="formkit:submit"
+              /></a>
               <a
                 @click="editButton?.callBack({ ...row })"
-                v-if="editButton?.show"
+                v-if="editButton?.show && !editButton?.hide?.(row)"
                 :title="langTranslations.editLabel"
                 href="#"
                 class="font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
@@ -194,7 +264,7 @@ const handlehandleDeleteMultiple = () => {
               /></a>
               <a
                 @click="deleteButton?.callBack({ ...row })"
-                v-if="deleteButton?.show"
+                v-if="deleteButton?.show && !deleteButton?.hide?.(row)"
                 :title="langTranslations.deleteLabel"
                 href="#"
                 class="font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
@@ -206,7 +276,7 @@ const handlehandleDeleteMultiple = () => {
       </tbody>
     </table>
   </div>
-  <div class="flex justify-between">
+  <div v-if="disablePagination !== true" class="flex justify-between">
     <div class="flex gap-2">
       <select
         @input="
@@ -232,7 +302,7 @@ const handlehandleDeleteMultiple = () => {
         {{ (totalResults ?? 0) + " " + langTranslations.resultLabel }}
       </p>
     </div>
-    <div class="flex">
+    <div class="pagination-row flex">
       <!-- Previous Button -->
       <a
         @click="handlePageChange('previous')"

@@ -10,12 +10,17 @@ import { onMounted, ref } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import { useSiteAssets } from "@/stores/SiteAssets";
 import { Icon } from "@iconify/vue";
+import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 
 /* Data */
 const { langTranslations } = useLanguage();
 const assetsStore = useSiteAssets();
 const showMenu = ref(false);
-const navLinks: Array<{ label: string; link: string }> = [
+const navLinks: Array<{
+  label: string;
+  link: string;
+  disabled?: boolean;
+}> = [
   {
     label: langTranslations.value.home,
     link: "Home",
@@ -27,7 +32,11 @@ const navLinks: Array<{ label: string; link: string }> = [
   {
     label: langTranslations.value.contactUs,
     link: "Contact"
-  }
+  },
+  {
+    label: langTranslations.value.statsLabel,
+    link: "Stats",
+  },
 ];
 
 /* Hooks */
@@ -59,6 +68,7 @@ onMounted(async () => {});
       <ul class="social-icon-one flex gap-8 pr-4">
         <li class="li_border">
           <a
+            target="_blank"
             href="https://www.facebook.com/rotary"
             title="Rotary International on Facebook"
           >
@@ -70,10 +80,12 @@ onMounted(async () => {});
         </li>
         <li class="li_border">
           <a
+            target="_blank"
             title="Rotary International on Twitter"
             href="https://twitter.com/Rotary?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor"
           >
             <Icon
+              target="_blank"
               icon="simple-icons:x"
               class="text-3xl hover:text-3xl hover:text-white"
           /></a>
@@ -98,13 +110,17 @@ onMounted(async () => {});
     <div
       class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4"
     >
-      <a href="https://flowbite.com/" class="flex items-center">
+      <div class="flex items-center">
         <img
-          :src="assetsStore.siteAssets.main_logo.s3UrlLink"
+          :src="
+            assetsStore.siteAssets.assets.main_logo.s3UrlLink ||
+            assetsStore.siteAssets.assets.main_logo.s3BaseUrlLink ||
+            '/rotary-reserve-logo.png'
+          "
           class="h-14 mr-3"
-          alt="Flowbite Logo"
+          alt="My Rotary Projects Main Logo"
         />
-      </a>
+      </div>
       <button
         @click="showMenu = !showMenu"
         data-collapse-toggle="navbar-default"
@@ -139,12 +155,46 @@ onMounted(async () => {});
           class="font-medium flex flex-col p-4 md:p-0 mt-4 border rounded-lg bg-nearWhite md:flex-row md:space-x-8 md:mt-0 md:border-0"
         >
           <li v-for="item in navLinks" :key="item.link">
-            <router-link :to="{ name: item.link }">
+            <router-link v-if="!item.disabled" :to="{ name: item.link }">
               <span
                 href="#"
                 class="block py-2 pl-3 pr-4 font-bold text-gray-900 rounded hover:text-primary"
                 aria-current="page"
                 >{{ item.label }}</span
+              >
+            </router-link>
+          </li>
+          <li v-if="!useLoggedInUserStore().isUserLoggedIn">
+            <router-link :to="{ name: 'UserLogin' }">
+              <span
+                href="#"
+                class="block py-2 pl-3 pr-4 font-bold text-gray-900 rounded hover:text-primary"
+                aria-current="page"
+                >{{ langTranslations.loginLabel }}</span
+              >
+            </router-link>
+          </li>
+          <li v-if="useLoggedInUserStore().isUserLoggedIn">
+            <a
+              class="block py-2 pl-3 pr-4 font-bold text-gray-900 rounded hover:text-primary"
+              href=""
+              @click="
+                () => {
+                  useLoggedInUserStore().logOut();
+                  $router.push({ name: 'Home' });
+                }
+              "
+            >
+              {{ langTranslations.logoutLabel }}
+            </a>
+          </li>
+          <li v-if="useLoggedInUserStore().isUserLoggedIn">
+            <router-link :to="{ name: 'AdminWelcome' }">
+              <span
+                href="#"
+                class="block py-2 pl-3 pr-4 font-bold text-gray-900 rounded hover:text-primary"
+                aria-current="page"
+                >{{ langTranslations.adminDash.headerDashboard }}</span
               >
             </router-link>
           </li>

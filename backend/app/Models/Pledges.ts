@@ -1,9 +1,14 @@
 import { DateTime } from "luxon";
-import { BaseModel, column } from "@ioc:Adonis/Lucid/Orm";
+import { BaseModel, column, computed } from "@ioc:Adonis/Lucid/Orm";
 // import { NonPlurizeNamingStrategy } from "Contracts/NonPlurizeNamingStrategy";
 
 export default class Pledges extends BaseModel {
   // public static namingStrategy = new NonPlurizeNamingStrategy();
+
+  @computed()
+  get fullname() {
+    return `${this.firstname} ${this.lastname}`;
+  }
 
   @column({ isPrimary: true })
   public pledgeId: number;
@@ -36,12 +41,11 @@ export default class Pledges extends BaseModel {
   @column()
   public districtNumber: string;
 
-  
   @column()
   public projectId: number;
 
   @column()
-  public userId: string;
+  public userId: string | number;
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime;

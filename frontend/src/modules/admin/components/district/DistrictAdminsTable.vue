@@ -11,6 +11,7 @@ import BaseDisplayTable from "@/components/tables/BaseDisplayTable.vue";
 import type { CustomError } from "@/utils/classes/CustomError";
 import BaseSelect from "@/components/form/BaseSelect.vue";
 import H3 from "@/components/headings/H3.vue";
+import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
 
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import type { IDistrict } from "@/utils/interfaces/IDistrict";
@@ -24,7 +25,6 @@ import { modalHandler } from "@/utils/composables/ModalHandler";
 import type { IUser } from "@/utils/interfaces/IUser";
 import { UsersApi } from "@/api/services/UserApi";
 
-
 /* Data */
 const { langTranslations } = useLanguage();
 
@@ -32,7 +32,8 @@ const { handleError, handleSuccess } = errorHandler();
 const districtApi = new DistrictApi(new ApiClient());
 const allDistricts = reactive<Map<string, number>>(new Map());
 const { changeShowModal, setModal } = modalHandler();
-const allDistrictsinDistrict = reactive<IDistrict[]>([])
+const allDistrictsinDistrict = reactive<IDistrict[]>([]);
+const loaded = ref(false);
 
 const chosenDistrict = ref("");
 const chosenDistrictId = ref(0);
@@ -61,15 +62,20 @@ watch(chosenDistrict, () => {
 
 onMounted(async () => {
   try {
+    loaded.value = false;
     const response = (await districtApi.getAllDistricts(
       false,
       1,
       10
     )) as PaginationResult;
     response.data.map((district) => {
-      allDistricts.set(district.district_name, district.district_id as number);
+      allDistricts.set(
+        (district as IDistrict).district_name,
+        district.district_id as number
+      );
     });
-  }catch(error){
+    loaded.value = true;
+  } catch (error) {
     handleError(error as CustomError);
   }
   await getDistrictAdmin();
@@ -86,41 +92,41 @@ watch(
 /* Methods */
 
 const getDistrictAdmin = async () => {
-  try{
-    allDistrictsinDistrict.splice(0, allDistrictsinDistrict.length)
+  try {
+    loaded.value = false;
+    allDistrictsinDistrict.splice(0, allDistrictsinDistrict.length);
     const response = (await districtApi.getDistrictAdmins(
-    pagination.currentPage,
-    pagination.limit,
-    chosenDistrictId.value,
-    false
-    )) as PaginationResult
+      pagination.currentPage,
+      pagination.limit,
+      chosenDistrictId.value,
+      false
+    )) as PaginationResult;
 
     const districtAdmins = response.data as IUser[];
 
     for (const user of districtAdmins) {
-      if(user.role && user.role[0]) {
-        user.title = user.role[0].district_role ?? "N/A";
+      if (user.role) {
+        user.title = user.role ?? "N/A";
       } else {
-        user.title = "N/A"
+        user.title = "N/A";
       }
-      
-      if(user.extra_details) {
-      user.districtName = user.extra_details.district_name ?? "N/A";
+
+      if (user.extra_details) {
+        user.districtName = user.extra_details.district_name ?? "N/A";
       } else {
         user.districtName = "N/A";
       }
     }
 
-    Object.assign(allDistrictsinDistrict, districtAdmins)
+    Object.assign(allDistrictsinDistrict, districtAdmins);
     pagination.currentPage = response.meta.current_page;
     pagination.lastPage = response.meta.last_page;
     pagination.total = response.meta.total;
-
-  }catch(error){
+    loaded.value = true;
+  } catch (error) {
     handleError(error as CustomError);
   }
-}
-
+};
 
 const deleteAdmin = async (user: unknown) => {
   const toDelete = user as IUser;
@@ -145,28 +151,27 @@ const editAdmin = async (user: unknown) => {
   const toEdit = user as IUser;
   const id = toEdit.user_id;
   try {
-    if(id) {
-       router.push({
+    if (id) {
+      router.push({
         path: `user-form/${id}`,
-              query: {
-                formType : 'siteAdminDistrict',
-                userType: 'districtAdmin'
-              }
-      })
+        query: {
+          formType: "siteAdminDistrict",
+          userType: "districtAdmin",
+        },
+      });
     }
     await getDistrictAdmin();
   } catch (error) {
-    handleError(error as CustomError)
+    handleError(error as CustomError);
   }
-}
-
+};
 
 const handlePageChange = (nextOrPrevious: "next" | "previous") => {
   pagination.currentPage =
     nextOrPrevious === "next"
       ? pagination.currentPage + 1
       : pagination.currentPage - 1;
-      getDistrictAdmin();
+  getDistrictAdmin();
 };
 </script>
 
@@ -182,7 +187,7 @@ const handlePageChange = (nextOrPrevious: "next" | "previous") => {
       />
     </div>
     <BaseDisplayTable
-      v-if="allDistrictsinDistrict.length > 0"
+      v-if="allDistrictsinDistrict.length > 0 && loaded"
       :multi-select-delete="(selectedItems) => {}"
       :show-checkboxes="false"
       :handle-page-change="handlePageChange"
@@ -200,7 +205,7 @@ const handlePageChange = (nextOrPrevious: "next" | "previous") => {
       :edit-button="{
         show: true,
         callBack: (user) => {
-          editAdmin(user)
+          editAdmin(user);
         },
       }"
       :table-data="allDistrictsinDistrict"
@@ -222,7 +227,11 @@ const handlePageChange = (nextOrPrevious: "next" | "previous") => {
         },
       ]"
     />
-    <div class="flex justify-center" v-else>
+    <LoadingSpinner v-if="!loaded" />
+    <div
+      class="flex justify-center"
+      v-else-if="allDistrictsinDistrict.length === 0 && loaded"
+    >
       <H3 :content="langTranslations.districtView.noAdminsInDistrict" />
     </div>
     <div class="flex justify-center">

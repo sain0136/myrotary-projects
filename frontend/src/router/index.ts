@@ -24,6 +24,12 @@ const routes = [
         component: () => import("@/modules/home/views/LandingHome.vue"),
       },
       {
+        path: "/:name?",
+        name: "ProjectDetails",
+        component: () =>
+          import("@/modules/home/components/landinghome/ProjectDetails.vue"),
+      },
+      {
         path: "/about",
         name: "About",
         component: () => import("@/modules/home/views/About.vue"),
@@ -32,7 +38,23 @@ const routes = [
         path: "/contact",
         name: "Contact",
         component: () => import("@/modules/home/views/Contact.vue")
-      }
+      },
+      {
+        path: "/pledge",
+        name: "PledgeForm",
+        component: () =>
+          import("@/modules/home/components/landinghome/PledgeForm.vue"),
+      },
+      {
+        path: "/login",
+        name: "UserLogin",
+        component: () => import("@/modules/home/views/UserLogin.vue"),
+      },
+      {
+        path: "stats",
+        name: "Stats",
+        component: () => import("@/modules/home/views/Stats.vue"),
+      },
     ],
   },
   // Admin Routes
@@ -72,6 +94,45 @@ const routes = [
         props: true,
       },
       {
+        path: "club-project-form/:projectId?",
+        name: "ClubProjectForm",
+        component: () => import("@/components/forms/ClubProjectForm.vue"),
+        props: true,
+      },
+      {
+        path: "simplified-project-form/:projectId?",
+        name: "SimplifiedProjectForm",
+        component: () => import("@/components/forms/SimplifiedProjectForm.vue"),
+        props: true,
+      },
+      {
+        path: "matching-project-form/:projectId?",
+        name: "MatchingProjectForm",
+        component: () => import("@/components/forms/MatchingProjectForm.vue"),
+        props: true,
+      },
+      {
+        path: "my-projects",
+        name: "MyProjects",
+        component: () => import("@/modules/admin/views/MyProjects.vue"),
+      },
+      {
+        path: "approvals",
+        name: "Approvals",
+        component: () => import("@/modules/admin/views/Approvals.vue"),
+      },
+      {
+        path: "district-clubs",
+        name: "ClubsAdmin",
+        component: () => import("@/modules/admin/views/ClubsAdmin.vue"),
+      },
+      {
+        path: "club-members",
+        name: "ClubMembers",
+        component: () =>
+          import("@/modules/admin/components/club/ClubMembersTable.vue"),
+      },
+      {
         path: "district",
         name: "District",
         component: () => import("@/modules/admin/views/District.vue"),
@@ -89,7 +150,7 @@ const routes = [
       {
         path: "profile",
         name: "MyProfile",
-        component: () => import("@/modules/admin/views/MyProfile.vue")
+        component: () => import("@/modules/admin/views/MyProfile.vue"),
       },
     ],
   },

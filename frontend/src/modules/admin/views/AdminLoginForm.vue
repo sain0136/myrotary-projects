@@ -21,6 +21,7 @@ import router from "@/router";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
 import { useLoggedInClub } from "@/stores/LoggedInClub";
+
 /* Data */
 const show = ref(false);
 const { handleError, handleSuccess } = errorHandler();
@@ -32,7 +33,6 @@ const state = reactive({
 const userStore = useLoggedInUserStore();
 const districtStore = useLoggedInDistrict();
 const clubStore = useLoggedInClub();
-
 // const logo = ref("");
 const usersApi = new UsersApi(new ApiClient());
 
@@ -70,7 +70,7 @@ onUnmounted(() => {
 });
 
 /* Methods */
-const yourSubmitMethod = async () => {
+const handleSubmit = async () => {
   const isFormCorrect = await v$.value.$validate();
   if (!isFormCorrect) return;
   try {
@@ -125,7 +125,7 @@ const yourSubmitMethod = async () => {
             :errorMessage="v$.password?.$errors[0]?.$message as string | undefined"
           />
           <RotaryButton
-            @click="yourSubmitMethod"
+            @click="handleSubmit"
             :label="langTranslations.adminLoginForm.signIn"
             theme="primary"
             class="w-full"

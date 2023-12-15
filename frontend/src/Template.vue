@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: "",
+  name: "template",
 };
 </script>
 
@@ -11,6 +11,10 @@ import { errorHandler } from "@/utils/composables/ErrorHandler";
 
 /* Data */
 const { langTranslations } = useLanguage();
+const { handleError } = errorHandler();
+const { exampleProperty } = defineProps<{
+  exampleProperty: string;
+}>();
 
 /* Hooks */
 onMounted(async () => {});

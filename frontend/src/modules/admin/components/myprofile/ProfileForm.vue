@@ -9,15 +9,18 @@ import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted } from "vue";
 import BaseFileUpload from "@/components/form/BaseFileUpload.vue";
 import type { uploadFileData } from "@/utils/types/commonTypes";
-/* Data */
-const { langTranslations } = useLanguage();
+import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 
+/* Data */
+const userStore = useLoggedInUserStore();
+const { langTranslations } = useLanguage();
 const reqData = {
-  databaseTarget: "profile-picture",
-  storagePath: "./siteadmin",
+  databaseTarget: "profile-picture-user",
+  storagePath: "./users",
   files: [],
   fileTypes: "profile-picture",
 } as uploadFileData;
+
 /* Hooks */
 onMounted(async () => {});
 </script>
@@ -26,6 +29,7 @@ onMounted(async () => {});
   <BaseFileUpload
     :submit-label="langTranslations.saveLabel"
     :req-data="reqData"
+    :user-id="userStore.loggedInUser.user_id"
   />
 </template>
 

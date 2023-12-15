@@ -1,5 +1,5 @@
-import type { IStorageInformation } from "App/Shared/Interfaces/IProjects";
-
+import { uploadFileData } from "../Types/commonTypes";
+import { uploadedFile } from "./IUser";
 export interface IDistrictDetails {
   ddfCalculation: Array<String>;
   ddfCapes: {
@@ -12,7 +12,7 @@ export interface IDistrictDetails {
     grant_submission_closedate: string;
     grant_submission_startdate: string;
   };
-  reportLinks: Array<IStorageInformation>;
+  reportLinks: Array<uploadFileData | uploadedFile>;
 }
 
 export interface IDistrict {

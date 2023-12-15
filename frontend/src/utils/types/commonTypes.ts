@@ -5,7 +5,7 @@ import type {
   IDmProject,
   IDsgProject,
 } from "@/utils/interfaces/IProjects";
-import type { IUser } from "../interfaces/IUser";
+import type { IUser } from "@/utils/interfaces/IUser";
 
 export type theme = "primary" | "black" | "secondary";
 
@@ -16,18 +16,38 @@ export type DistrictRole =
   | "District Foundations Chair"
   | "District International Chair";
 
-export type ClubRole = " Club Admin" | "Standard Member" | "Guest";
+export type ClubRole = "Club Admin" | "Standard Member" | "Guest";
 
 export type UserType = "CLUB" | "DISTRICT";
 
-export type storagePath = "./siteadmin";
+export type storagePath =
+  | "./siteadmin"
+  | "./users"
+  | "./projects"
+  | "./districts";
 
-export type databaseTarget = "assets" | "profile-picture";
+export type databaseTarget =
+  | "assets"
+  | "profile-picture"
+  | "profile-picture-user"
+  | "project-media"
+  | "district-report-files";
 
 export type uploadedFiletypes =
   | "profile-picture"
   | "main-logo"
-  | "project-coverImage";
+  | "project-coverImage"
+  | "project-document-evidence"
+  | "project-report-files"
+  | "district-report-files";
+
+export type uploadedFile = {
+  databaseTarget: databaseTarget;
+  fileType: uploadedFiletypes;
+  s3UrlLink: string;
+  s3Name: string;
+  s3BaseUrlLink?: string;
+};
 
 export type uploadFileData = {
   databaseTarget: databaseTarget;

@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import Banners from "@/components/banners/Banners.vue";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
@@ -15,6 +15,7 @@ import { ApiClient } from "@/api/ApiClient";
 import { ProjectsApi } from "@/api/services/ProjectsApi";
 import ProjectCard from "@/modules/home/components/landinghome/ProjectCard.vue";
 import type { CustomError } from "@/utils/classes/CustomError";
+import ProjectsTable from "@/modules/home/components/landinghome/ProjectsTable.vue";
 import type {
   IClubProject,
   IDmProject,
@@ -48,16 +49,43 @@ const filters: ProjectFilters = reactive({
   district_id: 0,
   grant_type: "",
 });
+type viewmodes = "list" | "grid";
+const viewmode = ref<viewmodes>("grid");
+const loaded = ref(false);
 
 /* Hooks */
 onMounted(async () => {
+  const savedview = sessionStorage.getItem("landingViewMode");
+  if (savedview) {
+    viewmode.value = savedview === "list" ? "list" : "grid";
+  }
   try {
     await getAllProjects();
+    loaded.value = true;
   } catch (error) {
     handleError(error as CustomError);
   }
 });
 
+watch(viewmode, () => {
+  if (viewmode.value === "list") {
+    pagination.current_page = 1;
+    pagination.limit = 15;
+    filters.limit = 15;
+    sessionStorage.setItem("landingViewMode", "list");
+  }
+  if (viewmode.value === "grid") {
+    pagination.current_page = 1;
+    pagination.limit = 6;
+    filters.limit = 6;
+    sessionStorage.setItem("landingViewMode", "grid");
+  }
+  if (filterSearchMode.value) {
+    filterProjects();
+  } else {
+    getAllProjects();
+  }
+});
 /* Methods */
 const recieveFilters = (f: ProjectFilters) => {
   filterSearchMode.value = f.reset ? false : true; // if reset is true, the filterSearchMode is set to false
@@ -80,6 +108,9 @@ const getAllProjects = async () => {
 };
 
 const filterProjects = async () => {
+  if (viewmode.value === "list") {
+    filters.limit = 15;
+  }
   try {
     const filterConverter = ResourceList.searchTermConversionMap();
     const aof = filterConverter.get(filters.area_focus)
@@ -133,6 +164,10 @@ const handlePageChange = (direction: string) => {
     }
   }
 };
+
+const chooseViewMode = () => {
+  viewmode.value = viewmode.value === "list" ? "grid" : "list";
+};
 </script>
 
 <template>
@@ -142,18 +177,36 @@ const handlePageChange = (direction: string) => {
       class="mt-8 md:pr-4 flex justify-center md:justify-end"
       id="viewButton"
     >
-      <RotaryButton :label="'View'" :theme="'secondary'" />
+      <RotaryButton
+        :label="
+          viewmode === 'list'
+            ? langTranslations.gridviewlabel
+            : langTranslations.listviewlabel
+        "
+        :theme="'secondary'"
+        @click="chooseViewMode"
+      />
     </div>
     <main class="landing-grid">
       <FilterTab @sendFilters="recieveFilters" />
-      <div class="project-cards" v-if="projects.length > 0">
+      <div
+        class="project-cards"
+        v-if="projects.length > 0 && viewmode === 'grid'"
+      >
         <ProjectCard
           v-for="project in projects"
           :key="project.project_id"
           :project="project"
         />
       </div>
-      <div class="no-results-container" v-if="projects.length === 0">
+      <ProjectsTable
+        :projects="projects"
+        v-else-if="viewmode === 'list' && projects.length > 0"
+      />
+      <div
+        class="no-results-container"
+        v-else-if="projects.length === 0 && loaded"
+      >
         <div
           class="no-results-box m-auto flex flex-col items-center gap-4 pt-20"
         >

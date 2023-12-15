@@ -12,7 +12,7 @@ export const useLoggedInDistrict = defineStore(
       Object.assign(loggedInDistrict, district);
     }
 
-    function resetDistrict() {
+    async function resetDistrict() {
       Object.assign(loggedInDistrict, new District());
     }
 

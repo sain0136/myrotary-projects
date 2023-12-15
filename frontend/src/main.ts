@@ -1,4 +1,5 @@
 import ToastService from "primevue/toastservice";
+import VueSocialSharing from "vue-social-sharing";
 import Toast from "primevue/toast";
 import { createApp } from "vue";
 import { createPinia } from "pinia";
@@ -14,6 +15,7 @@ const app = createApp(App);
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 app.use(pinia);
+app.use(VueSocialSharing);
 app.use(router);
 app.use(PrimeVue);
 app.use(ToastService);

@@ -32,7 +32,7 @@ export default class Users extends BaseModel {
   }
   // added becasue I didnt write relationship many to many correctly in model
   @computed()
-  public role?: string[];
+  public role?: string;
 
   @column({ isPrimary: true })
   public userId: number;

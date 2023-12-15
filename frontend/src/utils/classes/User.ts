@@ -18,7 +18,7 @@ export default class User implements IUser {
   extra_userinformation = {};
   user_type = "DISTRICT" as UserType;
   fullName = "";
-  role = [] as Array<IRoles>;
+  role = "";
   role_type = "";
   extra_details = {};
   user_id = 0;

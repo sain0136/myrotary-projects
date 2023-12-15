@@ -1,6 +1,7 @@
 import type { CustomError } from "@/utils/classes/CustomError";
 import { toastHandler } from "@/utils/composables/ToastHandler";
 import { useLanguage } from "@/utils/languages/UseLanguage";
+import router from "@/router";
 
 const { handleToast } = toastHandler();
 const { languagePref } = useLanguage();
@@ -14,7 +15,11 @@ const success = {
   fr: "Succès",
 };
 
-const handleError = (error: CustomError) => {
+const handleError = (
+  error: CustomError,
+  overrideTimeout?: boolean,
+  handleRedirect?: { path: string; goback?: boolean }
+) => {
   const errorBody = {
     en: '"error not translated": ' + error.message,
     fr: '"erreur non traduite": ' + error.message,
@@ -23,7 +28,19 @@ const handleError = (error: CustomError) => {
   if (error.translatedMessage?.en) {
     message = error.translatedMessage[languagePref.value];
   }
-  handleToast("error", errorName[languagePref.value], message, "3000");
+  const time = overrideTimeout ? "5000" : "3000";
+  handleToast("error", errorName[languagePref.value], message, time);
+  if (handleRedirect) {
+    setTimeout(() => {
+      if (handleRedirect.goback) {
+        router.go(-1);
+        return;
+      } else if (handleRedirect.path) {
+        router.push({ name: handleRedirect.path });
+        return;
+      }
+    }, Number(time));
+  }
 };
 
 const handleValidationForm = () => {
@@ -39,8 +56,22 @@ const handleValidationForm = () => {
   );
 };
 
-const handleSuccess = (message: string) => {
+const handleSuccess = (
+  message: string,
+  handleRedirect?: { path: string; goback?: boolean }
+) => {
   handleToast("success", "Success", message, "3000");
+  if (handleRedirect) {
+    setTimeout(() => {
+      if (handleRedirect.goback) {
+        router.go(-1);
+        return;
+      } else if (handleRedirect.path) {
+        router.push({ name: handleRedirect.path });
+        return;
+      }
+    }, 3000);
+  }
 };
 export const errorHandler = () => {
   return {
