@@ -30,11 +30,6 @@ const routes = [
           import("@/modules/home/components/landinghome/ProjectDetails.vue"),
       },
       {
-        path: "/about",
-        name: "About",
-        component: () => import("@/modules/home/views/About.vue"),
-      },
-      {
         path: "/pledge",
         name: "PledgeForm",
         component: () =>
@@ -67,6 +62,11 @@ const routes = [
         name: "MatchingProjectFormView",
         component: () => import("@/components/forms/MatchingProjectForm.vue"),
         props: true,
+      },
+      {
+        path: "/about",
+        name: "About",
+        component: () => import("@/modules/home/views/About.vue"),
       },
     ],
   },

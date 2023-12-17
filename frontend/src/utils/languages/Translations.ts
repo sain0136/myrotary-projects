@@ -1,4 +1,5 @@
 export interface Translation {
+  welcomeToMyRotaryProjects: string;
   versionLabel: string;
   backLabel: string;
   viewFullDescriptionLabel: string;
@@ -11,6 +12,8 @@ export interface Translation {
   langPrefrenceLabel: string;
   alltimesLabel: string;
   statsByDistrict: string;
+  aboutpageBannerText: string;
+  contactusBannerText: string;
   selectDistrictLabel: string;
   totalBudgetAmount: string;
   totalFundsRaised: string;
@@ -315,6 +318,9 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    welcomeToMyRotaryProjects: "Welcome to My Rotary Projects",
+    aboutpageBannerText: "About Us",
+    contactusBannerText: "Contact Us",
     versionLabel: "Version",
     viewFullDescriptionLabel: "View Full Description",
     backLabel: "Back",
@@ -668,6 +674,9 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    welcomeToMyRotaryProjects: "Bienvenue à Mes actions rotariennes",
+    aboutpageBannerText: "À propos de nous",
+    contactusBannerText: "Contactez-nous",
     versionLabel: "Version",
     viewFullDescriptionLabel: "Voir la description",
     backLabel: "Retour",
