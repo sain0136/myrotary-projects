@@ -22,7 +22,9 @@ onMounted(async () => {});
 /* Methods */
 </script>
 
-<template></template>
+<template>
+  <div></div>
+</template>
 
 <style lang="scss" scoped>
 @import "@/assets/_variables.scss";

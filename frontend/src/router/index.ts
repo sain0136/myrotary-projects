@@ -30,6 +30,11 @@ const routes = [
           import("@/modules/home/components/landinghome/ProjectDetails.vue"),
       },
       {
+        path: "/contact",
+        name: "Contact",
+        component: () => import("@/modules/home/views/Contact.vue"),
+      },
+      {
         path: "/pledge",
         name: "PledgeForm",
         component: () =>

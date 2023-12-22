@@ -31,6 +31,8 @@ export default Env.rules({
   SMTP_PORT: Env.schema.number(),
   SMTP_USERNAME: Env.schema.string(),
   SMTP_PASSWORD: Env.schema.string(),
+  SMTP_SENDER_ADDRESS: Env.schema.string(),
+  SMTP_RECEIVER_ADDRESS: Env.schema.string(),
   SESSION_DRIVER: Env.schema.string(),
   S3_CDN_ENDPOINT_URL: Env.schema.string(),
   S3_BASE_URL: Env.schema.string(),

@@ -17,7 +17,6 @@
 | import './routes/customer'
 |
 */
-import Env from "@ioc:Adonis/Core/Env";
 
 import Route from "@ioc:Adonis/Core/Route";
 
@@ -28,11 +27,10 @@ import "App/Modules/Assets/routes";
 import "App/Modules/Districts/routes";
 import "App/Modules/Clubs/routes";
 import "App/Modules/Pledges/routes";
+import "App/Modules/Mail/routes";
 
 Route.get("/", async () => {
   return {
     hello: "world",
-    mysql: Env.get("MYSQL_USER"),
-    db: Env.get("MYSQL_DB_NAME"),
   };
 });
