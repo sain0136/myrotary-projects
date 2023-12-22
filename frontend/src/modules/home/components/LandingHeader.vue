@@ -29,10 +29,13 @@ const navLinks: Array<{
     label: langTranslations.value.aboutLabel,
     link: "About",
   },
-
   {
     label: langTranslations.value.statsLabel,
     link: "Stats",
+  },
+  {
+    label: langTranslations.value.contactusBannerText,
+    link: "Contact",
   },
 ];
 
