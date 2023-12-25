@@ -7,7 +7,6 @@ export default {
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted, ref } from "vue";
-import { errorHandler } from "@/utils/composables/ErrorHandler";
 import BaseDisplayTable from "@/components/tables/BaseDisplayTable.vue";
 import type {
   IDsgProject,
@@ -59,6 +58,11 @@ const handleRowEvent = (row: IGenericProject) => {
           name: langTranslations.nameLabel,
           colName: 'project_name',
           columnWidth: 'w-2/12',
+          elipsis: {
+            show: true,
+            length: 20,
+          },
+          title: true,
         },
         {
           name: langTranslations.landingPage.grantTypeLabel,

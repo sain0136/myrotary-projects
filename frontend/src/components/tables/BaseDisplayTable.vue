@@ -25,6 +25,11 @@ type ColumnOptions = {
   colName: string;
   columnWidth?: tailwindWidths;
   isCurrency?: boolean;
+  elipsis?: {
+    show: boolean;
+    length: number;
+  };
+  title?: boolean;
 };
 type tailwindWidths = "w-2/12" | "w-1/12" | "w-1/6";
 type ButtonOptions = {
@@ -128,6 +133,19 @@ const handlehandleDeleteMultiple = () => {
     checkedItems.splice(0, checkedItems.length);
   }
 };
+
+const displayRow = (row: { [x: string]: any }, column: ColumnOptions) => {
+  if (column.isCurrency) {
+    return currencyFormatterFunding(row[column.colName]);
+  }
+  if (
+    column.elipsis?.show &&
+    row[column.colName].length > column.elipsis.length
+  ) {
+    return row[column.colName].substring(0, column.elipsis.length) + "...";
+  }
+  return row[column.colName];
+};
 </script>
 
 <template>
@@ -210,13 +228,10 @@ const handlehandleDeleteMultiple = () => {
               'hidden md:table-cell': column.collapsable,
               'hidden lg:table-cell': column.lgScreenCollapsable,
             }"
+            :title="column.title ? row[column.colName] : undefined"
           >
             <span>
-              {{
-                column.isCurrency
-                  ? currencyFormatterFunding(row[column.colName])
-                  : row[column.colName]
-              }}
+              {{ displayRow(row, column) }}
             </span>
           </td>
           <td v-if="hideActionsColumn != true" class="actions-col px-6 py-4">
