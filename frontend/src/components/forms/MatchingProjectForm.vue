@@ -1571,7 +1571,7 @@ const setActiveTab = (tabName: string) => {
                     class="border-2 border-primary-color px-6 py-4 text-center font-bold text-gray-900"
                   >
                     {{ langTranslations.projectFormLabels.totalBudgetLabel }}
-                    {{ formattedFundingGoal }}
+                    {{ formattedFundingGoal + " USD" }}
                   </td>
                 </tr>
               </tfoot>
@@ -1583,6 +1583,8 @@ const setActiveTab = (tabName: string) => {
           <H4
             class="text-center"
             :content="
+              langTranslations.districtLabel +
+              ' ' +
               customPrintf(
                 langTranslations.projectFormLabels.ddfStatement,
                 useLoggedInDistrict().loggedInDistrict.district_name,
@@ -1593,6 +1595,8 @@ const setActiveTab = (tabName: string) => {
           />
           <p class="text-center text-secondary py-4">
             {{
+              langTranslations.districtLabel +
+              " " +
               customPrintf(
                 langTranslations.projectFormLabels.ddfCalculationStatement,
                 useLoggedInDistrict().loggedInDistrict.district_name
@@ -1613,7 +1617,8 @@ const setActiveTab = (tabName: string) => {
             :content="
               langTranslations.projectFormLabels.ddfRequestLimit +
               ' ' +
-              matchingGrantRequestLimit
+              matchingGrantRequestLimit +
+              ' USD'
             "
           />
         </div>
@@ -1724,7 +1729,7 @@ const setActiveTab = (tabName: string) => {
                   class="border-2 border-primary-color px-6 py-4 text-center font-bold text-gray-900"
                 >
                   {{ langTranslations.projectFormLabels.totalFundingLabel }}
-                  {{ sumOfAnticipatedFunding }}
+                  {{ sumOfAnticipatedFunding + " USD" }}
                 </td>
               </tr>
             </tfoot>

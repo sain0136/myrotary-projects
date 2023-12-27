@@ -406,7 +406,7 @@ export const translations: Record<string, Translation> = {
       budgetHeader2:
         "*All Budget Items and Funding Sources will be recorded in USD!",
       costLabel: "Cost",
-      totalBudgetLabel: "Total Budget: USD ",
+      totalBudgetLabel: "Total Budget: ",
       budgetErorrMessage: "Budget item must be greater than zero",
       ddfStatement:
         "{districtName} will match District club contributions ({ddfFraction} : 1 ) up to a maximum of USD ${ddfCap} on a first come basis depending upon availability of DDF",
@@ -415,7 +415,7 @@ export const translations: Record<string, Translation> = {
       ddfRequestLimit: "DDF request limit:",
       fundingSourcesLabel: "Funding Sources",
       detailsLabel: "Details",
-      totalFundingLabel: "Total Funding: USD",
+      totalFundingLabel: "Total Funding: ",
       currentAnticipationLabel: "Current Anticipated Funding:",
       currentFundingLabel: "Current Funding Goal:",
       pledgeAmountLabel: "Pledge Amount To Date:",
@@ -765,7 +765,7 @@ export const translations: Record<string, Translation> = {
       budgetHeader2:
         "*Tous les éléments du budget et les sources de financement seront enregistrés en USD!",
       costLabel: "Coût",
-      totalBudgetLabel: "Budget Total : USD ",
+      totalBudgetLabel: "Budget Total :  ",
       budgetErorrMessage: "L'élément du budget doit être supérieur à zéro",
       ddfStatement:
         "{districtName} correspondra aux contributions des clubs de district ({ddfFraction} : 1) jusqu'à un maximum de USD ${ddfCap} sur une base du premier arrivé selon la disponibilité des FDD de district",
@@ -774,7 +774,7 @@ export const translations: Record<string, Translation> = {
       ddfRequestLimit: "Limite de demande de FDD :",
       fundingSourcesLabel: "Sources de Financement",
       detailsLabel: "Détails",
-      totalFundingLabel: "Financement Total : USD",
+      totalFundingLabel: "Financement Total : ",
       currentAnticipationLabel: "Financement Anticipé Actuel :",
       currentFundingLabel: "Objectif de Financement Actuel :",
       pledgeAmountLabel: "Montant des Promesses à ce Jour :",
