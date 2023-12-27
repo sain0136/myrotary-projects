@@ -12,9 +12,9 @@ import { errorHandler } from "@/utils/composables/ErrorHandler";
 /* Data */
 const { langTranslations } = useLanguage();
 const { handleError } = errorHandler();
-const { exampleProperty } = defineProps<{
-  exampleProperty: string;
-}>();
+// const { exampleProperty } = defineProps<{
+//   exampleProperty: string;
+// }>();
 
 /* Hooks */
 onMounted(async () => {});
