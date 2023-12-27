@@ -54,6 +54,12 @@ import { type ProjectStatus } from "@/utils/types/commonTypes";
 import { processAreaOfFocus } from "@/utils/utils";
 
 /* Data */
+const showModal = ref({
+  show: false,
+  chosenIndex: 0,
+  budget: false,
+  funding: false,
+});
 const viewerMode = ref(false);
 const disabledMode = ref(false);
 type formType = "normalView" | "readOnlyView";
@@ -194,7 +200,12 @@ watch(
       anticipatedFundingErrors.value.error = false;
       return;
     }
-
+    if (anticipatedAmount.greaterThan(fundingGoal)) {
+      anticipatedFundingErrors.value.messages =
+        langTranslations.value.formErorrText.lowerThanFundingGoal;
+      anticipatedFundingErrors.value.error = true;
+      return;
+    }
     if (
       Dinero({
         amount: project.funding_goal,
@@ -653,6 +664,39 @@ const addToBudget = (itemName: string, itemCost: string) => {
   }
 };
 
+const editBudget = (itemName: string, itemCost: string, index: number) => {
+  try {
+    const formattedCostInCents = convertFloatToCents(itemCost);
+    if (formattedCostInCents < 1) {
+      langTranslations.value.projectFormLabels.budgetErorrMessage;
+    }
+    if (
+      formattedCostInCents > FUNDING_GOAL_LIMIT ||
+      project.funding_goal + formattedCostInCents > FUNDING_GOAL_LIMIT
+    ) {
+      throw new CustomErrors(900, "Budget Exceeded", {
+        en: "The maximum amount for a budget exceeded. Please adjust the amount.",
+        fr: "Le montant maximum pour un budget est dépassé. Veuillez le modifier.",
+      });
+    }
+    project.funding_goal -= project.itemized_budget[index].itemCost;
+
+    project.itemized_budget[index].itemName = itemName;
+    project.itemized_budget[index].itemCost = formattedCostInCents;
+
+    project.funding_goal += project.itemized_budget[index].itemCost;
+
+    showModal.value.show = false;
+    showModal.value.chosenIndex = -1;
+    showModal.value.budget = false;
+
+    budgetItemName.value = "";
+    budgetItemCost.value = "";
+  } catch (error) {
+    handleError(error as CustomErrors);
+  }
+};
+
 const deleteFromBudget = (index: number) => {
   try {
     const item = project.itemized_budget[index];
@@ -665,6 +709,16 @@ const deleteFromBudget = (index: number) => {
     const subtracted = dinaroProjectFundingGoal.subtract(dinaroItemCost);
     project.funding_goal = subtracted.getAmount();
     project.itemized_budget.splice(index, 1);
+  } catch (error) {
+    handleError(error as CustomErrors);
+  }
+};
+
+const showEditBudget = (index: number) => {
+  try {
+    showModal.value.show = true;
+    showModal.value.chosenIndex = index;
+    showModal.value.budget = true;
   } catch (error) {
     handleError(error as CustomErrors);
   }
@@ -738,6 +792,60 @@ const setActiveTab = (tabName: string) => {
 
 <template>
   <div>
+    <div
+      v-if="showModal"
+      class="edit-table-row modal"
+      :class="{
+        hidden: !showModal.show,
+      }"
+    >
+      <span @click="showModal.show = false" class="close cursor-pointer"
+        >&times;</span
+      >
+      <!-- Modal content -->
+      <div class="modal-content flex justify-center items-center">
+        <td class="px-6 py-4">
+          <BaseInput
+            v-if="showModal.budget"
+            :disabled="disabledMode"
+            v-model="budgetItemName"
+            :label="'Item Name'"
+            :type="'text'"
+          />
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap :lg:whitespace-normal">
+          <BaseInput
+            v-if="showModal.budget"
+            :disabled="disabledMode"
+            v-model="budgetItemCost"
+            :label="'Cost'"
+            :inputmode="'numeric'"
+            :type="'number'"
+          />
+        </td>
+        <Icon
+          class="cursor-pointer text-4xl"
+          icon="ic:sharp-save"
+          @click="
+            () => {
+              if (showModal.budget) {
+                editBudget(
+                  budgetItemName,
+                  budgetItemCost,
+                  showModal.chosenIndex
+                );
+              } else if (showModal.funding) {
+              }
+            }
+          "
+        />
+        <Icon
+          @click="showModal.show = false"
+          class="text-4xl cursor-pointer"
+          icon="carbon:close-outline"
+        />
+      </div>
+    </div>
     <Banners
       v-if="viewerMode"
       :banner-text="langTranslations.landingpageBannerText"
@@ -956,7 +1064,6 @@ const setActiveTab = (tabName: string) => {
         </div>
       </div>
       <Hr />
-
       <H3
         class="text-center"
         :content="langTranslations.projectFormLabels.budgetLabel"
@@ -1033,9 +1140,18 @@ const setActiveTab = (tabName: string) => {
                   {{ item.itemName }}
                 </td>
                 <td class="px-6 py-4 font-medium text-nearWhite">
-                  {{ currencyFormatterFunding(item.itemCost) }}
+                  <p>
+                    {{ currencyFormatterFunding(item.itemCost) }}
+                  </p>
                 </td>
                 <td v-if="!disabledMode" class="px-6 py-4 text-center">
+                  <button
+                    title="Edit item"
+                    class="crud-buttons plus_icon hover:text-primary-color"
+                    @click="showEditBudget(index)"
+                  >
+                    <Icon class="text-2xl" icon="bxs:edit" />
+                  </button>
                   <button
                     title="Delete item"
                     class="crud-buttons plus_icon hover:text-primary-color"
@@ -1315,4 +1431,26 @@ const setActiveTab = (tabName: string) => {
 
 <style lang="scss" scoped>
 @import "@/assets/_variables.scss";
+
+.modal {
+  position: fixed; /* Stay in place */
+  z-index: 100; /* Sit on top */
+  padding-top: 15rem; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 1.5rem;
+  border: 1px solid #888;
+  width: 80%;
+}
 </style>

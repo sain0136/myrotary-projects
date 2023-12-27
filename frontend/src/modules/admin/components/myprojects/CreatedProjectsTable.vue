@@ -19,12 +19,10 @@ import { CustomErrors } from "@/utils/classes/CustomErrors";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
 import BaseDisplayTable from "@/components/tables/BaseDisplayTable.vue";
-import type { IUser } from "@/utils/interfaces/IUser";
 import H3 from "@/components/headings/H3.vue";
 import router from "@/router";
 import { modalHandler } from "@/utils/composables/ModalHandler";
 import { projectStatus } from "@/utils/types/commonTypes";
-import { useActiveProjectStore } from "@/stores/ActiveProjectStore";
 
 /* Data */
 const { changeShowModal, setModal } = modalHandler();
@@ -229,6 +227,11 @@ const editProject = (project: IDsgProject | IDmProject | IClubProject) => {
             name: langTranslations.nameLabel,
             colName: 'project_name',
             columnWidth: 'w-2/12',
+            elipsis: {
+              show: true,
+              length: 30,
+            },
+            title: true,
           },
           {
             name: langTranslations.projectCodeLabel,
