@@ -326,7 +326,7 @@ const redirect = () => {
         :min="0"
         @input="handleInput"
       />
-      <span class="pt-4 text-4xl font-semibold">.00</span>
+      <span class="pt-4 text-4xl font-semibold">.00 USD</span>
     </div>
     <p
       v-if="v$.pledge_amount?.$errors[0]?.$message as string | undefined"
