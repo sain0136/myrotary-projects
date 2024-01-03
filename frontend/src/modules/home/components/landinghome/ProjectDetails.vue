@@ -26,7 +26,6 @@ import Hr from "@/components/hr/Hr.vue";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import ResourceList from "@/utils/classes/ResourceList";
 import GenericProject from "@/utils/classes/GenericProject";
-import { Icon } from "@iconify/vue";
 import { useRouter } from "vue-router";
 import { useActiveProjectStore } from "@/stores/ActiveProjectStore";
 import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
@@ -290,9 +289,6 @@ const viewFullDescription = (
                     :key="area + 'area_focus'"
                     class="ml-4 flex gap-2 text-xl items-center italic"
                   >
-                    <!-- <Icon icon="ep:right" class="text-primary font-bold" />{{
-                      area
-                    }} -->
                     <div class="flex">
                       <div class="flex gap-4">
                         <img
@@ -350,52 +346,16 @@ const viewFullDescription = (
         </template>
       </Carousel>
     </div>
-    <!-- Rotary Pledge Process -->
-    <hr class="mt-8 h-px w-full border-0 bg-gray-500" />
-    <div class="faq-section my-8 flex justify-between">
-      <div class="content_column">
-        <h1 class="mb-2 text-2xl font-bold">
-          {{ langTranslations.pledgeProcess.pledgeProcessLabel }}
-        </h1>
-        <ol start="1" class="faq_steps flex flex-col gap-6 md:gap-2">
-          <li class="flex gap-2 items-center">
-            <Icon
-              icon="fluent-mdl2:radio-bullet"
-              class="text-primary hidden md:block md:text-lg"
-            />
-            <span class="md:font-semibold">{{
-              langTranslations.pledgeProcess.bulletPoint1
-            }}</span>
-          </li>
-          <li class="flex gap-2 items-center">
-            <Icon
-              icon="fluent-mdl2:radio-bullet"
-              class="text-primary hidden md:block md:text-lg"
-            />
-            <span class="md:font-semibold">{{
-              langTranslations.pledgeProcess.bulletPoint2
-            }}</span>
-          </li>
-          <li class="flex gap-2 items-center">
-            <Icon
-              icon="fluent-mdl2:radio-bullet"
-              class="text-primary hidden md:block md:text-lg"
-            />
-            <span class="md:font-semibold">{{
-              langTranslations.pledgeProcess.bulletPoint3
-            }}</span>
-          </li>
-          <li class="flex gap-2 items-center">
-            <Icon
-              icon="fluent-mdl2:radio-bullet"
-              class="text-primary hidden md:block md:text-lg"
-            />
-            <span class="md:font-semibold">{{
-              langTranslations.pledgeProcess.bulletPoint4
-            }}</span>
-          </li>
-        </ol>
-      </div>
+    <div class="flex justify-center my-8">
+      <RotaryButton
+        :theme="'primary'"
+        :label="langTranslations.backLabel"
+        @click="
+          () => {
+            router.push({ name: 'Home' });
+          }
+        "
+      />
     </div>
   </div>
   <LoadingSpinner v-else-if="!loaded" />
