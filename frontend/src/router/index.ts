@@ -73,6 +73,16 @@ const routes = [
         name: "About",
         component: () => import("@/modules/home/views/About.vue"),
       },
+      {
+        path: "/privacy-policy",
+        name: "PrivacyPolicy",
+        component: () => import("@/modules/home/views/PrivacyPolicy.vue"),
+      },
+      {
+        path: "/terms-and-conditions",
+        name: "TermsAndConditions",
+        component: () => import("@/modules/home/views/TermsAndConditions.vue"),
+      },
     ],
   },
   // Admin Routes

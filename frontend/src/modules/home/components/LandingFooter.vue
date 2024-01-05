@@ -7,7 +7,6 @@ export default {
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted, ref } from "vue";
-import { errorHandler } from "@/utils/composables/ErrorHandler";
 import { useSiteAssets } from "@/stores/SiteAssets";
 import { Icon } from "@iconify/vue";
 
@@ -85,14 +84,14 @@ onMounted(async () => {});
             </h2>
             <ul class="text-gray-500 dark:text-gray-400 font-medium">
               <div class="mb-4">
-                <router-link :to="{ name: '' }">
+                <router-link :to="{ name: 'PrivacyPolicy' }">
                   <span href="#" class="hover:underline">{{
                     langTranslations.landingFooter.privacyPolicyLabel
                   }}</span>
                 </router-link>
               </div>
               <div class="mb-4">
-                <router-link :to="{ name: '' }">
+                <router-link :to="{ name: 'TermsAndConditions' }">
                   <a href="#" class="hover:underline">{{
                     langTranslations.landingFooter.termsOfUseLabel
                   }}</a>
