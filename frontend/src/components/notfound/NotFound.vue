@@ -29,7 +29,7 @@ const { langTranslations } = useLanguage();
         <H2 :content="langTranslations.opps" />
         <div class="flex justify-center gap-8">
           <RotaryButton
-            @click="router.push({ name: 'Landing' })"
+            @click="router.push({ name: 'Home' })"
             :theme="'black'"
             :label="langTranslations.home"
           />

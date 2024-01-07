@@ -223,17 +223,6 @@ const v$ = useVuelidate(rules, user);
 
 /* Hooks */
 watch(chosenDistrict, async () => {
-  // if (chosenDistrict.value === "") {
-  //   chosenDistrictError.value = {
-  //     en: "Must select a district",
-  //     fr: "Doit sélectionner un district",
-  //   };
-  // } else {
-  //   chosenDistrictError.value = {
-  //     en: "",
-  //     fr: "",
-  //   };
-  // }
   try {
     const id = districtMap.get(chosenDistrict.value) as number;
     const allClubsInDistrict = await clubApi.clubsInDistrict(id, 1, 10000000);
@@ -353,6 +342,7 @@ const redirect = () => {
 const choosenDistrictError = computed((): string => {
   if (
     (chosenDistrict.value === "" || chosenClub.value === "") &&
+    clubId.value === null &&
     submitted.value
   ) {
     const str = chosenDistrictError.value[languagePref.value];

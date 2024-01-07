@@ -10,14 +10,18 @@ import { onMounted, ref } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import CreatedProjectsTable from "@/modules/admin/components/myprojects/CreatedProjectsTable.vue";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
-import H3 from "@/components/headings/H3.vue";
 import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
 import { DateTime } from "luxon";
 import { useLoggedInClub } from "@/stores/LoggedInClub";
 import router from "@/router";
+import {
+  useAccessControl,
+  type AllUserRoles,
+} from "@/utils/composables/UseAccessControl";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 
 /* Data */
+const { hasAccess } = useAccessControl();
 const startDate =
   useLoggedInDistrict().loggedInDistrict.district_details?.dates
     ?.grant_submission_startdate || "";
@@ -40,6 +44,14 @@ const activeTab = ref(
   sessionStorage.getItem("myprojectsViewLastTab") || "created"
 );
 const tabs = ref([
+  {
+    name: "allProjects",
+    label: langTranslations.value.allProjectsLabel,
+    hide: !hasAccess(
+      useLoggedInUserStore().loggedInUser.role as AllUserRoles,
+      "district-all-projects-tab"
+    ),
+  },
   {
     name: "created",
     label: langTranslations.value.myprojectsView.createdProjectsLabel,
@@ -70,6 +82,7 @@ const setActiveTab = (tabName: string) => {
   >
     <li class="mr-2" v-for="tab in tabs" :key="tab.name">
       <a
+        v-if="!tab.hide"
         @click="setActiveTab(tab.name)"
         class="inline-block cursor-pointer rounded-t-lg p-4 text-2xl hover:bg-gray-300 hover:text-gray-600"
         :class="{
@@ -80,8 +93,11 @@ const setActiveTab = (tabName: string) => {
       </a>
     </li>
   </ul>
+  <div v-if="activeTab === 'allProjects'">
+    <CreatedProjectsTable :district-admin-view="true" />
+  </div>
   <div v-if="activeTab === 'created'">
-    <CreatedProjectsTable :adminstrating-view="false" />
+    <CreatedProjectsTable />
   </div>
   <div v-if="activeTab === 'administrating'">
     <CreatedProjectsTable :adminstrating-view="true" />
