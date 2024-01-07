@@ -19,53 +19,51 @@ export class ApiClient {
     endpoint: string,
     data?: object | string | FormData | null
   ): Promise<any | ICustomError> {
-    try {
-      const url = `${this.baseURL}${endpoint}`;
-      const options: RequestInit = {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: data ? JSON.stringify(data) : null,
-        credentials: "include",
-      };
-      const response = await fetch(url, options);
-      const jsonData = await response.json();
-      if (response.status === 601) {
-        const { languagePref, langTranslations } = useLanguage();
-        const { changeShowModal, setModal } = modalHandler();
-        setModal(
-          langTranslations.value.sessionTimeoutHeader,
-          jsonData.translatedMessage[languagePref.value] ?? jsonData.rawMessage
-        );
-        changeShowModal();
-        const userStore = useLoggedInUserStore();
-        const districtStore = useLoggedInDistrict();
-        const clubStore = useLoggedInClub();
-        await userStore.logOut();
-        router.push({ name: "AdminLoginForm" });
-        districtStore.resetDistrict();
-        clubStore.resetClub();
-        router.push({ name: "AdminLoginForm" });
-        return;
-      }
-      if (response.status !== 200) {
-        const partialError = jsonData as unknown as ICustomError;
-        throw new CustomErrors(
-          partialError.statusCode,
-          partialError.rawMessage,
-          partialError.translatedMessage
-        );
-      }
-      return jsonData;
-    } catch (error) {
-      if (error instanceof SyntaxError && error.message.includes("JSON")) {
-        throw new CustomErrors(501, error.message, {
+    const url = `${this.baseURL}${endpoint}`;
+    const options: RequestInit = {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: data ? JSON.stringify(data) : null,
+      credentials: "include",
+    };
+    const response = await fetch(url, options);
+    const jsonData = await response.json();
+    if (response.status === 601) {
+      const { languagePref, langTranslations } = useLanguage();
+      const { changeShowModal, setModal } = modalHandler();
+      setModal(
+        langTranslations.value.sessionTimeoutHeader,
+        jsonData.translatedMessage[languagePref.value] ?? jsonData.rawMessage
+      );
+      changeShowModal();
+      const userStore = useLoggedInUserStore();
+      const districtStore = useLoggedInDistrict();
+      const clubStore = useLoggedInClub();
+      await userStore.logOut();
+      router.push({ name: "AdminLoginForm" });
+      districtStore.resetDistrict();
+      clubStore.resetClub();
+      router.push({ name: "AdminLoginForm" });
+      return;
+    }
+    if (response.status !== 200) {
+      const partialError = jsonData as unknown as ICustomError;
+
+      if (partialError.message?.includes("JSON")) {
+        throw new CustomErrors(501, partialError.message as string, {
           en: "Internal Server Error. Please try again later.",
           fr: "Erreur interne du serveur. Veuillez reessayer plus tard.",
         });
       }
+      throw new CustomErrors(
+        partialError.statusCode,
+        partialError.rawMessage,
+        partialError.translatedMessage
+      );
     }
+    return jsonData;
   }
 
   public async axiosWrapper(

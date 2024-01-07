@@ -1,4 +1,5 @@
 export interface Translation {
+  allProjectsLabel: string;
   messageLabel: string;
   welcomeToMyRotaryProjects: string;
   versionLabel: string;
@@ -319,6 +320,7 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    allProjectsLabel: "All Projects",
     messageLabel: "Message",
     welcomeToMyRotaryProjects: "Welcome to My Rotary Projects",
     aboutpageBannerText: "About Us",
@@ -676,6 +678,7 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    allProjectsLabel: "Tous les projets",
     messageLabel: "Message",
     welcomeToMyRotaryProjects: "Bienvenue à Mes actions rotariennes",
     aboutpageBannerText: "À propos de nous",

@@ -22,7 +22,10 @@ import BaseDisplayTable from "@/components/tables/BaseDisplayTable.vue";
 import H3 from "@/components/headings/H3.vue";
 import router from "@/router";
 import { modalHandler } from "@/utils/composables/ModalHandler";
-import { projectStatus } from "@/utils/types/commonTypes";
+import {
+  projectStatus,
+  type PaginationResult,
+} from "@/utils/types/commonTypes";
 
 /* Data */
 const { changeShowModal, setModal } = modalHandler();
@@ -37,8 +40,9 @@ const pagination = reactive({
   limit: 10,
 });
 const loaded = ref(false);
-const { adminstratingView } = defineProps<{
-  adminstratingView: boolean;
+const { adminstratingView, districtAdminView } = defineProps<{
+  adminstratingView?: boolean;
+  districtAdminView?: boolean;
 }>();
 /* Hooks */
 watch(
@@ -89,13 +93,24 @@ const changeProjectStatus = async (
 const getMyProjects = async () => {
   loaded.value = false;
   projects.splice(0, projects.length);
-  const response = await projectsApi.fetchConditionalProjects(
-    useLoggedInUserStore().loggedInUser.user_id,
-    pagination.currentPage,
-    pagination.limit,
-    "created_by",
-    adminstratingView
-  );
+  let response: PaginationResult;
+  if (districtAdminView) {
+    response = await projectsApi.fetchConditionalProjects(
+      useLoggedInUserStore().loggedInUser.district_id as number,
+      pagination.currentPage,
+      pagination.limit,
+      "district_id"
+    );
+  } else {
+    response = await projectsApi.fetchConditionalProjects(
+      useLoggedInUserStore().loggedInUser.user_id,
+      pagination.currentPage,
+      pagination.limit,
+      "created_by",
+      adminstratingView === true ? true : false
+    );
+  }
+
   Object.assign(projects, response.data);
   pagination.currentPage = response.meta.current_page;
   pagination.lastPage = response.meta.last_page;
@@ -229,13 +244,14 @@ const editProject = (project: IDsgProject | IDmProject | IClubProject) => {
             columnWidth: 'w-2/12',
             elipsis: {
               show: true,
-              length: 30,
+              length: 15,
             },
             title: true,
           },
           {
             name: langTranslations.projectCodeLabel,
             colName: 'project_code',
+            collapsable: true,
           },
           {
             name: langTranslations.landingPage.grantTypeLabel,
