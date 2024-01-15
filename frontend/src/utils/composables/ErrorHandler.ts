@@ -43,15 +43,15 @@ const handleError = (
   }
 };
 
-const handleValidationForm = () => {
+const handleValidationForm = (errorMessage?: string) => {
   const formNotValid = {
     en: "Form Errors. Please correct and resubmit.",
     fr: "Erreurs du formulaire. Veuillez corriger et resubmitter.",
   };
   handleToast(
     "error",
-    errorName[languagePref.value],
-    formNotValid[languagePref.value],
+    errorName[languagePref.value] ,
+    `${formNotValid[languagePref.value]} ${errorMessage ? errorMessage : ""}`,
     "5000"
   );
 };

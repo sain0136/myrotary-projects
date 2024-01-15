@@ -186,6 +186,29 @@ const deleteClubMember = async (user: unknown) => {
     handleError(error as CustomError);
   }
 };
+
+const createNewClubMember = () => {
+  if (tableView === "districtAdmins") {
+    router.push({
+      name: "UserAddEdit",
+      query: {
+        formType: "DistrictAdmin",
+        userType: "clubUser",
+        clubId: chosenId.value,
+      },
+    });
+    return;
+  }
+  router.push({
+    name: "UserAddEdit",
+    query: {
+      formType: "clubAdmin",
+      userType: "clubUser",
+      clubId: chosenId.value,
+      districtId: allDistricts.get(chosenDistrict.value),
+    },
+  });
+};
 </script>
 
 <template>
@@ -259,6 +282,7 @@ const deleteClubMember = async (user: unknown) => {
               path: `user-form/${id}`,
               query: {
               formType: 'districtAdmin',
+              isEdit: 'true',
               }
             })
             return
@@ -268,6 +292,7 @@ const deleteClubMember = async (user: unknown) => {
               path: `user-form/${id}`,
               query: {
               formType: 'clubAdmin',
+              isEdit: 'true',
             },
             })
             return
@@ -277,6 +302,7 @@ const deleteClubMember = async (user: unknown) => {
               path: `user-form/${id}`,
               query: {
               formType: 'siteAdminClub',
+              isEdit: 'true',
             },
             });
             return
@@ -316,29 +342,7 @@ const deleteClubMember = async (user: unknown) => {
     <div class="flex justify-center">
       <RotaryButton
         v-if="chosenId"
-        @click="
-          () => {
-            if (tableView === 'districtAdmins') {
-              router.push({
-                name: 'UserAddEdit',
-                query: {
-                  formType: 'DistrictAdmin',
-                  userType: 'clubUser',
-                  clubId: chosenId,
-                },
-              });
-              return;
-            }
-            router.push({
-              name: 'UserAddEdit',
-              query: {
-                formType: 'clubAdmin',
-                userType: 'clubUser',
-                clubId: chosenId,
-              },
-            });
-          }
-        "
+        @click="createNewClubMember()"
         :label="langTranslations.clubsView.creatNewClubMemberLabel"
         :theme="'primary'"
       />
