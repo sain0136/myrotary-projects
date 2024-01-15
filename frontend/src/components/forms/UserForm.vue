@@ -34,7 +34,7 @@ import { ClubApi } from "@/api/services//ClubApi";
 import type { IClub } from "@/utils/interfaces/IClub";
 import { districtRole } from "@/utils/types/commonTypes";
 
-/* Data */
+/* Types */
 type UserType = "districtAdmin" | "clubUser" | null;
 type formType =
   | "siteAdminClub"
@@ -43,29 +43,30 @@ type formType =
   | "clubAdmin"
   | "districtAdmin"
   | null;
+
+/* Data */
 const route = useRoute();
 const { langTranslations, languagePref, customPrintf } = useLanguage();
-// Required for form
+// Route query data
 const userId = ref(route.params.userId);
 const userType = ref(
   route.query.userType ? (route.query.userType as UserType) : null
 );
-
 const clubId = ref(route.query.clubId ?? null);
-// const districtId = ref(
-//   route.query.districtId ? Number(route.query.districtId) : null
-// );
+const districtId = ref(
+  route.query.districtId ? Number(route.query.districtId) : null
+);
+const isEdit = ref(route.query.isEdit ? true : false);
 const formType = ref(
   route.query.formType ? (route.query.formType as formType) : null
 );
-// not a hack when usign this as component that i want to pass props too
+// not a hack when using this as a component that i want to pass props too
 const { userIdProp, userTypeProp, clubIdProp, formTypeProp } = defineProps<{
   userIdProp?: string;
   userTypeProp?: UserType;
   clubIdProp?: string;
   formTypeProp?: formType;
 }>();
-
 userId.value = userIdProp ? userIdProp : userId.value;
 userType.value = userTypeProp ? userTypeProp : userType.value;
 clubId.value = clubIdProp ? clubIdProp : clubId.value;
@@ -86,7 +87,6 @@ const chosenDistrictError = ref({
 });
 const clubMap = reactive<Map<string, number>>(new Map());
 const userTitle = ref("");
-// const allClubsInDistrict = reactive<string[]>([]);
 const chosenClub = ref("");
 const submitLabel = userId.value
   ? {
@@ -106,6 +106,7 @@ const passwordMinLength = {
   fr: "Doit contenir au moins 8 caractères",
 };
 const submitted = ref(false);
+
 /* Validations */
 const rules = {
   firstname: {
@@ -244,6 +245,7 @@ onMounted(async () => {
       });
       allDistricts.push();
     }
+    // if edit
     if (userId.value) {
       const response = await userApi.getUser(parseInt(userId.value as string));
       Object.assign(user, response);
@@ -273,7 +275,7 @@ const validateAndSubmit = async () => {
       formType.value === "siteAdminDistrict" &&
       chosenDistrict.value === "")
   ) {
-    handleValidationForm();
+    handleValidationForm(choosenDistrictError.value);
     return;
   }
   try {
@@ -283,6 +285,7 @@ const validateAndSubmit = async () => {
       if (userType.value === "clubUser") {
         user.user_type = "CLUB";
         user.club_id = Number(clubId.value as string);
+        user.district_id = (districtId.value as number) || 1;
       }
       if (userType.value === "districtAdmin") {
         if (typeof districtMap.get(chosenDistrict.value) !== "undefined") {
@@ -330,7 +333,7 @@ const redirect = () => {
       router.push({
         name: "ClubMembers",
         query: {
-          tableView: "clubAdmins",
+          tableView: "clubUsers",
         },
       });
       return;
@@ -342,7 +345,8 @@ const redirect = () => {
 const choosenDistrictError = computed((): string => {
   if (
     (chosenDistrict.value === "" || chosenClub.value === "") &&
-    clubId.value === null &&
+    !clubId.value &&
+    !isEdit.value &&
     submitted.value
   ) {
     const str = chosenDistrictError.value[languagePref.value];
@@ -389,8 +393,8 @@ const choosenDistrictError = computed((): string => {
         class="w-1/2"
         v-model="user.role_type"
         :label="langTranslations.roleLabel"
-        :options="districtRole"
-        :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined "
+        :options="districtRole.filter((role) => role !== 'Webmaster')"
+        :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined"
       />
       <BaseSelect
         v-if="formType === 'siteAdminClub' || formType === 'clubAdmin'"
@@ -398,7 +402,7 @@ const choosenDistrictError = computed((): string => {
         v-model="user.role_type"
         :label="langTranslations.roleLabel"
         :options="ResourceList.clubRolesList"
-        :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined "
+        :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined"
       />
       <H2 v-if="formType !== 'myProfile'" :content="userTitle" />
       <div
@@ -417,37 +421,37 @@ const choosenDistrictError = computed((): string => {
         v-model="user.firstname"
         :label="langTranslations.userForm.firstNameLabel"
         :type="'text'"
-        :errorMessage="v$.firstname?.$errors[0]?.$message as string | undefined "
+        :errorMessage="v$.firstname?.$errors[0]?.$message as string | undefined"
       />
       <BaseInput
         v-model="user.lastname"
         :label="langTranslations.userForm.lastNameLabel"
         :type="'text'"
-        :errorMessage="v$.lastname?.$errors[0]?.$message as string | undefined "
+        :errorMessage="v$.lastname?.$errors[0]?.$message as string | undefined"
       />
       <BaseInput
         v-model="user.address"
         :label="langTranslations.addressLabel"
         :type="'text'"
-        :errorMessage="v$.address?.$errors[0]?.$message as string | undefined "
+        :errorMessage="v$.address?.$errors[0]?.$message as string | undefined"
       />
       <BaseInput
         v-model="user.user_city"
         :label="langTranslations.cityLabel"
         :type="'text'"
-        :errorMessage="v$.user_city?.$errors[0]?.$message as string | undefined "
+        :errorMessage="v$.user_city?.$errors[0]?.$message as string | undefined"
       />
       <BaseInput
         v-model="user.user_postal"
         :label="langTranslations.postalCodeLabel"
         :type="'text'"
-        :errorMessage="v$.user_postal?.$errors[0]?.$message as string | undefined "
+        :errorMessage="v$.user_postal?.$errors[0]?.$message as string | undefined"
       />
       <BaseSelect
         v-model="user.user_country"
         :label="langTranslations.countryLabel"
         :options="ResourceList.countryList"
-        :errorMessage="v$.user_country?.$errors[0]?.$message as string | undefined "
+        :errorMessage="v$.user_country?.$errors[0]?.$message as string | undefined"
       />
       <BaseSelect
         v-if="
@@ -461,32 +465,32 @@ const choosenDistrictError = computed((): string => {
             ? ResourceList.usaStatesList
             : ResourceList.canadaProvinceList
         "
-        :errorMessage="v$.user_province?.$errors[0]?.$message as string | undefined "
+        :errorMessage="v$.user_province?.$errors[0]?.$message as string | undefined"
       />
       <BaseInput
         v-else-if="user.user_country !== ''"
         v-model="user.user_province"
         :label="langTranslations.stateOrProvinceLabel"
         :type="'text'"
-        :errorMessage="v$.user_province?.$errors[0]?.$message as string | undefined "
+        :errorMessage="v$.user_province?.$errors[0]?.$message as string | undefined"
       />
       <BaseInput
         v-model="user.phone"
         :label="langTranslations.phone"
         :type="'text'"
-        :errorMessage="v$.phone?.$errors[0]?.$message as string | undefined "
+        :errorMessage="v$.phone?.$errors[0]?.$message as string | undefined"
       />
       <BaseInput
         v-model="user.email"
         :label="langTranslations.email"
         :type="'email'"
-        :errorMessage="v$.email?.$errors[0]?.$message as string | undefined "
+        :errorMessage="v$.email?.$errors[0]?.$message as string | undefined"
       />
       <BaseInput
         v-model="user.password"
         :label="langTranslations.password"
         :type="'password'"
-        :errorMessage="v$.password?.$errors[0]?.$message as string | undefined "
+        :errorMessage="v$.password?.$errors[0]?.$message as string | undefined"
       />
     </div>
     <div class="button_row mt-4 flex justify-center gap-4">

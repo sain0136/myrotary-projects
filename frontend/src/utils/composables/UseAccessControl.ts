@@ -15,7 +15,8 @@ type PermissionTypes =
   | "superadmin-view"
   | "approve-projects"
   | "approve-projects-reports"
-  | "district-all-projects-tab";
+  | "district-all-projects-tab"
+  | "all-projects-tab";
 
 export type AllUserRoles = DistrictRole | ClubRole | "SuperAdmin";
 
@@ -34,6 +35,7 @@ const rolePermissions: RolePermissions = {
     "myprojects-view",
     "approvals-view",
     "superadmin-view",
+    "all-projects-tab",
   ],
   Webmaster: [
     "webadmin-settings-view",

@@ -17,7 +17,7 @@ export type DistrictRole =
   | "District International Chair"
   | "District Stewardship";
 
-export const districtRole = [
+export const districtRole : DistrictRole[] = [
   "Webmaster",
   "District Admin",
   "District Grants Chair",

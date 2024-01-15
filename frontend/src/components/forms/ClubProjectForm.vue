@@ -132,7 +132,6 @@ onMounted(async () => {
         project.district_id =
           useLoggedInUserStore().loggedInUser.district_id ||
           useLoggedInDistrict().loggedInDistrict.district_id;
-        debugger;
       } catch (error) {
         throw new CustomErrors(900, "Project Erorr", {
           en: langTranslations.value.projectFormLabels

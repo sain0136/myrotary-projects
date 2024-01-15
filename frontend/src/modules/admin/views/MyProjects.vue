@@ -48,6 +48,19 @@ const tabs = ref([
     name: "allProjects",
     label: langTranslations.value.allProjectsLabel,
     hide: !hasAccess(
+      useLoggedInUserStore().loggedInUser.user_type === "SUPER"
+        ? "SuperAdmin"
+        : (useLoggedInUserStore().loggedInUser.role as AllUserRoles),
+      "all-projects-tab"
+    ),
+  },
+  {
+    name: "districtsProjects",
+    label:
+      langTranslations.value.districtLabel +
+      " " +
+      langTranslations.value.projectsLabel,
+    hide: !hasAccess(
       useLoggedInUserStore().loggedInUser.role as AllUserRoles,
       "district-all-projects-tab"
     ),
@@ -94,6 +107,9 @@ const setActiveTab = (tabName: string) => {
     </li>
   </ul>
   <div v-if="activeTab === 'allProjects'">
+    <CreatedProjectsTable :all-projects-view="true" />
+  </div>
+  <div v-if="activeTab === 'districtsProjects'">
     <CreatedProjectsTable :district-admin-view="true" />
   </div>
   <div v-if="activeTab === 'created'">

@@ -157,6 +157,7 @@ const editAdmin = async (user: unknown) => {
         query: {
           formType: "siteAdminDistrict",
           userType: "districtAdmin",
+          isEdit: "true",
         },
       });
     }

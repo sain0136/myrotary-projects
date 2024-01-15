@@ -5,7 +5,7 @@ import { Translation, DatabaseError } from "App/Utils/CommonTypes";
 
 const databaseErrors: { [key: string]: DatabaseError } = {
   "1062": {
-    en: "Duplicate record entry ",
+    en: "Duplicate record entry",
     fr: "Entrée d'enregistrement en double",
   },
   "1451": {

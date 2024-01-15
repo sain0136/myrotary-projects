@@ -7,7 +7,6 @@ export default {
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted, ref } from "vue";
-import { errorHandler } from "@/utils/composables/ErrorHandler";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import type { AllUserRoles } from "@/utils/composables/UseAccessControl";
 import { useAccessControl } from "@/utils/composables/UseAccessControl";

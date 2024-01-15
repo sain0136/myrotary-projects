@@ -40,10 +40,12 @@ const pagination = reactive({
   limit: 10,
 });
 const loaded = ref(false);
-const { adminstratingView, districtAdminView } = defineProps<{
+const { adminstratingView, districtAdminView, allProjectsView } = defineProps<{
   adminstratingView?: boolean;
   districtAdminView?: boolean;
+  allProjectsView?: boolean;
 }>();
+
 /* Hooks */
 watch(
   () => pagination.limit,
@@ -100,6 +102,11 @@ const getMyProjects = async () => {
       pagination.currentPage,
       pagination.limit,
       "district_id"
+    );
+  } else if (allProjectsView) {
+    response = await projectsApi.getAllProjects(
+      pagination.currentPage,
+      pagination.limit
     );
   } else {
     response = await projectsApi.fetchConditionalProjects(
