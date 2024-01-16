@@ -44,9 +44,10 @@ onMounted(async () => {
   if (!truncated.endsWith(".")) {
     truncated = truncated + "...";
   }
-  percentage.value = Math.trunc(
+  percentage.value = project.funding_goal !== 0 ? Math.trunc(
     (project.anticipated_funding / project.funding_goal) * 100
-  );
+  ) : 0;
+  
   truncatedDesc.value = truncated;
   truncatedTitle.value =
     project.project_name.length > 30
