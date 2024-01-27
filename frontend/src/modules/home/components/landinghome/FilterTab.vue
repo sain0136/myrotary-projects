@@ -20,6 +20,7 @@ import type { IClub } from "@/utils/interfaces/IClub";
 import ResourceList from "@/utils/classes/ResourceList";
 import type { ProjectFilters } from "@/utils/types/commonTypes";
 
+
 /* Data */
 const {
   langTranslations,
