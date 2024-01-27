@@ -8,6 +8,18 @@ const databaseErrors: { [key: string]: DatabaseError } = {
     en: "Duplicate record entry",
     fr: "Entrée d'enregistrement en double",
   },
+  "1062-users": {
+    en: "This email is already registered",
+    fr: "Cette adresse email est déjà enregistrée",
+  },
+  "1062-projects": {
+    en: "A Project with this name already exists",
+    fr: "Un projet avec ce nom existe d'ét",
+  },
+  "1062-districts": {
+    en: "A District with this name/number already exists",
+    fr: "Un district avec ce nom/numéro existe d'ét",
+  },
   "1451": {
     en: "Cannot delete or update a parent row",
     fr: "Impossible de supprimer ou de mettre à jour une ligne parent",
@@ -16,6 +28,20 @@ const databaseErrors: { [key: string]: DatabaseError } = {
     en: "Cannot delete or update this record contact the administrator",
     fr: "Impossible de supprimer ou de mettre à jour cet enregistrement, contactez l'administrateur",
   },
+};
+
+const handleDatabaseError = (errno: number, url: string): Translation => {
+  if (errno === 1062 && url.includes("user")) {
+    return databaseErrors["1062-users"];
+  } else if (errno === 1062 && url.includes("project")) {
+    return databaseErrors["1062-projects"];
+  } 
+  else if (errno === 1062 && url.includes("district")) {
+    return databaseErrors["1062-districts"];
+  }
+  else {
+    return databaseErrors[errno];
+  }
 };
 
 /**
@@ -42,13 +68,15 @@ export default class ErrorHandler {
     } catch (error) {
       if (error instanceof CustomException) {
         // Log or send the statusCode and type to a monitoring service
+        // Log or send the statusCode and type to a monitoring service
 
         // Handle the response
         response.status(error.status).send({
           statusCode: error.status,
           rawMessage: error.sqlMessage ? error.sqlMessage : error.message,
           translatedMessage:
-            error.translatedMessage ?? this.getTranslatedMessage(error),
+            error.translatedMessage ??
+            this.getTranslatedMessage(error, request.url()),
         });
       }
     }
@@ -60,15 +88,12 @@ export default class ErrorHandler {
    * @param {CustomException} exception - The custom exception object containing status, errno, sqlMessage, stack, and message properties.
    * @return {Translation} The translated message based on the exception.
    */
-  private getTranslatedMessage({
-    status,
-    errno,
-    sqlMessage,
-    stack,
-    message,
-  }: CustomException): Translation {
+  private getTranslatedMessage(
+    { status, errno, sqlMessage, stack, message }: CustomException,
+    url: string
+  ): Translation {
     if (errno && databaseErrors[errno]) {
-      return databaseErrors[errno];
+      return handleDatabaseError(errno, url);
     } else if (errno) {
       return {
         en: "Something went wrong. A report was sent to the administrator",
