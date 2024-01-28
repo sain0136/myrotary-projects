@@ -1,4 +1,17 @@
 export interface Translation {
+  mailTemplates: {
+    projectRejectTemplate: {
+      subject: string;
+      message: string;
+      messageIntructions: string;
+    };
+    reportRejectTemplate: {
+      subject: string;
+      message: string;
+      messageIntructions: string;
+    };
+  };
+  rejectLabel: string;
   allProjectsLabel: string;
   messageLabel: string;
   welcomeToMyRotaryProjects: string;
@@ -320,6 +333,19 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    mailTemplates: {
+      projectRejectTemplate: {
+        subject: "Rotary Project Rejection",
+        message: "Your project: {value} has been rejected by {value}.",
+        messageIntructions: "Please contact {value} if you have any questions.",
+      },
+      reportRejectTemplate: {
+        subject: "Rotary Project Rejection",
+        message: "Your report for project: {value} has been rejected by {value}.",
+        messageIntructions: "Please contact {value} if you have any questions.",
+      },
+    },
+    rejectLabel: "Reject",
     allProjectsLabel: "All Projects",
     messageLabel: "Message",
     welcomeToMyRotaryProjects: "Welcome to My Rotary Projects",
@@ -678,6 +704,19 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    mailTemplates: {
+      projectRejectTemplate: {
+        subject: "Rejet du projet Rotary",
+        message: "Votre projet: {value} a été rejeté par {value}.",
+        messageIntructions: "Veuillez contacter {value} si vous avez des questions.",
+      },
+      reportRejectTemplate: {
+        subject: "Rejet du rapport de projet Rotary",
+        message: "Votre rapport pour le projet: {value} a été rejeté par {value}.",
+        messageIntructions: "Veuillez contacter {value} si vous avez des questions.",
+      },
+    },
+    rejectLabel: "Refuser",
     allProjectsLabel: "Tous les projets",
     messageLabel: "Message",
     welcomeToMyRotaryProjects: "Bienvenue à Mes actions rotariennes",

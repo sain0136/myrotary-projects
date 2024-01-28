@@ -1,5 +1,6 @@
 export interface IEmail {
-  senderEmail: string;
+  senderEmail?: string;
+  receiverEmail?: string;
   senderName?: string;
   subject: string;
   messageBody: {
