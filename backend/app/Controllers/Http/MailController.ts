@@ -12,8 +12,8 @@ export default class MailController {
       await Mail.send((message) => {
         message
           .from(Env.get("SMTP_SENDER_ADDRESS"))
-          .to(Env.get("SMTP_RECEIVER_ADDRESS"))
-          .replyTo(newEmail.senderEmail)
+          .to(newEmail.receiverEmail || Env.get("SMTP_RECEIVER_ADDRESS"))
+          .replyTo(newEmail.senderEmail || Env.get("SMTP_SENDER_ADDRESS"))
           .subject(
             this.subjectLineFormatter(newEmail.subject, newEmail.senderName)
           )

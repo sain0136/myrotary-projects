@@ -16,18 +16,72 @@ import { grantType, projectStatus } from "@/utils/types/commonTypes";
 import { ProjectsApi } from "@/api/services/ProjectsApi";
 import { ApiClient } from "@/api/ApiClient";
 import router from "@/router";
+import { MailApi } from "@/api/services/MailApi";
+import type { IEmail } from "@/utils/interfaces/IMail";
+
 const projectsApi = new ProjectsApi(new ApiClient());
+const mailApi = new MailApi(new ApiClient());
 
 /* Data */
-const { langTranslations } = useLanguage();
+const { langTranslations, customPrintf } = useLanguage();
 const { handleError, handleSuccess } = errorHandler();
 const projectApproval = ref("");
+const mailTemplates: Record<string, IEmail> = {
+  projectRejectTemplate: {
+    receiverEmail:
+      useActiveProjectStore().activeProject.projectDetails.creatorData.email, // TODO: all project admins get email ?
+    subject: langTranslations.value.mailTemplates.projectRejectTemplate.subject,
+    messageBody: {
+      message: customPrintf(
+        langTranslations.value.mailTemplates.projectRejectTemplate.message,
+        `${useActiveProjectStore().activeProject.project_name}`,
+        `${useLoggedInUserStore().loggedInUser.role} - ${
+          useLoggedInUserStore().loggedInUser.fullName
+        }`
+      ),
+      messageIntructions: customPrintf(
+        langTranslations.value.mailTemplates.projectRejectTemplate
+          .messageIntructions,
+        `${useLoggedInUserStore().loggedInUser.email}`
+      ),
+    },
+  },
+  reportRejectTemplate: {
+    receiverEmail:
+      useActiveProjectStore().activeProject.projectDetails.creatorData.email, // TODO: all project admins get email ?
+    subject: langTranslations.value.mailTemplates.reportRejectTemplate.subject,
+    messageBody: {
+      message: customPrintf(
+        langTranslations.value.mailTemplates.reportRejectTemplate.message,
+        `${useActiveProjectStore().activeProject.project_name}`,
+        `${useLoggedInUserStore().loggedInUser.role} - ${
+          useLoggedInUserStore().loggedInUser.fullName
+        }`
+      ),
+      messageIntructions: customPrintf(
+        langTranslations.value.mailTemplates.reportRejectTemplate
+          .messageIntructions,
+        `${useLoggedInUserStore().loggedInUser.email}`
+      ),
+    },
+  },
+};
 /* Hooks */
 onMounted(async () => {});
 
 /* Methods */
-const approveProject = async () => {
+const approveProject = async (reject?: boolean) => {
   try {
+    if (reject) {
+      await projectsApi.updateProjectStatus(
+        projectStatus.FULLYFUNDED,
+        useActiveProjectStore().activeProject.project_id
+      );
+      await mailApi.sendMail(mailTemplates.projectRejectTemplate);
+      handleSuccess(langTranslations.value.toastSuccess);
+      redirect();
+      return
+    }
     if (
       useActiveProjectStore().activeProject.project_status !==
       projectStatus.PENDINGAPPROVAL
@@ -44,14 +98,24 @@ const approveProject = async () => {
       useActiveProjectStore().activeProject.project_id
     );
     handleSuccess(langTranslations.value.toastSuccess);
-    router.push({ name: "Approvals" });
+    redirect();
   } catch (error) {
     handleError(error as CustomError);
   }
 };
 
-const approveReports = async () => {
+const approveReports = async (reject?: boolean) => {
   try {
+    if (reject) {
+      await projectsApi.updateProjectStatus(
+        projectStatus.APPROVED,
+        useActiveProjectStore().activeProject.project_id
+      );
+      await mailApi.sendMail(mailTemplates.reportRejectTemplate);
+      handleSuccess(langTranslations.value.toastSuccess);
+      redirect();
+      return  
+    }
     if (
       useActiveProjectStore().activeProject.project_status !==
       projectStatus.REPORTSDUE
@@ -68,10 +132,14 @@ const approveReports = async () => {
       useActiveProjectStore().activeProject.project_id
     );
     handleSuccess(langTranslations.value.toastSuccess);
-    router.push({ name: "Approvals" });
+    redirect();
   } catch (error) {
     handleError(error as CustomError);
   }
+};
+
+const redirect = () => {
+  router.push({ name: "Approvals" });
 };
 </script>
 
@@ -109,7 +177,7 @@ const approveReports = async () => {
     </p>
     <div class="border border-primary p-4 font-bold">
       <div
-        class="flex flex-col gap-4"
+        class="flex flex-col gap-4 justify-center items-center"
         v-if="
           (useLoggedInUserStore().loggedInUser.role === 'District Admin' ||
             useLoggedInUserStore().loggedInUser.role ===
@@ -119,11 +187,18 @@ const approveReports = async () => {
         "
       >
         <p>{{ langTranslations.projectFormLabels.approveProjectLabel }}</p>
-        <RotaryButton
-          :label="langTranslations.approveLabel"
-          :theme="'black'"
-          @click="approveProject()"
-        />
+        <div class="flex gap-4">
+          <RotaryButton
+            :label="langTranslations.approveLabel"
+            :theme="'black'"
+            @click="approveProject()"
+          />
+          <RotaryButton
+            :label="langTranslations.rejectLabel"
+            :theme="'black'"
+            @click="approveProject(true)"
+          />
+        </div>
       </div>
       <h6
         v-else-if="
@@ -136,7 +211,7 @@ const approveReports = async () => {
       </h6>
     </div>
     <div
-      class="border border-primary p-4 font-bold flex flex-col gap-4"
+      class="border border-primary p-4 font-bold flex flex-col gap-4 justify-center items-center"
       v-if="
         (useLoggedInUserStore().loggedInUser.role === 'District Admin' ||
           useLoggedInUserStore().loggedInUser.role ===
@@ -146,11 +221,18 @@ const approveReports = async () => {
       "
     >
       <p>{{ langTranslations.projectFormLabels.approveReportsLabel }}</p>
-      <RotaryButton
-        :label="langTranslations.approveLabel"
-        :theme="'black'"
-        @click="approveReports()"
-      />
+      <div class="flex gap-4">
+        <RotaryButton
+          :label="langTranslations.approveLabel"
+          :theme="'black'"
+          @click="approveReports()"
+        />
+        <RotaryButton
+          :label="langTranslations.rejectLabel"
+          :theme="'black'"
+          @click="approveReports(true)"
+        />
+      </div>
     </div>
     <h6
       class="border border-primary p-4 font-bold flex flex-col gap-4"
