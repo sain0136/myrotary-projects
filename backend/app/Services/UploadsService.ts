@@ -116,7 +116,7 @@ export default class UploadsService {
                 .save();
             }
           }
-          return true;
+          continue;
         case "project-document-evidence":
           if (projectId) {
             const project = await Projects.findOrFail(projectId);
@@ -132,7 +132,7 @@ export default class UploadsService {
               await Drive.delete(file.s3Name);
             }
           }
-          return true;
+          continue;
         case "project-report-files":
           if (projectId) {
             const project = await Projects.findOrFail(projectId);
@@ -165,7 +165,7 @@ export default class UploadsService {
               await Drive.delete(file.s3Name);
             }
           }
-          return true;
+          continue;
       }
       console.log(userId);
     }

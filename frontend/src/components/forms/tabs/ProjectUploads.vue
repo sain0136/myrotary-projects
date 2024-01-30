@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import BaseFileUpload from "@/components/form/BaseFileUpload.vue";
 import type {
@@ -23,10 +23,13 @@ import { UploadsApi } from "@/api/services/UploadsApi";
 import type { CustomErrors } from "@/utils/classes/CustomErrors";
 import { ProjectsApi } from "@/api/services/ProjectsApi";
 import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
+import RotaryButton from "@/components/buttons/RotaryButton.vue";
 
 /* Data */
+type uploadedFileCheckbox = uploadedFile & { checked: boolean };
 const projectsApi = new ProjectsApi(new ApiClient());
 const uploadsApi = new UploadsApi(new ApiClient());
+const toBeDeletedFiles = ref<Array<uploadedFile>>([]); // files to be deleted
 const { langTranslations } = useLanguage();
 const { handleError } = errorHandler();
 const validStatuses = [
@@ -35,6 +38,7 @@ const validStatuses = [
   "Reports Due",
   "Completed",
 ];
+const isAllSelected = ref(false);
 const coverImageReqData = {
   databaseTarget: "project-media",
   storagePath: "./projects",
@@ -86,9 +90,10 @@ const fetchUpdatedData = async () => {
   }
 };
 
-const deleteFiles = async (file: uploadedFile) => {
+const deleteFiles = async (file: uploadedFile | uploadedFile[]) => {
   try {
-    await uploadsApi.deleteFiles([file], projectId ?? 0);
+    const toDelete = Array.isArray(file) ? file : [file];
+    await uploadsApi.deleteFiles(toDelete, projectId ?? 0);
     fetchUpdatedData();
   } catch (error) {
     handleError(error as CustomErrors);
@@ -105,6 +110,34 @@ const stripUrlPart = (url: string) => {
     return filename;
   } else {
     return url;
+  }
+};
+
+const handleCheckboxChange = (event: Event, row: uploadedFile) => {
+  const target = event.target as HTMLInputElement;
+  if (target.checked) {
+    toBeDeletedFiles.value.push(row);
+  } else {
+    const index = toBeDeletedFiles.value
+      .map((file) => file.s3Name)
+      .indexOf(row.s3Name);
+    if (index > -1) {
+      toBeDeletedFiles.value.splice(index, 1);
+    }
+  }
+};
+
+const handleSelectAll = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  for (const file of useActiveProjectStore().activeProject.file_uploads
+    .evidence_files as uploadedFileCheckbox[]) {
+    file.checked = target.checked;
+  }
+  if (target.checked) {
+    toBeDeletedFiles.value = useActiveProjectStore().activeProject.file_uploads
+      .evidence_files as uploadedFileCheckbox[];
+  } else {
+    toBeDeletedFiles.value = [];
   }
 };
 </script>
@@ -262,7 +295,7 @@ const stripUrlPart = (url: string) => {
         :content="langTranslations.uploadEvidenceLabel"
       />
       <p
-      class="text-center text-red-500 mb-4"
+        class="text-center text-red-500 mb-4"
         v-if="
           validStatuses.includes(
             useActiveProjectStore().activeProject.project_status
@@ -300,8 +333,26 @@ const stripUrlPart = (url: string) => {
           .length > 0
       "
     >
+      <RotaryButton
+        :disable="toBeDeletedFiles.length < 1"
+        :label="langTranslations.deleteLabel"
+        @click="deleteFiles(toBeDeletedFiles)"
+        :theme="'primary'"
+      />
       <table class="w-full text-sm text-left text-nearWhite">
         <thead class="text-xs text-nearWhite uppercase bg-gray-500">
+          <th scope="col" class="p-4">
+            <div class="flex items-center">
+              <input
+                id="checkbox-all-search"
+                @change="handleSelectAll($event)"
+                v-model="isAllSelected"
+                type="checkbox"
+                class="w-4 h-4 text-secondary bg-gray-100 border-gray-300 rounded"
+              />
+              <label for="checkbox-all-search" class="sr-only">checkbox</label>
+            </div>
+          </th>
           <th scope="col" class="px-6 py-3">
             {{ "File" }}
           </th>
@@ -312,10 +363,24 @@ const stripUrlPart = (url: string) => {
         <tbody>
           <tr
             v-for="file in (useActiveProjectStore().activeProject
-              .file_uploads.evidence_files as uploadedFile[])"
+              .file_uploads.evidence_files as uploadedFileCheckbox[])"
             :key="file.s3Name"
             class="bg-gray-800 border-b border-gray-700"
           >
+            <td class="w-4 p-4">
+              <div class="flex justify-center items-center">
+                <input
+                  @change="handleCheckboxChange($event, file)"
+                  v-model="file.checked"
+                  :id="'checkbox-table-search-'"
+                  type="checkbox"
+                  class="w-4 h-4 text-secondary bg-gray-100 border-gray-300 rounded"
+                />
+                <label :for="'checkbox-table-search-'" class="sr-only"
+                  >checkbox</label
+                >
+              </div>
+            </td>
             <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap">
               <a target="_blank" :href="file.s3UrlLink">
                 {{ stripUrlPart(file.s3Name) }}
