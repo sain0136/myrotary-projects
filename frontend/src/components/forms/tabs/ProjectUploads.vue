@@ -6,10 +6,9 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, ref } from "vue";
+import { onMounted } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import BaseFileUpload from "@/components/form/BaseFileUpload.vue";
-import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import type { uploadFileData, uploadedFile } from "@/utils/types/commonTypes";
 import H4 from "@/components/headings/H4.vue";
 import { useRoute } from "vue-router";
@@ -257,6 +256,16 @@ const stripUrlPart = (url: string) => {
         :acceptedFileTypes="'docsOnly'"
         :project-id="projectId ?? 0"
         :dropzone-mode="true"
+        :upload-limits="{
+          maxFiles:
+           ( useActiveProjectStore().activeProject.file_uploads.evidence_files &&
+            (useActiveProjectStore().activeProject.file_uploads.evidence_files as [])
+              .length > 0)
+              ? 10 -
+              (useActiveProjectStore().activeProject.file_uploads.evidence_files as [])
+              .length
+              : 10,
+        }"
       />
     </div>
     <div
@@ -314,6 +323,16 @@ const stripUrlPart = (url: string) => {
         :acceptedFileTypes="'allTypes'"
         :project-id="projectId ?? 0"
         :dropzone-mode="true"
+        :upload-limits="{
+          maxFiles:
+           ( useActiveProjectStore().activeProject.file_uploads.reports_files &&
+            (useActiveProjectStore().activeProject.file_uploads.reports_files as [])
+              .length > 0)
+              ? 10 -
+              (useActiveProjectStore().activeProject.file_uploads.reports_files as [])
+              .length
+              : 10,
+        }"
       />
     </div>
     <div
