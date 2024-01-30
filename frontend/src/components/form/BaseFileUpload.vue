@@ -71,6 +71,7 @@ const {
   postUploadCallback,
   iconMode,
   uploadLimits,
+  disabled,
 } = defineProps<{
   acceptedFileTypes?: "allTypes" | "docsOnly" | "imageOnly";
   fileUploadLabelFormats?: string;
@@ -88,6 +89,7 @@ const {
   uploadLimits?: {
     maxFiles?: number;
   };
+  disabled?: boolean;
 }>();
 
 const validationData: ValidationData = reactive({
@@ -112,6 +114,7 @@ const validationRules = {
 const v$ = useVuelidate(validationRules, validationData);
 
 const handleFileChange = (event: Event, multiple: boolean) => {
+  if (disabled) return;
   const target = event.target as HTMLInputElement;
   const files = target.files;
   if (!files || !files[0]) return;
@@ -278,6 +281,7 @@ const triggerFileInput = () => {
         :accept="getFileTypes()"
         ref="fileInput"
         style="display: none"
+        :disabled="disabled"
       />
     </div>
     <div
@@ -294,6 +298,7 @@ const triggerFileInput = () => {
           type="file"
           @change="handleFileChange($event, false)"
           :accept="getFileTypes()"
+          :disabled="disabled"
         />
         <p v-if="v$.file.$error" class="text-red-500">
           {{ v$.file.$errors[0].$message }}
@@ -305,7 +310,7 @@ const triggerFileInput = () => {
           <RotaryButton :label="submitLabel" :theme="'black'" @click="submit">
           </RotaryButton>
           <RotaryButton
-            :disable="!validationData.file"
+            :disable="!validationData.file || disabled"
             :label="langTranslations.clearLabel"
             :theme="'secondary'"
             @click="clear"
@@ -325,6 +330,7 @@ const triggerFileInput = () => {
           @drop="handleDrop"
           :class="{
             'pg-bg': validationData.file,
+            'bg-gray-500': disabled,
           }"
           id="drop_zone"
           class="flex flex-col items-center justify-center w-full h-64 border-2 border-primary border-dashed rounded-lg cursor-pointer bg-gray-50"
@@ -375,6 +381,7 @@ const triggerFileInput = () => {
             type="file"
             class="hidden"
             :accept="getFileTypes()"
+            :disabled="disabled"
           />
         </label>
       </div>
@@ -382,7 +389,12 @@ const triggerFileInput = () => {
         <p v-if="v$.file.$error" class="text-red-500 py-4">
           {{ v$.file.$errors[0].$message }}
         </p>
-        <RotaryButton :label="submitLabel" :theme="'black'" @click="submit">
+        <RotaryButton
+          :label="submitLabel"
+          :theme="'black'"
+          :disable="disabled"
+          @click="submit"
+        >
         </RotaryButton>
         <RotaryButton
           :disable="!validationData.file"

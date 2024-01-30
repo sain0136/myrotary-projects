@@ -9,7 +9,11 @@ import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import BaseFileUpload from "@/components/form/BaseFileUpload.vue";
-import type { uploadFileData, uploadedFile } from "@/utils/types/commonTypes";
+import type {
+  ProjectStatus,
+  uploadFileData,
+  uploadedFile,
+} from "@/utils/types/commonTypes";
 import H4 from "@/components/headings/H4.vue";
 import { useRoute } from "vue-router";
 import { useActiveProjectStore } from "@/stores/ActiveProjectStore";
@@ -25,6 +29,12 @@ const projectsApi = new ProjectsApi(new ApiClient());
 const uploadsApi = new UploadsApi(new ApiClient());
 const { langTranslations } = useLanguage();
 const { handleError } = errorHandler();
+const validStatuses = [
+  "Pending Approval",
+  "Approved",
+  "Reports Due",
+  "Completed",
+];
 const coverImageReqData = {
   databaseTarget: "project-media",
   storagePath: "./projects",
@@ -53,6 +63,7 @@ const reportFlieReqData = {
   fileTypes: "project-report-files",
 } as uploadFileData;
 const route = useRoute();
+
 // required form data
 const projectId =
   route.params.projectId !== "" ? Number(route.params.projectId) : null;
@@ -250,12 +261,27 @@ const stripUrlPart = (url: string) => {
         class="text-center pb-4"
         :content="langTranslations.uploadEvidenceLabel"
       />
+      <p
+      class="text-center text-red-500 mb-4"
+        v-if="
+          validStatuses.includes(
+            useActiveProjectStore().activeProject.project_status
+          )
+        "
+      >
+        {{ langTranslations.uploadEvidenceDisabled }}
+      </p>
       <BaseFileUpload
         :submit-label="langTranslations.saveLabel"
         :req-data="evidenceFlieReqData"
         :acceptedFileTypes="'docsOnly'"
         :project-id="projectId ?? 0"
         :dropzone-mode="true"
+        :disabled="
+          validStatuses.includes(
+            useActiveProjectStore().activeProject.project_status
+          )
+        "
         :upload-limits="{
           maxFiles:
            ( useActiveProjectStore().activeProject.file_uploads.evidence_files &&

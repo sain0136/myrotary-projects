@@ -1,4 +1,5 @@
 export interface Translation {
+  uploadEvidenceDisabled: string;
   mailTemplates: {
     projectRejectTemplate: {
       subject: string;
@@ -333,6 +334,8 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    uploadEvidenceDisabled:
+      "Project has been approved and evidence cannot be uploaded",
     mailTemplates: {
       projectRejectTemplate: {
         subject: "Rotary Project Rejection",
@@ -341,7 +344,8 @@ export const translations: Record<string, Translation> = {
       },
       reportRejectTemplate: {
         subject: "Rotary Project Rejection",
-        message: "Your report for project: {value} has been rejected by {value}.",
+        message:
+          "Your report for project: {value} has been rejected by {value}.",
         messageIntructions: "Please contact {value} if you have any questions.",
       },
     },
@@ -704,16 +708,21 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    uploadEvidenceDisabled:
+      "Le projet a été approuvé et les preuves ne peuvent pas être téléchargées",
     mailTemplates: {
       projectRejectTemplate: {
         subject: "Rejet du projet Rotary",
         message: "Votre projet: {value} a été rejeté par {value}.",
-        messageIntructions: "Veuillez contacter {value} si vous avez des questions.",
+        messageIntructions:
+          "Veuillez contacter {value} si vous avez des questions.",
       },
       reportRejectTemplate: {
         subject: "Rejet du rapport de projet Rotary",
-        message: "Votre rapport pour le projet: {value} a été rejeté par {value}.",
-        messageIntructions: "Veuillez contacter {value} si vous avez des questions.",
+        message:
+          "Votre rapport pour le projet: {value} a été rejeté par {value}.",
+        messageIntructions:
+          "Veuillez contacter {value} si vous avez des questions.",
       },
     },
     rejectLabel: "Refuser",
