@@ -11,7 +11,7 @@ import { errorHandler } from "@/utils/composables/ErrorHandler";
 import { useSiteAssets } from "@/stores/SiteAssets";
 import { Icon } from "@iconify/vue";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
-
+import RotaryButton from "@/components/buttons/RotaryButton.vue";
 /* Data */
 const { langTranslations, setLanguage, languagePref } = useLanguage();
 const assetsStore = useSiteAssets();
@@ -208,17 +208,14 @@ const changeLanguage = () => {
             </router-link>
           </li>
           <li>
-            <span
-              @click="changeLanguage()"
-              href="#"
-              class="block cursor-pointer py-2 pl-3 pr-4 font-bold text-gray-900 rounded hover:text-primary"
-              >{{
-                languagePref === "en"
-                  ? langTranslations.french
-                  : langTranslations.english
-              }}</span
-            >
-          </li>
+                  <RotaryButton
+                  :label="languagePref === 'en'
+                        ? langTranslations.french
+                        : langTranslations.english"
+                          :theme="'secondary'"
+                          @click="changeLanguage()"
+                          />
+            </li>
         </ul>
       </div>
     </div>
