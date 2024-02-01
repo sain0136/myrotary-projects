@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { computed, handleError, onMounted, reactive, ref, watch } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import District from "@/utils/classes/District";
 import { useVuelidate } from "@vuelidate/core";
@@ -60,7 +60,7 @@ const isEdit = ref(route.query.isEdit ? true : false);
 const formType = ref(
   route.query.formType ? (route.query.formType as formType) : null
 );
-// not a hack when using this as a component that i want to pass props too
+//when using this as a component that i want to pass props too
 const { userIdProp, userTypeProp, clubIdProp, formTypeProp } = defineProps<{
   userIdProp?: string;
   userTypeProp?: UserType;
@@ -101,10 +101,10 @@ const maxLengthPostal = {
   en: "Must be at most 32 characters",
   fr: "Doit contenir au plus 32 caractères",
 };
-const passwordMinLength = {
-  en: "Must be at least 8 characters",
-  fr: "Doit contenir au moins 8 caractères",
-};
+const passwordReset = ref({
+  resetSet: false,
+  newPassword: "",
+});
 const submitted = ref(false);
 
 /* Validations */
@@ -215,8 +215,20 @@ const rules = {
       required
     ),
     minLength: helpers.withMessage(
-      passwordMinLength[languagePref.value],
-      minLength(8)
+      customPrintf(
+        langTranslations.value.formErorrText.passwordMinLength,
+        "10"
+      ),
+      minLength(10)
+    ),
+    regexValidation: helpers.withMessage(
+      langTranslations.value.formErorrText.passwordRegex,
+      (value: string) => {
+        const regex = new RegExp(
+          "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])"
+        );
+        return regex.test(value);
+      }
     ),
   },
 };
@@ -487,11 +499,29 @@ const choosenDistrictError = computed((): string => {
         :errorMessage="v$.email?.$errors[0]?.$message as string | undefined"
       />
       <BaseInput
+        v-if="!isEdit || passwordReset.resetSet"
         v-model="user.password"
         :label="langTranslations.password"
         :type="'password'"
         :errorMessage="v$.password?.$errors[0]?.$message as string | undefined"
       />
+      <div
+        class="flex justify-center items-center "
+        v-if="isEdit && !passwordReset.resetSet"
+      >
+        <RotaryButton
+          :theme="'black'"
+          class="w-1/2 h-1/2 p-0"
+          :label="langTranslations.resetPasswordLabel"
+          :no-margin="true"
+          @click="
+            () => {
+              passwordReset.resetSet = true;
+              user.password = '';
+            }
+          "
+        />
+      </div>
     </div>
     <div class="button_row mt-4 flex justify-center gap-4">
       <RotaryButton

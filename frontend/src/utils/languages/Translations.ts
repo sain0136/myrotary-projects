@@ -1,4 +1,5 @@
 export interface Translation {
+  resetPasswordLabel: string;
   uploadEvidenceDisabled: string;
   mailTemplates: {
     projectRejectTemplate: {
@@ -307,6 +308,8 @@ export interface Translation {
     lowerThanFundingGoal: string;
     lowerThanPledgesTotal: string;
     startAfterStartDate: string;
+    passwordRegex: string;
+    passwordMinLength: string;
   };
   adminDash: {
     footerCopyright: string;
@@ -334,6 +337,7 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    resetPasswordLabel: "Reset Password",
     uploadEvidenceDisabled:
       "Project has been approved and evidence cannot be uploaded",
     mailTemplates: {
@@ -682,6 +686,9 @@ export const translations: Record<string, Translation> = {
       lowerThanPledgesTotal:
         "Anticipated funding must be greater or equal to the pledges total",
       startAfterStartDate: "Please enter a date after the start date",
+      passwordRegex:
+        "Your password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character from the set !@#$%^&*.",
+        passwordMinLength : "Your password must be at least {length} characters long.",
     },
     adminDash: {
       footerCopyright: "Copyright ©",
@@ -708,6 +715,7 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    resetPasswordLabel: "Réinitialiser le mot de passe",
     uploadEvidenceDisabled:
       "Le projet a été approuvé et les preuves ne peuvent pas être téléchargées",
     mailTemplates: {
@@ -1065,6 +1073,9 @@ export const translations: Record<string, Translation> = {
       lowerThanPledgesTotal:
         "Le financement prévu doit être supérieur ou égal au total des promesses de dons.",
       startAfterStartDate: "Veuillez entrer une date après la date de début",
+      passwordRegex:
+        "Votre mot de passe doit contenir au moins une lettre minuscule, une lettre majuscule, un chiffre et un caractère spécial parmi !@#$%^&*.",
+        passwordMinLength : "Le mot de passe doit contenir au moins {minLength} caractères",
     },
     adminDash: {
       footerCopyright: "Copyright ©",
