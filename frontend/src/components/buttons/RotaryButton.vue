@@ -11,6 +11,7 @@ defineProps<{
   theme: theme;
   label: string;
   disable?: boolean;
+  noMargin?: boolean;
 }>();
 
 const themes: Record<theme, string> = {
@@ -27,7 +28,7 @@ const themes: Record<theme, string> = {
   <button
     :disabled="disable"
     type="button"
-    :class="[themes[theme], { 'disable ': disable }]"
+    :class="[themes[theme], { 'disable ': disable }, { 'no-margin': noMargin }]"
     class="focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 cursor-pointer"
   >
     {{ label }}
@@ -42,5 +43,9 @@ const themes: Record<theme, string> = {
   &:hover {
     background: none;
   }
+}
+.no-margin {
+  margin: 0;
+  margin-top: 1rem;
 }
 </style>

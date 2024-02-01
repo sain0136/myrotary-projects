@@ -90,7 +90,7 @@ const handleSubmit = async () => {
   <Banners :banner-text="langTranslations.loginLabel" />
   <div class="flex justify-center items-center my-8">
     <form
-      @submit.prevent
+      @submit.prevent="handleSubmit"
       class="bg-nearWhite w-4/5 md:w-auto lg:w-1/4 p-5 rounded-lg border-solid border-primary border-2"
     >
       <div class="py-10">
@@ -109,10 +109,10 @@ const handleSubmit = async () => {
           :errorMessage="v$.password?.$errors[0]?.$message as string | undefined"
         />
         <RotaryButton
-          @click="handleSubmit"
           :label="langTranslations.adminLoginForm.signIn"
           theme="primary"
           class="w-full"
+          type="submit"
         />
       </div>
     </form>
