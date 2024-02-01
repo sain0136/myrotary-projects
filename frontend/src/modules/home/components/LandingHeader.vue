@@ -208,14 +208,16 @@ const changeLanguage = () => {
             </router-link>
           </li>
           <li>
-                  <RotaryButton
-                  :label="languagePref === 'en'
-                        ? langTranslations.french
-                        : langTranslations.english"
-                          :theme="'secondary'"
-                          @click="changeLanguage()"
-                          />
-            </li>
+            <RotaryButton
+              :label="
+                languagePref === 'en'
+                  ? langTranslations.french
+                  : langTranslations.english
+              "
+              :theme="'secondary'"
+              @click="changeLanguage()"
+            />
+          </li>
         </ul>
       </div>
     </div>
