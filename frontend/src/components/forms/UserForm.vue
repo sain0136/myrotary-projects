@@ -47,7 +47,7 @@ type formType =
 /* Data */
 const route = useRoute();
 const { langTranslations, languagePref, customPrintf } = useLanguage();
-// Route query data
+// Route data -- When using form from url
 const userId = ref(route.params.userId);
 const userType = ref(
   route.query.userType ? (route.query.userType as UserType) : null
@@ -60,17 +60,20 @@ const isEdit = ref(route.query.isEdit ? true : false);
 const formType = ref(
   route.query.formType ? (route.query.formType as formType) : null
 );
-//when using this as a component that i want to pass props too
-const { userIdProp, userTypeProp, clubIdProp, formTypeProp } = defineProps<{
-  userIdProp?: string;
-  userTypeProp?: UserType;
-  clubIdProp?: string;
-  formTypeProp?: formType;
-}>();
+// Component data -- When using form from component
+const { userIdProp, userTypeProp, clubIdProp, formTypeProp, isEditProp } =
+  defineProps<{
+    userIdProp?: string;
+    userTypeProp?: UserType;
+    clubIdProp?: string;
+    formTypeProp?: formType;
+    isEditProp?: boolean;
+  }>();
 userId.value = userIdProp ? userIdProp : userId.value;
 userType.value = userTypeProp ? userTypeProp : userType.value;
 clubId.value = clubIdProp ? clubIdProp : clubId.value;
 formType.value = formTypeProp ? formTypeProp : formType.value;
+isEdit.value = isEditProp ? true : false;
 
 const user = reactive(new User());
 const { handleError, handleSuccess, handleValidationForm } = errorHandler();
@@ -506,7 +509,7 @@ const choosenDistrictError = computed((): string => {
         :errorMessage="v$.password?.$errors[0]?.$message as string | undefined"
       />
       <div
-        class="flex justify-center items-center "
+        class="flex justify-center items-center"
         v-if="isEdit && !passwordReset.resetSet"
       >
         <RotaryButton

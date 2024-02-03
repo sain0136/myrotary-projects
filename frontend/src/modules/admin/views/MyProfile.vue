@@ -3,22 +3,19 @@ export default {
   name: "MyProfile",
 };
 </script>
+
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import ProfileForm from "@/modules/admin/components/myprofile/ProfileForm.vue";
 import H1 from "@/components/headings/H1.vue";
-import { useSiteAssets } from "@/stores/SiteAssets";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import UserForm from "@/components/forms/UserForm.vue";
 import Hr from "@/components/hr/Hr.vue";
 import H2 from "@/components/headings/H2.vue";
-import BaseCheckBox from "@/components/form/BaseCheckBox.vue";
-import { ref } from "vue";
 
 /* Data  */
 const { langTranslations, languagePref, setLanguage, availabileLanguages } =
   useLanguage();
-const siteAssetsStore = useSiteAssets();
 const userStore = useLoggedInUserStore();
 const changeLanguage = (pref: "en" | "fr") => {
   languagePref.value = pref;
@@ -86,6 +83,7 @@ const map = new Map([
         <UserForm
           :user-id-prop="userStore.loggedInUser?.user_id.toString()"
           :form-type-prop="'myProfile'"
+          :is-edit-prop="true"
         />
       </div>
     </div>
