@@ -73,7 +73,7 @@ userId.value = userIdProp ? userIdProp : userId.value;
 userType.value = userTypeProp ? userTypeProp : userType.value;
 clubId.value = clubIdProp ? clubIdProp : clubId.value;
 formType.value = formTypeProp ? formTypeProp : formType.value;
-isEdit.value = isEditProp ? true : false;
+isEdit.value = isEditProp ? isEditProp : isEdit.value;
 
 const user = reactive(new User());
 const { handleError, handleSuccess, handleValidationForm } = errorHandler();

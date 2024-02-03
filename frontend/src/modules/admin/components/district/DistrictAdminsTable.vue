@@ -56,7 +56,7 @@ watch(chosenDistrict, () => {
       total: 0,
       limit: 5,
     });
-    getDistrictAdmin();
+    getDistrictAdmins();
   }
 });
 
@@ -78,20 +78,20 @@ onMounted(async () => {
   } catch (error) {
     handleError(error as CustomError);
   }
-  await getDistrictAdmin();
+  await getDistrictAdmins();
 });
 
 // watch () => pagination.limit --> expalantion here : https://vuejs.org/guide/essentials/watchers.html#deep-watchers
 watch(
   () => pagination.limit,
   async () => {
-    await getDistrictAdmin();
+    await getDistrictAdmins();
   }
 );
 
 /* Methods */
 
-const getDistrictAdmin = async () => {
+const getDistrictAdmins = async () => {
   try {
     loaded.value = false;
     allDistrictsinDistrict.splice(0, allDistrictsinDistrict.length);
@@ -103,7 +103,6 @@ const getDistrictAdmin = async () => {
     )) as PaginationResult;
 
     const districtAdmins = response.data as IUser[];
-
     for (const user of districtAdmins) {
       if (user.role) {
         user.title = user.role ?? "N/A";
@@ -141,7 +140,7 @@ const deleteAdmin = async (user: unknown) => {
       await userApi.deleteUser(id);
       handleSuccess(langTranslations.value.succssDeleteToast);
     }
-    await getDistrictAdmin();
+    await getDistrictAdmins();
   } catch (error) {
     handleError(error as CustomError);
   }
@@ -161,7 +160,7 @@ const editAdmin = async (user: unknown) => {
         },
       });
     }
-    await getDistrictAdmin();
+    await getDistrictAdmins();
   } catch (error) {
     handleError(error as CustomError);
   }
@@ -172,7 +171,7 @@ const handlePageChange = (nextOrPrevious: "next" | "previous") => {
     nextOrPrevious === "next"
       ? pagination.currentPage + 1
       : pagination.currentPage - 1;
-  getDistrictAdmin();
+  getDistrictAdmins();
 };
 </script>
 
