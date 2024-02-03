@@ -116,6 +116,11 @@ export default class ErrorHandler {
           en: "Unauthorized. Please login to continue ",
           fr: "Non autorisé. Veuillez vous connecter pour continuer",
         };
+        case 422:
+        return {
+          en: "Unprocessable Entity",
+          fr: "Entité non traitable",
+        };
       case 403:
         return {
           en: "Forbidden",
