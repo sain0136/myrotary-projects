@@ -26,7 +26,7 @@ if (
   userStore.loggedInUser.user_id === 2 ||
   userStore.loggedInUser.user_id === 10
 ) {
-  loggedinRole.value = "Webmaster";
+  loggedinRole.value = "SuperAdmin";
 } else if (userStore.loggedInUser.user_type === "SUPER") {
   loggedinRole.value = "SuperAdmin";
 } else if (userStore.loggedInUser.role) {
@@ -36,6 +36,7 @@ if (
 } else {
   loggedinRole.value = "guest";
 }
+
 const sideBarItems: Record<
   string,
   {

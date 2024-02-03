@@ -40,10 +40,16 @@ const pagination = reactive({
   limit: 10,
 });
 const loaded = ref(false);
-const { adminstratingView, districtAdminView, allProjectsView } = defineProps<{
+const {
+  adminstratingView,
+  districtAdminView,
+  allProjectsView,
+  clubProjectsView,
+} = defineProps<{
   adminstratingView?: boolean;
   districtAdminView?: boolean;
   allProjectsView?: boolean;
+  clubProjectsView?: boolean;
 }>();
 
 /* Hooks */
@@ -102,6 +108,13 @@ const getMyProjects = async () => {
       pagination.currentPage,
       pagination.limit,
       "district_id"
+    );
+  } else if (clubProjectsView) {
+    response = await projectsApi.fetchConditionalProjects(
+      useLoggedInUserStore().loggedInUser.club_id as number,
+      pagination.currentPage,
+      pagination.limit,
+      "club_id"
     );
   } else if (allProjectsView) {
     response = await projectsApi.getAllProjects(

@@ -7,7 +7,6 @@ export default {
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted, ref } from "vue";
-import { errorHandler } from "@/utils/composables/ErrorHandler";
 import CreatedProjectsTable from "@/modules/admin/components/myprojects/CreatedProjectsTable.vue";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
@@ -39,7 +38,6 @@ if (todaysDate < startDateLuxon || todaysDate > closeDateLuxon) {
   isProjectsOpen.value = false;
 }
 const { langTranslations, customPrintf } = useLanguage();
-const { handleError } = errorHandler();
 const activeTab = ref(
   sessionStorage.getItem("myprojectsViewLastTab") || "created"
 );
@@ -63,6 +61,17 @@ const tabs = ref([
     hide: !hasAccess(
       useLoggedInUserStore().loggedInUser.role as AllUserRoles,
       "district-all-projects-tab"
+    ),
+  },
+  {
+    name: "clubProjects",
+    label:
+      langTranslations.value.clubLabel +
+      " " +
+      langTranslations.value.projectsLabel,
+    hide: !hasAccess(
+      useLoggedInUserStore().loggedInUser.role as AllUserRoles,
+      "club-all-projects-tab"
     ),
   },
   {
@@ -111,6 +120,9 @@ const setActiveTab = (tabName: string) => {
   </div>
   <div v-if="activeTab === 'districtsProjects'">
     <CreatedProjectsTable :district-admin-view="true" />
+  </div>
+  <div v-if="activeTab === 'clubProjects'">
+    <CreatedProjectsTable :club-projects-view="true" />
   </div>
   <div v-if="activeTab === 'created'">
     <CreatedProjectsTable />

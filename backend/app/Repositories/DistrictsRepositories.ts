@@ -75,6 +75,7 @@ export default class DistrictsRepositories {
   ) {
     const allAdmins = !allFlag
       ? await Users.query()
+          .where({ userType: "DISTRICT" })
           .where({ district_id: districtId })
           .paginate(currentPage, limit)
       : await Users.query()
