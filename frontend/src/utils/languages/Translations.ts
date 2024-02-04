@@ -432,9 +432,9 @@ export const translations: Record<string, Translation> = {
         "Must be a District Admin / Grants Chair to approve",
       projectApprovalError:
         "Project must be in pending approval state to be approved",
-      clubProjectHeader: "Club Project",
-      dsgProjectsHeader: "District Simplified Project",
-      dmProjectsHeader: "District Matching Project",
+      clubProjectHeader: "Club Projects",
+      dsgProjectsHeader: "District Simplified Projects",
+      dmProjectsHeader: "District Matching Projects",
       benefit_community_description:
         "Describe how the project will benefit the community or address a community need.",
       non_financial_participation:
@@ -696,7 +696,8 @@ export const translations: Record<string, Translation> = {
       startAfterStartDate: "Please enter a date after the start date",
       passwordRegex:
         "Your password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character from the set !@#$%^&*.",
-        passwordMinLength : "Your password must be at least {length} characters long.",
+      passwordMinLength:
+        "Your password must be at least {length} characters long.",
     },
     adminDash: {
       footerCopyright: "Copyright ©",
@@ -818,9 +819,9 @@ export const translations: Record<string, Translation> = {
         "Il faut être un administrateur de district ou un président de commission chargé des subventions pour approuver une demande.",
       projectApprovalError:
         "Le projet doit être en attente d'approbation pour être approuvé",
-      clubProjectHeader: "Projet du club",
-      dsgProjectsHeader: "Projet simplifié du district",
-      dmProjectsHeader: "Projet de contrepartie du district",
+      clubProjectHeader: "Projets de club",
+      dsgProjectsHeader: "Projets simplifiés de district",
+      dmProjectsHeader: "Projets d'appariement de district",
       benefit_community_description:
         "Décrivez comment le projet bénéficiera à la communauté ou répondra à un besoin communautaire.",
       non_financial_participation:
@@ -1087,7 +1088,8 @@ export const translations: Record<string, Translation> = {
       startAfterStartDate: "Veuillez entrer une date après la date de début",
       passwordRegex:
         "Votre mot de passe doit contenir au moins une lettre minuscule, une lettre majuscule, un chiffre et un caractère spécial parmi !@#$%^&*.",
-        passwordMinLength : "Le mot de passe doit contenir au moins {minLength} caractères",
+      passwordMinLength:
+        "Le mot de passe doit contenir au moins {minLength} caractères",
     },
     adminDash: {
       footerCopyright: "Copyright ©",
