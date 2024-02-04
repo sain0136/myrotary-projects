@@ -75,8 +75,16 @@ export default class DistrictsRepositories {
   ) {
     const allAdmins = !allFlag
       ? await Users.query()
-          .where({ userType: "DISTRICT" })
-          .where({ district_id: districtId })
+          .where((query) => {
+            // a subquery to group the two where conditions together
+            query
+              .where({ userType: "DISTRICT", district_id: districtId })
+              .orWhere({ userType: "SUPER", district_id: districtId });
+          })
+          // now where not will be applied befoe i had it just applyed to just the orWhere
+          .whereNot({
+            email: "update@email.com",
+          })
           .paginate(currentPage, limit)
       : await Users.query()
           .where({ userType: "DISTRICT" })

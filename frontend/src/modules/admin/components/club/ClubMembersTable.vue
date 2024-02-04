@@ -267,7 +267,7 @@ const createNewClubMember = () => {
         },
         hide: (user) => {
           const member = user as IUser;
-          if (member.user_type === 'DISTRICT') {
+          if (member.user_type === 'DISTRICT' || member.user_type === 'SUPER') {
             return true;
           }
           return false
@@ -310,7 +310,7 @@ const createNewClubMember = () => {
         },
         hide: (user) => {
           const member = user as IUser;
-          if (member.user_type === 'DISTRICT') {
+          if (member.user_type === 'DISTRICT' || member.user_type === 'SUPER') {
             return true;
           }
           return false
