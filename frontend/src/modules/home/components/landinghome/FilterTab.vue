@@ -17,9 +17,8 @@ import BaseSelect from "@/components/form/BaseSelect.vue";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import type { IClub } from "@/utils/interfaces/IClub";
-import ResourceList from "@/utils/classes/ResourceList";
 import type { ProjectFilters } from "@/utils/types/commonTypes";
-
+import { ProjectsApi } from "@/api/services/ProjectsApi";
 
 /* Data */
 const {
@@ -39,6 +38,7 @@ const clubMap = reactive<Map<string, number>>(new Map());
 const { handleError } = errorHandler();
 const clubApi = new ClubApi(new ApiClient());
 const districtApi = new DistrictApi(new ApiClient());
+const projectsApi = new ProjectsApi(new ApiClient());
 const showFilter = ref(false);
 const filterData: ProjectFilters = reactive({
   current_page: 1,
@@ -56,6 +56,8 @@ const filterData: ProjectFilters = reactive({
 const emit = defineEmits();
 const chosenDistrict = ref("");
 const chosenClub = ref("");
+const rotaryYearsList = ref([langTranslations.value.allYearsLabel] as string[]);
+const longYearToYear = reactive(new Map<string, string>());
 
 /* Hooks */
 onMounted(async () => {
@@ -64,6 +66,7 @@ onMounted(async () => {
     response.forEach((district) => {
       districtMap.set(district.district_name, district.district_id);
     });
+    await getRotaryYears();
   } catch (error) {
     handleError(error as CustomError);
   }
@@ -106,6 +109,14 @@ watch(
 );
 
 /* Methods */
+const getRotaryYears = async () => {
+  const response = await projectsApi.getRotaryYears();
+  response.allRotaryYears.forEach((rotaryYear, index) => {
+    rotaryYearsList.value.push(rotaryYear);
+    longYearToYear.set(rotaryYear, rotaryYear.replace(/-\d{4}$/, ""));
+  });
+};
+
 const filterProjects = async () => {
   filterData.grant_type = convertProjectLang(filterData.grant_type);
   filterData.project_region = convertRegionLang(filterData.project_region);
@@ -113,6 +124,10 @@ const filterProjects = async () => {
     filterData.project_status
   );
   filterData.area_focus = convertAreaOfFocusLang(filterData.area_focus);
+  const year =
+    longYearToYear.get(filterData.rotary_year) ??
+    new Date().getFullYear().toString();
+  filterData.rotary_year = year;
   emit("sendFilters", filterData);
   showFilter.value = false;
 };
@@ -206,7 +221,7 @@ const resetSearch = () => {
         />
         <BaseSelect
           :label="langTranslations.landingPage.yearLabel"
-          :options="[]"
+          :options="[...longYearToYear.keys()]"
           v-model="filterData.rotary_year"
         />
         <BaseSelect
