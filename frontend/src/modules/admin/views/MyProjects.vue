@@ -41,16 +41,27 @@ const { langTranslations, customPrintf } = useLanguage();
 const activeTab = ref(
   sessionStorage.getItem("myprojectsViewLastTab") || "created"
 );
+const access = {
+  allProjects: hasAccess(
+    useLoggedInUserStore().loggedInUser.user_type === "SUPER"
+      ? "SuperAdmin"
+      : (useLoggedInUserStore().loggedInUser.role as AllUserRoles),
+    "all-projects-tab"
+  ),
+  districtAllProjects: hasAccess(
+    useLoggedInUserStore().loggedInUser.role as AllUserRoles,
+    "district-all-projects-tab"
+  ),
+  clubAllProjects: hasAccess(
+    useLoggedInUserStore().loggedInUser.role as AllUserRoles,
+    "club-all-projects-tab"
+  ),
+};
 const tabs = ref([
   {
     name: "allProjects",
     label: langTranslations.value.allProjectsLabel,
-    hide: !hasAccess(
-      useLoggedInUserStore().loggedInUser.user_type === "SUPER"
-        ? "SuperAdmin"
-        : (useLoggedInUserStore().loggedInUser.role as AllUserRoles),
-      "all-projects-tab"
-    ),
+    hide: !access.allProjects,
   },
   {
     name: "districtsProjects",
@@ -58,10 +69,7 @@ const tabs = ref([
       langTranslations.value.districtLabel +
       " " +
       langTranslations.value.projectsLabel,
-    hide: !hasAccess(
-      useLoggedInUserStore().loggedInUser.role as AllUserRoles,
-      "district-all-projects-tab"
-    ),
+    hide: !access.districtAllProjects,
   },
   {
     name: "clubProjects",
@@ -69,10 +77,7 @@ const tabs = ref([
       langTranslations.value.clubLabel +
       " " +
       langTranslations.value.projectsLabel,
-    hide: !hasAccess(
-      useLoggedInUserStore().loggedInUser.role as AllUserRoles,
-      "club-all-projects-tab"
-    ),
+    hide: !access.clubAllProjects,
   },
   {
     name: "created",
@@ -116,13 +121,19 @@ const setActiveTab = (tabName: string) => {
     </li>
   </ul>
   <div v-if="activeTab === 'allProjects'">
-    <CreatedProjectsTable :all-projects-view="true" />
+    <CreatedProjectsTable :all-projects-view="true" v-if="access.allProjects" />
   </div>
   <div v-if="activeTab === 'districtsProjects'">
-    <CreatedProjectsTable :district-admin-view="true" />
+    <CreatedProjectsTable
+      :district-admin-view="true"
+      v-if="access.districtAllProjects"
+    />
   </div>
   <div v-if="activeTab === 'clubProjects'">
-    <CreatedProjectsTable :club-projects-view="true" />
+    <CreatedProjectsTable
+      :club-projects-view="true"
+      v-if="access.clubAllProjects"
+    />
   </div>
   <div v-if="activeTab === 'created'">
     <CreatedProjectsTable />

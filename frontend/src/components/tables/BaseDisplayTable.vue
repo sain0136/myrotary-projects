@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, ref, watch, provide, reactive } from "vue";
+import { onMounted, ref, watch, reactive, onUnmounted } from "vue";
 import { Icon } from "@iconify/vue";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import { useCurrencyFormatter } from "@/utils/composables/CurrencyFormatter";
@@ -67,6 +67,7 @@ const {
   rowEvents,
 } = defineProps<{
   currentPage: number;
+  // TODO transform any into types maybe
   tableData: any[];
   columns: ColumnOptions[];
   handlePageChange: (nextOrPrevious: "next" | "previous") => void;
@@ -86,8 +87,11 @@ const {
   // TODO transform all these unknowns into types
   rowEvents?: (row: unknown) => void;
 }>();
+
 /* Hooks */
 onMounted(async () => {});
+
+onUnmounted(() => {});
 
 watch(isAllSelected, () => {
   isAllSelected.value = checkedItems.length === tableData.length;
