@@ -10,7 +10,6 @@ import { useLanguage } from "@/utils/languages/UseLanguage";
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import H3 from "@/components/headings/H3.vue";
-import H2 from "@/components/headings/H2.vue";
 import Banners from "@/components/banners/Banners.vue";
 import BaseSelect from "@/components/form/BaseSelect.vue";
 import { ProjectsApi } from "@/api/services/ProjectsApi";
@@ -27,19 +26,18 @@ import type {
 } from "@/utils/interfaces/IProjects";
 import Dinero from "dinero.js";
 import { useCurrencyFormatter } from "@/utils/composables/CurrencyFormatter";
-import { PieChart, BarChart, DoughnutChart } from "vue-chart-3";
+import { PieChart, BarChart } from "vue-chart-3";
 import { Chart, registerables } from "chart.js";
 
 /* Data */
 Chart.register(...registerables);
 Chart.defaults.plugins.legend.display = false;
-const { currencyFormatterFunding, convertCentsToFloat, convertFloatToCents } =
-  useCurrencyFormatter();
+const { currencyFormatterFunding } = useCurrencyFormatter();
 const projectsApi = new ProjectsApi(new ApiClient());
 const { langTranslations } = useLanguage();
 const { handleError } = errorHandler();
-const rotaryYearsList = ref(["Any Year"] as string[]);
-const year = ref("Any Year");
+const rotaryYearsList = ref([langTranslations.value.allYearsLabel] as string[]);
+const year = ref(langTranslations.value.allYearsLabel);
 const longYearToYear = reactive(new Map<string, string>());
 const districtApi = new DistrictApi(new ApiClient());
 const districtNameList = ref([] as string[]);
@@ -51,7 +49,8 @@ const allProjects = ref<
 const districtChosen = ref("");
 let computed1 = [] as number[];
 let computed2 = [] as number[];
-const chartData = ref({
+
+const pieChartData = ref({
   labels: [
     langTranslations.value.projectFormLabels.clubProjectHeader,
     langTranslations.value.projectFormLabels.dsgProjectsHeader,
@@ -66,7 +65,12 @@ const chartData = ref({
     },
   ],
 });
-const chartData2 = ref({
+
+const pieChartOptions = {
+  responsive: true,
+};
+
+const districtBarChart = ref({
   labels: [
     "Club Projects",
     "District Simplified Projects",
@@ -80,7 +84,8 @@ const chartData2 = ref({
     },
   ],
 });
-const chartOptions2 = {
+
+const barChartOptions = {
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
@@ -88,9 +93,6 @@ const chartOptions2 = {
       display: false,
     },
   },
-};
-const chartOptions = {
-  responsive: true,
 };
 
 /*Computed*/
@@ -102,107 +104,94 @@ const totalBuget = computed(() => {
   let grantypeArrayNumberTotalByDistrict: number[] = [0, 0, 0, 0];
   let allProjectsCalculation = 0;
   let currentChartData1: number[] = [0, 0, 0, 0];
-  if (year.value !== "Any Year") {
+  if (year.value !== langTranslations.value.allYearsLabel) {
     allProjectsCalculation = 0;
   }
   allProjects.value.forEach((project) => {
     let yearFilter = "";
-    if (year.value !== "Any Year") {
+    if (year.value !== langTranslations.value.allYearsLabel) {
       yearFilter = longYearToYear.get(year.value) as string;
     }
-    const projectStretech = project as IClubProject | IDmProject | IDsgProject;
+    const projectSearch = project as IClubProject | IDmProject | IDsgProject;
     if (
-      yearFilter === projectStretech.rotary_year &&
-      year.value !== "Any Year"
+      yearFilter === projectSearch.rotary_year &&
+      year.value !== langTranslations.value.allYearsLabel
     ) {
       allProjectsCalculation += 1;
       fundingGoalSumAllProjects = fundingGoalSumAllProjects.add(
-        Dinero({ amount: projectStretech.funding_goal })
+        Dinero({ amount: projectSearch.funding_goal })
       );
       currentFundingSumAllProjects = currentFundingSumAllProjects.add(
-        Dinero({ amount: projectStretech.anticipated_funding })
+        Dinero({ amount: projectSearch.anticipated_funding })
       );
       pledgeSumForAllProjects = pledgeSumForAllProjects.add(
-        Dinero({ amount: projectStretech.total_pledges })
+        Dinero({ amount: projectSearch.total_pledges })
       );
-    } else if (year.value === "Any Year") {
+    } else if (year.value === langTranslations.value.allYearsLabel) {
       allProjectsCalculation += 1;
       fundingGoalSumAllProjects = fundingGoalSumAllProjects.add(
-        Dinero({ amount: projectStretech.funding_goal })
+        Dinero({ amount: projectSearch.funding_goal })
       );
       currentFundingSumAllProjects = currentFundingSumAllProjects.add(
-        Dinero({ amount: projectStretech.anticipated_funding })
+        Dinero({ amount: projectSearch.anticipated_funding })
       );
       pledgeSumForAllProjects = pledgeSumForAllProjects.add(
-        Dinero({ amount: projectStretech.total_pledges })
+        Dinero({ amount: projectSearch.total_pledges })
       );
     }
-    switch (projectStretech.grant_type) {
-      case "Club Project":
-        if (
-          districtId.value > 0 &&
-          projectStretech.district_id === districtId.value
-        ) {
-          grantypeArrayNumberTotalByDistrict[0] += 1;
-        }
-        if (yearFilter === projectStretech.rotary_year) {
-          currentChartData1[0] += 1;
-          //   grantypeArrayNumberTotal[0] += 1;
-        } else if (!yearFilter) {
-          currentChartData1[0] += 1;
-          //   grantypeArrayNumberTotal[0] += 1;
-        }
+    const updateData = (
+      index: number,
+      projectSearch: IClubProject | IDmProject | IDsgProject
+    ) => {
+      // Check if the districtId is greater than 0 and if the district_id of the projectSearch matches the districtId
+      // Also check if the yearFilter matches the rotary_year of the projectSearch
+      // If all these conditions are true, increment the value at the current index of the grantypeArrayNumberTotalByDistrict array by 1
+      if (
+        districtId.value > 0 &&
+        projectSearch.district_id === districtId.value &&
+        yearFilter === projectSearch.rotary_year
+      ) {
+        grantypeArrayNumberTotalByDistrict[index] += 1;
+      }
+      // If the districtId is greater than 0 and the district_id of the projectSearch matches the districtId, but there is no yearFilter
+      // Then also increment the value at the current index of the grantypeArrayNumberTotalByDistrict array by 1
+      else if (
+        districtId.value > 0 &&
+        projectSearch.district_id === districtId.value &&
+        !yearFilter
+      ) {
+        grantypeArrayNumberTotalByDistrict[index] += 1;
+      }
 
+      // If the yearFilter matches the rotary_year of the projectSearch, increment the value at the current index of the currentChartData1 array by 1
+      if (yearFilter === projectSearch.rotary_year) {
+        currentChartData1[index] += 1;
+      }
+      // If there is no yearFilter, also increment the value at the current index of the currentChartData1 array by 1
+      else if (!yearFilter) {
+        currentChartData1[index] += 1;
+      }
+    };
+
+    switch (projectSearch.grant_type) {
+      case "Club Project":
+        updateData(0, projectSearch);
         break;
       case "District Simplified Project":
-        if (
-          districtId.value > 0 &&
-          projectStretech.district_id === districtId.value
-        ) {
-          grantypeArrayNumberTotalByDistrict[1] += 1;
-        }
-        if (yearFilter === projectStretech.rotary_year) {
-          currentChartData1[1] += 1;
-
-          //   grantypeArrayNumberTotal[1] += 1;
-        } else if (!yearFilter) {
-          currentChartData1[1] += 1;
-
-          //   grantypeArrayNumberTotal[1] += 1;
-        }
+        updateData(1, projectSearch);
         break;
       case "District Matching Project":
-        if (
-          districtId.value > 0 &&
-          projectStretech.district_id === districtId.value
-        ) {
-          grantypeArrayNumberTotalByDistrict[2] += 1;
-        }
-        if (yearFilter === projectStretech.rotary_year) {
-          currentChartData1[2] += 1;
-        } else if (!yearFilter) {
-          currentChartData1[2] += 1;
-        }
+        updateData(2, projectSearch);
         break;
       case "Global Project":
-        if (
-          districtId.value > 0 &&
-          projectStretech.district_id === districtId.value
-        ) {
-          grantypeArrayNumberTotalByDistrict[3] += 1;
-        }
-        if (yearFilter === projectStretech.rotary_year) {
-          currentChartData1[3] += 1;
-        } else if (!yearFilter) {
-          currentChartData1[3] += 1;
-        }
+        updateData(3, projectSearch);
         break;
       default:
         break;
     }
   });
-  chartData.value.datasets[0].data = currentChartData1;
-  chartData2.value.datasets[0].data = grantypeArrayNumberTotalByDistrict;
+  pieChartData.value.datasets[0].data = currentChartData1;
+  districtBarChart.value.datasets[0].data = grantypeArrayNumberTotalByDistrict;
   return {
     totalCurrentFunds: currencyFormatterFunding(
       currentFundingSumAllProjects.getAmount()
@@ -222,27 +211,30 @@ watch(districtChosen, async () => {
   districtId.value = districtMapChosenDistrictToID.get(
     districtChosen.value as string
   ) as number;
-  chartData2.value.datasets[0].data =
+  districtBarChart.value.datasets[0].data =
     totalBuget.value.grantypeArrayNumberTotalByDistrict;
 });
 
 watch(computed1, async () => {
-  chartData.value.datasets[0].data = totalBuget.value.grantypeArrayNumberTotal;
+  pieChartData.value.datasets[0].data =
+    totalBuget.value.grantypeArrayNumberTotal;
 });
 
 watch(computed2, async () => {
-  chartData2.value.datasets[0].data =
+  districtBarChart.value.datasets[0].data =
     totalBuget.value.grantypeArrayNumberTotalByDistrict;
 });
 
 onMounted(async () => {
   try {
     const response = await projectsApi.getRotaryYears();
-    response.allRotaryYears.forEach((year) => {
-      rotaryYearsList.value.push(year);
-      longYearToYear.set(year, year.replace(/-\d{4}$/, ""));
+    response.allRotaryYears.forEach((rotaryYear, index) => {
+      rotaryYearsList.value.push(rotaryYear);
+      longYearToYear.set(rotaryYear, rotaryYear.replace(/-\d{4}$/, ""));
+      if (index === response.allRotaryYears.length - 1) {
+        year.value = rotaryYear;
+      }
     });
-    year.value = response.currentRotaryYear;
     await getAllProjects();
     await getAllDistricts();
     computed1 = totalBuget.value.grantypeArrayNumberTotal;
@@ -282,7 +274,7 @@ const getAllDistricts = async () => {
 
 const showHide = () => {
   let total = 0;
-  chartData.value.datasets[0].data.forEach((i) => {
+  pieChartData.value.datasets[0].data.forEach((i) => {
     total += i;
   });
   if (total > 0) {
@@ -302,6 +294,9 @@ const showHide = () => {
       v-model="year"
       :label="langTranslations.selectLabelRotaryYear"
       :options="rotaryYearsList"
+      :label-class="'text-3xl font-bold'"
+      :select-width="'w-5/12'"
+      :flex-view="true"
     />
   </div>
   <div class="flex flex-col items-center gap-4">
@@ -312,7 +307,7 @@ const showHide = () => {
       }}</span>
     </p>
     <p class="mb-5 text-lg font-bold text-primary-black">
-      {{ langTranslations.totalBudgetAmount }}
+      {{ langTranslations.totalBudgetsLabel }}
       <span class="text-primary-dark-color font-bold">{{
         totalBuget.totalBudget
       }}</span>
@@ -324,7 +319,7 @@ const showHide = () => {
       }}</span>
     </p>
     <p class="mb-5 text-lg font-bold text-primary-black">
-      {{ langTranslations.projectFormLabels.pledgesLabel }}
+      {{ langTranslations.totalPledgesLabel }}
       <span class="text-primary-dark-color font-bold">{{
         totalBuget.pledgeAmount
       }}</span>
@@ -333,13 +328,13 @@ const showHide = () => {
   <div
     class="chart_container items-center justify-center flex flex-col gap-4 my-8"
   >
-    <h1 class="mb-4 text-5xl font-bold text-center">
+    <h1 class="mb-4 text-3xl font-bold text-center">
       {{ langTranslations.alltimesLabel }}
     </h1>
     <div class="pie" v-if="showHide()">
       <PieChart
-        :chart-options="chartOptions"
-        :chart-data="chartData"
+        :chart-options="pieChartOptions"
+        :chart-data="pieChartData"
         :chart-id="'pie-chart'"
         :dataset-id-key="'label'"
         :css-classes="''"
@@ -363,8 +358,8 @@ const showHide = () => {
       <div class="bar">
         <BarChart
           class="bar"
-          :chart-options="chartOptions2"
-          :chart-data="chartData2"
+          :chart-options="barChartOptions"
+          :chart-data="districtBarChart"
           :chart-id="'bar-chart'"
           :css-classes="''"
           :styles="{}"

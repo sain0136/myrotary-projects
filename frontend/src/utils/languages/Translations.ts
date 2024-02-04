@@ -1,4 +1,8 @@
 export interface Translation {
+  totalPledgesLabel: string;
+  totalProjectsLabel: string;
+  totalBudgetsLabel: string;
+  allYearsLabel: string;
   resetPasswordLabel: string;
   uploadEvidenceDisabled: string;
   mailTemplates: {
@@ -337,6 +341,10 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    totalPledgesLabel: "Total Pledges:",
+    totalBudgetsLabel: "Budget Allocation for Projects:",
+    totalProjectsLabel: "Total Projects:",
+    allYearsLabel: "All Years",
     resetPasswordLabel: "Reset Password",
     uploadEvidenceDisabled:
       "Project has been approved and evidence cannot be uploaded",
@@ -369,12 +377,12 @@ export const translations: Record<string, Translation> = {
     minLengthMessage: "Must be at least {value} characters",
     maxLengthMessage: "Must be at most {value} characters",
     langPrefrenceLabel: "Language Preference",
-    alltimesLabel: "All Time Project Types",
-    statsByDistrict: "District Project Types ",
+    alltimesLabel: "Stats By Project Type",
+    statsByDistrict: "Stats By District",
     selectDistrictLabel: "Select a district",
-    totalFundsRaised: "Funds Raised:",
+    totalFundsRaised: "Total Funds Raised:",
     totalBudgetAmount: "Projects Budget:",
-    selectLabelRotaryYear: "Select Rotary Year",
+    selectLabelRotaryYear: "Choose Rotary Year",
     statsHeaderLabel: "All Projects Statistics",
     statsLabel: "Stats",
     noReportFormsFound:
@@ -715,6 +723,10 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    totalPledgesLabel: "Promesses totales:",
+    totalBudgetsLabel: "Budget Allocation pour les projets:",
+    totalProjectsLabel: "Total des projets:",
+    allYearsLabel: "Toutes les années:",
     resetPasswordLabel: "Réinitialiser le mot de passe",
     uploadEvidenceDisabled:
       "Le projet a été approuvé et les preuves ne peuvent pas être téléchargées",
@@ -750,12 +762,12 @@ export const translations: Record<string, Translation> = {
     minLengthMessage: "Doit contenir au moins  {value} caractères",
     maxLengthMessage: "Doit contenir au plus {value} caractères",
     langPrefrenceLabel: "Préférence linguistique",
-    alltimesLabel: "Tous les types de projets",
-    statsByDistrict: "Types de projets District",
+    alltimesLabel: "Statistiques par type de projet",
+    statsByDistrict: "Statistiques par district",
     selectDistrictLabel: "Sélectionner un district",
     totalBudgetAmount: "Budget des Projets:",
-    totalFundsRaised: "Fonds collectés :",
-    selectLabelRotaryYear: "Sélectionnez l'année Rotary",
+    totalFundsRaised: "Total des fonds collectés:",
+    selectLabelRotaryYear: "Choisir l'année rotarienne",
     statsHeaderLabel: "Tous les projets Statistiques",
     statsLabel: "Statistiques",
     noReportFormsFound:
