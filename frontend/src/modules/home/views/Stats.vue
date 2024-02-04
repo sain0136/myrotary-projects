@@ -295,7 +295,7 @@ const showHide = () => {
       :label="langTranslations.selectLabelRotaryYear"
       :options="rotaryYearsList"
       :label-class="'text-3xl font-bold'"
-      :select-width="'w-5/12'"
+      :select-width="'w-6/12'"
       :flex-view="true"
     />
   </div>
