@@ -9,7 +9,7 @@ import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted, reactive, ref } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import District from "@/utils/classes/District";
-import { useVuelidate } from "@vuelidate/core";
+import { useVuelidate, type ValidationRuleWithParams } from "@vuelidate/core";
 import router from "@/router";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import H3 from "@/components/headings/H3.vue";
@@ -49,11 +49,11 @@ type formType = "districtAdmin";
 const districtApi = new DistrictApi(new ApiClient());
 // required form data
 const route = useRoute();
-const isEdit = router.currentRoute.value.params.districtId ? true : false;
+const isEdit = ref(router.currentRoute.value.params.districtId ? true : false);
 const formType = route.query.formType
   ? (route.query.formType as formType)
   : null;
-const districtId = isEdit
+const districtId = isEdit.value
   ? parseInt(router.currentRoute.value.params.districtId as string)
   : null;
 const { handleError, handleSuccess, handleValidationForm } = errorHandler();
@@ -89,7 +89,7 @@ const duplicateErrorMsg = ref({
   en: "",
   fr: "",
 });
-const submitLabel = isEdit
+const submitLabel = isEdit.value
   ? {
       en: "Update",
       fr: "Modifier",
@@ -98,6 +98,7 @@ const submitLabel = isEdit
       en: "Submit",
       fr: "Soumettre",
     };
+const alwaysTrueValidator = () => true;
 
 /* Validations */
 const rules = {
@@ -108,15 +109,15 @@ const rules = {
     ),
     maxLength: helpers.withMessage(
       customPrintf(langTranslations.value.maxLengthMessage, "4"),
-      maxLength(4)
+      () => (!isEdit.value ? maxLength(4) : (alwaysTrueValidator() as any))
     ),
     minLenght: helpers.withMessage(
       customPrintf(langTranslations.value.minLengthMessage, "4"),
-      minLength(4)
+      () => (!isEdit.value ? minLength(4) : (alwaysTrueValidator() as any))
     ),
     numeric: helpers.withMessage(
       langTranslations.value.formErorrText.numeric,
-      numeric
+      () => (!isEdit.value ? numeric : (alwaysTrueValidator() as any))
     ),
   },
   district_president: {
@@ -207,7 +208,7 @@ const v$ = useVuelidate(rules, district);
 /* Hooks */
 
 onMounted(async () => {
-  if (isEdit && districtId) {
+  if (isEdit.value && districtId) {
     try {
       const response = await districtApi.getById(districtId);
       Object.assign(district, response);
@@ -279,7 +280,7 @@ const validateAndSubmit = async () => {
   }
   try {
     //TODO Should i udate store data?
-    if (isEdit) {
+    if (isEdit.value) {
       await districtApi.updateDistrict(district);
     } else {
       await districtApi.createDistrict(district);

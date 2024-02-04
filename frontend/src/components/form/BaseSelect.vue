@@ -5,36 +5,37 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, ref } from "vue";
-import { errorHandler } from "@/utils/composables/ErrorHandler";
 defineEmits(["update:modelValue"]);
 
 /* Data */
-const { langTranslations } = useLanguage();
-const { options, modelValue, defaultOption, label, errorMessage, disabled } =
-  defineProps<{
-    label?: string;
-    errorMessage?: string;
-    modelValue: string | number;
-    defaultOption?: string;
-    options: string[];
-    disabled?: boolean;
-  }>();
-/* Hooks */
-onMounted(async () => {});
+const {
+  options,
+  modelValue,
+  label,
+  errorMessage,
+  disabled,
+  labelClass,
+  selectWidth,
+  flexView,
+} = defineProps<{
+  label?: string;
+  labelClass?: string;
+  errorMessage?: string;
+  modelValue: string | number;
+  options: string[];
+  disabled?: boolean;
+  selectWidth?: string;
+  flexView?: boolean;
+}>();
 
-/* Methods */
+const baseStyling = `block pl-0.5 mb-2 text-nearBlack ${
+  !labelClass ? "font-semibold text-sm" : ""
+} ${labelClass ?? ""}`;
 </script>
 
 <template>
-  <div>
-    <label
-      v-if="label"
-      :for="label"
-      class="block pl-0.5 mb-2 text-sm font-semibold text-nearBlack"
-      >{{ label }}</label
-    >
+  <div :class="[flexView ? 'flex flex-col justify-center items-center' : '']">
+    <label v-if="label" :for="label" :class="baseStyling">{{ label }}</label>
     <select
       :disabled="disabled ?? false"
       :value="modelValue"
@@ -42,8 +43,11 @@ onMounted(async () => {});
       @input="
         $emit('update:modelValue', ($event.target as HTMLInputElement).value)
       "
-      :class="[disabled ? 'disabled-input' : 'text-nearBlack']"
-      class="bg-gray-50 border border-gray-300 rounded-lg text-sm block w-full p-2.5"
+      :class="[
+        disabled ? 'disabled-input' : 'text-nearBlack',
+        !selectWidth ? 'w-full' : selectWidth,
+      ]"
+      class="bg-gray-50 border border-gray-300 rounded-lg text-sm block p-2.5"
     >
       <option
         v-for="option in options"
