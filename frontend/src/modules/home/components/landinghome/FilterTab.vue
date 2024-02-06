@@ -53,6 +53,7 @@ const filterData: ProjectFilters = reactive({
   grant_type: "",
   reset: false,
 });
+const rotary_year_long_format = ref("");
 const emit = defineEmits();
 const chosenDistrict = ref("");
 const chosenClub = ref("");
@@ -125,7 +126,7 @@ const filterProjects = async () => {
   );
   filterData.area_focus = convertAreaOfFocusLang(filterData.area_focus);
   const year =
-    longYearToYear.get(filterData.rotary_year) ??
+    longYearToYear.get(rotary_year_long_format.value) ??
     new Date().getFullYear().toString();
   filterData.rotary_year = year;
   emit("sendFilters", filterData);
@@ -149,6 +150,7 @@ const resetSearch = () => {
     grant_type: "",
     reset: true,
   });
+  rotary_year_long_format.value = "";
   emit("sendFilters", filterData);
   filterData.reset = false;
   showFilter.value = false;
@@ -222,7 +224,7 @@ const resetSearch = () => {
         <BaseSelect
           :label="langTranslations.landingPage.yearLabel"
           :options="[...longYearToYear.keys()]"
-          v-model="filterData.rotary_year"
+          v-model="rotary_year_long_format"
         />
         <BaseSelect
           :label="langTranslations.landingPage.areaOfFocusLabel"
