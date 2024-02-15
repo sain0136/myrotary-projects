@@ -3,7 +3,7 @@ import type { Ref } from "vue";
 import { translations } from "@/utils/languages/Translations";
 import type { ProjectStatus } from "@/utils/types/commonTypes";
 import ResourceList from "@/utils/classes/ResourceList";
-
+import { translatedStatus} from "@/utils/languages/TranslationConversions"
 export type lang = "en" | "fr";
 // Reactive variable for the current language
 const languagePref: Ref<lang> = ref("en");
@@ -34,35 +34,10 @@ function customPrintf(formatString: string, ...args: string[]) {
   return formattedString;
 }
 
-const translatedVersion: Record<ProjectStatus, Record<lang, string>> = {
-  "Looking For Funding": {
-    en: "Looking For Funding",
-    fr: "En recherche de financement",
-  },
-  "Fully Funded": {
-    en: "Fully Funded",
-    fr: "Financement complet",
-  },
-  Completed: {
-    en: "Completed",
-    fr: "Termine",
-  },
-  Approved: {
-    en: "Approved",
-    fr: "Approuve",
-  },
-  "Pending Approval": {
-    en: "Pending Approval",
-    fr: "En attente d'approbation",
-  },
-  "Reports Due": {
-    en: "Reports Due",
-    fr: "Rapports à rendre",
-  },
-};
+
 
 function translateProjectStatus(status: ProjectStatus, lang: lang): string {
-  return translatedVersion[status][lang];
+  return translatedStatus[status][lang];
 }
 
 function translateProjectTypeList(lang: lang): string[] {
@@ -77,7 +52,7 @@ function translateProjectTypeList(lang: lang): string[] {
 function translateProjectStatusList(lang: lang): string[] {
   return [
     "",
-    ...Object.values(translatedVersion).map(
+    ...Object.values(translatedStatus).map(
       (projectStatus) => projectStatus[lang]
     ),
   ];
@@ -111,7 +86,7 @@ function convertRegionLang(type: string) {
   return region?.en || "";
 }
 function convertProjectStatusLang(type: string) {
-  const projectStatus = Object.values(translatedVersion).find(
+  const projectStatus = Object.values(translatedStatus).find(
     (projectStatus) => projectStatus.en === type || projectStatus.fr === type
   );
   return projectStatus?.en || "";
