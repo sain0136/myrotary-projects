@@ -66,23 +66,35 @@ function translateProjectStatus(status: ProjectStatus, lang: lang): string {
 }
 
 function translateProjectTypeList(lang: lang): string[] {
-  return Object.values(ResourceList.projectTypeMap).map(
-    (projectType) => projectType[lang]
-  );
+  return [
+    "",
+    ...Object.values(ResourceList.projectTypeMap).map(
+      (projectType) => projectType[lang]
+    ),
+  ];
 }
 
 function translateProjectStatusList(lang: lang): string[] {
-  return Object.values(translatedVersion).map(
-    (projectStatus) => projectStatus[lang]
-  );
+  return [
+    "",
+    ...Object.values(translatedVersion).map(
+      (projectStatus) => projectStatus[lang]
+    ),
+  ];
 }
 
 function translateRegionList(lang: lang): string[] {
-  return Object.values(ResourceList.regionMap).map((region) => region[lang]);
+  return [
+    "",
+    ...Object.values(ResourceList.regionMap).map((region) => region[lang]),
+  ];
 }
 
 function translateAreaOfFocusList(lang: lang): string[] {
-  return Object.values(ResourceList.areaOfFocusMap).map((aof) => aof[lang]);
+  return [
+    "",
+    ...Object.values(ResourceList.areaOfFocusMap).map((aof) => aof[lang]),
+  ];
 }
 
 function convertAreaOfFocusLang(type: string) {

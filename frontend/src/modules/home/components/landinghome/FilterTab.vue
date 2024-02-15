@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, reactive, ref, watch } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import District from "@/utils/classes/District";
 import { DistrictApi } from "@/api/services/DistrictsApi";
 import { ApiClient } from "@/api/ApiClient";
@@ -59,6 +59,9 @@ const chosenDistrict = ref("");
 const chosenClub = ref("");
 const rotaryYearsList = ref([langTranslations.value.allYearsLabel] as string[]);
 const longYearToYear = reactive(new Map<string, string>());
+const arrayLongYearToYear = computed(() => {
+  return ["", ...longYearToYear.keys()];
+});
 
 /* Hooks */
 onMounted(async () => {
@@ -125,9 +128,7 @@ const filterProjects = async () => {
     filterData.project_status
   );
   filterData.area_focus = convertAreaOfFocusLang(filterData.area_focus);
-  const year =
-    longYearToYear.get(rotary_year_long_format.value) ??
-    new Date().getFullYear().toString();
+  const year = longYearToYear.get(rotary_year_long_format.value) ?? "";
   filterData.rotary_year = year;
   emit("sendFilters", filterData);
   showFilter.value = false;
@@ -223,7 +224,7 @@ const resetSearch = () => {
         />
         <BaseSelect
           :label="langTranslations.landingPage.yearLabel"
-          :options="[...longYearToYear.keys()]"
+          :options="arrayLongYearToYear"
           v-model="rotary_year_long_format"
         />
         <BaseSelect

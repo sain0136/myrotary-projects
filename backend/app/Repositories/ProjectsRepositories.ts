@@ -109,31 +109,25 @@ export default class ProjectsRepositories {
             rotary_year: projectFilters.rotary_year,
           });
         }
-
         if (projectFilters.grant_type) {
           db.from("projects").where({ grant_type: projectFilters.grant_type });
         }
-
         if (projectFilters.district_id) {
           db.from("projects").where({
             district_id: projectFilters.district_id,
           });
         }
-
         if (projectFilters.club_id) {
           db.from("projects").where({ club_id: projectFilters.club_id });
         }
-
         if (projectFilters.project_region) {
           db.from("projects").where({ region: projectFilters.project_region });
         }
-
         if (projectFilters.project_status) {
           db.from("projects").where({
             project_status: projectFilters.project_status,
           });
         }
-
         if (projectFilters.area_focus) {
           db.from("projects").whereRaw(
             `area_focus->>'$.${projectFilters.area_focus}' = 'true'`
