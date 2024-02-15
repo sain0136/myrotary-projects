@@ -19,6 +19,7 @@ import { errorHandler } from "@/utils/composables/ErrorHandler";
 import type { IClub } from "@/utils/interfaces/IClub";
 import type { ProjectFilters } from "@/utils/types/commonTypes";
 import { ProjectsApi } from "@/api/services/ProjectsApi";
+import { cloneDeep } from "lodash";
 
 /* Data */
 const {
@@ -122,15 +123,16 @@ const getRotaryYears = async () => {
 };
 
 const filterProjects = async () => {
-  filterData.grant_type = convertProjectLang(filterData.grant_type);
-  filterData.project_region = convertRegionLang(filterData.project_region);
-  filterData.project_status = convertProjectStatusLang(
-    filterData.project_status
+  const copy = cloneDeep(filterData);
+  copy.grant_type = convertProjectLang(filterData.grant_type);
+  copy.project_region = convertRegionLang(filterData.project_region);
+  copy.project_status = convertProjectStatusLang(
+    copy.project_status
   );
-  filterData.area_focus = convertAreaOfFocusLang(filterData.area_focus);
+  copy.area_focus = convertAreaOfFocusLang(filterData.area_focus);
   const year = longYearToYear.get(rotary_year_long_format.value) ?? "";
-  filterData.rotary_year = year;
-  emit("sendFilters", filterData);
+  copy.rotary_year = year;
+  emit("sendFilters", copy);
   showFilter.value = false;
 };
 
