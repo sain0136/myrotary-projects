@@ -30,6 +30,10 @@ type ColumnOptions = {
     length: number;
   };
   title?: boolean;
+  toolTip?: {
+    show: boolean;
+    columnsApplied: string[];
+  };
 };
 type tailwindWidths = "w-2/12" | "w-1/12" | "w-1/6";
 type ButtonOptions = {
@@ -150,6 +154,19 @@ const displayRow = (row: { [x: string]: any }, column: ColumnOptions) => {
   }
   return row[column.colName];
 };
+
+const getTooltipContent = (
+  row: { [x: string]: any },
+  column: ColumnOptions
+) => {
+  if (
+    column.toolTip?.show &&
+    column.toolTip.columnsApplied.includes(column.colName)
+  ) {
+    return row[column.colName];
+  }
+  return "";
+};
 </script>
 
 <template>
@@ -233,6 +250,7 @@ const displayRow = (row: { [x: string]: any }, column: ColumnOptions) => {
               'hidden lg:table-cell': column.lgScreenCollapsable,
             }"
             :title="column.title ? row[column.colName] : undefined"
+            v-tooltip.top="getTooltipContent(row, column)"
           >
             <span>
               {{ displayRow(row, column) }}
