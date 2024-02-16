@@ -266,7 +266,11 @@ const editProject = (project: IDsgProject | IDmProject | IClubProject) => {
               show: true,
               length: 15,
             },
-            title: true,
+            title: false,
+            toolTip: {
+              show: true,
+              columnsApplied: ['project_name'],
+            },
           },
           {
             name: langTranslations.projectCodeLabel,
