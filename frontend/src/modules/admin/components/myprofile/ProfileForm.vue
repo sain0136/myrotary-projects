@@ -30,6 +30,7 @@ onMounted(async () => {});
     :submit-label="langTranslations.saveLabel"
     :req-data="reqData"
     :user-id="userStore.loggedInUser.user_id"
+    :acceptedFileTypes="'imageOnly'"
   />
 </template>
 

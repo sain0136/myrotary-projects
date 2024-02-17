@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import BaseFileUpload from "@/components/form/BaseFileUpload.vue";
 import type { uploadFileData, uploadedFile } from "@/utils/types/commonTypes";
@@ -134,16 +134,49 @@ const handleCheckboxChange = (event: Event, row: uploadedFile) => {
   }
 };
 
-const handleSelectAll = (e: Event) => {
+const handleSelectAll = (e: Event, type: "gallery" | "evidence" | "report") => {
   const target = e.target as HTMLInputElement;
-  for (const file of useActiveProjectStore().activeProject.file_uploads
-    .evidence_files as uploadedFileCheckbox[]) {
-    file.checked = target.checked;
-  }
+
   if (target.checked) {
-    toBeDeletedFiles.value = useActiveProjectStore().activeProject.file_uploads
-      .evidence_files as uploadedFileCheckbox[];
+    if (type === "gallery") {
+      toBeDeletedFiles.value = useActiveProjectStore().activeProject
+        .file_uploads.project_gallery as uploadedFileCheckbox[];
+      for (const file of useActiveProjectStore().activeProject.file_uploads
+        .project_gallery as uploadedFileCheckbox[]) {
+        file.checked = target.checked;
+      }
+    } else if (type === "evidence") {
+      toBeDeletedFiles.value = useActiveProjectStore().activeProject
+        .file_uploads.evidence_files as uploadedFileCheckbox[];
+      for (const file of useActiveProjectStore().activeProject.file_uploads
+        .evidence_files as uploadedFileCheckbox[]) {
+        file.checked = target.checked;
+      }
+    } else if (type === "report") {
+      toBeDeletedFiles.value = useActiveProjectStore().activeProject
+        .file_uploads.reports_files as uploadedFileCheckbox[];
+      for (const file of useActiveProjectStore().activeProject.file_uploads
+        .reports_files as uploadedFileCheckbox[]) {
+        file.checked = target.checked;
+      }
+    }
   } else {
+    if (type === "gallery") {
+      for (const file of useActiveProjectStore().activeProject.file_uploads
+        .project_gallery as uploadedFileCheckbox[]) {
+        file.checked = target.checked;
+      }
+    } else if (type === "evidence") {
+      for (const file of useActiveProjectStore().activeProject.file_uploads
+        .evidence_files as uploadedFileCheckbox[]) {
+        file.checked = target.checked;
+      }
+    } else if (type === "report") {
+      for (const file of useActiveProjectStore().activeProject.file_uploads
+        .reports_files as uploadedFileCheckbox[]) {
+        file.checked = target.checked;
+      }
+    }
     toBeDeletedFiles.value = [];
   }
 };
@@ -312,7 +345,7 @@ const generateUploadLimits = (
             <div class="flex items-center">
               <input
                 id="checkbox-all-search"
-                @change="handleSelectAll($event)"
+                @change="handleSelectAll($event, 'gallery')"
                 v-model="isAllSelected.projectGallery"
                 type="checkbox"
                 class="w-4 h-4 text-secondary bg-gray-100 border-gray-300 rounded"
@@ -428,7 +461,7 @@ const generateUploadLimits = (
             <div class="flex items-center">
               <input
                 id="checkbox-all-search"
-                @change="handleSelectAll($event)"
+                @change="handleSelectAll($event, 'evidence')"
                 v-model="isAllSelected.evidence"
                 type="checkbox"
                 class="w-4 h-4 text-secondary bg-gray-100 border-gray-300 rounded"
@@ -482,7 +515,7 @@ const generateUploadLimits = (
               <div
                 @click="deleteFiles(file)"
                 :title="langTranslations.deleteLabel"
-                class="cursor-pointer  font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
+                class="cursor-pointer font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
               >
                 <Icon icon="tabler:trash" />
               </div>
@@ -531,7 +564,7 @@ const generateUploadLimits = (
             <div class="flex items-center">
               <input
                 id="checkbox-all-search"
-                @change="handleSelectAll($event)"
+                @change="handleSelectAll($event, 'report')"
                 v-model="isAllSelected.evidence"
                 type="checkbox"
                 class="w-4 h-4 text-secondary bg-gray-100 border-gray-300 rounded"
