@@ -18,6 +18,7 @@ import {
   type AllUserRoles,
 } from "@/utils/composables/UseAccessControl";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
+import Qmark from "@/components/icons/Qmark.vue";
 
 /* Data */
 const { hasAccess } = useAccessControl();
@@ -86,6 +87,7 @@ const tabs = ref([
   {
     name: "administrating",
     label: langTranslations.value.myprojectsView.administratingProjectsLabel,
+    toolTip: langTranslations.value.myprojectsView.administratingProjectsToolTip,
   },
   {
     name: "newProject",
@@ -114,9 +116,11 @@ const setActiveTab = (tabName: string) => {
         class="inline-block cursor-pointer rounded-t-lg p-4 text-2xl hover:bg-gray-300 hover:text-gray-600"
         :class="{
           ' active  bg-gray-100 text-nearBlack': tab.name === activeTab,
+          'flex flex-nowrap' : tab.toolTip
         }"
       >
         {{ tab.label }}
+        <Qmark :help-text="tab.toolTip ?? ''" v-if="tab.toolTip" />
       </a>
     </li>
   </ul>
