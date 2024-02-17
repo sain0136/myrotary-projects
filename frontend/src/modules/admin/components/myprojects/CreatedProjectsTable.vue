@@ -270,7 +270,7 @@ const editProject = (project: IDsgProject | IDmProject | IClubProject) => {
             toolTip: {
               show: true,
               columnsApplied: ['project_name'],
-            },
+            }
           },
           {
             name: langTranslations.projectCodeLabel,

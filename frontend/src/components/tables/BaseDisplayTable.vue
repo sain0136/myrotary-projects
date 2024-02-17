@@ -16,6 +16,7 @@ import type {
   IDsgProject,
 } from "@/utils/interfaces/IProjects";
 import { grantType, projectStatus } from "@/utils/types/commonTypes";
+import Qmark from "@/components/icons/Qmark.vue";
 
 /* Types */
 type ColumnOptions = {
@@ -34,6 +35,7 @@ type ColumnOptions = {
     show: boolean;
     columnsApplied: string[];
   };
+  headerTooltip?: string;
 };
 type tailwindWidths = "w-2/12" | "w-1/12" | "w-1/6";
 type ButtonOptions = {
@@ -199,13 +201,14 @@ const getTooltipContent = (
             v-for="column in columns"
             :key="column.name"
             scope="col"
-            class="px-6 py-3"
+            class="px-6 py-3 flex gap-2 items-center flex-nowrap"
             :class="{
               'hidden md:table-cell': column.collapsable,
               'hidden lg:table-cell': column.lgScreenCollapsable,
             }"
           >
             {{ column.name }}
+            <Qmark :help-text="column.headerTooltip ?? ''" v-if="column.headerTooltip" />
           </th>
           <th
             v-if="!hideActionsColumn"
