@@ -20,7 +20,7 @@ import type { CustomErrors } from "@/utils/classes/CustomErrors";
 import { ProjectsApi } from "@/api/services/ProjectsApi";
 import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
-
+import Hr from "@/components/hr/Hr.vue";
 /* Props */
 const { projectType } = defineProps<{
   projectType: "club" | "dsg" | "dm";
@@ -40,7 +40,11 @@ const validStatuses = [
   "Completed",
 ];
 const componentKey = ref(0);
-const isAllSelected = ref(false);
+const isAllSelected = ref({
+  evidence: false,
+  projectGallery: false,
+  report: false,
+});
 const coverImageReqData = {
   databaseTarget: "project-media",
   storagePath: "./projects",
@@ -92,6 +96,11 @@ const deleteFiles = async (file: uploadedFile | uploadedFile[]) => {
   try {
     const toDelete = Array.isArray(file) ? file : [file];
     await uploadsApi.deleteFiles(toDelete, projectId ?? 0);
+    isAllSelected.value = {
+      evidence: false,
+      projectGallery: false,
+      report: false,
+    };
     fetchUpdatedData();
   } catch (error) {
     handleError(error as CustomErrors);
@@ -252,6 +261,7 @@ const generateUploadLimits = (
         :project-id="projectId ?? 0"
       />
     </div>
+    <hr class="w-full bg-gray-900 h-0.5" />
     <!-- Gallery Upload -->
     <div
       v-if="
@@ -275,56 +285,96 @@ const generateUploadLimits = (
         :post-upload-callback="() => (componentKey += 1)"
       />
     </div>
-    <div v-else>
-      {{ langTranslations.maxGalleryUploads }}
+    <div class="w-full" v-else>
+      <div
+        class="w-1/2 m-auto text-center rounded-lg border border-primary p-4"
+      >
+        {{ langTranslations.maxGalleryUploads }}
+      </div>
     </div>
-    <table
+    <div
+      class="w-full"
       v-if="
         useActiveProjectStore().activeProject.file_uploads.project_gallery &&
         (useActiveProjectStore().activeProject.file_uploads.project_gallery as [])
           .length > 0
       "
-      class="w-full text-sm text-left text-nearWhite"
     >
-      <thead class="text-xs text-nearWhite uppercase bg-gray-500">
-        <th scope="col" class="px-6 py-3">
-          {{ "#" }}
-        </th>
-        <th scope="col" class="px-6 py-3">
-          {{ "File" }}
-        </th>
-        <th scope="col" class="px-6 py-3 text-center">
-          {{ langTranslations.deleteLabel }}
-        </th>
-      </thead>
-      <tbody>
-        <tr
-          v-for="(file, index) in (useActiveProjectStore().activeProject
-              .file_uploads.project_gallery as uploadedFile[])"
-          :key="file.s3Name"
-          class="bg-gray-800 border-b border-gray-700"
-        >
-          <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap">
-            {{ index + 1 }}
-          </th>
-          <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap">
-            <a target="_blank" :href="file.s3UrlLink">
-              {{ stripUrlPart(file.s3Name) }}
-            </a>
-          </th>
-          <td class="px-6 py-4 flex justify-center">
-            <div
-              @click="deleteFiles(file)"
-              :title="langTranslations.deleteLabel"
-              class="cursor-pointer font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
-            >
-              <Icon icon="tabler:trash" />
+      <RotaryButton
+        :disable="toBeDeletedFiles.length < 1"
+        :label="langTranslations.deleteLabel"
+        @click="deleteFiles(toBeDeletedFiles)"
+        :theme="'primary'"
+      />
+      <table class="w-full text-sm text-left text-nearWhite">
+        <thead class="text-xs text-nearWhite uppercase bg-gray-500">
+          <th scope="col" class="p-4">
+            <div class="flex items-center">
+              <input
+                id="checkbox-all-search"
+                @change="handleSelectAll($event)"
+                v-model="isAllSelected.projectGallery"
+                type="checkbox"
+                class="w-4 h-4 text-secondary bg-gray-100 border-gray-300 rounded"
+              />
+              <label for="checkbox-all-search" class="sr-only">checkbox</label>
             </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+          </th>
+          <th scope="col" class="px-6 py-3">
+            {{ "#" }}
+          </th>
+          <th scope="col" class="px-6 py-3">
+            {{ "File" }}
+          </th>
+          <th scope="col" class="px-6 py-3 text-center">
+            {{ langTranslations.deleteLabel }}
+          </th>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(file, index) in (useActiveProjectStore().activeProject
+              .file_uploads.project_gallery as uploadedFileCheckbox[])"
+            :key="file.s3Name"
+            class="bg-gray-800 border-b border-gray-700"
+          >
+            <td class="w-4 p-4">
+              <div class="flex justify-center items-center">
+                <input
+                  @change="handleCheckboxChange($event, file)"
+                  v-model="file.checked"
+                  :id="'checkbox-table-search-'"
+                  type="checkbox"
+                  class="w-4 h-4 text-secondary bg-gray-100 border-gray-300 rounded"
+                />
+                <label :for="'checkbox-table-search-'" class="sr-only"
+                  >checkbox</label
+                >
+              </div>
+            </td>
+            <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap">
+              {{ index + 1 }}
+            </th>
+            <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap">
+              <a target="_blank" :href="file.s3UrlLink">
+                {{ stripUrlPart(file.s3Name) }}
+              </a>
+            </th>
+            <td class="px-6 py-4 flex justify-center">
+              <div
+                @click="deleteFiles(file)"
+                :title="langTranslations.deleteLabel"
+                class="cursor-pointer font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
+              >
+                <Icon icon="tabler:trash" />
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <!-- Evidence Upload -->
+    <hr class="w-full bg-gray-900 h-0.5" />
     <div
       class="w-9/12 py-4"
       v-if="projectType === 'dsg' || projectType === 'dm'"
@@ -360,6 +410,7 @@ const generateUploadLimits = (
       />
     </div>
     <div
+      class="w-full"
       v-if="
         useActiveProjectStore().activeProject.file_uploads.evidence_files
           .length > 0
@@ -378,7 +429,7 @@ const generateUploadLimits = (
               <input
                 id="checkbox-all-search"
                 @change="handleSelectAll($event)"
-                v-model="isAllSelected"
+                v-model="isAllSelected.evidence"
                 type="checkbox"
                 class="w-4 h-4 text-secondary bg-gray-100 border-gray-300 rounded"
               />
@@ -386,15 +437,18 @@ const generateUploadLimits = (
             </div>
           </th>
           <th scope="col" class="px-6 py-3">
-            {{ "File" }}
+            {{ "#" }}
           </th>
           <th scope="col" class="px-6 py-3">
+            {{ "File" }}
+          </th>
+          <th scope="col" class="px-6 py-3 text-center">
             {{ langTranslations.deleteLabel }}
           </th>
         </thead>
         <tbody>
           <tr
-            v-for="file in (useActiveProjectStore().activeProject
+            v-for="(file, index) in (useActiveProjectStore().activeProject
               .file_uploads.evidence_files as uploadedFileCheckbox[])"
             :key="file.s3Name"
             class="bg-gray-800 border-b border-gray-700"
@@ -413,6 +467,12 @@ const generateUploadLimits = (
                 >
               </div>
             </td>
+            <th
+              scope="row"
+              class="whitespace-nowrap px-6 py-4 font-medium text-nearWhite"
+            >
+              {{ index + 1 }}
+            </th>
             <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap">
               <a target="_blank" :href="file.s3UrlLink">
                 {{ stripUrlPart(file.s3Name) }}
@@ -422,7 +482,7 @@ const generateUploadLimits = (
               <div
                 @click="deleteFiles(file)"
                 :title="langTranslations.deleteLabel"
-                class="cursor-pointer font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
+                class="cursor-pointer  font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
               >
                 <Icon icon="tabler:trash" />
               </div>
@@ -432,6 +492,7 @@ const generateUploadLimits = (
       </table>
     </div>
     <!-- Report Upload -->
+    <hr class="w-full bg-gray-900 h-0.5" />
     <div
       class="w-9/12 py-4"
       v-if="projectType === 'dsg' || projectType === 'dm'"
@@ -452,27 +513,69 @@ const generateUploadLimits = (
       />
     </div>
     <div
+      class="w-full"
       v-if="
         useActiveProjectStore().activeProject.file_uploads.reports_files
           .length > 0
       "
     >
+      <RotaryButton
+        :disable="toBeDeletedFiles.length < 1"
+        :label="langTranslations.deleteLabel"
+        @click="deleteFiles(toBeDeletedFiles)"
+        :theme="'primary'"
+      />
       <table class="w-full text-sm text-left text-nearWhite">
         <thead class="text-xs text-nearWhite uppercase bg-gray-500">
+          <th scope="col" class="p-4">
+            <div class="flex items-center">
+              <input
+                id="checkbox-all-search"
+                @change="handleSelectAll($event)"
+                v-model="isAllSelected.evidence"
+                type="checkbox"
+                class="w-4 h-4 text-secondary bg-gray-100 border-gray-300 rounded"
+              />
+              <label for="checkbox-all-search" class="sr-only">checkbox</label>
+            </div>
+          </th>
+          <th scope="col" class="px-6 py-3">
+            {{ "#" }}
+          </th>
           <th scope="col" class="px-6 py-3">
             {{ langTranslations.fileLabel }}
           </th>
-          <th scope="col" class="px-6 py-3">
+          <th scope="col" class="px-6 py-3 text-center">
             {{ langTranslations.deleteLabel }}
           </th>
         </thead>
         <tbody>
           <tr
-            v-for="file in (useActiveProjectStore().activeProject
-              .file_uploads.reports_files as uploadedFile[])"
+            v-for="(file, index) in (useActiveProjectStore().activeProject
+              .file_uploads.reports_files as uploadedFileCheckbox[])"
             :key="file.s3Name"
             class="bg-gray-800 border-b border-gray-700"
           >
+            <td class="w-4 p-4">
+              <div class="flex justify-center items-center">
+                <input
+                  @change="handleCheckboxChange($event, file)"
+                  v-model="file.checked"
+                  :id="'checkbox-table-search-'"
+                  type="checkbox"
+                  class="w-4 h-4 text-secondary bg-gray-100 border-gray-300 rounded"
+                />
+                <label :for="'checkbox-table-search-'" class="sr-only"
+                  >checkbox</label
+                >
+              </div>
+            </td>
+            <th
+              scope="row"
+              class="whitespace-nowrap px-6 py-4 font-medium text-nearWhite"
+            >
+              {{ index + 1 }}
+            </th>
             <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap">
               <a target="_blank" :href="file.s3UrlLink">
                 {{ stripUrlPart(file.s3Name) }}
