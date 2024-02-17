@@ -433,7 +433,7 @@ const triggerFileInput = () => {
         </RotaryButton>
       </div>
     </div>
-    <LoadingSpinner v-if="loading && !iconMode" />
+    <LoadingSpinner v-else-if="loading && dropzoneMode && !iconMode" />
   </div>
 </template>
 
