@@ -6,14 +6,10 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import BaseFileUpload from "@/components/form/BaseFileUpload.vue";
-import type {
-  ProjectStatus,
-  uploadFileData,
-  uploadedFile,
-} from "@/utils/types/commonTypes";
+import type { uploadFileData, uploadedFile } from "@/utils/types/commonTypes";
 import H4 from "@/components/headings/H4.vue";
 import { useRoute } from "vue-router";
 import { useActiveProjectStore } from "@/stores/ActiveProjectStore";
@@ -24,6 +20,11 @@ import type { CustomErrors } from "@/utils/classes/CustomErrors";
 import { ProjectsApi } from "@/api/services/ProjectsApi";
 import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
+
+/* Props */
+const { projectType } = defineProps<{
+  projectType: "club" | "dsg" | "dm";
+}>();
 
 /* Data */
 type uploadedFileCheckbox = uploadedFile & { checked: boolean };
@@ -38,6 +39,7 @@ const validStatuses = [
   "Reports Due",
   "Completed",
 ];
+const componentKey = ref(0);
 const isAllSelected = ref(false);
 const coverImageReqData = {
   databaseTarget: "project-media",
@@ -71,20 +73,16 @@ const route = useRoute();
 // required form data
 const projectId =
   route.params.projectId !== "" ? Number(route.params.projectId) : null;
-//
 
-const { projectType } = defineProps<{
-  projectType: "club" | "dsg" | "dm";
-}>();
 /* Hooks */
 onMounted(async () => {});
 
 /* Methods */
-
 const fetchUpdatedData = async () => {
   try {
     const response = await projectsApi.getProject(projectId ?? 0);
     useActiveProjectStore().setActiveProject(response);
+    componentKey.value += 1;
   } catch (error) {
     handleError(error as CustomErrors);
   }
@@ -139,6 +137,48 @@ const handleSelectAll = (e: Event) => {
   } else {
     toBeDeletedFiles.value = [];
   }
+};
+
+const generateUploadLimits = (
+  limitPer: number,
+  type: "gallery" | "evidence" | "report",
+  maxLimit: number
+) => {
+  const uploadLimit = {
+    maxFilesUploadPer: limitPer,
+    uploadMaxLimit: maxLimit,
+    typeListLength: 0,
+  };
+  switch (type) {
+    case "gallery":
+      uploadLimit.typeListLength =
+        (useActiveProjectStore().activeProject.file_uploads.project_gallery &&
+          (
+            useActiveProjectStore().activeProject.file_uploads
+              .project_gallery as []
+          ).length) ??
+        0;
+      break;
+    case "evidence":
+      uploadLimit.typeListLength =
+        (useActiveProjectStore().activeProject.file_uploads.evidence_files &&
+          (
+            useActiveProjectStore().activeProject.file_uploads
+              .evidence_files as []
+          ).length) ??
+        0;
+      break;
+    case "report":
+      uploadLimit.typeListLength =
+        (useActiveProjectStore().activeProject.file_uploads.reports_files &&
+          (
+            useActiveProjectStore().activeProject.file_uploads
+              .reports_files as []
+          ).length) ??
+        0;
+      break;
+  }
+  return uploadLimit;
 };
 </script>
 
@@ -216,7 +256,7 @@ const handleSelectAll = (e: Event) => {
     <div
       v-if="
         !useActiveProjectStore().activeProject.file_uploads.project_gallery ||
-        (useActiveProjectStore().activeProject.file_uploads.project_gallery as []).length < 10
+        (useActiveProjectStore().activeProject.file_uploads.project_gallery as []).length < 15
       "
       class="w-9/12 py-4"
     >
@@ -225,21 +265,14 @@ const handleSelectAll = (e: Event) => {
         :content="langTranslations.uploadGalleryLabel"
       />
       <BaseFileUpload
+        :key="componentKey"
         :submit-label="langTranslations.saveLabel"
         :req-data="projectGalleryReqData"
         :acceptedFileTypes="'imageOnly'"
         :project-id="projectId ?? 0"
         :dropzone-mode="true"
-        :upload-limits="{
-          maxFiles:
-           ( useActiveProjectStore().activeProject.file_uploads.project_gallery &&
-            (useActiveProjectStore().activeProject.file_uploads.project_gallery as [])
-              .length > 0)
-              ? 10 -
-              (useActiveProjectStore().activeProject.file_uploads.project_gallery as [])
-              .length
-              : 10,
-        }"
+        :upload-limits="generateUploadLimits(10, 'gallery', 15)"
+        :post-upload-callback="() => (componentKey += 1)"
       />
     </div>
     <div v-else>
@@ -255,6 +288,9 @@ const handleSelectAll = (e: Event) => {
     >
       <thead class="text-xs text-nearWhite uppercase bg-gray-500">
         <th scope="col" class="px-6 py-3">
+          {{ "#" }}
+        </th>
+        <th scope="col" class="px-6 py-3">
           {{ "File" }}
         </th>
         <th scope="col" class="px-6 py-3 text-center">
@@ -263,11 +299,14 @@ const handleSelectAll = (e: Event) => {
       </thead>
       <tbody>
         <tr
-          v-for="file in (useActiveProjectStore().activeProject
+          v-for="(file, index) in (useActiveProjectStore().activeProject
               .file_uploads.project_gallery as uploadedFile[])"
           :key="file.s3Name"
           class="bg-gray-800 border-b border-gray-700"
         >
+          <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap">
+            {{ index + 1 }}
+          </th>
           <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap">
             <a target="_blank" :href="file.s3UrlLink">
               {{ stripUrlPart(file.s3Name) }}
@@ -305,6 +344,7 @@ const handleSelectAll = (e: Event) => {
         {{ langTranslations.uploadEvidenceDisabled }}
       </p>
       <BaseFileUpload
+        :key="componentKey"
         :submit-label="langTranslations.saveLabel"
         :req-data="evidenceFlieReqData"
         :acceptedFileTypes="'docsOnly'"
@@ -315,16 +355,8 @@ const handleSelectAll = (e: Event) => {
             useActiveProjectStore().activeProject.project_status
           )
         "
-        :upload-limits="{
-          maxFiles:
-           ( useActiveProjectStore().activeProject.file_uploads.evidence_files &&
-            (useActiveProjectStore().activeProject.file_uploads.evidence_files as [])
-              .length > 0)
-              ? 10 -
-              (useActiveProjectStore().activeProject.file_uploads.evidence_files as [])
-              .length
-              : 10,
-        }"
+        :upload-limits="generateUploadLimits(5, 'evidence', 10)"
+        :post-upload-callback="() => (componentKey += 1)"
       />
     </div>
     <div
@@ -409,21 +441,14 @@ const handleSelectAll = (e: Event) => {
         :content="langTranslations.uploadreportsLabel"
       />
       <BaseFileUpload
+        :key="componentKey"
         :submit-label="langTranslations.saveLabel"
         :req-data="reportFlieReqData"
         :acceptedFileTypes="'allTypes'"
         :project-id="projectId ?? 0"
         :dropzone-mode="true"
-        :upload-limits="{
-          maxFiles:
-           ( useActiveProjectStore().activeProject.file_uploads.reports_files &&
-            (useActiveProjectStore().activeProject.file_uploads.reports_files as [])
-              .length > 0)
-              ? 10 -
-              (useActiveProjectStore().activeProject.file_uploads.reports_files as [])
-              .length
-              : 10,
-        }"
+        :upload-limits="generateUploadLimits(5, 'report', 5)"
+        :post-upload-callback="() => (componentKey += 1)"
       />
     </div>
     <div

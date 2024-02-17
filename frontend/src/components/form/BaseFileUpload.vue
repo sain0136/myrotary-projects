@@ -5,9 +5,9 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { ref, reactive, defineProps } from "vue";
+import { ref, reactive, defineProps, onMounted } from "vue";
 import { useVuelidate } from "@vuelidate/core";
-import { helpers, required } from "@vuelidate/validators";
+import { helpers } from "@vuelidate/validators";
 import type { uploadFileData } from "@/utils/types/commonTypes";
 import { CustomErrors } from "@/utils/classes/CustomErrors";
 import { useLanguage } from "@/utils/languages/UseLanguage";
@@ -87,7 +87,9 @@ const {
   postUploadCallback?: Function;
   iconMode?: boolean;
   uploadLimits?: {
-    maxFiles?: number;
+    maxFilesUploadPer: number;
+    typeListLength: number;
+    uploadMaxLimit: number;
   };
   disabled?: boolean;
 }>();
@@ -102,7 +104,7 @@ const validationRules = {
       langTranslations.value.formErorrText.noFilesUpload,
       (value) => {
         if (iconMode) {
-          // If iconMode   is true, skip validation by returning true
+          // If iconMode is true, skip validation by returning true
           return true;
         }
         // Otherwise, perform the required validation
@@ -113,6 +115,7 @@ const validationRules = {
 };
 const v$ = useVuelidate(validationRules, validationData);
 
+/* Methods */
 const handleFileChange = (event: Event, multiple: boolean) => {
   if (disabled) return;
   const target = event.target as HTMLInputElement;
@@ -140,22 +143,47 @@ const handleDrop = (event: any) => {
 };
 
 const uploadLimitexceeded = () => {
-  if (uploadLimits && uploadLimits.maxFiles) {
+  if (uploadLimits && uploadLimits.maxFilesUploadPer) {
     if (validationData.file && Array.isArray(validationData.file)) {
-      if (validationData.file.length > uploadLimits.maxFiles) {
+      if (validationData.file.length > uploadLimits.maxFilesUploadPer) {
         handleError(
           new CustomErrors(
             400,
-            `You can upload a maximum of ${uploadLimits.maxFiles} files`,
+            `You can upload a maximum of ${uploadLimits.maxFilesUploadPer} files`,
             {
-              en: `You can upload a maximum of ${uploadLimits.maxFiles} files`,
-              fr: `Vous pouvez télécharger un maximum de ${uploadLimits.maxFiles} fichiers`,
+              en: `You can upload a maximum of ${uploadLimits.maxFilesUploadPer} files per request`,
+              fr: `Vous pouvez télécharger un maximum de ${uploadLimits.maxFilesUploadPer} fichiers par requête`,
             }
           )
         );
         return true;
       }
     }
+  }
+  let filesArray = [];
+  if (validationData.file) {
+    if (Array.isArray(validationData.file)) {
+      filesArray = validationData.file;
+    } else {
+      filesArray = [validationData.file];
+    }
+  }
+  if (
+    uploadLimits &&
+    uploadLimits.typeListLength + filesArray.length >
+      uploadLimits.uploadMaxLimit
+  ) {
+    handleError(
+      new CustomErrors(400, "Total upload limit reached", {
+        en: `Total upload limit reached. Cannot upload more than ${
+          uploadLimits.uploadMaxLimit ?? 10
+        } files`,
+        fr: `La limite de téléchargement totale est atteinte. Vous ne pouvez pas télécharger plus de ${
+          uploadLimits.uploadMaxLimit ?? 10
+        } fichiers`,
+      })
+    );
+    return true;
   }
   return false;
 };
