@@ -144,6 +144,7 @@ export interface Translation {
   projectTypeLabel: string;
   projectsLabel: string;
   myprojectsView: {
+    administratingProjectsToolTip: string;
     createdProjectsLabel: string;
     administratingProjectsLabel: string;
     createdProjectsHelpText: string;
@@ -515,6 +516,7 @@ export const translations: Record<string, Translation> = {
     projectTypeLabel: "Project Types",
     projectsLabel: "Projects",
     myprojectsView: {
+      administratingProjectsToolTip: "Projects you are assigned as co-admin",
       submissionDatesLabel:
         "District Matching and District Simplified Projects will be open for submission from {startDate} to {endDate}",
       createdProjectsLabel: "Created Projects",
@@ -903,6 +905,7 @@ export const translations: Record<string, Translation> = {
     projectTypeLabel: "Types de projets",
     projectsLabel: "Projets",
     myprojectsView: {
+      administratingProjectsToolTip: "Projets que vous administrez",
       submissionDatesLabel:
         "Les projets District Matching et District Simplified seront ouverts pour soumission du {startDate} au {endDate}",
       createdProjectsLabel: "Projets Créés",
