@@ -201,10 +201,11 @@ const getTooltipContent = (
             v-for="column in columns"
             :key="column.name"
             scope="col"
-            class="px-6 py-3 flex gap-2 items-center flex-nowrap"
+            class="px-6 py-3  "
             :class="{
               'hidden md:table-cell': column.collapsable,
               'hidden lg:table-cell': column.lgScreenCollapsable,
+              'flex gap-2 items-center flex-nowrap' : column.toolTip?.show
             }"
           >
             {{ column.name }}
