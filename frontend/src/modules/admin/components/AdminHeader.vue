@@ -6,16 +6,14 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onBeforeUnmount, onMounted, provide, ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import router from "@/router";
 import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
 import { useLoggedInClub } from "@/stores/LoggedInClub";
-import { useSiteAssets } from "@/stores/SiteAssets";
 
 /* Data */
 const showSub = ref(false);
-const assetsStore = useSiteAssets();
 const userStore = useLoggedInUserStore();
 const districtStore = useLoggedInDistrict();
 const clubStore = useLoggedInClub();
@@ -27,11 +25,6 @@ const { langTranslations, languagePref, setLanguage, availabileLanguages } =
   useLanguage();
 const show = ref(false);
 const rootElement = ref<HTMLElement | null>(null);
-
-const title =
-  languagePref.value === "en"
-    ? langTranslations.value.french
-    : langTranslations.value.english;
 
 /* Hooks */
 onMounted(async () => {});
@@ -113,8 +106,7 @@ const logoutAdmin = async () => {
           </svg>
           <span class="sr-only">Toggle sidebar</span>
         </button>
-        <router-link
-          :to="{ name: 'Home' }"
+        <div
           class="flex items-center justify-between mr-4"
         >
           <img src="/rotary-logo.svg" class="mr-3 h-8" alt="Flowbite Logo" />
@@ -122,7 +114,7 @@ const logoutAdmin = async () => {
             class="text-nearWhite self-center text-2xl font-semibold whitespace-nowrap"
             >{{ langTranslations.adminDash.headerDashboard }}</span
           >
-        </router-link>
+        </div>
       </div>
       <div class="flex items-center lg:order-2">
         <div ref="rootElement" class="flex flex-col">

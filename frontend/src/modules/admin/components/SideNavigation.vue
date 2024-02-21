@@ -48,6 +48,12 @@ const sideBarItems: Record<
     query?: Record<string, string>;
   }
 > = {
+  home: {
+    label: langTranslations.value.adminDash.homeLabel,
+    icon: ResourceList.sidebarIcons.homeIcon,
+    link: "Home",
+    hasAccess: true,
+  },
   profile: {
     label: langTranslations.value.adminDash.myProfileLabel,
     icon: ResourceList.sidebarIcons.myProfileIcon,
@@ -162,7 +168,7 @@ const sideBarItems: Record<
   superAdmins: {
     label: "Super Admin",
     icon: ResourceList.sidebarIcons.superAdmins,
-    link: "AllProjects",
+    link: "SuperAdmin",
     hasAccess: hasAccess(loggedinRole.value as AllUserRoles, "superadmin-view"),
   },
 };

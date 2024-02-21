@@ -181,9 +181,9 @@ const routes = [
         component: () => import("@/modules/admin/views/MyProfile.vue"),
       },
       {
-        path: "all-projects",
-        name: "AllProjects",
-        component: () => import("@/modules/admin/views/AllProjects.vue"),
+        path: "super-admin",
+        name: "SuperAdmin",
+        component: () => import("@/modules/admin/views/SuperAdmin.vue"),
       },
     ],
   },

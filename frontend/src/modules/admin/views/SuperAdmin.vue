@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: "AllProjects",
+  name: "SuperAdmin",
 };
 </script>
 
@@ -12,9 +12,9 @@ import { errorHandler } from "@/utils/composables/ErrorHandler";
 /* Data */
 const { langTranslations } = useLanguage();
 const { handleError } = errorHandler();
-const { exampleProperty } = defineProps<{
-  exampleProperty: string;
-}>();
+// const { exampleProperty } = defineProps<{
+//   exampleProperty: string;
+// }>();
 
 /* Hooks */
 onMounted(async () => {});
@@ -22,7 +22,9 @@ onMounted(async () => {});
 /* Methods */
 </script>
 
-<template></template>
+<template>
+  <div class="h-full justify-center text-center gap-4 flex items-center flex-col text-2xl font-bold">{{ "Under construction" }}</div> 
+</template>
 
 <style lang="scss" scoped>
 @import "@/assets/_variables.scss";
