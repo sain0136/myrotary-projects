@@ -13,13 +13,9 @@ import { Icon } from "@iconify/vue";
 
 /* Data */
 const { langTranslations } = useLanguage();
-const urlForShare = ref("");
-if (import.meta.env.MODE === "development") {
-  urlForShare.value = "http://localhost:5173/";
-} else {
-  urlForShare.value = import.meta.env.VITE_APP_BASE_URL;
-}
-console.log(urlForShare.value); //TO
+const urlForShare = ref(import.meta.env.VITE_APP_BASE_URL);
+urlForShare.value += `/${useActiveProjectStore().activeProject?.project_name.replace(/\s/g, "-")}?id=${useActiveProjectStore().activeProject?.project_id}`;
+console.log(urlForShare.value); 
 const data = {
   urlForShare: urlForShare.value,
   title: useActiveProjectStore().activeProject?.project_name ?? "Lorem",
