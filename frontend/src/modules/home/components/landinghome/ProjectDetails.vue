@@ -31,6 +31,7 @@ import { useActiveProjectStore } from "@/stores/ActiveProjectStore";
 import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
 import Carousel from "primevue/carousel";
 import type { uploadFileData, uploadedFile } from "@/utils/types/commonTypes";
+import SocialShareButton from "@/components/forms/tabs/SocialShareButton.vue";
 
 /* Data */
 const router = useRouter();
@@ -249,6 +250,9 @@ const viewFullDescription = (
           </h1>
         </div>
       </div>
+    </div>
+    <div>
+      <SocialShareButton />
     </div>
     <!-- Project Description -->
     <Hr />
