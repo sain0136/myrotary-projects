@@ -317,6 +317,7 @@ export interface Translation {
     passwordMinLength: string;
   };
   adminDash: {
+    homeLabel: string;
     footerCopyright: string;
     welcomeH1: string;
     welcomeH2: string;
@@ -516,7 +517,7 @@ export const translations: Record<string, Translation> = {
     projectTypeLabel: "Project Types",
     projectsLabel: "Projects",
     myprojectsView: {
-      administratingProjectsToolTip: "Projects you are assigned as co-admin",
+      administratingProjectsToolTip: "Projects you are assigned as a co-admin",
       submissionDatesLabel:
         "District Matching and District Simplified Projects will be open for submission from {startDate} to {endDate}",
       createdProjectsLabel: "Created Projects",
@@ -702,6 +703,7 @@ export const translations: Record<string, Translation> = {
         "Your password must be at least {length} characters long.",
     },
     adminDash: {
+      homeLabel: "Main Site",
       footerCopyright: "Copyright ©",
       welcomeH1: "Welcome to the Admin Dashboard",
       welcomeH2:
@@ -1095,6 +1097,7 @@ export const translations: Record<string, Translation> = {
         "Le mot de passe doit contenir au moins {minLength} caractères",
     },
     adminDash: {
+      homeLabel: "Site Principal",
       footerCopyright: "Copyright ©",
       welcomeH1: "Bienvenue sur le tableau de bord",
       welcomeH2:

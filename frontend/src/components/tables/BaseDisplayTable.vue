@@ -254,7 +254,10 @@ const getTooltipContent = (
               'hidden lg:table-cell': column.lgScreenCollapsable,
             }"
             :title="column.title ? row[column.colName] : undefined"
-            v-tooltip.top="getTooltipContent(row, column)"
+            v-tooltip.top="{
+              value: getTooltipContent(row, column),
+              class: 'flex gap-2 items-center flex-nowrap',
+            }"
           >
             <span>
               {{ displayRow(row, column) }}

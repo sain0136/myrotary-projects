@@ -26,6 +26,11 @@ export default class ResourceList {
   ];
 
   static sidebarIcons = {
+    homeIcon: `
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor"
+    class="iconify-icon text-gray-500 transition duration-75 group-hover:text-nearBlack" 
+    d="M10 20v-6h4v6h5v-8h3L12 3L2 12h3v8z"/></svg>
+    `,
     superAdmins: `<svg xmlns="http://www.w3.org/2000/svg"  width="24" height="24" viewBox="0 0 512 512"><path fill="currentColor" 
     class="iconify-icon text-gray-500 transition duration-75 group-hover:text-nearBlack"
     d="m448 362.7l-117.3-21.3C320 320 320 310.7 320 298.7c10.7-10.7 32-21.3 32-32c10.7-32 10.7-53.3 10.7-53.3c5.5-8 21.3-21.3 
