@@ -13,14 +13,20 @@ import { Icon } from "@iconify/vue";
 
 /* Data */
 const { langTranslations } = useLanguage();
-const { handleError } = errorHandler();
-
+const urlForShare = ref("");
+if (import.meta.env.MODE === "development") {
+  urlForShare.value = "http://localhost:5173/";
+} else {
+  urlForShare.value = import.meta.env.VITE_APP_BASE_URL;
+}
+console.log(urlForShare.value); //TO
 const data = {
-  urlForShare: "http://localhost:5173/",
+  urlForShare: urlForShare.value,
   title: useActiveProjectStore().activeProject?.project_name ?? "Lorem",
   description:
     useActiveProjectStore().activeProject?.project_description ?? "Lorem",
 };
+
 /* Hooks */
 onMounted(async () => {});
 
