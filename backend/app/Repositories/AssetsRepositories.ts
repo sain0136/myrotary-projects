@@ -7,7 +7,6 @@ export default class AssetsRepositories {
 
   public async updateAssets(updateAssets: object) {
     let assetsRecord = await Assets.findOrFail(1);
-    console.log((updateAssets as Assets).assets);
     await assetsRecord
       .merge({
         assets: JSON.stringify((updateAssets as Assets).assets),

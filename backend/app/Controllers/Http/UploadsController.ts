@@ -19,7 +19,6 @@ export default class UploadsController {
       const path = await uploadsService.test(coverImage);
       return response.json(path);
     } catch (error) {
-      console.log(error);
     }
   }
 
@@ -47,7 +46,6 @@ export default class UploadsController {
       );
       return response.json(result);
     } catch (error) {
-      console.log(error);
       throw new CustomException(error as CustomErrorType);
     }
   }

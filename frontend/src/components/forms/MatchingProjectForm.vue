@@ -125,7 +125,9 @@ const tabs = ref([
 
 const objectiveItem = ref("");
 const project = reactive(new DistrictMatchingProject());
-const activeTab = ref("form");
+const activeTab = ref(
+  sessionStorage.getItem("projectsLastActiveTab") || "form"
+);
 const allCurrencies = ref(
   [] as Array<{
     shortName: string;
@@ -845,6 +847,7 @@ const redirect = () => {
 
 const setActiveTab = (tabName: string) => {
   activeTab.value = tabName;
+  sessionStorage.setItem("projectsLastActiveTab", tabName);
 };
 </script>
 

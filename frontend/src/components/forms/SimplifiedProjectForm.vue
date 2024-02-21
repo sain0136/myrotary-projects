@@ -71,7 +71,7 @@ const formType = route.query.formType
   ? (route.query.formType as formType)
   : "normalView";
 //
-const { currencyFormatterFunding, convertCentsToFloat, convertFloatToCents } =
+const { currencyFormatterFunding, convertFloatToCents } =
   useCurrencyFormatter();
 const submitLabel: { [key: string]: string } = projectId
   ? {
@@ -127,7 +127,7 @@ const tabs = ref([
 ]);
 
 const project = reactive(new DistrictSimplifiedProject());
-const activeTab = ref("form");
+const activeTab = ref( sessionStorage.getItem("projectsLastActiveTab") || "form");
 // TODO
 
 const fundingSources = ref<IFundingSource>({
@@ -787,6 +787,7 @@ const redirect = () => {
 
 const setActiveTab = (tabName: string) => {
   activeTab.value = tabName;
+  sessionStorage.setItem("projectsLastActiveTab", tabName);
 };
 </script>
 

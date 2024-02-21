@@ -112,7 +112,9 @@ const tabs = ref([
 ]);
 
 const project = reactive(new ClubProject());
-const activeTab = ref("form");
+const activeTab = ref(
+  sessionStorage.getItem("projectsLastActiveTab") || "form"
+);
 // TODO
 
 /* Hooks */
@@ -364,6 +366,7 @@ const redirect = () => {
 
 const setActiveTab = (tabName: string) => {
   activeTab.value = tabName;
+  sessionStorage.setItem("projectsLastActiveTab", tabName);
 };
 </script>
 
