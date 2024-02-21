@@ -82,7 +82,7 @@ const {
   projectId?: number;
   districtId?: number;
   dropzoneMode?: boolean;
-  dropzoneAcceptedFileTypes?: "allTypes" | "docsOnly";
+  dropzoneAcceptedFileTypes?: "allTypes" | "docsOnly" | "imageOnly";
   customIdentifier?: string;
   postUploadCallback?: Function;
   iconMode?: boolean;
@@ -114,6 +114,15 @@ const validationRules = {
   },
 };
 const v$ = useVuelidate(validationRules, validationData);
+const acceptedFileTypesText = ref("");
+if (dropzoneAcceptedFileTypes === "docsOnly") {
+  acceptedFileTypesText.value = allowedDoctypesMap.docsOnly[languagePref.value];
+} else if (dropzoneAcceptedFileTypes === "allTypes") {
+  acceptedFileTypesText.value = allowedDoctypesMap.allTypes[languagePref.value];
+} else if (dropzoneAcceptedFileTypes === "imageOnly") {
+  acceptedFileTypesText.value =
+    allowedDoctypesMap.imageOnly[languagePref.value];
+}
 
 /* Methods */
 const handleFileChange = (event: Event, multiple: boolean) => {
@@ -393,13 +402,7 @@ const triggerFileInput = () => {
               {{ langTranslations.dragAndDropLabel }}
             </p>
             <p class="text-xs text-gray-500">
-              {{
-                dropzoneAcceptedFileTypes === "allTypes"
-                  ? allowedDoctypesMap.allTypes[languagePref]
-                  : allowedDoctypesMap.docsOnly[languagePref]
-                  ? allowedDoctypesMap.docsOnly[languagePref]
-                  : ""
-              }}
+              {{ acceptedFileTypesText }}
             </p>
           </div>
           <input
