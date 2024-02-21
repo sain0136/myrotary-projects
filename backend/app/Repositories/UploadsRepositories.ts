@@ -32,7 +32,7 @@ export default class UploadsController {
         case "assets":
           for await (const file of uploadedFiles) {
             const rotaryAssets = await Assets.findOrFail(1);
-            const mainAsses = (rotaryAssets as unknown as IAssets).assets;
+            const mainAsses = (rotaryAssets as unknown as IAssets).assets; // TODO: Fix this main asses lol
             if (mainAsses.main_logo && mainAsses.main_logo.s3Name) {
               await Drive.delete(mainAsses.main_logo.s3Name);
             }
