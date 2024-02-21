@@ -148,6 +148,7 @@ export default class UploadsService {
               await Drive.delete(file.s3Name);
             }
           }
+          continue;
         case "project-gallery":
           if (projectId) {
             const project = await Projects.findOrFail(projectId);
