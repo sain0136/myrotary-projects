@@ -180,11 +180,14 @@ export const logger: LoggerConfig = {
   |Env.get("NODE_ENV") === "development"
   */
   prettyPrint: false,
-  transports: {
-    file: {
-      level: Env.get("LOG_LEVEL", "info"),
-      filename: "logs/development_log.log",
-    },
+  transport: "console",
+  console: {
+    driver: "console",
+  },
+
+  file: {
+    level: Env.get("LOG_LEVEL", "info"),
+    filename: "development_log.log",
   },
 };
 
