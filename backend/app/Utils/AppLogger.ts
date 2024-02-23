@@ -2,6 +2,19 @@ import { CustomErrorType, loginLogData } from "./CommonTypes";
 import Application from "@ioc:Adonis/Core/Application";
 import Env from "@ioc:Adonis/Core/Env";
 const pino = require("pino");
+const fs = require('fs');
+
+const data = 'Hello, world!';
+
+function writeTest() {
+  fs.writeFile('example.txt', data, (err) => {
+    if (err) {
+      console.error('An error occurred:', err);
+    } else {
+      console.log('Successfully wrote to file');
+    }
+  });
+}
 
 type typeOfLog =
   | "exception_error"
@@ -15,6 +28,7 @@ export async function appLogger(
   logData: CustomErrorType | loginLogData | any
 ) {
   try {
+    writeTest();
     logData.timestamp = new Date().toISOString();
     let typeOfLog: typeOfLog = "unknown";
     const environment = Env.get("NODE_ENV");
@@ -32,6 +46,9 @@ export async function appLogger(
         },
       ],
     });
+    transport.on('error', err => {
+      console.error('error caught', err)
+    })
     const logger = pino(transport);
     switch (type) {
       case "error":
