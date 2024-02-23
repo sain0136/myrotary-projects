@@ -10,6 +10,7 @@ import {
 import RotaryYear from "App/Utils/Classes/RotaryYear";
 import { CustomErrorType, ProjectFilters } from "App/Utils/CommonTypes";
 
+
 export default class ProjectsController {
   private initializeServices() {
     const projectsRepositories = new ProjectsRepositories();
@@ -32,7 +33,10 @@ export default class ProjectsController {
     return response.json(allProjects);
   }
 
-  public async getAllProjects({ request, response }: HttpContextContract) {
+  public async getAllProjects({
+    request,
+    response,
+  }: HttpContextContract) {
     try {
       const currentPage: number = request.input("current_page", 1);
       const limit: number = request.input("limit", 6);

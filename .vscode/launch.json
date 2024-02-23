@@ -5,6 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Attach debug",
+      "type": "node",
+      "request": "attach",
+      "processId": "${command:PickProcess}"
+    },
+    
+    {
       "cwd": "${workspaceFolder}/backend",
       "type": "node",
       "request": "launch",

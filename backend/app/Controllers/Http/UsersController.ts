@@ -2,9 +2,10 @@ import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import UserRepositories from "App/Repositories/UserRepositories";
 import UserService from "App/Services/UserService";
 import CustomException from "App/Exceptions/CustomException";
-import { CustomErrorType } from "App/Utils/CommonTypes";
+import { CustomErrorType, loginLogData } from "App/Utils/CommonTypes";
 import { DateTime } from "luxon";
 import { IUser } from "App/Shared/Interfaces/IUser";
+import { appLogger } from "App/Utils/AppLogger";
 
 export default class UsersController {
   private initializeServices() {
@@ -43,8 +44,18 @@ export default class UsersController {
         session.put("userIsLoggedIn", true);
         session.put("lastApiCallTimeStamp", DateTime.now().toMillis());
       }
+      const loggerData: loginLogData = {
+        type: "login",
+        loginStatus: "success",
+      };
+      appLogger("login", loggerData);
       return response.json(userData);
     } catch (error) {
+      const loggerData: loginLogData = {
+        type: "login",
+        loginStatus: "failed",
+      };
+      appLogger("login", loggerData);
       throw new CustomException(error as CustomErrorType);
     }
   }
