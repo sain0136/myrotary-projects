@@ -1,7 +1,7 @@
 import { CustomErrorType, loginLogData } from "./CommonTypes";
 const pino = require("pino");
 import Application from "@ioc:Adonis/Core/Application";
-import Env from '@ioc:Adonis/Core/Env'
+import Env from "@ioc:Adonis/Core/Env";
 
 type typeOfLog =
   | "exception_error"
@@ -18,13 +18,17 @@ export function appLogger(
     logData.timestamp = new Date().toISOString();
     let typeOfLog: typeOfLog = "unknown";
     const environment = Env.get("NODE_ENV");
-    const destination = environment === "development"  ? "development_log.log" : "production_log.log"
+    const destination =
+      environment === "development"
+        ? Application.makePath("development_log.log")
+        : Application.makePath("build", "production_log.log");
+    const absolutePath = Application.makePath(destination);
     const transport = pino.transport({
       targets: [
         {
           level: "info",
           target: Application.makePath("my-transport.mjs"), // replace with the path to your transport file
-          options: { destination: Application.makePath(destination) }, // replace with the path to your log file
+          options: { destination: absolutePath }, // replace with the path to your log file
         },
       ],
     });

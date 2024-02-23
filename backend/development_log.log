@@ -1,3 +1,5 @@
 {"level":30,"time":1708669016789,"pid":16072,"hostname":"DESKTOP-NHEOSCU","typeOfLog":{"type":"login","loginStatus":"success"},"type":"login","loginStatus":"success","timestamp":"2024-02-23T06:16:51.575Z"}
 {"level":30,"time":1708669038024,"pid":16072,"hostname":"DESKTOP-NHEOSCU","typeOfLog":{"type":"login","loginStatus":"success"},"type":"login","loginStatus":"success","timestamp":"2024-02-23T06:17:15.064Z"}
 {"level":50,"time":1708669131575,"pid":16072,"hostname":"DESKTOP-NHEOSCU","typeOfLog":"database_error","errno":1062,"sqlMessage":"Duplicate entry 'Timo red' for key 'projects.projects_project_name_unique'","sqlCode":"ER_DUP_ENTRY","timestamp":"2024-02-23T06:18:46.656Z"}
+{"level":30,"time":1708670190790,"pid":4024,"hostname":"DESKTOP-NHEOSCU","typeOfLog":{"type":"login","loginStatus":"success"},"type":"login","loginStatus":"success","timestamp":"2024-02-23T06:36:17.661Z"}
+{"level":30,"time":1708670214653,"pid":4024,"hostname":"DESKTOP-NHEOSCU","typeOfLog":{"type":"login","loginStatus":"success"},"type":"login","loginStatus":"success","timestamp":"2024-02-23T06:36:40.314Z"}
