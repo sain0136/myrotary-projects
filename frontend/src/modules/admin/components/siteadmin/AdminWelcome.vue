@@ -18,6 +18,11 @@ const { langTranslations } = useLanguage();
   >
     <H1 :content="langTranslations.adminDash.welcomeH1" />
     <img src="/rotary-logo.svg" alt="" class="w-32 h-32" />
+    <router-link :to="{ name: 'Home' }">
+      <a href="#" class="hover:underline">{{
+        langTranslations.home
+      }}</a>
+    </router-link>
   </section>
 </template>
 
