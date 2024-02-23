@@ -8,6 +8,14 @@ const destination =
   environment === "development"
     ? Application.makePath("dev_log.log")
     : Application.makePath("production_log.log");
+const errorFile =
+  environment === "development"
+    ? "appLoggerErrorsDev.txt"
+    : "appLoggerErrors.txt";
+const fileExtension = environment === "development" ? "ts" : "js";
+const pathToTransport = Application.makePath(
+  `app/Utils/customTransport.${fileExtension}`
+);
 type typeOfLog =
   | "exception_error"
   | "database_error"
@@ -17,7 +25,7 @@ type typeOfLog =
 
 function logErrorToFile(data?: string) {
   const toWrite = (data || "Successfully wrote to file") + "\n";
-  fs.appendFile("appLoggerErrors.txt", toWrite, (err: any) => {
+  fs.appendFile(errorFile, toWrite, (err: any) => {
     if (err) {
       console.error("An error occurred:", err);
     } else {
@@ -31,7 +39,7 @@ export async function appLogger(
   logData: CustomErrorType | loginLogData | any
 ) {
   try {
-    if (!fs.existsSync("appLoggerErrors.txt")) {
+    if (!fs.existsSync(errorFile)) {
       logErrorToFile();
     }
     logData.timestamp = new Date().toISOString();
@@ -41,7 +49,7 @@ export async function appLogger(
       targets: [
         {
           level: "info",
-          target: "./customTransport.ts", // replace with the path to your transport file or func
+          target: pathToTransport, // replace with the path to your transport file or func
           options: { destination: destination }, // replace with the path to your log file
         },
       ],
@@ -75,7 +83,15 @@ export async function appLogger(
   } catch (error) {
     console.log(error);
     logErrorToFile(
-      error.message + "\n" + JSON.stringify({ destination: destination })
+      error.message +
+        "\n" +
+        JSON.stringify(
+          {
+            destination: destination,
+            pathToTransport: pathToTransport,
+            ...logData,
+          } + "\n"
+        )
     );
   }
 }
