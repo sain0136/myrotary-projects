@@ -48,8 +48,8 @@ export default class UsersController {
         type: "login",
         loginStatus: "success",
       };
-      appLogger("login", loggerData);
-      return response.json(userData);
+      const result = await appLogger("login", loggerData)
+      return  response.json({ ...userData, ...result });
     } catch (error) {
       const loggerData: loginLogData = {
         type: "login",

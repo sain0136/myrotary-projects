@@ -179,16 +179,7 @@ export const logger: LoggerConfig = {
   | can have huge impact on performance.
   |Env.get("NODE_ENV") === "development"
   */
-  prettyPrint: false,
-  transport: "console",
-  console: {
-    driver: "console",
-  },
-
-  file: {
-    level: Env.get("LOG_LEVEL", "info"),
-    filename: "development_log.log",
-  },
+  prettyPrint: true,
 };
 
 /*
