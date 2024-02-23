@@ -127,7 +127,9 @@ const tabs = ref([
 ]);
 
 const project = reactive(new DistrictSimplifiedProject());
-const activeTab = ref( sessionStorage.getItem("projectsLastActiveTab") || "form");
+const activeTab = ref(
+  projectId ? sessionStorage.getItem("projectsLastActiveTab") : "form"
+);
 // TODO
 
 const fundingSources = ref<IFundingSource>({

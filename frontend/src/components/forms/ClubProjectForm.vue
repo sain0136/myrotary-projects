@@ -113,7 +113,7 @@ const tabs = ref([
 
 const project = reactive(new ClubProject());
 const activeTab = ref(
-  sessionStorage.getItem("projectsLastActiveTab") || "form"
+  projectId ? sessionStorage.getItem("projectsLastActiveTab") : "form"
 );
 // TODO
 
