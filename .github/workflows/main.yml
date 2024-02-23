@@ -46,7 +46,7 @@ jobs:
             pm2 delete ProductionApi
             pm2 list
             pm2 save 
-            pm2 start /home/servicehost/myrotary-projects/backend/build/server.js -i -f --name ProductionApi
+            pm2 start /home/servicehost/myrotary-projects/backend/build/server.js  >> production_log.log -i -f --name ProductionApi
             pm2 save --force
             pm2 list
             
