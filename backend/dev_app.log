@@ -5,3 +5,4 @@
 {"level":30,"time":1708672939258,"pid":18392,"hostname":"DESKTOP-NHEOSCU","typeOfLog":{"type":"login","loginStatus":"success"},"type":"login","loginStatus":"success","timestamp":"2024-02-23T07:22:19.253Z"}
 {"level":30,"time":1708672986489,"pid":8688,"hostname":"DESKTOP-NHEOSCU","typeOfLog":{"type":"login","loginStatus":"success"},"type":"login","loginStatus":"success","timestamp":"2024-02-23T07:23:06.485Z"}
 {"level":30,"time":1708673043514,"pid":8688,"hostname":"DESKTOP-NHEOSCU","typeOfLog":{"type":"login","loginStatus":"success"},"type":"login","loginStatus":"success","timestamp":"2024-02-23T07:24:03.513Z"}
+{"level":30,"time":1708673695643,"pid":20180,"hostname":"DESKTOP-NHEOSCU","typeOfLog":{"type":"login","loginStatus":"success"},"type":"login","loginStatus":"success","timestamp":"2024-02-23T07:34:55.639Z"}

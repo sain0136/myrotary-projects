@@ -1,6 +1,6 @@
 import { CustomErrorType, loginLogData } from "./CommonTypes";
 import Application from "@ioc:Adonis/Core/Application";
-import Env from '@ioc:Adonis/Core/Env'
+import Env from "@ioc:Adonis/Core/Env";
 const pino = require("pino");
 
 type typeOfLog =
@@ -9,7 +9,6 @@ type typeOfLog =
   | "login"
   | "unknown"
   | { [key: string]: any };
-
 
 export async function appLogger(
   type: "error" | "login",
@@ -22,8 +21,8 @@ export async function appLogger(
     const destination =
       environment === "development"
         ? Application.makePath("dev_app.log")
-        : Application.makePath("build", "pro_log.log");
-  
+        : Application.makePath("pro_log.log");
+
     const transport = pino.transport({
       targets: [
         {
@@ -52,7 +51,7 @@ export async function appLogger(
         }
         logger.info({ typeOfLog, ...logData });
     }
-    return {loginfo :{destination, typeOfLog, ...logData}};
+    return { loginfo: { destination, typeOfLog, ...logData } };
   } catch (error) {
     console.log(error);
   }

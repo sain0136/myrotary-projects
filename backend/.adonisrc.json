@@ -49,5 +49,11 @@
   },
   "testProviders": [
     "@japa/preset-adonis/TestsProvider"
+  ],
+  "metaFiles": [
+    {
+      "pattern": "**/*.log",
+      "reloadServer": false
+    }
   ]
 }
