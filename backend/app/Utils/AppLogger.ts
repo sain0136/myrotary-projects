@@ -3,7 +3,11 @@ import Application from "@ioc:Adonis/Core/Application";
 import Env from "@ioc:Adonis/Core/Env";
 const pino = require("pino");
 const fs = require("fs");
-
+const environment = Env.get("NODE_ENV");
+const destination =
+  environment === "development"
+    ? Application.makePath("dev_log.log")
+    : Application.makePath("production_log.log");
 type typeOfLog =
   | "exception_error"
   | "database_error"
@@ -32,11 +36,6 @@ export async function appLogger(
     }
     logData.timestamp = new Date().toISOString();
     let typeOfLog: typeOfLog = "unknown";
-    const environment = Env.get("NODE_ENV");
-    const destination =
-      environment === "development"
-        ? Application.makePath("dev_log.log")
-        : Application.makePath("production_log.log");
 
     const transport = pino.transport({
       targets: [
@@ -75,6 +74,8 @@ export async function appLogger(
     return { loginfo: { destination, typeOfLog, ...logData } };
   } catch (error) {
     console.log(error);
-    logErrorToFile(error.message);
+    logErrorToFile(
+      error.message + "\n" + JSON.stringify({ destination: destination })
+    );
   }
 }
