@@ -2,19 +2,7 @@ import { CustomErrorType, loginLogData } from "./CommonTypes";
 import Application from "@ioc:Adonis/Core/Application";
 import Env from "@ioc:Adonis/Core/Env";
 const pino = require("pino");
-const fs = require('fs');
-
-const data = 'Hello, world!';
-
-function writeTest() {
-  fs.writeFile('example.txt', data, (err) => {
-    if (err) {
-      console.error('An error occurred:', err);
-    } else {
-      console.log('Successfully wrote to file');
-    }
-  });
-}
+const fs = require("fs");
 
 type typeOfLog =
   | "exception_error"
@@ -22,6 +10,17 @@ type typeOfLog =
   | "login"
   | "unknown"
   | { [key: string]: any };
+const data = "Successfully wrote to file";
+
+function writeTest() {
+  fs.writeFile("example.txt", data, (err) => {
+    if (err) {
+      console.error("An error occurred:", err);
+    } else {
+      console.log("Successfully wrote to file");
+    }
+  });
+}
 
 export async function appLogger(
   type: "error" | "login",
@@ -34,22 +33,25 @@ export async function appLogger(
     const environment = Env.get("NODE_ENV");
     const destination =
       environment === "development"
-        ? Application.makePath("dev_app.log")
-        : Application.makePath("pro_log.log");
+        ? Application.makePath("dev_log.log")
+        : Application.makePath("production_log.log");
 
     const transport = pino.transport({
       targets: [
         {
           level: "info",
-          target: Application.makePath("my-transport.mjs"), // replace with the path to your transport file
+          target: './customTransport.ts', // replace with the path to your transport file or func
           options: { destination: destination }, // replace with the path to your log file
         },
       ],
     });
-    transport.on('error', err => {
-      console.error('error caught', err)
-    })
+
+    transport.on("error", (err) => {
+      console.error("error caught", err);
+    });
+
     const logger = pino(transport);
+
     switch (type) {
       case "error":
         if ((logData as CustomErrorType).sqlCode) {
