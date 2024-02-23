@@ -10,10 +10,10 @@ type typeOfLog =
   | "login"
   | "unknown"
   | { [key: string]: any };
-const data = "Successfully wrote to file";
 
-function writeTest() {
-  fs.writeFile("example.txt", data, (err) => {
+function logErrorToFile(data?: string) {
+  const toWrite = (data || "Successfully wrote to file") + "\n";
+  fs.appendFile("appLoggerErrors.txt", toWrite, (err: any) => {
     if (err) {
       console.error("An error occurred:", err);
     } else {
@@ -27,7 +27,9 @@ export async function appLogger(
   logData: CustomErrorType | loginLogData | any
 ) {
   try {
-    writeTest();
+    if (!fs.existsSync("appLoggerErrors.txt")) {
+      logErrorToFile();
+    }
     logData.timestamp = new Date().toISOString();
     let typeOfLog: typeOfLog = "unknown";
     const environment = Env.get("NODE_ENV");
@@ -40,13 +42,13 @@ export async function appLogger(
       targets: [
         {
           level: "info",
-          target: './customTransport.ts', // replace with the path to your transport file or func
+          target: "./customTransport.ts", // replace with the path to your transport file or func
           options: { destination: destination }, // replace with the path to your log file
         },
       ],
     });
 
-    transport.on("error", (err) => {
+    transport.on("error", (err: any) => {
       console.error("error caught", err);
     });
 
@@ -73,5 +75,6 @@ export async function appLogger(
     return { loginfo: { destination, typeOfLog, ...logData } };
   } catch (error) {
     console.log(error);
+    logErrorToFile(error.message);
   }
 }
