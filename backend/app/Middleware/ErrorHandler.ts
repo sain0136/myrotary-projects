@@ -1,8 +1,7 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import CustomException from "App/Exceptions/CustomException";
-import Logger from "@ioc:Adonis/Core/Logger";
 import { Translation, DatabaseError } from "App/Utils/CommonTypes";
-
+import { appLogger } from "App/Utils/AppLogger";
 const databaseErrors: { [key: string]: DatabaseError } = {
   "1062": {
     en: "Duplicate record entry",
@@ -35,11 +34,9 @@ const handleDatabaseError = (errno: number, url: string): Translation => {
     return databaseErrors["1062-users"];
   } else if (errno === 1062 && url.includes("project")) {
     return databaseErrors["1062-projects"];
-  } 
-  else if (errno === 1062 && url.includes("district")) {
+  } else if (errno === 1062 && url.includes("district")) {
     return databaseErrors["1062-districts"];
-  }
-  else {
+  } else {
     return databaseErrors[errno];
   }
 };
@@ -63,13 +60,14 @@ export default class ErrorHandler {
     next: () => Promise<void>
   ) {
     try {
-      console.log(`-> ${request.method()}: ${request.url()}`);
+      // console.log(`-> ${request.method()}: ${request.url()}`);
       await next();
     } catch (error) {
       if (error instanceof CustomException) {
         // Log or send the statusCode and type to a monitoring service
         // Log or send the statusCode and type to a monitoring service
-
+        appLogger("error", error);
+        // Log or send the statusCode and type to a monitoring service
         // Handle the response
         response.status(error.status).send({
           statusCode: error.status,
@@ -89,7 +87,7 @@ export default class ErrorHandler {
    * @return {Translation} The translated message based on the exception.
    */
   private getTranslatedMessage(
-    { status, errno, sqlMessage, stack, message }: CustomException,
+    { status, errno }: CustomException,
     url: string
   ): Translation {
     if (errno && databaseErrors[errno]) {
@@ -99,11 +97,6 @@ export default class ErrorHandler {
         en: "Something went wrong. A report was sent to the administrator",
         fr: "Quelque chose s'est mal passé. Un rapport a été envoyée à l'administrateur",
       };
-    } else {
-      Logger.error(`Unknown database error code: ${errno} `);
-      Logger.error(`Error message: ${message}`);
-      Logger.error(`Sql message: ${sqlMessage}`);
-      Logger.error(`Stack trace: ${stack}`);
     }
     switch (status) {
       case 400:
@@ -116,7 +109,7 @@ export default class ErrorHandler {
           en: "Unauthorized. Please login to continue ",
           fr: "Non autorisé. Veuillez vous connecter pour continuer",
         };
-        case 422:
+      case 422:
         return {
           en: "Unprocessable Entity",
           fr: "Entité non traitable",

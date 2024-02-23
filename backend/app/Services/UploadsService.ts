@@ -96,7 +96,7 @@ export default class UploadsService {
     toDeleteUploads: Array<uploadedFile>,
     districtId?: number,
     projectId?: number,
-    userId?: number
+    // userId?: number
   ) {
     for await (const file of toDeleteUploads) {
       switch (file.fileType) {
@@ -168,7 +168,7 @@ export default class UploadsService {
           }
           continue;
       }
-      console.log(userId);
+      // console.log(userId);
     }
   }
 }

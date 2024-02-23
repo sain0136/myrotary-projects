@@ -29,8 +29,7 @@ import "App/Modules/Clubs/routes";
 import "App/Modules/Pledges/routes";
 import "App/Modules/Mail/routes";
 
-Route.get("/", async ({ logger }) => {
-  logger.info("You are in the root route");
+Route.get("/", async () => {
   return {
     hello: "world",
   };

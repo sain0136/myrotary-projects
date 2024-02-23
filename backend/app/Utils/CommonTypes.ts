@@ -50,3 +50,8 @@ export type Currency = {
 export type Currencies = {
   [key: string]: Currency;
 };
+
+export type loginLogData = {
+    type: "login" | "logout";
+    loginStatus: "success" | "failed";
+};
