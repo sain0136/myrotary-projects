@@ -6,6 +6,7 @@ export type CustomErrorType = {
   sqlCode?: string | number;
   code?: number | string;
   translatedMessage?: Translation;
+  timestamp?: string | Date;
 };
 
 export type Translation = {
@@ -54,4 +55,17 @@ export type Currencies = {
 export type loginLogData = {
     type: "login" | "logout";
     loginStatus: "success" | "failed";
+    user?: {
+        userId: number | 'failed-login';
+        email: string;
+        name: string | 'failed-login';
+    }
+    timestamp?: string | Date;
 };
+
+export type typeOfLog =
+  | "exception_error"
+  | "database_error"
+  | "login"
+  | "unknown"
+  | { [key: string]: any };

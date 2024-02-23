@@ -47,13 +47,23 @@ export default class UsersController {
       const loggerData: loginLogData = {
         type: "login",
         loginStatus: "success",
+        user: {
+          userId: userData.user.userId ?? "error",
+          email: email ?? "error",
+          name: userData.user.fullName ?? "error",
+        },
       };
-      const result = await appLogger("login", loggerData)
-      return  response.json({ ...userData, ...result });
+      await appLogger("login", loggerData);
+      return response.json(userData);
     } catch (error) {
       const loggerData: loginLogData = {
         type: "login",
         loginStatus: "failed",
+        user: {
+          userId: "failed-login",
+          email: email,
+          name: "failed-login",
+        },
       };
       appLogger("login", loggerData);
       throw new CustomException(error as CustomErrorType);
@@ -61,18 +71,27 @@ export default class UsersController {
   }
 
   public async logout({ session, response }: HttpContextContract) {
-    session.clear();
-    if (!(session as any).store.isEmpty) {
-      throw new CustomException({
-        message: "Error logging out",
-        status: 605,
-        translatedMessage: {
-          en: "Error logging out",
-          fr: "Erreur de déconnexion",
-        },
-      });
-    }
-    return response.json({});
+    try {
+      const loggerData: loginLogData = {
+        type: "logout",
+        loginStatus: "success",
+      };
+      appLogger("login", loggerData);
+      session.clear();
+      if (!(session as any).store.isEmpty) {
+        loggerData.loginStatus = "failed";
+        appLogger("login", loggerData);
+        throw new CustomException({
+          message: "Error logging out",
+          status: 605,
+          translatedMessage: {
+            en: "Error logging out",
+            fr: "Erreur de déconnexion",
+          },
+        });
+      }
+      return response.json({});
+    } catch (error) {}
   }
 
   public async getUser({ request, response }: HttpContextContract) {
