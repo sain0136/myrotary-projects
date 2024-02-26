@@ -6,21 +6,23 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, ref } from "vue";
-import { errorHandler } from "@/utils/composables/ErrorHandler";
+import { computed, onMounted, ref, type Ref } from "vue";
 import { useSiteAssets } from "@/stores/SiteAssets";
 import { Icon } from "@iconify/vue";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
+
 /* Data */
 const { langTranslations, setLanguage, languagePref } = useLanguage();
 const assetsStore = useSiteAssets();
 const showMenu = ref(false);
-const navLinks: Array<{
+interface NavLink {
   label: string;
   link: string;
   disabled?: boolean;
-}> = [
+}
+
+const navLinks: Ref<NavLink[]> = computed(() => [
   {
     label: langTranslations.value.home,
     link: "Home",
@@ -37,7 +39,7 @@ const navLinks: Array<{
     label: langTranslations.value.contactusBannerText,
     link: "Contact",
   },
-];
+]);
 
 /* Hooks */
 onMounted(async () => {});
