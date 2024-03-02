@@ -106,12 +106,11 @@ const submitEmail = async () => {
         class="my-8 flex flex-col md:flex-row items-center justify-center gap-8"
       >
         <div class="flex flex-1 flex-col">
-          <H3 class="text-center" :content="'Send Us A Message'" />
+          <H3 class="text-center" :content="langTranslations.contactPage.calloutMessage" />
           <p class="text-gray-400 text-center mt-4">
-            Do you have any questions about joining Rotary or making pledges?
-            Fill out the form below to ask any questions about Rotary,how to
-            make a pledge or how to use/navigate this site. We are excited to
-            hear from you.
+            {{
+              langTranslations.contactPage.calloutDescription
+            }}
           </p>
           <div class="form-block">
             <BaseInput
@@ -146,7 +145,7 @@ const submitEmail = async () => {
           </div>
         </div>
         <div class="flex flex-1 flex-col gap-4 items-center justify-center">
-          <H3 class="text-center" :content="'Contact Info'" />
+          <H3 class="text-center" :content="langTranslations.contactPage.contactDetailsTitle" />
           <ul class="info flex flex-col justify-center items-center gap-4">
             <li class="flex w-full">
               <div class="flex mt-2 gap-1">
@@ -174,7 +173,7 @@ const submitEmail = async () => {
             <li class="flex w-full">
               <div class="flex mt-2 gap-1 justify-center items-center">
                 <Icon class="text-3xl text-gray-500" icon="entypo:address" />
-                <h6>{{ langTranslations.email + ":" }}</h6>
+                <h6>{{ langTranslations.addressLabel + ":" }}</h6>
                 <span class="text-primary-color">{{
                   assetsStore.$state.siteAssets.assets.contentManagement
                     .myRotaryAddress[languagePref] || "N/A"
