@@ -1,4 +1,9 @@
 export interface Translation {
+  contactPage: {
+    calloutMessage: string;
+    calloutDescription: string;
+    contactDetailsTitle: string;
+  };
   totalPledgesLabel: string;
   totalProjectsLabel: string;
   totalBudgetsLabel: string;
@@ -343,6 +348,12 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    contactPage: {
+      calloutMessage: "Send Us A Message",
+      calloutDescription:
+        "Do you have any questions about joining Rotary or making pledges? Fill out the form below to ask any questions about Rotary,how to make a pledge or how to use/navigate this site. We are excited to hear from you.",
+      contactDetailsTitle: "Contact Details",
+    },
     totalPledgesLabel: "Total Pledges:",
     totalBudgetsLabel: "Budget Allocation for Projects:",
     totalProjectsLabel: "Total Projects:",
@@ -728,6 +739,12 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    contactPage: {
+      calloutMessage: "Envoyez-nous un message",
+      calloutDescription:
+        "Vous avez des questions sur l'adhésion à Rotary ou sur les promesses? Remplissez le formulaire ci-dessous pour poser des questions sur Rotary, comment faire une promesse ou comment utiliser/naviguer sur ce site. Nous sommes ravis de vous entendre.",
+        contactDetailsTitle: "Coordonnées",
+    },
     totalPledgesLabel: "Promesses totales:",
     totalBudgetsLabel: "Budget Allocation pour les projets:",
     totalProjectsLabel: "Total des projets:",
