@@ -126,7 +126,7 @@ const tabs = ref([
 const objectiveItem = ref("");
 const project = reactive(new DistrictMatchingProject());
 const activeTab = ref(
-  projectId ? sessionStorage.getItem("projectsLastActiveTab") : "form"
+  projectId && formType !== "readOnlyView" ? sessionStorage.getItem("projectsLastActiveTab") : "form"
 );
 const allCurrencies = ref(
   [] as Array<{
