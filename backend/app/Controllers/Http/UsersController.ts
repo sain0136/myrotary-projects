@@ -2,7 +2,7 @@ import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import UserRepositories from "App/Repositories/UserRepositories";
 import UserService from "App/Services/UserService";
 import CustomException from "App/Exceptions/CustomException";
-import { CustomErrorType, loginLogData } from "App/Utils/CommonTypes";
+import { CustomErrorType, genericLogData } from "App/Utils/CommonTypes";
 import { DateTime } from "luxon";
 import { IUser } from "App/Shared/Interfaces/IUser";
 import { appLogger } from "App/Utils/AppLogger";
@@ -44,54 +44,33 @@ export default class UsersController {
         session.put("userIsLoggedIn", true);
         session.put("lastApiCallTimeStamp", DateTime.now().toMillis());
       }
-      const loggerData: loginLogData = {
-        type: "login",
-        loginStatus: "success",
-        user: {
-          userId: userData.user.userId ?? "error",
-          email: email ?? "error",
-          name: userData.user.fullName ?? "error",
-        },
-      };
-      await appLogger("login", loggerData);
+      await appLogger("access_log", userData.user);
       return response.json(userData);
     } catch (error) {
-      const loggerData: loginLogData = {
-        type: "login",
-        loginStatus: "failed",
-        user: {
-          userId: "failed-login",
-          email: email,
-          name: "failed-login",
-        },
-      };
-      appLogger("login", loggerData);
+      appLogger("access_log", error as CustomErrorType);
       throw new CustomException(error as CustomErrorType);
     }
   }
 
   public async logout({ session, response }: HttpContextContract) {
     try {
-      const loggerData: loginLogData = {
-        type: "logout",
-        loginStatus: "success",
+      const log: genericLogData = {
+        status: "success",
+        message: "User logged out",
       };
-      appLogger("login", loggerData);
+      appLogger("access_log", log);
       session.clear();
       if (!(session as any).store.isEmpty) {
-        loggerData.loginStatus = "failed";
-        appLogger("login", loggerData);
-        throw new CustomException({
-          message: "Error logging out",
-          status: 605,
-          translatedMessage: {
-            en: "Error logging out",
-            fr: "Erreur de déconnexion",
-          },
-        });
+        const loggerData: genericLogData = {
+          status: "failed",
+          message: "Error logging out. Session not cleared",
+        };
+        appLogger("access_log", loggerData);
       }
       return response.json({});
-    } catch (error) {}
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
   }
 
   public async getUser({ request, response }: HttpContextContract) {

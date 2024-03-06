@@ -66,7 +66,10 @@ export default class ErrorHandler {
       if (error instanceof CustomException) {
         // Log or send the statusCode and type to a monitoring service
         // Log or send the statusCode and type to a monitoring service
-        appLogger("error", error);
+        const errorType = error.sqlMessage
+          ? "database_error"
+          : "exception_error";
+        appLogger(errorType, error);
         // Log or send the statusCode and type to a monitoring service
         // Handle the response
         response.status(error.status).send({
