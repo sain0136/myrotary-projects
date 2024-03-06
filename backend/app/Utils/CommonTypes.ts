@@ -52,20 +52,32 @@ export type Currencies = {
   [key: string]: Currency;
 };
 
-export type loginLogData = {
-    type: "login" | "logout";
-    loginStatus: "success" | "failed";
-    user?: {
-        userId: number | 'failed-login';
-        email: string;
-        name: string | 'failed-login';
-    }
-    timestamp?: string | Date;
-};
+export type genericLogData = { status: "success" | "failed"; message: string };
 
 export type typeOfLog =
   | "exception_error"
   | "database_error"
-  | "login"
-  | "unknown"
+  | "access_log"
   | { [key: string]: any };
+
+export interface logDataForm {
+  uniqueId: string;
+  type: typeOfLog;
+  timeStamp: string;
+  event: "login" | "logout" | "exception_error" | "database_error";
+  status: "success" | "failed" | "system error" | "not found";
+  source: string;
+  target: "system" | "";
+  message: string;
+}
+
+export const defaultLog: logDataForm = {
+  uniqueId: "",
+  type: "exception_error",
+  event: "exception_error",
+  status: "not found",
+  source: "",
+  target: "",
+  message: "",
+  timeStamp: "",
+};

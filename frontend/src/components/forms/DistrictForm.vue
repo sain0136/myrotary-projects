@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import District from "@/utils/classes/District";
 import { useVuelidate, type ValidationRuleWithParams } from "@vuelidate/core";
@@ -98,7 +98,9 @@ const submitLabel = isEdit.value
       en: "Submit",
       fr: "Soumettre",
     };
-const alwaysTrueValidator = () => true;
+const alwaysTrueValidator = () => {
+  return true;
+};
 
 /* Validations */
 const rules = {
@@ -142,11 +144,11 @@ const rules = {
       required
     ),
     maxLength: helpers.withMessage(
-      langTranslations.value.maxLengthMessage,
+      customPrintf(langTranslations.value.maxLengthMessage, "1000"),
       maxLength(1000)
     ),
     minLenght: helpers.withMessage(
-      langTranslations.value.minLengthMessage,
+      customPrintf(langTranslations.value.minLengthMessage, "100"),
       minLength(100)
     ),
   },

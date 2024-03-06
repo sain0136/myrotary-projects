@@ -6,3 +6,4 @@ coverage
 .env
 tmp
 appLoggerErrorsDev.txt
+dev_log.log

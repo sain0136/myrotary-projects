@@ -1,12 +1,17 @@
-import { CustomErrorType, loginLogData } from "./CommonTypes";
+import { CustomErrorType, defaultLog } from "./CommonTypes";
 import Application from "@ioc:Adonis/Core/Application";
 import Env from "@ioc:Adonis/Core/Env";
-import type { typeOfLog } from "App/Utils/CommonTypes";
+import type {
+  genericLogData,
+  logDataForm,
+  typeOfLog,
+} from "App/Utils/CommonTypes";
 const pino = require("pino");
 import { Logger } from "pino";
 import Mail from "@ioc:Adonis/Addons/Mail";
 import { v4 as uuidv4 } from "uuid";
 import fs from "fs/promises";
+import Users from "App/Models/Users";
 
 const senderEmail = Env.get("SMTP_SENDER_ADDRESS");
 const receiverEmail = Env.get("SMTP_RECEIVER_ADDRESS");
@@ -24,15 +29,13 @@ const pathToTransport = Application.makePath(
   `app/Utils/customTransport.${fileExtension}`
 );
 
-export async function appLogger(
-  type: "error" | "login",
-  logData: CustomErrorType | loginLogData
-) {
+type acceptedTypes = CustomErrorType | Users | genericLogData;
+export async function appLogger(type: typeOfLog, logData: acceptedTypes) {
   try {
     await confirmErrorLogFile();
     const transport = makeTransport();
     const pinoLogger = pino(transport);
-    return executeLogger(logData, type, pinoLogger);
+    return executeLogger(type, logData, pinoLogger);
   } catch (error) {
     handleError(error, logData);
   }
@@ -67,30 +70,59 @@ async function handleLoggerErrors(data?: string): Promise<void> {
 }
 
 function executeLogger(
-  logData: CustomErrorType | loginLogData,
-  type: string,
+  type: typeOfLog,
+  logData: acceptedTypes,
   pinoLogger: Logger
 ) {
   const logId = uuidv4();
-  logData.timestamp = new Date().toISOString();
-  let typeOfLog: typeOfLog = "unknown";
+  let log: logDataForm = defaultLog;
+  log.timeStamp = new Date().toISOString();
+  log.uniqueId = logId;
+  log.type = type;
   switch (type) {
-    case "error":
-      if ((logData as CustomErrorType).sqlCode) {
-        typeOfLog = "database_error";
-      } else if ((logData as CustomErrorType).errno) {
-        typeOfLog = "exception_error";
-      }
-      pinoLogger.error({ uniqueId: logId, typeOfLog, ...logData });
+    case "exception_error":
+      log.event = "exception_error";
+      log.status = "system error";
+      log.message = (logData as CustomErrorType).message;
+      pinoLogger.error({ rotaryLog: log });
       break;
-    case "login":
-      if ((logData as loginLogData).type === "login") {
-        typeOfLog = {
-          type: "login",
-          loginStatus: (logData as loginLogData).loginStatus,
-        };
+    case "database_error":
+      log.event = "database_error";
+      log.status = "system error";
+      log.message =
+        (logData as CustomErrorType).sqlMessage ??
+        (logData as CustomErrorType).message;
+      pinoLogger.error({ rotaryLog: log });
+      break;
+    case "access_log":
+      if ((logData as Users)?.userId) {
+        log.event = "login";
+        log.status = "success";
+        log.source = (logData as Users).fullName;
+        log.target = "system";
+        log.message = `${(logData as Users).fullName} logged in with email ${
+          (logData as Users).email
+        }`;
+        pinoLogger.info({ rotaryLog: log });
+      } else if ((logData as genericLogData)?.status === "success") {
+        log.event = "login";
+        log.status = (logData as genericLogData).status;
+        log.source = "";
+        log.target = "system";
+        log.message = `A user logged out`;
+        pinoLogger.info({ rotaryLog: log });
+      } else if ((logData as genericLogData)?.status === "failed") {
+        log.event = "logout";
+        log.status = (logData as genericLogData).status;
+        log.source = "";
+        log.target = "system";
+        log.message = `A user failed to log out`;
+        pinoLogger.info({ rotaryLog: log });
       }
-      pinoLogger.info({ uniqueId: logId, typeOfLog, ...logData });
+      break;
+    default:
+      pinoLogger.error({ rotaryLog: log });
+      break;
   }
 }
 
@@ -112,7 +144,7 @@ function makeTransport() {
 
 async function handleError(
   error: any,
-  logData: CustomErrorType | loginLogData
+  logData: CustomErrorType | Users | genericLogData
 ) {
   console.log(error);
   const extraData = JSON.stringify({
