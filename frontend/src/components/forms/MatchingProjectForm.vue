@@ -126,7 +126,9 @@ const tabs = ref([
 const objectiveItem = ref("");
 const project = reactive(new DistrictMatchingProject());
 const activeTab = ref(
-  projectId && formType !== "readOnlyView" ? sessionStorage.getItem("projectsLastActiveTab") : "form"
+  projectId && formType !== "readOnlyView"
+    ? sessionStorage.getItem("projectsLastActiveTab")
+    : "form"
 );
 const allCurrencies = ref(
   [] as Array<{
@@ -160,14 +162,22 @@ const originalAmountofAnitcipated = ref(Dinero({ amount: 0 }));
 /* Hooks */
 onMounted(async () => {
   try {
-    const res = await assetsApi.getCurrencies();
+    let res = await assetsApi.getCurrencies();
     allCurrencies.value = res ? res : [];
+  } catch (e) {
+    allCurrencies.value = [];
+  }
+  try {
     if (formType === "readOnlyView") {
       disabledMode.value = true;
       viewerMode.value = true;
     }
     if (projectId) {
-      await getProject();
+      try {
+        await getProject();
+      } catch (error) {
+        handleError(error as CustomErrors);
+      }
     } else {
       try {
         project.grant_type = grantType.DISTRICTMATCHINGPROJECT;
