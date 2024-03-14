@@ -54,6 +54,10 @@
     {
       "pattern": "**/*.log",
       "reloadServer": false
+    },
+    {
+      "pattern": "resources/**/*",
+      "reloadServer": false
     }
   ]
 }
