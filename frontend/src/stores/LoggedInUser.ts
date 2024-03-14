@@ -20,11 +20,10 @@ export const useLoggedInUserStore = defineStore(
     }
 
     async function logOut() {
-      Object.assign(loggedInUser, new User());
-      isUserLoggedIn.value = false;
       const usersApi = new UsersApi(new ApiClient());
-      await usersApi.logoutUser();
-      // loggedInUser = reactive(new User());
+      await usersApi.logoutUser(loggedInUser);
+      isUserLoggedIn.value = false;
+      Object.assign(loggedInUser, new User());
     }
 
     function getLoggedInUserRole() {

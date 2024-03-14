@@ -11,12 +11,15 @@ import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import router from "@/router";
 import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
 import { useLoggedInClub } from "@/stores/LoggedInClub";
+import { CustomErrors } from "@/utils/classes/CustomErrors";
+import { errorHandler } from "@/utils/composables/ErrorHandler";
 
 /* Data */
 const showSub = ref(false);
 const userStore = useLoggedInUserStore();
 const districtStore = useLoggedInDistrict();
 const clubStore = useLoggedInClub();
+const { handleError, handleSuccess, handleValidationForm } = errorHandler();
 defineEmits(["update:modelValue"]);
 defineProps<{
   drawerVal: boolean;
@@ -59,9 +62,13 @@ const hideDropdown = (event: Event): void => {
 };
 
 const logoutAdmin = async () => {
-  userStore.logOut();
-  districtStore.resetDistrict();
-  clubStore.resetClub();
+  try {
+    userStore.logOut();
+    districtStore.resetDistrict();
+    clubStore.resetClub();
+  } catch (error) {
+    handleError(error as CustomErrors);
+  }
 };
 </script>
 
@@ -106,9 +113,7 @@ const logoutAdmin = async () => {
           </svg>
           <span class="sr-only">Toggle sidebar</span>
         </button>
-        <div
-          class="flex items-center justify-between mr-4"
-        >
+        <div class="flex items-center justify-between mr-4">
           <img src="/rotary-logo.svg" class="mr-3 h-8" alt="Flowbite Logo" />
           <span
             class="text-nearWhite self-center text-2xl font-semibold whitespace-nowrap"

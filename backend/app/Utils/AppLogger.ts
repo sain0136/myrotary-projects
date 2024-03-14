@@ -95,7 +95,7 @@ function executeLogger(
       pinoLogger.error({ rotaryLog: log });
       break;
     case "access_log":
-      if ((logData as Users)?.userId) {
+      if ((logData as Users)?.userId || (logData as Users)?.email) {
         log.event = "login";
         log.status = "success";
         log.source = (logData as Users).fullName;
@@ -105,18 +105,22 @@ function executeLogger(
         }`;
         pinoLogger.info({ rotaryLog: log });
       } else if ((logData as genericLogData)?.status === "success") {
-        log.event = "login";
+        log.event = "logout";
         log.status = (logData as genericLogData).status;
         log.source = "";
         log.target = "system";
-        log.message = `A user logged out`;
+        log.message = (logData as genericLogData)
+          ? (logData as genericLogData).message
+          : `A user logged out`;
         pinoLogger.info({ rotaryLog: log });
       } else if ((logData as genericLogData)?.status === "failed") {
         log.event = "logout";
         log.status = (logData as genericLogData).status;
         log.source = "";
         log.target = "system";
-        log.message = `A user failed to log out`;
+        log.message = (logData as genericLogData)
+          ? (logData as genericLogData).message
+          : `A user failed to log out`;
         pinoLogger.info({ rotaryLog: log });
       }
       break;
