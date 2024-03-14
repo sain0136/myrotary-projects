@@ -12,6 +12,8 @@ import type { AllUserRoles } from "@/utils/composables/UseAccessControl";
 import { useAccessControl } from "@/utils/composables/UseAccessControl";
 import ResourceList from "@/utils/classes/ResourceList";
 import { logoutUser } from "@/utils/utils";
+import { errorHandler } from "@/utils/composables/ErrorHandler";
+import { CustomErrors } from "@/utils/classes/CustomErrors";
 
 /* Data */
 defineProps<{
@@ -22,6 +24,7 @@ const userStore = useLoggedInUserStore();
 const { hasAccess } = useAccessControl();
 const { langTranslations } = useLanguage();
 const loggedinRole = ref("");
+const { handleError, handleSuccess, handleValidationForm } = errorHandler();
 if (
   userStore.loggedInUser.user_id === 2 ||
   userStore.loggedInUser.user_id === 10
@@ -178,7 +181,11 @@ onMounted(async () => {});
 
 /* Methods */
 const logout = () => {
-  logoutUser();
+  try {
+    logoutUser();
+  } catch (error) {
+    handleError(error as CustomErrors);
+  }
 };
 </script>
 

@@ -6,6 +6,7 @@ import { CustomErrorType, genericLogData } from "App/Utils/CommonTypes";
 import { DateTime } from "luxon";
 import { IUser } from "App/Shared/Interfaces/IUser";
 import { appLogger } from "App/Utils/AppLogger";
+import Users from "App/Models/Users";
 
 export default class UsersController {
   private initializeServices() {
@@ -52,18 +53,19 @@ export default class UsersController {
     }
   }
 
-  public async logout({ session, response }: HttpContextContract) {
+  public async logout({ request, session, response }: HttpContextContract) {
     try {
+      const user = request.body() as Users;
       const log: genericLogData = {
         status: "success",
-        message: "User logged out",
+        message: `User ${user.fullName} with email ${user.email} logged out successfully`,
       };
       appLogger("access_log", log);
       session.clear();
       if (!(session as any).store.isEmpty) {
         const loggerData: genericLogData = {
           status: "failed",
-          message: "Error logging out. Session not cleared",
+          message: `Error logging out user ${user.fullName}. Session not cleared`,
         };
         appLogger("access_log", loggerData);
       }

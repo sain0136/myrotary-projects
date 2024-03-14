@@ -26,8 +26,8 @@ export class UsersApi {
     );
   }
 
-  public async logoutUser(): Promise<void> {
-    return await this.apiClient.fetchWrapper("POST", `${BASE_ROUTE}/logout`);
+  public async logoutUser(user: IUser): Promise<void> {
+    return await this.apiClient.fetchWrapper("POST", `${BASE_ROUTE}/logout`, user);
   }
 
   public async getUser(userId: number): Promise<IUser> {
