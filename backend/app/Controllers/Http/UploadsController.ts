@@ -56,13 +56,13 @@ export default class UploadsController {
         request.input("toDeleteUploads");
       const districtId = request.input("districtId", null);
       const projectId = request.input("projectId", null);
-      const userId = request.input("projectId", null);
+      // const userId = request.input("projectId", null);
       const { uploadsService } = this.initializeServices();
       await uploadsService.delete(
         toDeleteUploads,
         districtId,
         projectId,
-        userId
+        // userId
       );
       return response.json({});
     } catch (error) {
