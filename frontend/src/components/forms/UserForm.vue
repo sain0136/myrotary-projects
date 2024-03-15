@@ -352,8 +352,11 @@ const redirect = () => {
         },
       });
       return;
+      case 'myProfile':
+        return
     default:
-      router.go(-1);
+      router.go(0);
+      return;
   }
 };
 
