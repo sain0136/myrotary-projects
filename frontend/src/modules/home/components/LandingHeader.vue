@@ -22,6 +22,9 @@ interface NavLink {
   disabled?: boolean;
 }
 
+//Array of links/buttons to be displayed in the navigation bar
+//label: the text displayed on the button
+//link: the path to navigate to when the button is clicked (needs to match what's in the router file)
 const navLinks: Ref<NavLink[]> = computed(() => [
   {
     label: langTranslations.value.home,
@@ -162,16 +165,17 @@ const changeLanguage = () => {
         :class="showMenu ? 'block' : 'hidden'"
         id="navbar-default"
       >
-        <ul
+        <ul 
           class="font-medium flex flex-col p-4 md:p-0 mt-4 border rounded-lg bg-nearWhite md:flex-row md:space-x-8 md:mt-0 md:border-0"
         >
           <li v-for="item in navLinks" :key="item.link">
-            <router-link v-if="!item.disabled" :to="{ name: item.link }">
+            <!--This creates clickable links to the different pages, containing the name of the button and the path to the page -->
+            <router-link v-if="!item.disabled" :to="{ name: item.link }">  <!--Path-->
               <span
                 href="#"
                 class="block py-2 pl-3 pr-4 font-bold text-gray-900 rounded hover:text-primary"
                 aria-current="page"
-                >{{ item.label }}</span
+                >{{ item.label }} <!--Header Names--></span 
               >
             </router-link>
           </li>

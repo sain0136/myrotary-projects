@@ -344,6 +344,8 @@ export interface Translation {
   sessionTimeoutHeader: string;
   fileUploadLabelFormats: string;
   myRotaryProjectsLabel: string;
+  createAccountLabel: string;
+  createNewAccountBanner:string;
 }
 
 export const translations: Record<string, Translation> = {
@@ -737,6 +739,9 @@ export const translations: Record<string, Translation> = {
     sessionTimeoutHeader: "Session Timeout",
     fileUploadLabelFormats: "PNG, JPG or GIF (MAX. 10 GB).",
     myRotaryProjectsLabel: "MyRotaryProjects",
+    createAccountLabel: "Don't have an account? Sign Up here!",
+    createNewAccountBanner: "Register",
+    
   },
   fr: {
     contactPage: {
@@ -1137,5 +1142,7 @@ export const translations: Record<string, Translation> = {
     sessionTimeoutHeader: "Délai de session",
     fileUploadLabelFormats: "PNG, JPG ou GIF (MAX. 10 GB).",
     myRotaryProjectsLabel: "MyRotaryProjects",
+    createAccountLabel: "Vous n'avez pas de compte ? Inscrivez-vous ici !",
+    createNewAccountBanner:"S'inscrire"
   },
 };

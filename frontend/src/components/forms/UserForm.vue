@@ -42,6 +42,7 @@ type formType =
   | "myProfile"
   | "clubAdmin"
   | "districtAdmin"
+  | "newAccount"
   | null;
 
 /* Data */
@@ -354,6 +355,9 @@ const redirect = () => {
       return;
       case 'myProfile':
         return
+      case "newAccount":
+        router.push({name:"UserLogin"})
+        return;
     default:
       router.go(0);
       return;
@@ -376,10 +380,16 @@ const choosenDistrictError = computed((): string => {
 
 <template>
   <form @submit.prevent class="">
+     <!-- User form banner -->
     <H2
-      v-if="formType !== 'myProfile'"
+      v-if="formType !== 'myProfile' && formType !== 'newAccount'"
       class="text-center"
       :content="langTranslations.userFormHeader"
+    />
+    <H2
+      v-else-if="formType === 'newAccount'"
+      class="text-center"
+      :content="langTranslations.createNewAccountBanner"
     />
     <Hr />
     <div class="flex-block flex-col items-center justify-center">
@@ -407,7 +417,7 @@ const choosenDistrictError = computed((): string => {
       />
       <!-- TODO: implications of changes to users role -->
       <BaseSelect
-        v-if="formType === 'siteAdminDistrict'"
+        v-if="formType === 'siteAdminDistrict' || formType === 'newAccount' "
         class="w-1/2"
         v-model="user.role_type"
         :label="langTranslations.roleLabel"

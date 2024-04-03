@@ -31,7 +31,7 @@ const routes = [
       },
       {
         path: "/contact",
-        name: "Contact",
+        name: "Contact", 
         component: () => import("@/modules/home/views/Contact.vue"),
       },
       {
@@ -82,6 +82,11 @@ const routes = [
         path: "/terms-and-conditions",
         name: "TermsAndConditions",
         component: () => import("@/modules/home/views/TermsAndConditions.vue"),
+      },
+      {
+        path: "/create-account",
+        name: "CreateAccount",
+        component: () => import("@/modules/home/views/CreateAccount.vue")
       },
     ],
   },

@@ -1,4 +1,4 @@
-import type { CustomError } from "@/utils/classes/CustomError";
+import type { CustomError } from "@/utils/classes/customError";
 import { toastHandler } from "@/utils/composables/ToastHandler";
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import router from "@/router";

@@ -12,7 +12,7 @@ import BaseInput from "@/components/form/BaseInput.vue";
 import { UsersApi } from "@/api/services/UserApi";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import { ApiClient } from "@/api/ApiClient";
-import type { CustomError } from "@/utils/classes/CustomError";
+import type { CustomError } from "@/utils/classes/customError";
 import { useVuelidate } from "@vuelidate/core";
 import { required, email, helpers, minLength } from "@vuelidate/validators";
 import router from "@/router";
@@ -114,6 +114,14 @@ const handleSubmit = async () => {
           class="w-full"
           type="submit"
         />
+        <router-link :to="{ name: 'CreateAccount' }">  <!--Path-->
+              <span
+                href="#"
+                class="block py-2 pl-3 pr-4 font-bold text-gray-900 rounded hover:text-primary text-center"
+                aria-current="page"
+                >{{ langTranslations.createAccountLabel }}</span 
+              >
+            </router-link>
       </div>
     </form>
   </div>

@@ -10,7 +10,7 @@ import { onMounted, ref } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 
 /* Data */
-const { bannerText } = defineProps<{
+const { bannerText } = defineProps<{ //
   bannerText: string;
 }>();
 const { langTranslations } = useLanguage();
