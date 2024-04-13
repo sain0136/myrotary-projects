@@ -1,5 +1,9 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
+import type { IUser } from "@/utils/interfaces/IUser";
+import type { UserType } from "@/utils/types/commonTypes";
+import type {UserTypeForm} from "@/components/forms/UserForm.vue";
+import type { formType } from "@/components/forms/UserForm.vue";
 // import SiteAdminRoutes from "@/modules/admin/routes/routes"
 // import LandingRoutes from "@/modules/home/views/Landing.vue"
 const routes = [
@@ -153,6 +157,17 @@ const routes = [
         path: "approvals",
         name: "Approvals",
         component: () => import("@/modules/admin/views/Approvals.vue"),
+      },
+      {
+        path: "prospect-users",
+        name: "ProspectUsers",
+        component: () => import("@/modules/admin/views/ProspectUsers.vue"),
+      },
+      {
+        path: '/prospect-userform/:userId',
+        name: 'ProspectUserForm',
+        component: () => import("@/components/forms/ProspectUserForm.vue"),
+        props: true
       },
       {
         path: "district-clubs",

@@ -2,6 +2,7 @@ import { ApiClient } from "@/api/ApiClient";
 import type { IClub } from "@/utils/interfaces/IClub";
 import type { IDistrict } from "@/utils/interfaces/IDistrict";
 import type { IUser } from "@/utils/interfaces/IUser";
+import type { PaginationResult } from "@/utils/types/commonTypes";
 const BASE_ROUTE = "/user";
 export class UsersApi {
   constructor(private apiClient: ApiClient) {}
@@ -44,6 +45,18 @@ export class UsersApi {
     );
   }
 
+  //TODO: Create new table for prospect users on database. Then uncomment code
+  public async addProspectUser(user: IUser): Promise<boolean>{
+    //return await this.apiClient.fetchWrapper("POST",`${BASE_ROUTE}/prospectUsers/create`,user)
+    return await this.apiClient.fetchWrapper("POST",`${BASE_ROUTE}/prospectUsers/create`,user);
+  }
+
+  //TODO: Create new table for prospect users on database. Then uncomment code
+  public async getAllProspectUsers(): Promise<Array<IUser>>{
+    //return await this.apiClient.fetchWrapper("GET",`${BASE_ROUTE}/prospectUsers`)
+    return await this.apiClient.fetchWrapper("GET",`${BASE_ROUTE}`)
+  }
+  
   public async updateUser(user: IUser) {
     return await this.apiClient.fetchWrapper(
       "POST",

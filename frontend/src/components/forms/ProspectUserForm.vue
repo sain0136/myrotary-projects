@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: "UserForm",
+  name: "ProspectUserForm",
 };
 </script>
 
@@ -8,12 +8,10 @@ export default {
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
-import District from "@/utils/classes/District";
 import { useVuelidate } from "@vuelidate/core";
 import router from "@/router";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import H2 from "@/components/headings/H2.vue";
-import Hr from "@/components/hr/Hr.vue";
 import BaseInput from "@/components/form/BaseInput.vue";
 import {
   email,
@@ -32,49 +30,26 @@ import { DistrictApi } from "@/api/services/DistrictsApi";
 import ResourceList from "@/utils/classes/ResourceList";
 import { ClubApi } from "@/api/services//ClubApi";
 import type { IClub } from "@/utils/interfaces/IClub";
-import { districtRole } from "@/utils/types/commonTypes";
-
+import type { IUser } from "@/utils/interfaces/IUser";
 /* Types */
-//newUser = when user is creating account for first time, prospectUser = user pending approval
-export type UserTypeForm = "districtAdmin" | "clubUser" | "newUser" | "prospectUser" | null;
-export type formType =
-  | "siteAdminClub"
-  | "siteAdminDistrict"
-  | "myProfile"
-  | "clubAdmin"
-  | "districtAdmin"
-  | "newAccount"
-  | null;
 
 /* Data */
 const route = useRoute();
 const { langTranslations, languagePref, customPrintf } = useLanguage();
 // Route data -- When using form from url
 const userId = ref(route.params.userId);
-const userType = ref(
-  route.query.userType ? (route.query.userType as UserTypeForm) : null
-);
 const clubId = ref(route.query.clubId ?? null);
-const districtId = ref(
-  route.query.districtId ? Number(route.query.districtId) : null
-);
 const isEdit = ref(route.query.isEdit ? true : false);
-const formType = ref(
-  route.query.formType ? (route.query.formType as formType) : null
-);
+
 // Component data -- When using form from component
-const { userIdProp, userTypeProp, clubIdProp, formTypeProp, isEditProp } =
+const { userIdProp, clubIdProp, isEditProp } =
   defineProps<{
     userIdProp?: string;
-    userTypeProp?: UserTypeForm;
     clubIdProp?: string;
-    formTypeProp?: formType;
     isEditProp?: boolean;
   }>();
 userId.value = userIdProp ? userIdProp : userId.value;
-userType.value = userTypeProp ? userTypeProp : userType.value;
 clubId.value = clubIdProp ? clubIdProp : clubId.value;
-formType.value = formTypeProp ? formTypeProp : formType.value;
 isEdit.value = isEditProp ? isEditProp : isEdit.value;
 
 const user = reactive(new User());
@@ -82,10 +57,10 @@ const { handleError, handleSuccess, handleValidationForm } = errorHandler();
 const userApi = new UsersApi(new ApiClient());
 const clubApi = new ClubApi(new ApiClient());
 const districtApi = new DistrictApi(new ApiClient());
-const allDistricts = [];
 // TODO: Verify later district names are unique in db
 const districtMap = reactive<Map<string, number>>(new Map());
 const chosenDistrict = ref("");
+let prospectUserDistrictName:string
 const chosenDistrictError = ref({
   en: "Must assign Admin to a District and Base Club",
   fr: "Doit assigner un Admin a un District et un Club",
@@ -93,15 +68,8 @@ const chosenDistrictError = ref({
 const clubMap = reactive<Map<string, number>>(new Map());
 const userTitle = ref("");
 const chosenClub = ref("");
-const submitLabel = userId.value
-  ? {
-      en: "Update",
-      fr: "Modifier",
-    }
-  : {
-      en: "Create",
-      fr: "Créer",
-    };
+let prospectUserClubName: string
+
 const maxLengthPostal = {
   en: "Must be at most 32 characters",
   fr: "Doit contenir au plus 32 caractères",
@@ -113,6 +81,7 @@ const passwordReset = ref({
 const submitted = ref(false);
 
 /* Validations */
+
 const rules = {
   firstname: {
     required: helpers.withMessage(
@@ -256,28 +225,18 @@ watch(chosenDistrict, async () => {
 });
 
 onMounted(async () => {
+          //TODO: REMOVE THIS , TESTING PURPOSES ONLY
+          user.is_prospect = true
   try {
-    if (userType.value === "districtAdmin" || userType.value === "newUser") {
-      console.log('here')
-      const response = (await districtApi.getAllDistricts(true)) as District[];
-      response.forEach((district) => {
-        districtMap.set(district.district_name, district.district_id);
-      });
-      allDistricts.push();
-    }
-    // if edit
     if (userId.value) {
       const response = await userApi.getUser(parseInt(userId.value as string));
       Object.assign(user, response);
-      if (formType.value === "siteAdminClub") {
-        const role = user.role ? user.role : user.role ? user.role : "";
-        userTitle.value = role + ": " + user.fullName;
-        user.role_type = role;
-      } else {
-        const role = user.role ? user.role : user.role ? user.role : "";
-        userTitle.value = role + ": " + user.fullName;
-        user.role_type = role;
-      }
+      prospectUserDistrictName = (await districtApi.getById(user.district_id)).district_name
+      prospectUserClubName = (await clubApi.getById(user.club_id)).club_name
+
+      const role = user.role ? user.role : user.role ? user.role : "";
+      userTitle.value = role + ": " + user.fullName;
+      user.role_type = role;  
     }
   } catch (error) {
     handleError(error as CustomErrors);
@@ -285,171 +244,57 @@ onMounted(async () => {
 });
 
 /* Methods */
-const validateAndSubmit = async () => {
-  submitted.value = true;
-  let isFormCorrect = await v$.value.$validate();
-  isFormCorrect = choosenDistrictError.value !== "" ? false : isFormCorrect;
-  if (
-    !isFormCorrect ||
-    (!userId.value &&
-      formType.value === "siteAdminDistrict" &&
-      chosenDistrict.value === "")
-  ) {
-    handleValidationForm(choosenDistrictError.value);
-    return;
-  }
-  try {
-    if (userId.value) {
-      await userApi.updateUser(user);
-    } else {
-      if (userType.value === "clubUser") {
-        user.user_type = "CLUB";
-        user.club_id = Number(clubId.value as string);
-        user.district_id = (districtId.value as number) || 1;
-      }
-      //populating user data
-      if (userType.value === "districtAdmin" ||userType.value === "newUser" ) {
-        if (typeof districtMap.get(chosenDistrict.value) !== "undefined") {
-          {
-            user.district_id = districtMap.get(chosenDistrict.value) as number;
-          }
-        } else {
-          throw new CustomErrors(900, "District not found", {
-            en: "District not found",
-            fr: "District non trouvé",
-          });
-        }
-        if (typeof clubMap.get(chosenClub.value) !== "undefined") {
-          user.club_id = clubMap.get(chosenClub.value) as number;
-        } else {
-          throw new CustomErrors(900, "Club not found", {
-            en: "Club not found",
-            fr: "Club non trouvé",
-          });
-        }
-      }
-      if(userType.value === "newUser"){
+const approveUser = async(user:IUser) => {
+console.log("Approving user")
+user.isProspect = false
+//await userApi.createNewUser(user)
+}
 
-        console.log("Creating new prospect user")
-        //Uncomment this once prospector user table is created on backend
-        //await userApi.addProspectUser(user)
-      }
-      else{
-        await userApi.createNewUser(user);
-      }
-    }
-    handleSuccess(langTranslations.value.toastSuccess);
-    redirect();
-  } catch (error) {
-    handleError(error as CustomErrors);
-  }
-};
+const denyUser = async(user:IUser) => {
+  console.log("Denying user")
+  //TODO: Grab user.email address and send e-mail notification
+}
+
+//Applied on child components to define if they are disabled or not
+const isFieldDisabled = computed((): boolean => {
+  return user.is_prospect ? true : false;
+});
+
 
 const redirect = () => {
-  switch (formType.value) {
-    case "districtAdmin":
-      router.push({
-        name: "ClubsAdmin",
-      });
-      return;
-    case "siteAdminClub":
-      router.push({ name: "Club" });
-      return;
-    case "siteAdminDistrict":
-      router.push({ name: "District" });
-      return;
-    case "clubAdmin":
-      router.push({
-        name: "ClubMembers",
-        query: {
-          tableView: "clubUsers",
-        },
-      });
-      return;
-      case 'myProfile':
-        return
-      case "newAccount":
-        router.push({name:"UserLogin"})
-        return;
-    default:
-      router.go(0);
-      return;
-  }
+    router.push({name:"ProspectUsers"})
+    return;
 };
-
-const choosenDistrictError = computed((): string => {
-  if (
-    (chosenDistrict.value === "" || chosenClub.value === "") &&
-    !clubId.value &&
-    !isEdit.value &&
-    submitted.value
-  ) {
-    const str = chosenDistrictError.value[languagePref.value];
-    return str;
-  }
-  return "";
-});
 </script>
 
 <template>
   <form @submit.prevent class="">
-     <!-- User form banner -->
+     <!-- Form header -->
+     <!-- TODO: Add prospect user header -->
     <H2
-      v-if="formType !== 'myProfile' && formType !== 'newAccount'"
       class="text-center"
-      :content="langTranslations.userFormHeader"
+      :content="langTranslations.userFormHeader" 
     />
-    <H2
-      v-else-if="formType === 'newAccount'"
-      class="text-center"
-      :content="langTranslations.createNewAccountBanner"
-    />
-    <Hr />
     <div class="flex-block flex-col items-center justify-center">
-      <p
-        v-if="chosenDistrict === '' && chosenClub === '' && userId === ''"
-        id="error"
-        class="mt-2 text-md text-nearBlack"
-      >
-        <span class="font-bold">{{ chosenDistrictError[languagePref] }}</span>
-      </p>
-      <BaseSelect
-        v-else-if="userType === 'districtAdmin' || userType === 'newUser'"
-        class="w-1/2"
+      <BaseInput
+      v-model="prospectUserDistrictName"
         :label="langTranslations.userForm.districtSelectLabel"
-        :options="[...districtMap.keys()]"
-        v-model="chosenDistrict"
-        :errorMessage="choosenDistrictError"
+        :type="'text'"
+        :disabled="true"
       />
-      <BaseSelect
-        v-if="userType === 'districtAdmin' || userType === 'newUser'"
-        class="w-1/2"
+      <BaseInput
+      v-model="prospectUserClubName"
         :label="langTranslations.baseClubLabel"
-        :options="[...clubMap.keys()]"
-        v-model="chosenClub"
+        :type="'text'"
+        :disabled="true"
       />
-      <!-- TODO: implications of changes to users role -->
-      <BaseSelect
-        v-if="formType === 'siteAdminDistrict' || formType === 'newAccount'"
-        class="w-1/2"
-        v-model="user.role_type"
+      <!--Right now, Only DistrictRole are being accepted. Add support for ClubRole to? check commonTypes.ts -->
+      <BaseInput
+      v-model="user.role" 
         :label="langTranslations.roleLabel"
-        :options="districtRole.filter((role) => role !== 'Webmaster')"
-        :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined"
+        :type="'text'"
+        :disabled="true"
       />
-      <!-- Club member role only -->
-
-      <H2 v-if="formType !== 'myProfile'" :content="userTitle" />
-      <div
-        v-else-if="formType === 'myProfile'"
-        class="flex flex-col gap-4 justify-center items-center font-bold"
-      >
-        <H2 :content="langTranslations.adminDash.personalInformationLabel" />
-        <h6>
-          {{ langTranslations.roleLabel }}:
-          {{ user.role ?? user.role }}
-        </h6>
-      </div>
     </div>
     <div class="form-block">
       <BaseInput
@@ -457,69 +302,63 @@ const choosenDistrictError = computed((): string => {
         :label="langTranslations.userForm.firstNameLabel"
         :type="'text'"
         :errorMessage="v$.firstname?.$errors[0]?.$message as string | undefined"
+        :disabled="isFieldDisabled"
       />
       <BaseInput
         v-model="user.lastname"
         :label="langTranslations.userForm.lastNameLabel"
         :type="'text'"
         :errorMessage="v$.lastname?.$errors[0]?.$message as string | undefined"
+        :disabled="isFieldDisabled"
       />
       <BaseInput
         v-model="user.address"
         :label="langTranslations.addressLabel"
         :type="'text'"
         :errorMessage="v$.address?.$errors[0]?.$message as string | undefined"
+        :disabled="isFieldDisabled"
       />
       <BaseInput
         v-model="user.user_city"
         :label="langTranslations.cityLabel"
         :type="'text'"
         :errorMessage="v$.user_city?.$errors[0]?.$message as string | undefined"
+        :disabled="isFieldDisabled"
       />
       <BaseInput
         v-model="user.user_postal"
         :label="langTranslations.postalCodeLabel"
         :type="'text'"
         :errorMessage="v$.user_postal?.$errors[0]?.$message as string | undefined"
+        :disabled="isFieldDisabled"
       />
       <BaseSelect
         v-model="user.user_country"
         :label="langTranslations.countryLabel"
         :options="ResourceList.countryList"
         :errorMessage="v$.user_country?.$errors[0]?.$message as string | undefined"
-      />
-      <BaseSelect
-        v-if="
-          (user.user_country !== '' && user.user_country === 'United States') ||
-          user.user_country === 'Canada'
-        "
-        v-model="user.user_province"
-        :label="langTranslations.stateOrProvinceLabel"
-        :options="
-          user.user_country === 'United States'
-            ? ResourceList.usaStatesList
-            : ResourceList.canadaProvinceList
-        "
-        :errorMessage="v$.user_province?.$errors[0]?.$message as string | undefined"
+        :disabled="isFieldDisabled"
       />
       <BaseInput
-        v-else-if="user.user_country !== ''"
         v-model="user.user_province"
         :label="langTranslations.stateOrProvinceLabel"
         :type="'text'"
         :errorMessage="v$.user_province?.$errors[0]?.$message as string | undefined"
+        :disabled="isFieldDisabled"
       />
       <BaseInput
         v-model="user.phone"
         :label="langTranslations.phone"
         :type="'text'"
         :errorMessage="v$.phone?.$errors[0]?.$message as string | undefined"
+        :disabled="isFieldDisabled"
       />
       <BaseInput
         v-model="user.email"
         :label="langTranslations.email"
         :type="'email'"
         :errorMessage="v$.email?.$errors[0]?.$message as string | undefined"
+        :disabled="isFieldDisabled"
       />
       <BaseInput
         v-if="!isEdit || passwordReset.resetSet"
@@ -527,6 +366,7 @@ const choosenDistrictError = computed((): string => {
         :label="langTranslations.password"
         :type="'password'"
         :errorMessage="v$.password?.$errors[0]?.$message as string | undefined"
+        :disabled="isFieldDisabled"
       />
       <div
         class="flex justify-center items-center"
@@ -546,18 +386,27 @@ const choosenDistrictError = computed((): string => {
         />
       </div>
     </div>
+    <!--Approval, Denial, Cancel buttons-->
     <div class="button_row mt-4 flex justify-center gap-4">
       <RotaryButton
         :theme="'primary'"
-        :label="submitLabel[languagePref]"
+        :label="langTranslations.approveLabel"
         @click="
-          () => {
-            validateAndSubmit();
+          (user) => {
+            approveUser(user);
           }
         "
       />
       <RotaryButton
-        v-if="formType !== 'myProfile'"
+        :theme="'primary'"
+        :label="langTranslations.denyLabel"
+        @click="
+          (user) => {
+            denyUser(user)
+          }
+        "
+      />
+      <RotaryButton
         :theme="'primary'"
         :label="langTranslations.cancelLabel"
         @click="redirect()"

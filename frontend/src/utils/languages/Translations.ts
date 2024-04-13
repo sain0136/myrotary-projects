@@ -52,6 +52,7 @@ export interface Translation {
   viewLabel: string;
   fileLabel: string;
   approveLabel: string;
+  denyLabel: string;
   clickToUpload: string;
   dragAndDropLabel: string;
   filesSelectedLabel: string;
@@ -346,6 +347,7 @@ export interface Translation {
   myRotaryProjectsLabel: string;
   createAccountLabel: string;
   createNewAccountBanner:string;
+  prospectUserLabel: string;
 }
 
 export const translations: Record<string, Translation> = {
@@ -407,6 +409,7 @@ export const translations: Record<string, Translation> = {
     viewLabel: "View",
     fileLabel: "File",
     approveLabel: "Approve",
+    denyLabel: "Deny",
     clickToUpload: "Click to upload",
     dragAndDropLabel: "or drag and drop",
     filesSelectedLabel: "files selected",
@@ -741,7 +744,7 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
     createAccountLabel: "Don't have an account? Sign Up here!",
     createNewAccountBanner: "Register",
-    
+    prospectUserLabel: "Prospect Users",  
   },
   fr: {
     contactPage: {
@@ -805,6 +808,7 @@ export const translations: Record<string, Translation> = {
     viewLabel: "Voir",
     fileLabel: "Fichiers",
     approveLabel: "Approuver",
+    denyLabel: "Refuser",
     clickToUpload: "Cliquez pour télécharger",
     dragAndDropLabel: "ou glissez et déposez",
     filesSelectedLabel: "fichiers sélectionnés",
@@ -1143,6 +1147,7 @@ export const translations: Record<string, Translation> = {
     fileUploadLabelFormats: "PNG, JPG ou GIF (MAX. 10 GB).",
     myRotaryProjectsLabel: "MyRotaryProjects",
     createAccountLabel: "Vous n'avez pas de compte ? Inscrivez-vous ici !",
-    createNewAccountBanner:"S'inscrire"
+    createNewAccountBanner:"S'inscrire",
+    prospectUserLabel:"Inscriptions en attente",
   },
 };

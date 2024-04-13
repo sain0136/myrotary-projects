@@ -168,6 +168,12 @@ const sideBarItems: Record<
     link: "Approvals",
     hasAccess: hasAccess(loggedinRole.value as AllUserRoles, "approvals-view"),
   },
+  prospectUsers: {
+    label: langTranslations.value.prospectUserLabel,
+    icon: ResourceList.sidebarIcons.newIcon,
+    link: "ProspectUsers",
+    hasAccess: hasAccess(loggedinRole.value as AllUserRoles, "prospect-users-view"),
+  },
   superAdmins: {
     label: "Super Admin",
     icon: ResourceList.sidebarIcons.superAdmins,

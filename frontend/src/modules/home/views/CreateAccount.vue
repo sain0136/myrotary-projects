@@ -26,8 +26,8 @@ const { langTranslations, languagePref, customPrintf } = useLanguage();
 const { handleError, handleSuccess } = errorHandler();
 const assetsStore = useSiteAssets();
 
-const userType = 'districtAdmin' // shows the following dropdowns: assign to district, base club. line 394: UserForm.vue: v-if="userType === 'districtAdmin' && !userId"
-const formType = 'newAccount' //shows role dropdown and all the other extra options 
+const userType = 'newUser' 
+const formType = 'newAccount' 
 const mailApi = new MailApi(new ApiClient());
 const mail = reactive({
   senderEmail: "",

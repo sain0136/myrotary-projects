@@ -17,6 +17,7 @@ import type {
 } from "@/utils/interfaces/IProjects";
 import { grantType, projectStatus } from "@/utils/types/commonTypes";
 import Qmark from "@/components/icons/Qmark.vue";
+import type Button from "primevue/button";
 
 /* Types */
 type ColumnOptions = {
@@ -86,6 +87,9 @@ const {
   submitForReportsButton?: ButtonOptions;
   projectCompleteButton?: ButtonOptions;
   deleteButton?: ButtonOptions;
+  approveButton?: ButtonOptions;
+  denyButton?: ButtonOptions;
+  viewDetailsButton?: ButtonOptions;
   disablePagination?: Boolean;
   hideActionsColumn?: boolean;
   //TODO perhaps make expict union type  selectedItems typed ? like allow a select types that can be passed in
@@ -317,6 +321,30 @@ const getTooltipContent = (
                 href="#"
                 class="font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
                 ><Icon icon="tabler:trash"
+              /></a>
+              <a
+                @click.prevent="approveButton?.callBack({ ...row })"
+                v-if="approveButton?.show && !approveButton?.hide?.(row)"
+                :title="langTranslations.approveLabel"
+                href="#"
+                class="font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
+                ><Icon icon="tabler:check" 
+              /></a>
+              <a
+                @click.prevent="denyButton?.callBack({ ...row })"
+                v-if="denyButton?.show && !denyButton?.hide?.(row)"
+                :title="langTranslations.denyLabel"
+                href="#"
+                class="font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
+                ><Icon icon="tabler:x" 
+              /></a>
+              <a
+                @click.prevent="viewDetailsButton?.callBack({ ...row })"
+                v-if="viewDetailsButton?.show && !viewDetailsButton?.hide?.(row)"
+                :title="langTranslations.viewLabel"
+                href="#"
+                class="font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
+                ><Icon icon="tabler:eye" 
               /></a>
             </div>
           </td>
