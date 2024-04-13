@@ -252,6 +252,9 @@ export interface Translation {
     firstNameLabel: string;
     lastNameLabel: string;
   };
+  prospectUserForm:{
+    districtLabel:string
+  }
   districtForm: {
     districtNameLabel: string;
     govLabel: string;
@@ -624,6 +627,9 @@ export const translations: Record<string, Translation> = {
       districtSelectLabel: "Assign to District",
       firstNameLabel: "First Name",
       lastNameLabel: "Last Name",
+    },
+    prospectUserForm:{
+      districtLabel: "District"
     },
     userFormHeader: "User Form",
     roleLabel: "Role",
@@ -1025,6 +1031,9 @@ export const translations: Record<string, Translation> = {
       districtSelectLabel: "Assigner au District",
       firstNameLabel: "Prénom",
       lastNameLabel: "Nom de Famillle",
+    },
+    prospectUserForm:{
+      districtLabel: "District"
     },
     userFormHeader: "User Form",
     roleLabel: "Role",

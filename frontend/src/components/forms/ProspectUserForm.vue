@@ -278,7 +278,7 @@ const redirect = () => {
     <div class="flex-block flex-col items-center justify-center">
       <BaseInput
       v-model="prospectUserDistrictName"
-        :label="langTranslations.userForm.districtSelectLabel"
+        :label="langTranslations.prospectUserForm.districtLabel"
         :type="'text'"
         :disabled="true"
       />
