@@ -76,7 +76,6 @@ userType.value = userTypeProp ? userTypeProp : userType.value;
 clubId.value = clubIdProp ? clubIdProp : clubId.value;
 formType.value = formTypeProp ? formTypeProp : formType.value;
 isEdit.value = isEditProp ? isEditProp : isEdit.value;
-
 const user = reactive(new User());
 const { handleError, handleSuccess, handleValidationForm } = errorHandler();
 const userApi = new UsersApi(new ApiClient());
@@ -258,7 +257,6 @@ watch(chosenDistrict, async () => {
 onMounted(async () => {
   try {
     if (userType.value === "districtAdmin" || userType.value === "newUser") {
-      console.log('here')
       const response = (await districtApi.getAllDistricts(true)) as District[];
       response.forEach((district) => {
         districtMap.set(district.district_name, district.district_id);
@@ -329,16 +327,14 @@ const validateAndSubmit = async () => {
         }
       }
       if(userType.value === "newUser"){
-
-        console.log("Creating new prospect user")
-        //Uncomment this once prospector user table is created on backend
-        //await userApi.addProspectUser(user)
+        await userApi.createProspectUser(user)
+        handleSuccess(langTranslations.value.toastSucessCreateProspect,true);
       }
       else{
         await userApi.createNewUser(user);
+        handleSuccess(langTranslations.value.toastSuccess);
       }
     }
-    handleSuccess(langTranslations.value.toastSuccess);
     redirect();
   } catch (error) {
     handleError(error as CustomErrors);

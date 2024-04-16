@@ -36,6 +36,11 @@ export default class UserService {
     await this.userRepositories.createUser(user);
   }
 
+  public async createProspectUser(user: IUser) {
+    await this.validateUser(user);
+    await this.userRepositories.createProspectUser(user);
+  }
+
   public async updateUser(user: IUser) {
     await this.validateUser(user);
     await this.userRepositories.updateUser(user);
@@ -58,9 +63,19 @@ export default class UserService {
         rules.regex(/[!@#\$%\^&\*]/), // must contain a special character
       ]),
     });
-    await validator.validate({
-      schema: userSchema,
-      data: user,
-    });
+    //Console log the validation error 
+    try {
+      await validator.validate({
+        schema: userSchema,
+        data: user,
+      });
+    } catch (e) {
+      if (e.messages) {
+        console.error('Validation failed:', e.messages);
+      } else {
+        console.error('Validation failed with an unknown error:', e);
+      }
+      throw e; // Re-throw the error if you want to handle it further up the call stack
+    }
   }
 }

@@ -22,7 +22,7 @@ export default class User implements IUser {
   role_type = "";
   extra_details = {};
   user_id = 0;
-  is_prospect=false
+  is_prospect= false
 
   constructor() {}
 }

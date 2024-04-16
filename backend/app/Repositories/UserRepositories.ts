@@ -25,6 +25,13 @@ export default class UserRepositories {
       throw new CustomException({ message, status, translatedMessage });
     }
     const user = authenticatedUserEmail[0];
+    if(user.isProspect){
+      throw new CustomException({
+        message: "Login not allowed for prospect users",
+        status: 403,
+        translatedMessage: errorTranslations.loginNotAllowed,
+      });
+    }
     if (await Hash.verify(user.password, userCredentials.password)) {
       // TODO: See if the check for his email is security risk should be env variable
       if (
@@ -146,6 +153,56 @@ export default class UserRepositories {
     }
   }
 
+  //Very similar to createUser, except we're passing the optional prop isProspect
+  public async createProspectUser(user: IUser) {
+    if (
+      (!user.user_type && user.user_type !== "CLUB") ||
+      (!user.role_type && user.role_type !== "DISTRICT")
+    ) {
+      throw new CustomException({
+        message: "Malformed user",
+        status: 505,
+        translatedMessage: {
+          en: "Malformed user",
+          fr: "Malformé utilisateur",
+        },
+      });
+    }
+    const createdUser = await Users.create({
+      firstname: user.firstname,
+      lastname: user.lastname,
+      address: user.address,
+      userCity: user.user_city,
+      userPostal: user.user_postal,
+      userProvince: user.user_province,
+      userCountry: user.user_country,
+      isProspect: user.is_prospect,
+      phone: user.phone,
+      email: user.email,
+      password: user.password,
+      clubId: user.club_id,
+      districtId:
+        user.district_id && user.district_id > 0 ? user.district_id : undefined,
+      userType: user.user_type,
+      extraDetails: JSON.stringify(user.extra_details),
+    });
+    if (createdUser.userType === "DISTRICT") {
+      const district = await Districts.findOrFail(createdUser.districtId);
+      await createdUser.related("districtRole").attach({
+        [district.districtId]: {
+          district_role: user.role_type,
+        },
+      });
+    } else {
+      const club = await Clubs.findOrFail(createdUser.clubId);
+      await createdUser.related("clubRole").attach({
+        [club.clubId]: {
+          club_role: user.role_type,
+        },
+      });
+    }
+  }
+
   public async updateUser(user: IUser) {
     const existingUser = await Users.findOrFail(user.user_id);
     const updatedUser = await existingUser
@@ -163,6 +220,7 @@ export default class UserRepositories {
         clubId: user.club_id,
         districtId: user.district_id ? user.district_id : undefined,
         userType: user.user_type,
+        isProspect: user.is_prospect,
         extraDetails: JSON.stringify(user.extra_details),
       })
       .save();

@@ -59,6 +59,9 @@ export default class Users extends BaseModel {
   public userCountry?: string;
 
   @column()
+  public isProspect?: boolean;
+
+  @column()
   public phone?: string;
 
   @column()

@@ -280,6 +280,9 @@ export interface Translation {
   french: string;
   toastError: string;
   toastSuccess: string;
+  toastSucessCreateProspect: string
+  toastSucessApproveProspect:string
+  toastDenyProspect: string
   toastWarning: string;
   toastInfo: string;
   notfoundText: string;
@@ -351,6 +354,7 @@ export interface Translation {
   createAccountLabel: string;
   createNewAccountBanner:string;
   prospectUserLabel: string;
+  noProspectUserAvailable:string;
 }
 
 export const translations: Record<string, Translation> = {
@@ -677,6 +681,9 @@ export const translations: Record<string, Translation> = {
     french: "French",
     toastError: "Error occurred",
     toastSuccess: "Operation successful",
+    toastSucessCreateProspect:"Sucess! Your request has been sent to the administrator for approval",
+    toastSucessApproveProspect: "The user has been successfully approved!",
+    toastDenyProspect: "User denied. An e-mail notification was sent",
     toastWarning: "Warning",
     toastInfo: "Information",
     notfoundText: "The page you are looking for couldn’t be found",
@@ -751,6 +758,7 @@ export const translations: Record<string, Translation> = {
     createAccountLabel: "Don't have an account? Sign Up here!",
     createNewAccountBanner: "Register",
     prospectUserLabel: "Prospect Users",  
+    noProspectUserAvailable: "There are no prospect users at this moment"
   },
   fr: {
     contactPage: {
@@ -1083,6 +1091,9 @@ export const translations: Record<string, Translation> = {
     french: "Français",
     toastError: "Une erreur s'est produite",
     toastSuccess: "Opération réussie",
+    toastSucessCreateProspect: "Sucess! Votre demande a été envoyée à l’administrateur pour approbation",
+    toastSucessApproveProspect: "L’utilisateur a été approuvé avec succès!",
+    toastDenyProspect: "Utilisateur refusé. Une notification par e-mail a été envoyée",
     toastWarning: "Avertissement",
     toastInfo: "Information",
     notfoundText: "La page que vous cherchez n'a pas pu être trouvée",
@@ -1158,5 +1169,6 @@ export const translations: Record<string, Translation> = {
     createAccountLabel: "Vous n'avez pas de compte ? Inscrivez-vous ici !",
     createNewAccountBanner:"S'inscrire",
     prospectUserLabel:"Inscriptions en attente",
+    noProspectUserAvailable: "Il n’y a pas d’utilisateurs potentiels en ce moment"
   },
 };

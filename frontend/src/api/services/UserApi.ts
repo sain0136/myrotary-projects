@@ -45,16 +45,17 @@ export class UsersApi {
     );
   }
 
-  //TODO: Create new table for prospect users on database. Then uncomment code
-  public async addProspectUser(user: IUser): Promise<boolean>{
+  //TODO: This method can potentially only be implemented on the frontend, we`re using 
+  //same obj, just passing an optional prop
+  public async createProspectUser(user: IUser): Promise<boolean>{
     //return await this.apiClient.fetchWrapper("POST",`${BASE_ROUTE}/prospectUsers/create`,user)
-    return await this.apiClient.fetchWrapper("POST",`${BASE_ROUTE}/prospectUsers/create`,user);
+    user.is_prospect = true
+    return await this.apiClient.fetchWrapper("POST",`${BASE_ROUTE}/createProspect`,user);
   }
 
-  //TODO: Create new table for prospect users on database. Then uncomment code
   public async getAllProspectUsers(): Promise<Array<IUser>>{
-    //return await this.apiClient.fetchWrapper("GET",`${BASE_ROUTE}/prospectUsers`)
-    return await this.apiClient.fetchWrapper("GET",`${BASE_ROUTE}`)
+    const allUsers: Array<IUser> =  await this.apiClient.fetchWrapper("GET",`${BASE_ROUTE}`)
+    return allUsers.filter((user)=> user.is_prospect)
   }
   
   public async updateUser(user: IUser) {

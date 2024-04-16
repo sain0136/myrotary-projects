@@ -13,30 +13,16 @@ import { errorHandler } from "@/utils/composables/ErrorHandler";
 import { onMounted, reactive, ref, watch } from "vue";
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import router from "@/router";
-import RotaryButton from "@/components/buttons/RotaryButton.vue";
-import { modalHandler } from "@/utils/composables/ModalHandler";
-import type { PaginationResult } from "@/utils/types/commonTypes";
-import BaseSelect from "@/components/form/BaseSelect.vue";
-import H3 from "@/components/headings/H3.vue";
 import type { IUser } from "@/utils/interfaces/IUser";
 import { UsersApi } from "@/api/services/UserApi";
-import { DistrictApi } from "@/api/services/DistrictsApi";
-import { ClubApi } from "@/api/services/ClubApi";
-import type { IDistrict } from "@/utils/interfaces/IDistrict";
-import { useRoute } from "vue-router";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
-import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
-import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
-import { first } from "lodash";
-import { all } from "node_modules/axios/index.cjs";
-
 
 /* Data */
 const userStore = useLoggedInUserStore();
 
 //
 const { langTranslations } = useLanguage();
-const { handleError, handleSuccess } = errorHandler();
+const { handleError, handleSuccess,handleInfo} = errorHandler();
 const userApi = new UsersApi(new ApiClient());
 let allProspectUsers = reactive<Array<IUser>>([]);
 
@@ -77,15 +63,19 @@ const getProspectUsers = async () => {
 
     //Clearing array, to be re-populated according to page limit
     allProspectUsers.splice(0, allProspectUsers.length);
+    console.log("All prospect users:", JSON.stringify(response, null, 2));
+    //Filter out for is_prospect, and same district as logged in user
+    let selectedUsers = response.filter((user)=> (
+    user.district_id === userStore.loggedInUser.district_id
+  )
+  )
 
-    //Filter out any prospect users that are not on the same district as logged  user
-    let selectedUsers = response.filter((user)=> user.district_id === userStore.loggedInUser.district_id)
     const totalResult = selectedUsers.length
-    
+
     //Display results based on the limit we set
     selectedUsers = selectedUsers.slice(0, pagination.limit)
 
-
+    //CURRENT LOGGED IN USER DISCTRICT = DISTRICT 7000
     selectedUsers.map((user) => allProspectUsers.push(user))
 
 
@@ -119,14 +109,20 @@ const showProspectUserInfo = (user: IUser) => {
 
 const approveUser = async(user:IUser) => {
 console.log("Approving user")
-user.isProspect = false
-//await userApi.createNewUser(user)
+user.is_prospect = false
+await userApi.updateUser(user)
 }
 
 const denyUser = async(user:IUser) => {
   console.log("Denying user")
   //TODO: Grab user.email address and send e-mail notification
+  await userApi.deleteUser(user.user_id)
 }
+
+const refreshPage = async ()=>{
+  await getProspectUsers()
+}
+
 </script>
 
 <template>
@@ -142,14 +138,18 @@ const denyUser = async(user:IUser) => {
       @update:limit="pagination.limit = $event"
       :approve-button="{
         show: true,
-        callBack: (user) => {
-          approveUser(user as IUser);
+        callBack: async (user) => {
+          await approveUser(user as IUser);
+          await refreshPage()
+          handleSuccess(langTranslations.toastSucessApproveProspect,false);
         },
       }"
       :deny-button="{
         show: true,
-        callBack: (user) => {
-          denyUser(user as IUser)
+        callBack: async (user) => {
+          await denyUser(user as IUser)
+          await refreshPage()
+          handleInfo(langTranslations.toastDenyProspect,true);
         },
       }"
       :view-details-button="{
@@ -167,9 +167,18 @@ const denyUser = async(user:IUser) => {
         },
       ]"
     />
+    <h1 v-if="allProspectUsers.length === 0" class = 'no_users'>
+      {{langTranslations.noProspectUserAvailable}} 
+    </h1>
   </div>
 </template>
 
 <style lang="scss" scoped>
+.no_users {
+display: flex;
+ justify-content: center; 
+ align-items: center;
+ height: 80vh
+}
 @import "@/assets/_variables.scss"; 
 </style>

@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { computed, onMounted, reactive, ref, watch } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import { useVuelidate } from "@vuelidate/core";
 import router from "@/router";
@@ -53,7 +53,7 @@ clubId.value = clubIdProp ? clubIdProp : clubId.value;
 isEdit.value = isEditProp ? isEditProp : isEdit.value;
 
 const user = reactive(new User());
-const { handleError, handleSuccess, handleValidationForm } = errorHandler();
+const { handleError, handleSuccess, handleInfo, handleValidationForm, } = errorHandler();
 const userApi = new UsersApi(new ApiClient());
 const clubApi = new ClubApi(new ApiClient());
 const districtApi = new DistrictApi(new ApiClient());
@@ -225,8 +225,6 @@ watch(chosenDistrict, async () => {
 });
 
 onMounted(async () => {
-          //TODO: REMOVE THIS , TESTING PURPOSES ONLY
-          user.is_prospect = true
   try {
     if (userId.value) {
       const response = await userApi.getUser(parseInt(userId.value as string));
@@ -245,21 +243,14 @@ onMounted(async () => {
 
 /* Methods */
 const approveUser = async(user:IUser) => {
-console.log("Approving user")
-user.isProspect = false
-//await userApi.createNewUser(user)
+user.is_prospect = false
+await userApi.updateUser(user)
 }
 
 const denyUser = async(user:IUser) => {
-  console.log("Denying user")
   //TODO: Grab user.email address and send e-mail notification
+  await userApi.deleteUser(user.user_id)
 }
-
-//Applied on child components to define if they are disabled or not
-const isFieldDisabled = computed((): boolean => {
-  return user.is_prospect ? true : false;
-});
-
 
 const redirect = () => {
     router.push({name:"ProspectUsers"})
@@ -302,89 +293,64 @@ const redirect = () => {
         :label="langTranslations.userForm.firstNameLabel"
         :type="'text'"
         :errorMessage="v$.firstname?.$errors[0]?.$message as string | undefined"
-        :disabled="isFieldDisabled"
+        :disabled="true"
       />
       <BaseInput
         v-model="user.lastname"
         :label="langTranslations.userForm.lastNameLabel"
         :type="'text'"
         :errorMessage="v$.lastname?.$errors[0]?.$message as string | undefined"
-        :disabled="isFieldDisabled"
+        :disabled="true"
       />
       <BaseInput
         v-model="user.address"
         :label="langTranslations.addressLabel"
         :type="'text'"
         :errorMessage="v$.address?.$errors[0]?.$message as string | undefined"
-        :disabled="isFieldDisabled"
+        :disabled="true"
       />
       <BaseInput
         v-model="user.user_city"
         :label="langTranslations.cityLabel"
         :type="'text'"
         :errorMessage="v$.user_city?.$errors[0]?.$message as string | undefined"
-        :disabled="isFieldDisabled"
+        :disabled="true"
       />
       <BaseInput
         v-model="user.user_postal"
         :label="langTranslations.postalCodeLabel"
         :type="'text'"
         :errorMessage="v$.user_postal?.$errors[0]?.$message as string | undefined"
-        :disabled="isFieldDisabled"
+        :disabled="true"
       />
       <BaseSelect
         v-model="user.user_country"
         :label="langTranslations.countryLabel"
         :options="ResourceList.countryList"
         :errorMessage="v$.user_country?.$errors[0]?.$message as string | undefined"
-        :disabled="isFieldDisabled"
+        :disabled="true"
       />
       <BaseInput
         v-model="user.user_province"
         :label="langTranslations.stateOrProvinceLabel"
         :type="'text'"
         :errorMessage="v$.user_province?.$errors[0]?.$message as string | undefined"
-        :disabled="isFieldDisabled"
+        :disabled="true"
       />
       <BaseInput
         v-model="user.phone"
         :label="langTranslations.phone"
         :type="'text'"
         :errorMessage="v$.phone?.$errors[0]?.$message as string | undefined"
-        :disabled="isFieldDisabled"
+        :disabled="true"
       />
       <BaseInput
         v-model="user.email"
         :label="langTranslations.email"
         :type="'email'"
         :errorMessage="v$.email?.$errors[0]?.$message as string | undefined"
-        :disabled="isFieldDisabled"
+        :disabled="true"
       />
-      <BaseInput
-        v-if="!isEdit || passwordReset.resetSet"
-        v-model="user.password"
-        :label="langTranslations.password"
-        :type="'password'"
-        :errorMessage="v$.password?.$errors[0]?.$message as string | undefined"
-        :disabled="isFieldDisabled"
-      />
-      <div
-        class="flex justify-center items-center"
-        v-if="isEdit && !passwordReset.resetSet"
-      >
-        <RotaryButton
-          :theme="'black'"
-          class="w-1/2 h-1/2 p-0"
-          :label="langTranslations.resetPasswordLabel"
-          :no-margin="true"
-          @click="
-            () => {
-              passwordReset.resetSet = true;
-              user.password = '';
-            }
-          "
-        />
-      </div>
     </div>
     <!--Approval, Denial, Cancel buttons-->
     <div class="button_row mt-4 flex justify-center gap-4">
@@ -392,8 +358,10 @@ const redirect = () => {
         :theme="'primary'"
         :label="langTranslations.approveLabel"
         @click="
-          (user) => {
-            approveUser(user);
+          async () => {
+            await approveUser(user);
+            handleSuccess(langTranslations.toastSucessApproveProspect,true);
+            redirect()
           }
         "
       />
@@ -401,8 +369,10 @@ const redirect = () => {
         :theme="'primary'"
         :label="langTranslations.denyLabel"
         @click="
-          (user) => {
-            denyUser(user)
+          async () => {
+            await denyUser(user)
+            handleInfo(langTranslations.toastDenyProspect,true);
+            redirect()
           }
         "
       />

@@ -28,7 +28,6 @@ const assetsStore = useSiteAssets();
 
 const userType = 'newUser' 
 const formType = 'newAccount' 
-const mailApi = new MailApi(new ApiClient());
 const mail = reactive({
   senderEmail: "",
   senderName: "",
@@ -81,22 +80,7 @@ const v$ = useVuelidate(rules, mail);
 onMounted(async () => {});
 
 /* Methods */
-const submitEmail = async () => {
-  try {
-    const isFormValid = await v$.value.$validate();
-    if (!isFormValid) {
-      return;
-    }
-    await mailApi.sendMail(mail as IEmail);
-    handleSuccess(langTranslations.value.toastSuccess);
-    mail.senderEmail = "";
-    mail.senderName = "";
-    mail.messageBody.message = "";
-    v$.value.$reset();
-  } catch (error) {
-    handleError(error as CustomErrors); 
-  }
-};
+
 </script>
 
 <template>

@@ -39,9 +39,7 @@ export interface IUser {
   district_id: number | null;
   user_type: UserType;
   user_id: number;
-  /*Make this mandatory?
-  I don't know how it's going to interact with the rest of the codebase*/
-  isProspect?:boolean;
+  is_prospect?:boolean;
   // computed properties
   fullName: string;
   role: DistrictRole | ClubRole | string;

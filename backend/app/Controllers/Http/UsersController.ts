@@ -97,6 +97,17 @@ export default class UsersController {
     }
   }
 
+  public async createProspectUser({ request, response }: HttpContextContract) {
+    try {
+      const user = request.body() as IUser;
+      const { userService } = this.initializeServices();
+      await userService.createProspectUser(user);
+      return response.json(true);
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
+  }
+  
   public async updateUser({ request, response }: HttpContextContract) {
     try {
       const user = request.body() as IUser;
