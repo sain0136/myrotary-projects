@@ -229,7 +229,8 @@ const generateUploadLimits = (
     <div
       v-if="
         useLoggedInDistrict().loggedInDistrict.district_details.reportLinks
-          .length > 0
+          .length > 0 &&
+        (projectType === 'dsg' || projectType === 'dm')
       "
     >
       <H4
@@ -408,7 +409,10 @@ const generateUploadLimits = (
     </div>
 
     <!-- Evidence Upload -->
-    <hr class="w-full bg-gray-900 h-0.5" />
+    <hr
+      v-if="projectType === 'dsg' || projectType === 'dm'"
+      class="w-full bg-gray-900 h-0.5"
+    />
     <div
       class="w-9/12 py-4"
       v-if="projectType === 'dsg' || projectType === 'dm'"
@@ -527,7 +531,10 @@ const generateUploadLimits = (
       </table>
     </div>
     <!-- Report Upload -->
-    <hr class="w-full bg-gray-900 h-0.5" />
+    <hr
+      v-if="projectType === 'dsg' || projectType === 'dm'"
+      class="w-full bg-gray-900 h-0.5"
+    />
     <div
       class="w-9/12 py-4"
       v-if="projectType === 'dsg' || projectType === 'dm'"
