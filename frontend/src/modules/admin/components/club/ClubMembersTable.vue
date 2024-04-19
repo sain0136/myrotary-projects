@@ -209,6 +209,11 @@ const createNewClubMember = () => {
     },
   });
 };
+
+const updateLimit = (limit: number) => {
+  pagination.currentPage = 1;
+  pagination.limit = limit;
+};
 </script>
 
 <template>
@@ -259,7 +264,7 @@ const createNewClubMember = () => {
       :last-page="pagination.lastPage"
       :total-results="pagination.total"
       :limit="pagination.limit"
-      @update:limit="pagination.limit = $event"
+      @update:limit="updateLimit($event)"
       :delete-button="{
         show: true,
         callBack: (user) => {

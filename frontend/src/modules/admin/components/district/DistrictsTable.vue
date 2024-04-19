@@ -118,6 +118,11 @@ const deleteDistrict = async (district: unknown) => {
     handleError(error as CustomErrors);
   }
 };
+
+const updateLimit = (limit: number) => {
+  pagination.currentPage = 1;
+  pagination.limit = limit;
+};
 </script>
 
 <template>
@@ -131,7 +136,7 @@ const deleteDistrict = async (district: unknown) => {
       :last-page="pagination.lastPage"
       :total-results="pagination.total"
       :limit="pagination.limit"
-      @update:limit="pagination.limit = $event"
+      @update:limit="updateLimit($event)"
       :delete-button="{
         show: true,
         callBack: deleteDistrict,
