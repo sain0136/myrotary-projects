@@ -337,6 +337,7 @@ export interface Translation {
     myProfileLabel: string;
     personalInformationLabel: string;
     districtClubsLabel: string;
+    rotaryAnalticsLink: string;
   };
   uploadFileLabel: string;
   submit: string;
@@ -730,6 +731,7 @@ export const translations: Record<string, Translation> = {
       myProfileLabel: "Profile",
       personalInformationLabel: "Personal Information",
       districtClubsLabel: "District Clubs",
+      rotaryAnalticsLink: "Rotary Analytics Dashboard",
     },
     uploadFileLabel: "Upload Files",
     submit: "Submit",
@@ -1130,6 +1132,7 @@ export const translations: Record<string, Translation> = {
       myProfileLabel: "Profil",
       personalInformationLabel: "Informations personnelles",
       districtClubsLabel: "Clubs de district",
+      rotaryAnalticsLink: "Tableau de bord de Rotary Analytics",
     },
     uploadFileLabel: "Télécharger des fichiers",
     submit: "Soumettre",
