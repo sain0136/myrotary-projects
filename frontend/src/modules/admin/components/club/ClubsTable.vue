@@ -138,6 +138,11 @@ const deleteClub = async (club: unknown) => {
     handleError(error as CustomError);
   }
 };
+
+const updateLimit = (limit: number) => {
+  pagination.currentPage = 1;
+  pagination.limit = limit;
+};
 </script>
 
 <template>
@@ -162,7 +167,7 @@ const deleteClub = async (club: unknown) => {
       :last-page="pagination.lastPage"
       :total-results="pagination.total"
       :limit="pagination.limit"
-      @update:limit="pagination.limit = $event"
+      @update:limit="updateLimit($event)"
       :delete-button="{
         show: true,
         callBack: deleteClub,

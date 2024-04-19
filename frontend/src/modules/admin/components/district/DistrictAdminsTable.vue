@@ -173,6 +173,11 @@ const handlePageChange = (nextOrPrevious: "next" | "previous") => {
       : pagination.currentPage - 1;
   getDistrictAdmins();
 };
+
+const updateLimit = (limit: number) => {
+  pagination.currentPage = 1;
+  pagination.limit = limit;
+};
 </script>
 
 <template>
@@ -195,7 +200,7 @@ const handlePageChange = (nextOrPrevious: "next" | "previous") => {
       :last-page="pagination.lastPage"
       :total-results="pagination.total"
       :limit="pagination.limit"
-      @update:limit="pagination.limit = $event"
+      @update:limit="updateLimit($event)"
       :delete-button="{
         show: true,
         callBack: (user) => {
