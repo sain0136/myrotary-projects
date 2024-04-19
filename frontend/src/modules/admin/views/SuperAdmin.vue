@@ -27,7 +27,7 @@ onMounted(async () => {});
     class="h-full justify-center text-center gap-4 flex items-center flex-col text-2xl font-bold"
   >
     <a
-      class="text-blue-600"
+      class="text-blue-600 hover:text-primary"
       target="_blank"
       href="https://analytics.myrotaryprojects.org"
       >{{ langTranslations.adminDash.rotaryAnalticsLink }}</a
