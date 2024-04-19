@@ -23,7 +23,16 @@ onMounted(async () => {});
 </script>
 
 <template>
-  <div class="h-full justify-center text-center gap-4 flex items-center flex-col text-2xl font-bold">{{ "Under construction" }}</div> 
+  <div
+    class="h-full justify-center text-center gap-4 flex items-center flex-col text-2xl font-bold"
+  >
+    <a
+      class="text-blue-600"
+      target="_blank"
+      href="https://analytics.myrotaryprojects.org"
+      >{{ langTranslations.adminDash.rotaryAnalticsLink }}</a
+    >
+  </div>
 </template>
 
 <style lang="scss" scoped>
