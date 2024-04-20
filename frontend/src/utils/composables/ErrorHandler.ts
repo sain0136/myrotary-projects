@@ -1,5 +1,5 @@
 import type { CustomError } from "@/utils/classes/CustomError";
-import { toastHandler } from "@/utils/composables/ToastHandler";
+import { toastHandler, type toastLength } from "@/utils/composables/ToastHandler";
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import router from "@/router";
 
@@ -28,7 +28,12 @@ const handleError = (
   if (error.translatedMessage?.en) {
     message = error.translatedMessage[languagePref.value];
   }
-  const time = overrideTimeout ? "5000" : "3000";
+  let time: toastLength = overrideTimeout ? "5000" : "3000";
+  time =
+    errorBody["en"] ===
+    "You were logged out due to inactivity. Please login again."
+      ? "10000"
+      : time;
   handleToast("error", errorName[languagePref.value], message, time);
   if (handleRedirect) {
     setTimeout(() => {
@@ -50,7 +55,7 @@ const handleValidationForm = (errorMessage?: string) => {
   };
   handleToast(
     "error",
-    errorName[languagePref.value] ,
+    errorName[languagePref.value],
     `${formNotValid[languagePref.value]} ${errorMessage ? errorMessage : ""}`,
     "5000"
   );

@@ -1,32 +1,19 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import { DateTime } from "luxon";
 import CustomException from "App/Exceptions/CustomException";
-import { CustomErrorType } from "App/Utils/CommonTypes";
-
-const exceptionRoutes = [
-  "/user/authenticate/",
-  "/user/logout/",
-  "/user/logout",
-  "/user/authenticate",
-  "/assets",
-];
 
 export default class Authorize {
   public async handle(
-    { request, session }: HttpContextContract,
+    { session }: HttpContextContract,
     next: () => Promise<void>
   ) {
-    //TODO: Clean up
-    console.info("Session Data: %j", session.all());
-    console.info("Is session fresh? %s", session.fresh);
-    if (exceptionRoutes.includes(request.parsedUrl.pathname as string)) {
-      return next();
-    }
     if (session.get("userIsLoggedIn")) {
       let lastApiCallTimeStamp = session.get("lastApiCallTimeStamp");
       let now = DateTime.now().toMillis();
-      const oneHourInMilliseconds = 3600000;
-      if (now - lastApiCallTimeStamp > oneHourInMilliseconds) {
+      // const oneHourInMilliseconds = 3600000;
+      const twentyseconds = 20000;
+
+      if (now - lastApiCallTimeStamp > twentyseconds) {
         session.clear();
         const message =
           "You were logged out due to inactivity. Please login again.";
@@ -40,12 +27,7 @@ export default class Authorize {
         await next();
       }
     } else {
-      const message = "Unauthorized access. ";
-      const status = 401;
-      throw new CustomException({
-        message,
-        status,
-      } as CustomErrorType);
+      await next();
     }
   }
 }

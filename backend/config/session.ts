@@ -106,11 +106,13 @@ HTTP Support: Yes, SameSite: 'strict' will
 work over HTTP in a development environment.
  However, it's crucial to switch to HTTPS for 
  production to ensure security. */
+
+  // use firefox browser it allows more than chrome for development
   cookie: {
-    path: "/",
+    path: "/", //Setting it to '/' means that the cookie will be sent for all paths on your domain. If you set it to '/admin', the cookie will only be sent when the requested URL starts with /admin.
     httpOnly: true,
-    sameSite: "none",
-    secure: false,
+    sameSite: process.env.NODE_ENV === "production" ? "lax" : "none",
+    secure: process.env.NODE_ENV === "production",
     maxAge: 7200,
   },
 

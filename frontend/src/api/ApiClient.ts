@@ -31,22 +31,7 @@ export class ApiClient {
     const response = await fetch(url, options);
     const jsonData = await response.json();
     if (response.status === 601) {
-      const { languagePref, langTranslations } = useLanguage();
-      const { changeShowModal, setModal } = modalHandler();
-      setModal(
-        langTranslations.value.sessionTimeoutHeader,
-        jsonData.translatedMessage[languagePref.value] ?? jsonData.rawMessage
-      );
-      changeShowModal();
-      const userStore = useLoggedInUserStore();
-      const districtStore = useLoggedInDistrict();
-      const clubStore = useLoggedInClub();
-      await userStore.logOut();
-      router.push({ name: "AdminLoginForm" });
-      districtStore.resetDistrict();
-      clubStore.resetClub();
-      router.push({ name: "AdminLoginForm" });
-      return;
+      this.handleSessionTimeout();
     }
     if (response.status !== 200) {
       const partialError = jsonData as unknown as ICustomError;
@@ -88,5 +73,28 @@ export class ApiClient {
       );
     }
     return response.data;
+  }
+
+  private async handleSessionTimeout() {
+    try {
+      // TODO: delete this and that modal when it's ready
+      // const { langTranslations } = useLanguage();
+      // const { changeShowModal, setModal } = modalHandler();
+      // setModal(
+      //   langTranslations.value.sessionTimeoutHeader,
+      //   langTranslations.value.sessionTimeoutBody
+      // );
+      // changeShowModal();
+      const userStore = useLoggedInUserStore();
+      const districtStore = useLoggedInDistrict();
+      const clubStore = useLoggedInClub();
+      await userStore.logOut();
+      districtStore.resetDistrict();
+      clubStore.resetClub();
+      router.push({ name: "UserLogin" });
+      return;
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
