@@ -20,6 +20,9 @@ import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import Banners from "@/components/banners/Banners.vue";
 import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
 import { useLoggedInClub } from "@/stores/LoggedInClub";
+import { useProspectUserStore } from "@/stores/ProspecUserStore";
+import { DistrictApi } from "@/api/services/DistrictsApi";
+import type { IUser } from "@/utils/interfaces/IUser";
 
 /* Data */
 const { langTranslations, customPrintf } = useLanguage();
@@ -29,9 +32,11 @@ const state = reactive({
   password: "",
 });
 const userStore = useLoggedInUserStore();
+const prospectUserStore = useProspectUserStore()
 const districtStore = useLoggedInDistrict();
 const clubStore = useLoggedInClub();
 const usersApi = new UsersApi(new ApiClient());
+const districtApi = new DistrictApi(new ApiClient())
 
 /* Validations */
 const rules = {
@@ -80,6 +85,10 @@ const handleSubmit = async () => {
       )
     );
     router.push({ name: "AdminWelcome" });
+
+    // use ProspectUserStore so we can update our notification icon
+    const allProspectUsers = ((await usersApi.getAllUsers(true,undefined,undefined,userStore.loggedInUser.district_id!)))
+    prospectUserStore.setHasProspectUsers(Object(allProspectUsers).length > 0)
   } catch (error) {
     handleError(error as CustomError);
   }

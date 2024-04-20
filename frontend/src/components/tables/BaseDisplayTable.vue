@@ -405,7 +405,7 @@ const getTooltipContent = (
       </a>
       <a
         @click="handlePageChange('next')"
-        v-if="currentPage !== lastPage"
+        v-if="currentPage !== lastPage && totalResults > limit /*Limit is our dropdown option*/" 
         href="#"
         class="flex items-center justify-center px-3 h-8 text-sm font-medium text-nearWhite bg-primary hover:bg-primaryHover focus:ring-primaryFocus rounded-lg"
       >

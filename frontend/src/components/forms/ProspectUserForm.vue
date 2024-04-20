@@ -45,7 +45,7 @@ const isEdit = ref(route.query.isEdit ? true : false);
 const { userIdProp, clubIdProp, isEditProp } =
   defineProps<{
     userIdProp?: string;
-    clubIdProp?: string;
+    clubIdProp?: string; 
     isEditProp?: boolean;
   }>();
 userId.value = userIdProp ? userIdProp : userId.value;

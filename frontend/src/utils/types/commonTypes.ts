@@ -26,6 +26,15 @@ export const districtRole: DistrictRole[] = [
   "District Stewardship",
 ];
 
+export const districtRoles:string[] = [
+  "Webmaster",
+  "District Admin",
+  "District Grants Chair",
+  "District Foundations Chair",
+  "District International Chair",
+  "District Stewardship",
+];
+
 export type ClubRole = "Club Admin" | "Standard Member" | "Guest";
 
 export const clubRole = ["Club Admin", "Standard Member", "Guest"];

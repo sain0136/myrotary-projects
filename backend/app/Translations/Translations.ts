@@ -16,7 +16,7 @@ export const errorTranslations: Record<apiError, Translation> = {
     fr: "Impossible de supprimer le projet, il y a des engagements associés",
   },
   loginNotAllowed: {
-    en: "It looks like your account isn't ready for login yet. Please contact us if you believe this is an error",
-    fr: "Il semble que votre compte ne soit pas encore prêt pour la connexion. Veuillez nous contacter si vous pensez qu’il s’agit d’une erreur",
+    en: "Your account is pending admin approval. Please check your email for updates and reach out to us if you encounter any issues",
+    fr: "Votre compte est en attente d’approbation par l’administrateur. Veuillez consulter votre courriel pour obtenir des mises à jour et communiquer avec nous si vous rencontrez des problèmes",
   },
 };

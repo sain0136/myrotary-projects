@@ -9,11 +9,39 @@ import { errorTranslations } from "App/Translations/Translations";
 import { AuthenticationRequestData } from "App/Utils/CommonTypes";
 
 export default class UserRepositories {
-  public async index() {
-    const allUsers = await Users.all();
-    return allUsers;
-  }
+  
+  public async getAllUsers(
+    isProspect: boolean,
+    limit?: number,
+    currentPage?: number,
+    districtId?: number
+  ) {
+    //Meaning user wants a pagination result
+    if(limit && currentPage){
+      const query = Users.query()
+      .select()
+      .where({isProspect: isProspect})
+      .orderBy("created_at", "asc")
+  
+      if(districtId){
+        query.andWhere({district_id:districtId})
+      }
+      return await query.paginate(currentPage,limit)
+    }
+    //Meaning user just wants the User objects
+    else{
+      const query = Users.query()
+      .select()
+      .where({isProspect: isProspect})
+      .orderBy("created_at", "asc")
 
+      if(districtId){
+        query.andWhere({ district_id: districtId });
+      }
+      return await query
+    }
+  }
+  
   public async authenticateUser(userCredentials: AuthenticationRequestData) {
     const authenticatedUserEmail = await Users.query()
       .select()
@@ -25,7 +53,7 @@ export default class UserRepositories {
       throw new CustomException({ message, status, translatedMessage });
     }
     const user = authenticatedUserEmail[0];
-    if(user.isProspect){
+    if (user.isProspect) {
       throw new CustomException({
         message: "Login not allowed for prospect users",
         status: 403,
@@ -106,55 +134,6 @@ export default class UserRepositories {
   }
 
   public async createUser(user: IUser) {
-    if (
-      (!user.user_type && user.user_type !== "CLUB") ||
-      (!user.role_type && user.role_type !== "DISTRICT")
-    ) {
-      throw new CustomException({
-        message: "Malformed user",
-        status: 505,
-        translatedMessage: {
-          en: "Malformed user",
-          fr: "Malformé utilisateur",
-        },
-      });
-    }
-    const createdUser = await Users.create({
-      firstname: user.firstname,
-      lastname: user.lastname,
-      address: user.address,
-      userCity: user.user_city,
-      userPostal: user.user_postal,
-      userProvince: user.user_province,
-      userCountry: user.user_country,
-      phone: user.phone,
-      email: user.email,
-      password: user.password,
-      clubId: user.club_id,
-      districtId:
-        user.district_id && user.district_id > 0 ? user.district_id : undefined,
-      userType: user.user_type,
-      extraDetails: JSON.stringify(user.extra_details),
-    });
-    if (createdUser.userType === "DISTRICT") {
-      const district = await Districts.findOrFail(createdUser.districtId);
-      await createdUser.related("districtRole").attach({
-        [district.districtId]: {
-          district_role: user.role_type,
-        },
-      });
-    } else {
-      const club = await Clubs.findOrFail(createdUser.clubId);
-      await createdUser.related("clubRole").attach({
-        [club.clubId]: {
-          club_role: user.role_type,
-        },
-      });
-    }
-  }
-
-  //Very similar to createUser, except we're passing the optional prop isProspect
-  public async createProspectUser(user: IUser) {
     if (
       (!user.user_type && user.user_type !== "CLUB") ||
       (!user.role_type && user.role_type !== "DISTRICT")

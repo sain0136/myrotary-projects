@@ -33,6 +33,9 @@ import ResourceList from "@/utils/classes/ResourceList";
 import { ClubApi } from "@/api/services//ClubApi";
 import type { IClub } from "@/utils/interfaces/IClub";
 import { districtRole } from "@/utils/types/commonTypes";
+import { districtRoles } from "@/utils/types/commonTypes";
+import  { clubRole } from "@/utils/types/commonTypes";
+import Banners from "@/components/banners/Banners.vue";
 
 /* Types */
 //newUser = when user is creating account for first time, prospectUser = user pending approval
@@ -62,6 +65,7 @@ const isEdit = ref(route.query.isEdit ? true : false);
 const formType = ref(
   route.query.formType ? (route.query.formType as formType) : null
 );
+
 // Component data -- When using form from component
 const { userIdProp, userTypeProp, clubIdProp, formTypeProp, isEditProp } =
   defineProps<{
@@ -390,17 +394,15 @@ const choosenDistrictError = computed((): string => {
 <template>
   <form @submit.prevent class="">
      <!-- User form banner -->
+    <Banners 
+    v-if= "formType ==='newAccount'"
+    :banner-text="langTranslations.createNewAccountBanner" />
     <H2
       v-if="formType !== 'myProfile' && formType !== 'newAccount'"
       class="text-center"
       :content="langTranslations.userFormHeader"
     />
-    <H2
-      v-else-if="formType === 'newAccount'"
-      class="text-center"
-      :content="langTranslations.createNewAccountBanner"
-    />
-    <Hr />
+    <Hr v-if = "formType!='newAccount'"/>
     <div class="flex-block flex-col items-center justify-center">
       <p
         v-if="chosenDistrict === '' && chosenClub === '' && userId === ''"
@@ -426,11 +428,19 @@ const choosenDistrictError = computed((): string => {
       />
       <!-- TODO: implications of changes to users role -->
       <BaseSelect
-        v-if="formType === 'siteAdminDistrict' || formType === 'newAccount'"
+        v-if="formType === 'siteAdminDistrict'"
         class="w-1/2"
         v-model="user.role_type"
         :label="langTranslations.roleLabel"
         :options="districtRole.filter((role) => role !== 'Webmaster')"
+        :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined"
+      />
+      <BaseSelect
+        v-if="formType === 'newAccount'"
+        class="w-1/2"
+        v-model="user.role_type"
+        :label="langTranslations.roleLabel"
+        :options="districtRoles.filter((role)=> role!== 'Webmaster').concat(clubRole.filter((role)=> role !=='Guest'))"
         :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined"
       />
       <!-- Club member role only -->

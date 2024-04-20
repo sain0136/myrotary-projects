@@ -16,9 +16,11 @@ import router from "@/router";
 import type { IUser } from "@/utils/interfaces/IUser";
 import { UsersApi } from "@/api/services/UserApi";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
+import { useProspectUserStore } from "@/stores/ProspecUserStore";
 
 /* Data */
 const userStore = useLoggedInUserStore();
+const prospectUserStore  = useProspectUserStore();
 
 //
 const { langTranslations } = useLanguage();
@@ -26,15 +28,12 @@ const { handleError, handleSuccess,handleInfo} = errorHandler();
 const userApi = new UsersApi(new ApiClient());
 let allProspectUsers = reactive<Array<IUser>>([]);
 
-
-
 const pagination = reactive({
   currentPage: 1,
   lastPage: 1,
   total: 0,
   limit: 5,
 });
-
 
 
 //Hardcode pagination settings for now (in the future this will be part of the api response)
@@ -59,30 +58,26 @@ onMounted(async () => {
 const getProspectUsers = async () => {
   loaded.value = false;
   try {
-    const response = await userApi.getAllProspectUsers()
-
+    const response = await userApi.getAllUsers(true,pagination.limit,pagination.currentPage, userStore.loggedInUser.district_id!)
+    let selectedUsers = response.data
+    console.log("All prospect users:", JSON.stringify(response, null, 2));
     //Clearing array, to be re-populated according to page limit
     allProspectUsers.splice(0, allProspectUsers.length);
-    console.log("All prospect users:", JSON.stringify(response, null, 2));
-    //Filter out for is_prospect, and same district as logged in user
-    let selectedUsers = response.filter((user)=> (
-    user.district_id === userStore.loggedInUser.district_id
-  )
-  )
 
-    const totalResult = selectedUsers.length
+    //Filter out for is_prospect, and same district as logged in user
+
+    //Update prospectUserStore so that we can update the notification icon
+    prospectUserStore.setHasProspectUsers(selectedUsers.length > 0 ? true : false)
 
     //Display results based on the limit we set
     selectedUsers = selectedUsers.slice(0, pagination.limit)
 
     //CURRENT LOGGED IN USER DISCTRICT = DISTRICT 7000
-    selectedUsers.map((user) => allProspectUsers.push(user))
+    selectedUsers.map((user) => allProspectUsers.push(user as IUser))
 
-
-    //TODO: Update these values correctly when I press "next" button
-    pagination.currentPage = paginationOptions.current_page
-    pagination.lastPage = paginationOptions.last_page
-    pagination.total = totalResult
+    pagination.currentPage = response.meta.current_page
+    pagination.lastPage = response.meta.last_page
+    pagination.total = response.meta.total
   
     loaded.value = true;
   } catch (error) {
@@ -91,7 +86,6 @@ const getProspectUsers = async () => {
 }
 
 const handlePageChange = (nextOrPrevious: "next" | "previous") => {
-  console.log('Changing Page')
   pagination.currentPage =
     nextOrPrevious === "next"
       ? pagination.currentPage + 1
@@ -103,7 +97,7 @@ const handlePageChange = (nextOrPrevious: "next" | "previous") => {
 const showProspectUserInfo = (user: IUser) => {
   router.push({
     name: "ProspectUserForm",
-    params: { userId: user.user_id }
+    params: { userId: user.user_id}
   })
 }
 
@@ -111,6 +105,7 @@ const approveUser = async(user:IUser) => {
 console.log("Approving user")
 user.is_prospect = false
 await userApi.updateUser(user)
+
 }
 
 const denyUser = async(user:IUser) => {
@@ -122,7 +117,6 @@ const denyUser = async(user:IUser) => {
 const refreshPage = async ()=>{
   await getProspectUsers()
 }
-
 </script>
 
 <template>

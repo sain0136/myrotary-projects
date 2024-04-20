@@ -12,8 +12,18 @@ export default class UserService {
   which you can then use in your methods. */
   constructor(private userRepositories: UserRepositories) {}
 
-  public async index() {
-    const allUsers = await this.userRepositories.index();
+  public async getAllUsers(
+    isProspect: boolean,
+    limit?: number,
+    currentPage?: number,
+    districtId?: number
+  ) {
+    const allUsers = await this.userRepositories.getAllUsers(
+      isProspect,
+      limit,
+      currentPage,
+      districtId
+    );
     return allUsers;
   }
 
@@ -34,11 +44,6 @@ export default class UserService {
   public async createUser(user: IUser) {
     await this.validateUser(user);
     await this.userRepositories.createUser(user);
-  }
-
-  public async createProspectUser(user: IUser) {
-    await this.validateUser(user);
-    await this.userRepositories.createProspectUser(user);
   }
 
   public async updateUser(user: IUser) {
@@ -63,19 +68,9 @@ export default class UserService {
         rules.regex(/[!@#\$%\^&\*]/), // must contain a special character
       ]),
     });
-    //Console log the validation error 
-    try {
-      await validator.validate({
-        schema: userSchema,
-        data: user,
-      });
-    } catch (e) {
-      if (e.messages) {
-        console.error('Validation failed:', e.messages);
-      } else {
-        console.error('Validation failed with an unknown error:', e);
-      }
-      throw e; // Re-throw the error if you want to handle it further up the call stack
-    }
+    await validator.validate({
+      schema: userSchema,
+      data: user,
+    });
   }
 }

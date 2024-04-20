@@ -15,10 +15,14 @@ export default class UsersController {
     return { userRepositories, userService };
   }
 
-  public async index({ response }: HttpContextContract) {
+  public async getAllUsers({ request, response }: HttpContextContract) {
     try {
+      const isProspect: boolean = request.input("isProspect")
+      const limit: number | undefined = request.input("limit") // it's optional, so it might be undefined
+      const currentPage:number | undefined = request.input("currentPage")
+      const districtId: number | undefined = request.input("districtId") 
       const { userService } = this.initializeServices();
-      const allUsers = await userService.index();
+      const allUsers = await userService.getAllUsers(isProspect,limit,currentPage,districtId);
       return response.json(allUsers);
     } catch (error) {
       throw new CustomException(error as CustomErrorType);
@@ -91,17 +95,6 @@ export default class UsersController {
       const user = request.body() as IUser;
       const { userService } = this.initializeServices();
       await userService.createUser(user);
-      return response.json(true);
-    } catch (error) {
-      throw new CustomException(error as CustomErrorType);
-    }
-  }
-
-  public async createProspectUser({ request, response }: HttpContextContract) {
-    try {
-      const user = request.body() as IUser;
-      const { userService } = this.initializeServices();
-      await userService.createProspectUser(user);
       return response.json(true);
     } catch (error) {
       throw new CustomException(error as CustomErrorType);

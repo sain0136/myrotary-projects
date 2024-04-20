@@ -7,8 +7,22 @@ const BASE_ROUTE = "/user";
 export class UsersApi {
   constructor(private apiClient: ApiClient) {}
 
-  public async getAllUsers(): Promise<Array<IUser>> {
-    return await this.apiClient.fetchWrapper("GET", `${BASE_ROUTE}`);
+  public async getAllUsers(
+    isProspect: boolean,
+    limit?: number,
+    currentPage?: number,
+    districtId?: number
+  ): Promise<PaginationResult> {
+    return await this.apiClient.fetchWrapper(
+      "POST",
+      `${BASE_ROUTE}/getAllUsers`,
+      {
+        isProspect,
+        limit,
+        currentPage,
+        districtId,
+      }
+    );
   }
 
   public async authenticateUser(
@@ -28,7 +42,11 @@ export class UsersApi {
   }
 
   public async logoutUser(user: IUser): Promise<void> {
-    return await this.apiClient.fetchWrapper("POST", `${BASE_ROUTE}/logout`, user);
+    return await this.apiClient.fetchWrapper(
+      "POST",
+      `${BASE_ROUTE}/logout`,
+      user
+    );
   }
 
   public async getUser(userId: number): Promise<IUser> {
@@ -45,19 +63,15 @@ export class UsersApi {
     );
   }
 
-  //TODO: This method can potentially only be implemented on the frontend, we`re using 
-  //same obj, just passing an optional prop
-  public async createProspectUser(user: IUser): Promise<boolean>{
-    //return await this.apiClient.fetchWrapper("POST",`${BASE_ROUTE}/prospectUsers/create`,user)
-    user.is_prospect = true
-    return await this.apiClient.fetchWrapper("POST",`${BASE_ROUTE}/createProspect`,user);
+  public async createProspectUser(user: IUser): Promise<boolean> {
+    user.is_prospect = true;
+    return await this.apiClient.fetchWrapper(
+      "POST",
+      `${BASE_ROUTE}/create`,
+      user
+    );
   }
 
-  public async getAllProspectUsers(): Promise<Array<IUser>>{
-    const allUsers: Array<IUser> =  await this.apiClient.fetchWrapper("GET",`${BASE_ROUTE}`)
-    return allUsers.filter((user)=> user.is_prospect)
-  }
-  
   public async updateUser(user: IUser) {
     return await this.apiClient.fetchWrapper(
       "POST",
