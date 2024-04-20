@@ -2,7 +2,7 @@ import type { ToastMessageOptions } from "primevue/toast";
 import { reactive, ref } from "vue";
 
 type Severity = "success" | "info" | "warn" | "error" | undefined;
-type toastLength = "5000" | "3000" | "1000";
+export type toastLength =  "10000" | "8000" | "6000" | "5000" | "3000" | "1000";
 
 const refCounter = ref(0);
 const toastRecord = reactive({

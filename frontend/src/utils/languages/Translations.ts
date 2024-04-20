@@ -343,12 +343,14 @@ export interface Translation {
   submit: string;
   logoutLabel: string;
   sessionTimeoutHeader: string;
+  sessionTimeoutBody: string;
   fileUploadLabelFormats: string;
   myRotaryProjectsLabel: string;
 }
 
 export const translations: Record<string, Translation> = {
   en: {
+    sessionTimeoutBody:"You were logged out due to inactivity. Please login again.",
     contactPage: {
       calloutMessage: "Send Us A Message",
       calloutDescription:
@@ -741,6 +743,7 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
   },
   fr: {
+    sessionTimeoutBody:"Vous avez été déconnecté suite à l'inactivité. Veuillez vous reconnecter.",
     contactPage: {
       calloutMessage: "Envoyez-nous un message",
       calloutDescription:

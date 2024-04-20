@@ -41,7 +41,6 @@ export default class UsersController {
         webAdmin,
       });
       if (userData) {
-        // if (!session.get("userIsLoggedIn")) {
         session.put("userIsLoggedIn", true);
         session.put("lastApiCallTimeStamp", DateTime.now().toMillis());
       }

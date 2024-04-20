@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: "",
+  name: "BaseModal",
 };
 </script>
 
@@ -25,7 +25,8 @@ const {
 const { langTranslations, languagePref } = useLanguage();
 
 /* Hooks */
-onMounted(async () => {});
+onMounted(async () => {
+});
 
 /* Methods */
 // const conformModal = () => {
@@ -87,7 +88,7 @@ const cancel = () => {
         </div>
         <!-- Modal body -->
         <div class="p-4 space-y-6">
-          <Paragraph :p1="bodyText" />
+          <Paragraph :p1="bodyText + 'sdfddsf '" />
         </div>
         <!-- Modal footer -->
         <div
