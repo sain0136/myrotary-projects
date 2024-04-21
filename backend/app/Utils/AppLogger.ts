@@ -13,13 +13,15 @@ import { v4 as uuidv4 } from "uuid";
 import fs from "fs/promises";
 import Users from "App/Models/Users";
 
+type acceptedLogTypes = CustomErrorType | Users | genericLogData;
+
 const senderEmail = Env.get("SMTP_SENDER_ADDRESS");
 const receiverEmail = Env.get("SMTP_RECEIVER_ADDRESS");
 const environment = Env.get("NODE_ENV");
 const destination =
   environment === "development"
     ? Application.makePath("dev_log.log")
-    : Application.makePath("production_log.log");
+    : Application.makePath(Env.get("LOGS_PATH"));
 const errorFile =
   environment === "development"
     ? "appLoggerErrorsDev.txt"
@@ -29,18 +31,28 @@ const pathToTransport = Application.makePath(
   `app/Utils/customTransport.${fileExtension}`
 );
 
-type acceptedTypes = CustomErrorType | Users | genericLogData;
-export async function appLogger(type: typeOfLog, logData: acceptedTypes) {
+export async function appLogger(type: typeOfLog, logData: acceptedLogTypes) {
   try {
+    //  First confirm that the error log file exists
+    //  If it doesn't exist, create it
     await confirmErrorLogFile();
+    //  Then create the transport
+    //  Then create the pino logger
     const transport = makeTransport();
     const pinoLogger = pino(transport);
+    //  Then execute the logger
     return executeLogger(type, logData, pinoLogger);
   } catch (error) {
     handleError(error, logData);
   }
 }
 
+/**
+ * Handles logger errors by appending the error data to the error file and sending an email notification.
+ *
+ * @param {string} [data] - The error data to be appended to the error file. If not provided, a default message is used.
+ * @return {Promise<void>} A promise that resolves when the error handling is complete.
+ */
 async function handleLoggerErrors(data?: string): Promise<void> {
   const toWrite =
     (data ||
@@ -54,6 +66,7 @@ async function handleLoggerErrors(data?: string): Promise<void> {
     //TODO Consider adding more robust error handling here
   }
   try {
+    // Send an email notification to the admin if an error occurs
     await Mail.sendLater((message) => {
       message
         .from(senderEmail)
@@ -69,9 +82,10 @@ async function handleLoggerErrors(data?: string): Promise<void> {
   }
 }
 
+// TODO this needs to be refactored
 function executeLogger(
   type: typeOfLog,
-  logData: acceptedTypes,
+  logData: acceptedLogTypes,
   pinoLogger: Logger
 ) {
   const logId = uuidv4();
