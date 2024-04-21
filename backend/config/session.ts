@@ -87,27 +87,28 @@ export default sessionConfig({
 
   // Remember, these settings are not recommended for a production environment due to security concerns. Always revert to more secure settings when deploying your application.
 
-  /*TODO:
+  /*Note:
    In a development environment, 
   it's generally acceptable to use SameSite:
-   'strict' over HTTP for testing purposes. 
+  'strict' over HTTP for testing purposes. 
    Just be aware that this is not a secure configuration 
    for production, especially for 
    sensitive data or authentication cookies.
+   Use firefox browser it allows more than chrome for development
 
-Here's what you need to know:
+  Here's what you need to know:
 
-First-Party Context: With SameSite: 'strict', cookies
- will only be sent in a first-party context, meaning 
- they are only sent when the domain in the browser matches 
- the domain setting the cookie.
+  First-Party Context: With SameSite: 'strict', cookies
+  will only be sent in a first-party context, meaning 
+  they are only sent when the domain in the browser matches 
+  the domain setting the cookie.
 
-HTTP Support: Yes, SameSite: 'strict' will 
-work over HTTP in a development environment.
- However, it's crucial to switch to HTTPS for 
- production to ensure security. */
+  HTTP Support: Yes, SameSite: 'strict' will 
+  work over HTTP in a development environment.
+  However, it's crucial to switch to HTTPS for 
+  production to ensure security. 
+  */
 
-  // use firefox browser it allows more than chrome for development
   cookie: {
     path: "/", //Setting it to '/' means that the cookie will be sent for all paths on your domain. If you set it to '/admin', the cookie will only be sent when the requested URL starts with /admin.
     httpOnly: true,
