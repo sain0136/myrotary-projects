@@ -21,7 +21,8 @@ const environment = Env.get("NODE_ENV");
 const destination =
   environment === "development"
     ? Application.makePath("dev_log.log")
-    : Application.makePath(Env.get("LOGS_PATH"));
+    : Env.get("LOGS_PATH");
+console.log("destination for log file", destination);
 const errorFile =
   environment === "development"
     ? "appLoggerErrorsDev.txt"
