@@ -7,24 +7,12 @@ export default {
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted, reactive, ref } from "vue";
-import { errorHandler } from "@/utils/composables/ErrorHandler";
-import RotaryButton from "@/components/buttons/RotaryButton.vue";
-import BaseTextarea from "@/components/form/BaseTextarea.vue";
-import BaseInput from "@/components/form/BaseInput.vue";
-import type { IEmail } from "@/utils/interfaces/IMail";
-import { useSiteAssets } from "@/stores/SiteAssets";
 import { useVuelidate } from "@vuelidate/core";
-import { MailApi } from "@/api/services/MailApi";
-import { ApiClient } from "@/api/ApiClient";
-import { CustomErrors } from "@/utils/classes/CustomErrors";
 import { helpers, maxLength, required, email } from "@vuelidate/validators";
 import UserForm from "@/components/forms/UserForm.vue";
-import router from "@/router";
 
 /* Data */
-const { langTranslations, languagePref, customPrintf } = useLanguage();
-const { handleError, handleSuccess } = errorHandler();
-const assetsStore = useSiteAssets();
+const { langTranslations, customPrintf } = useLanguage();
 
 const userType = 'newUser' 
 const formType = 'newAccount' 
@@ -92,16 +80,4 @@ onMounted(async () => {});
 
 <style lang="scss" scoped>
 @import "@/assets/_variables.scss";
-
-.icon {
-  // padding: 1rem;
-  // width: 2rem;
-  // height: 2rem;
-  // font-size: 1rem;
-  // color: #cdcdcd;
-  // border-radius: 50%;
-  // text-align: center;
-  // border: 0.1rem solid #a7a7a7;
-  // margin-right: 2rem;
-}
 </style>

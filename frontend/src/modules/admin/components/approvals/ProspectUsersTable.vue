@@ -7,7 +7,6 @@ export default {
 <script setup lang="ts">
 import { ApiClient } from "@/api/ApiClient";
 import BaseDisplayTable from "@/components/tables/BaseDisplayTable.vue";
-import type { CustomError } from "@/utils/classes/CustomError";
 import type { CustomErrors } from "@/utils/classes/CustomErrors";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import { onMounted, reactive, ref, watch } from "vue";
@@ -35,9 +34,6 @@ const pagination = reactive({
   limit: 5,
 });
 
-
-//Hardcode pagination settings for now (in the future this will be part of the api response)
-const paginationOptions = {first_page:1,last_page:3,current_page: 1, per_page: 5}
 const loaded = ref(false);
 
 /* Hooks */
@@ -60,11 +56,9 @@ const getProspectUsers = async () => {
   try {
     const response = await userApi.getAllUsers(true,pagination.limit,pagination.currentPage, userStore.loggedInUser.district_id!)
     let selectedUsers = response.data
-    console.log("All prospect users:", JSON.stringify(response, null, 2));
+
     //Clearing array, to be re-populated according to page limit
     allProspectUsers.splice(0, allProspectUsers.length);
-
-    //Filter out for is_prospect, and same district as logged in user
 
     //Update prospectUserStore so that we can update the notification icon
     prospectUserStore.setHasProspectUsers(selectedUsers.length > 0 ? true : false)
@@ -72,7 +66,6 @@ const getProspectUsers = async () => {
     //Display results based on the limit we set
     selectedUsers = selectedUsers.slice(0, pagination.limit)
 
-    //CURRENT LOGGED IN USER DISCTRICT = DISTRICT 7000
     selectedUsers.map((user) => allProspectUsers.push(user as IUser))
 
     pagination.currentPage = response.meta.current_page
@@ -102,14 +95,12 @@ const showProspectUserInfo = (user: IUser) => {
 }
 
 const approveUser = async(user:IUser) => {
-console.log("Approving user")
 user.is_prospect = false
 await userApi.updateUser(user)
 
 }
 
 const denyUser = async(user:IUser) => {
-  console.log("Denying user")
   //TODO: Grab user.email address and send e-mail notification
   await userApi.deleteUser(user.user_id)
 }

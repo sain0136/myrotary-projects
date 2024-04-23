@@ -67,18 +67,12 @@ const chosenDistrictError = ref({
 });
 const clubMap = reactive<Map<string, number>>(new Map());
 const userTitle = ref("");
-const chosenClub = ref("");
 let prospectUserClubName: string
 
 const maxLengthPostal = {
   en: "Must be at most 32 characters",
   fr: "Doit contenir au plus 32 caractères",
 };
-const passwordReset = ref({
-  resetSet: false,
-  newPassword: "",
-});
-const submitted = ref(false);
 
 /* Validations */
 
