@@ -39,6 +39,7 @@ export interface IUser {
   district_id: number | null;
   user_type: UserType;
   user_id: number;
+  is_prospect?:boolean;
   // computed properties
   fullName: string;
   role: DistrictRole | ClubRole | string;

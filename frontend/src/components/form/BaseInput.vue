@@ -11,6 +11,8 @@ defineEmits(["update:modelValue"]);
 let dd = 7;
 
 type inputType = "text" | "password" | "email" | "number" | "date";
+
+//can't we just defineProps without this const?
 const {
   modelValue,
   label,

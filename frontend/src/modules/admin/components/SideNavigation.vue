@@ -8,19 +8,26 @@ export default {
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted, ref } from "vue";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
+import { useProspectUserStore } from "@/stores/ProspecUserStore";
 import type { AllUserRoles } from "@/utils/composables/UseAccessControl";
 import { useAccessControl } from "@/utils/composables/UseAccessControl";
 import ResourceList from "@/utils/classes/ResourceList";
 import { logoutUser } from "@/utils/utils";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import { CustomErrors } from "@/utils/classes/CustomErrors";
+import { UsersApi } from "@/api/services/UserApi";
+import { ApiClient } from "@/api/ApiClient";
+import User from "@/utils/classes/User";
 
 /* Data */
+
 defineProps<{
   drawer: boolean;
 }>();
 defineEmits(["update:modelValue"]);
 const userStore = useLoggedInUserStore();
+const prospectUserStore = useProspectUserStore()
+
 const { hasAccess } = useAccessControl();
 const { langTranslations } = useLanguage();
 const loggedinRole = ref("");
@@ -45,6 +52,7 @@ const sideBarItems: Record<
   {
     label: string;
     icon: string;
+    extras?:string;
     link: string;
     hasAccess: boolean;
     params?: Record<string, string>;
@@ -168,6 +176,13 @@ const sideBarItems: Record<
     link: "Approvals",
     hasAccess: hasAccess(loggedinRole.value as AllUserRoles, "approvals-view"),
   },
+  prospectUsers: {
+    label: langTranslations.value.prospectUserLabel,
+    icon: ResourceList.sidebarIcons.prospectUsersIcon,
+    extras: ResourceList.sidebarIcons.notificationIcon,
+    link: "ProspectUsers",
+    hasAccess: hasAccess(loggedinRole.value as AllUserRoles, "prospect-users-view"),
+  },
   superAdmins: {
     label: "Super Admin",
     icon: ResourceList.sidebarIcons.superAdmins,
@@ -237,9 +252,10 @@ const logout = () => {
                 data-collapse-toggle="dropdown-pages"
               >
                 <span v-html="item.icon"></span>
-                <span class="flex-1 ml-3 text-center mt-1 whitespace-nowrap">{{
+                <span class="flex-1 ml-3 text-center mt-1 whitespace-wrap">{{
                   item.label
                 }}</span>
+                <span v-if="item.link === 'ProspectUsers' && prospectUserStore.hasProspectUsers" v-html="item.extras"></span>
               </button>
             </router-link>
           </div>

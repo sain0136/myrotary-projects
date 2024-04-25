@@ -20,7 +20,6 @@ onMounted(async () => {});
 
 /* Methods */
 </script>
-
 <template>
   <Banners :banner-text="langTranslations.aboutpageBannerText" />
 

@@ -12,7 +12,7 @@ import BaseInput from "@/components/form/BaseInput.vue";
 import { UsersApi } from "@/api/services/UserApi";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import { ApiClient } from "@/api/ApiClient";
-import type { CustomError } from "@/utils/classes/CustomError";
+import type { CustomError } from "@/utils/classes/customError";
 import { useVuelidate } from "@vuelidate/core";
 import { required, email, helpers, minLength } from "@vuelidate/validators";
 import router from "@/router";
@@ -20,6 +20,9 @@ import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import Banners from "@/components/banners/Banners.vue";
 import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
 import { useLoggedInClub } from "@/stores/LoggedInClub";
+import { useProspectUserStore } from "@/stores/ProspecUserStore";
+import { DistrictApi } from "@/api/services/DistrictsApi";
+import type { IUser } from "@/utils/interfaces/IUser";
 
 /* Data */
 const { langTranslations, customPrintf } = useLanguage();
@@ -29,9 +32,11 @@ const state = reactive({
   password: "",
 });
 const userStore = useLoggedInUserStore();
+const prospectUserStore = useProspectUserStore()
 const districtStore = useLoggedInDistrict();
 const clubStore = useLoggedInClub();
 const usersApi = new UsersApi(new ApiClient());
+const districtApi = new DistrictApi(new ApiClient())
 
 /* Validations */
 const rules = {
@@ -80,6 +85,10 @@ const handleSubmit = async () => {
       )
     );
     router.push({ name: "AdminWelcome" });
+
+    // use ProspectUserStore so we can update our notification icon
+    const allProspectUsers = ((await usersApi.getAllUsers(true,undefined,undefined,userStore.loggedInUser.district_id!)))
+    prospectUserStore.setHasProspectUsers(Object(allProspectUsers).length > 0)
   } catch (error) {
     handleError(error as CustomError);
   }
@@ -114,6 +123,14 @@ const handleSubmit = async () => {
           class="w-full"
           type="submit"
         />
+        <router-link :to="{ name: 'CreateAccount' }">  <!--Path-->
+              <span
+                href="#"
+                class="block py-2 pl-3 pr-4 font-bold text-gray-900 rounded hover:text-primary text-center"
+                aria-current="page"
+                >{{ langTranslations.createAccountLabel }}</span 
+              >
+            </router-link>
       </div>
     </form>
   </div>

@@ -63,9 +63,11 @@ const handleValidationForm = (errorMessage?: string) => {
 
 const handleSuccess = (
   message: string,
+  overrideTimeout?: boolean,
   handleRedirect?: { path: string; goback?: boolean }
 ) => {
-  handleToast("success", "Success", message, "3000");
+  const time = overrideTimeout ? "8000" : "3000"
+  handleToast("success", "Success", message, time);
   if (handleRedirect) {
     setTimeout(() => {
       if (handleRedirect.goback) {
@@ -78,10 +80,32 @@ const handleSuccess = (
     }, 3000);
   }
 };
+
+const handleInfo = (
+  message: string,
+  overrideTimeout?: boolean,
+  handleRedirect?: { path: string; goback?: boolean }
+) => {
+  const time = overrideTimeout ? "5000" : "3000"
+  handleToast("info", "", message, time);
+  if (handleRedirect) {
+    setTimeout(() => {
+      if (handleRedirect.goback) {
+        router.go(-1);
+        return;
+      } else if (handleRedirect.path) {
+        router.push({ name: handleRedirect.path });
+        return;
+      }
+    }, 3000);
+  }
+};
+
 export const errorHandler = () => {
   return {
     handleError,
     handleSuccess,
     handleValidationForm,
+    handleInfo,
   };
 };

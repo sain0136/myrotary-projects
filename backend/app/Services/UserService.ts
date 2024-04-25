@@ -12,8 +12,18 @@ export default class UserService {
   which you can then use in your methods. */
   constructor(private userRepositories: UserRepositories) {}
 
-  public async index() {
-    const allUsers = await this.userRepositories.index();
+  public async getAllUsers(
+    isProspect: boolean,
+    limit?: number,
+    currentPage?: number,
+    districtId?: number
+  ) {
+    const allUsers = await this.userRepositories.getAllUsers(
+      isProspect,
+      limit,
+      currentPage,
+      districtId
+    );
     return allUsers;
   }
 

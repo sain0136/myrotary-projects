@@ -13,6 +13,7 @@ type PermissionTypes =
   | "districtadmin-clubadmin-view"
   | "approvals-view"
   | "superadmin-view"
+  | "prospect-users-view"
   | "approve-projects"
   | "approve-projects-reports"
   | "district-all-projects-tab"
@@ -35,6 +36,7 @@ const rolePermissions: RolePermissions = {
     "myprofile-view",
     "myprojects-view",
     "approvals-view",
+    "prospect-users-view",
     "superadmin-view",
     "all-projects-tab",
     "approve-projects",
@@ -56,6 +58,7 @@ const rolePermissions: RolePermissions = {
     "districtadmin-clubadmin-view",
     "myprojects-view",
     "approvals-view",
+    "prospect-users-view",
     "approve-projects",
     "approve-projects-reports",
     "district-all-projects-tab",
@@ -64,6 +67,7 @@ const rolePermissions: RolePermissions = {
     "myprofile-view",
     "myprojects-view",
     "approvals-view",
+    "prospect-users-view",
     "approve-projects",
     "approve-projects-reports",
     "district-all-projects-tab",

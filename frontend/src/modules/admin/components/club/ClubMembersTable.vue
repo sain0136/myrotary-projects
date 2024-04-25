@@ -42,7 +42,7 @@ const { tableViewProp } = defineProps<{
 if (tableViewProp) {
   tableView = tableViewProp;
 }
-//
+
 const { langTranslations } = useLanguage();
 const { handleError, handleSuccess } = errorHandler();
 const { changeShowModal, setModal } = modalHandler();
@@ -133,6 +133,7 @@ onMounted(async () => {
 const getClubMembers = async () => {
   try {
     loaded.value = false;
+    //Clearing array before repopulating it with new data (depending on the page)
     allUsersInClub.splice(0, allUsersInClub.length);
     const response = (await clubApi.getClubUsers(
       chosenId.value,
@@ -140,6 +141,7 @@ const getClubMembers = async () => {
       pagination.limit
     )) as PaginationResult;
     if (response?.data) {
+      console.log(response.meta)
       for (const user of response.data as IUser[]) {
         if (user.role) {
           user.title = user.role ?? user.role;

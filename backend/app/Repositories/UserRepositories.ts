@@ -9,11 +9,39 @@ import { errorTranslations } from "App/Translations/Translations";
 import { AuthenticationRequestData } from "App/Utils/CommonTypes";
 
 export default class UserRepositories {
-  public async index() {
-    const allUsers = await Users.all();
-    return allUsers;
-  }
+  
+  public async getAllUsers(
+    isProspect: boolean,
+    limit?: number,
+    currentPage?: number,
+    districtId?: number
+  ) {
+    //Meaning user wants a pagination result
+    if(limit && currentPage){
+      const query = Users.query()
+      .select()
+      .where({isProspect: isProspect})
+      .orderBy("created_at", "asc")
+  
+      if(districtId){
+        query.andWhere({district_id:districtId})
+      }
+      return await query.paginate(currentPage,limit)
+    }
+    //Meaning user just wants the User objects
+    else{
+      const query = Users.query()
+      .select()
+      .where({isProspect: isProspect})
+      .orderBy("created_at", "asc")
 
+      if(districtId){
+        query.andWhere({ district_id: districtId });
+      }
+      return await query
+    }
+  }
+  
   public async authenticateUser(userCredentials: AuthenticationRequestData) {
     const authenticatedUserEmail = await Users.query()
       .select()
@@ -25,6 +53,13 @@ export default class UserRepositories {
       throw new CustomException({ message, status, translatedMessage });
     }
     const user = authenticatedUserEmail[0];
+    if (user.isProspect) {
+      throw new CustomException({
+        message: "Login not allowed for prospect users",
+        status: 403,
+        translatedMessage: errorTranslations.loginNotAllowed,
+      });
+    }
     if (await Hash.verify(user.password, userCredentials.password)) {
       // TODO: See if the check for his email is security risk should be env variable
       if (
@@ -120,6 +155,7 @@ export default class UserRepositories {
       userPostal: user.user_postal,
       userProvince: user.user_province,
       userCountry: user.user_country,
+      isProspect: user.is_prospect,
       phone: user.phone,
       email: user.email,
       password: user.password,
@@ -163,6 +199,7 @@ export default class UserRepositories {
         clubId: user.club_id,
         districtId: user.district_id ? user.district_id : undefined,
         userType: user.user_type,
+        isProspect: user.is_prospect,
         extraDetails: JSON.stringify(user.extra_details),
       })
       .save();
