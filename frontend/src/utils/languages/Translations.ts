@@ -344,11 +344,13 @@ export interface Translation {
     myProfileLabel: string;
     personalInformationLabel: string;
     districtClubsLabel: string;
+    rotaryAnalticsLink: string;
   };
   uploadFileLabel: string;
   submit: string;
   logoutLabel: string;
   sessionTimeoutHeader: string;
+  sessionTimeoutBody: string;
   fileUploadLabelFormats: string;
   myRotaryProjectsLabel: string;
   createAccountLabel: string;
@@ -359,6 +361,7 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    sessionTimeoutBody:"You were logged out due to inactivity. Please login again.",
     contactPage: {
       calloutMessage: "Send Us A Message",
       calloutDescription:
@@ -748,6 +751,7 @@ export const translations: Record<string, Translation> = {
       myProfileLabel: "Profile",
       personalInformationLabel: "Personal Information",
       districtClubsLabel: "District Clubs",
+      rotaryAnalticsLink: "Rotary Analytics Dashboard",
     },
     uploadFileLabel: "Upload Files",
     submit: "Submit",
@@ -761,6 +765,7 @@ export const translations: Record<string, Translation> = {
     noProspectUserAvailable: "There are no prospect users at this moment"
   },
   fr: {
+    sessionTimeoutBody:"Vous avez été déconnecté suite à l'inactivité. Veuillez vous reconnecter.",
     contactPage: {
       calloutMessage: "Envoyez-nous un message",
       calloutDescription:
@@ -1159,6 +1164,7 @@ export const translations: Record<string, Translation> = {
       myProfileLabel: "Profil",
       personalInformationLabel: "Informations personnelles",
       districtClubsLabel: "Clubs de district",
+      rotaryAnalticsLink: "Tableau de bord de Rotary Analytics",
     },
     uploadFileLabel: "Télécharger des fichiers",
     submit: "Soumettre",

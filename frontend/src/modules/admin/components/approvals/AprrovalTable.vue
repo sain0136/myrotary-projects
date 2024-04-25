@@ -132,6 +132,11 @@ const editProject = (project: IDsgProject | IDmProject | IClubProject) => {
     handleError(error as CustomErrors);
   }
 };
+
+const updateLimit = (limit: number) => {
+  pagination.currentPage = 1;
+  pagination.limit = limit;
+};
 </script>
 
 <template>
@@ -154,7 +159,7 @@ const editProject = (project: IDsgProject | IDmProject | IClubProject) => {
         :last-page="pagination.lastPage"
         :total-results="pagination.total"
         :limit="pagination.limit"
-        @update:limit="pagination.limit = $event"
+        @update:limit="updateLimit($event)"
         :edit-button="{
           show: true,
           callBack: (project) => {
