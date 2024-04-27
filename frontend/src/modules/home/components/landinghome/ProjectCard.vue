@@ -183,6 +183,7 @@ const escapeHTML = (unsafe: string) => {
             <div class="bar_inner">
               <div class="bar" :style="{
                     width: percentage + '%',
+                    background:(percentage === 100 ? '#4CAF50' :'#FFB607' ) // if complete color = green, otherwise yellow
                   }">
                 <div class="count_box counted">
                   <span class="count-text" data-speed="2000" data-stop="82">{{
