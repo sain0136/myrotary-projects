@@ -37,7 +37,7 @@ export const districtRoles:string[] = [
 
 export type ClubRole = "Club Admin" | "Standard Member" | "Guest";
 
-export const clubRole = ["Club Admin", "Standard Member", "Guest"];
+export const clubRoles = ["Club Admin", "Standard Member", "Guest"];
 
 export type UserType = "CLUB" | "DISTRICT" | "SUPER";
 
