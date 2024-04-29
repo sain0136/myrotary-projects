@@ -34,12 +34,12 @@ import { ClubApi } from "@/api/services//ClubApi";
 import type { IClub } from "@/utils/interfaces/IClub";
 import { districtRole } from "@/utils/types/commonTypes";
 import { districtRoles } from "@/utils/types/commonTypes";
-import  { clubRole } from "@/utils/types/commonTypes";
+import { clubRoles } from "@/utils/types/commonTypes";
 import Banners from "@/components/banners/Banners.vue";
 
 /* Types */
-//newUser = when user is creating account for first time, prospectUser = user pending approval
-export type UserTypeForm = "districtAdmin" | "clubUser" | "newUser" | "prospectUser" | null;
+// newUser type = when user is creating account for first time this is user submitted and they will become a prospective user
+export type UserTypeForm = "districtAdmin" | "clubUser" | "newUser" | null;
 export type formType =
   | "siteAdminClub"
   | "siteAdminDistrict"
@@ -52,6 +52,7 @@ export type formType =
 /* Data */
 const route = useRoute();
 const { langTranslations, languagePref, customPrintf } = useLanguage();
+
 // Route data -- When using form from url
 const userId = ref(route.params.userId);
 const userType = ref(
@@ -80,12 +81,14 @@ userType.value = userTypeProp ? userTypeProp : userType.value;
 clubId.value = clubIdProp ? clubIdProp : clubId.value;
 formType.value = formTypeProp ? formTypeProp : formType.value;
 isEdit.value = isEditProp ? isEditProp : isEdit.value;
+
 const user = reactive(new User());
 const { handleError, handleSuccess, handleValidationForm } = errorHandler();
 const userApi = new UsersApi(new ApiClient());
 const clubApi = new ClubApi(new ApiClient());
 const districtApi = new DistrictApi(new ApiClient());
 const allDistricts = [];
+
 // TODO: Verify later district names are unique in db
 const districtMap = reactive<Map<string, number>>(new Map());
 const chosenDistrict = ref("");
@@ -253,6 +256,11 @@ watch(chosenDistrict, async () => {
     (allClubsInDistrict.data as IClub[]).forEach((club) => {
       clubMap.set(club.club_name, club.club_id as number);
     });
+    if (formType.value === "siteAdminDistrict") {
+      chosenClub.value = Array.from(clubMap.keys()).find(
+        (key) => clubMap.get(key) === user.club_id
+      ) as string;
+    }
   } catch (error) {
     handleError(error as CustomErrors);
   }
@@ -274,6 +282,12 @@ onMounted(async () => {
       if (formType.value === "siteAdminClub") {
         const role = user.role ? user.role : user.role ? user.role : "";
         userTitle.value = role + ": " + user.fullName;
+        user.role_type = role;
+      } else if (formType.value === "siteAdminDistrict") {
+        const role = user.role ? user.role : user.role ? user.role : "";
+        chosenDistrict.value = Array.from(districtMap.keys()).find(
+          (key) => districtMap.get(key) === user.district_id
+        ) as string;
         user.role_type = role;
       } else {
         const role = user.role ? user.role : user.role ? user.role : "";
@@ -303,6 +317,7 @@ const validateAndSubmit = async () => {
   try {
     if (userId.value) {
       await userApi.updateUser(user);
+      handleSuccess(langTranslations.value.toastSuccess);
     } else {
       if (userType.value === "clubUser") {
         user.user_type = "CLUB";
@@ -310,7 +325,7 @@ const validateAndSubmit = async () => {
         user.district_id = (districtId.value as number) || 1;
       }
       //populating user data
-      if (userType.value === "districtAdmin" ||userType.value === "newUser" ) {
+      if (userType.value === "districtAdmin" || userType.value === "newUser") {
         if (typeof districtMap.get(chosenDistrict.value) !== "undefined") {
           {
             user.district_id = districtMap.get(chosenDistrict.value) as number;
@@ -330,11 +345,15 @@ const validateAndSubmit = async () => {
           });
         }
       }
-      if(userType.value === "newUser"){
-        await userApi.createProspectUser(user)
-        handleSuccess(langTranslations.value.toastSucessCreateProspect,true);
-      }
-      else{
+      if (userType.value === "newUser") {
+        if (clubRoles.includes(user.role_type)) {
+          user.user_type = "CLUB";
+        } else if (districtRoles.includes(user.role_type)) {
+          user.user_type = "DISTRICT";
+        }
+        await userApi.createProspectUser(user);
+        handleSuccess(langTranslations.value.toastSucessCreateProspect, true);
+      } else {
         await userApi.createNewUser(user);
         handleSuccess(langTranslations.value.toastSuccess);
       }
@@ -366,11 +385,11 @@ const redirect = () => {
         },
       });
       return;
-      case 'myProfile':
-        return
-      case "newAccount":
-        router.push({name:"UserLogin"})
-        return;
+    case "myProfile":
+      return;
+    case "newAccount":
+      router.push({ name: "UserLogin" });
+      return;
     default:
       router.go(0);
       return;
@@ -393,16 +412,17 @@ const choosenDistrictError = computed((): string => {
 
 <template>
   <form @submit.prevent class="">
-     <!-- User form banner -->
-    <Banners 
-    v-if= "formType ==='newAccount'"
-    :banner-text="langTranslations.createNewAccountBanner" />
+    <!-- User form banner -->
+    <Banners
+      v-if="formType === 'newAccount'"
+      :banner-text="langTranslations.createNewAccountBanner"
+    />
     <H2
       v-if="formType !== 'myProfile' && formType !== 'newAccount'"
       class="text-center"
       :content="langTranslations.userFormHeader"
     />
-    <Hr v-if = "formType!='newAccount'"/>
+    <Hr v-if="formType != 'newAccount'" />
     <div class="flex-block flex-col items-center justify-center">
       <p
         v-if="chosenDistrict === '' && chosenClub === '' && userId === ''"
@@ -418,6 +438,7 @@ const choosenDistrictError = computed((): string => {
         :options="[...districtMap.keys()]"
         v-model="chosenDistrict"
         :errorMessage="choosenDistrictError"
+        :disabled="isEdit"
       />
       <BaseSelect
         v-if="userType === 'districtAdmin' || userType === 'newUser'"
@@ -425,6 +446,7 @@ const choosenDistrictError = computed((): string => {
         :label="langTranslations.baseClubLabel"
         :options="[...clubMap.keys()]"
         v-model="chosenClub"
+        :disabled="isEdit"
       />
       <!-- TODO: implications of changes to users role -->
       <BaseSelect
@@ -440,7 +462,11 @@ const choosenDistrictError = computed((): string => {
         class="w-1/2"
         v-model="user.role_type"
         :label="langTranslations.roleLabel"
-        :options="districtRoles.filter((role)=> role!== 'Webmaster').concat(clubRole.filter((role)=> role !=='Guest'))"
+        :options="
+          districtRoles
+            .filter((role) => role !== 'Webmaster')
+            .concat(clubRoles.filter((role) => role !== 'Guest'))
+        "
         :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined"
       />
       <!-- Club member role only -->

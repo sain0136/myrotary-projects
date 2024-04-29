@@ -762,7 +762,7 @@ export const translations: Record<string, Translation> = {
     createAccountLabel: "Don't have an account? Sign Up here!",
     createNewAccountBanner: "Register",
     prospectUserLabel: "Prospect Users",  
-    noProspectUserAvailable: "There are no prospect users at this moment"
+    noProspectUserAvailable: "There are no prospective users at this moment"
   },
   fr: {
     sessionTimeoutBody:"Vous avez été déconnecté suite à l'inactivité. Veuillez vous reconnecter.",
@@ -1175,6 +1175,6 @@ export const translations: Record<string, Translation> = {
     createAccountLabel: "Vous n'avez pas de compte ? Inscrivez-vous ici !",
     createNewAccountBanner:"S'inscrire",
     prospectUserLabel:"Inscriptions en attente",
-    noProspectUserAvailable: "Il n’y a pas d’utilisateurs potentiels en ce moment"
+    noProspectUserAvailable: "Il n'y a pas d'utilisateurs potentiels pour le moment"
   },
 };

@@ -141,7 +141,6 @@ const getClubMembers = async () => {
       pagination.limit
     )) as PaginationResult;
     if (response?.data) {
-      console.log(response.meta)
       for (const user of response.data as IUser[]) {
         if (user.role) {
           user.title = user.role ?? user.role;
