@@ -52,19 +52,45 @@ export type Currencies = {
   [key: string]: Currency;
 };
 
-export type genericLogData = { status: "success" | "failed"; message: string };
+export type genericLogData = {
+  status: "success" | "failed";
+  message: string;
+  event?:
+    | "login"
+    | "logout"
+    | "exception_error"
+    | "database_error"
+    | "user_creation"
+    | "user_update"
+    | "user_deletion"
+    | "user_log"
+    | "mail_log"
+    | "system";
+};
 
 export type typeOfLog =
   | "exception_error"
   | "database_error"
   | "access_log"
+  | "user_log"
+  | "mail_log"
   | { [key: string]: any };
 
 export interface logDataForm {
   uniqueId: string;
   type: typeOfLog;
   timeStamp: string;
-  event: "login" | "logout" | "exception_error" | "database_error";
+  event:
+    | "login"
+    | "logout"
+    | "exception_error"
+    | "database_error"
+    | "user_creation"
+    | "user_update"
+    | "user_deletion"
+    | "user_log"
+    | "mail_log"
+    | "system";
   status: "success" | "failed" | "system error" | "not found";
   source: string;
   target: "system" | "";

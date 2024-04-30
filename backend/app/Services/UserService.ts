@@ -41,14 +41,14 @@ export default class UserService {
     return user;
   }
 
-  public async createUser(user: IUser) {
+  public async createUser(user: IUser, prospectUser: boolean) {
     await this.validateUser(user);
-    await this.userRepositories.createUser(user);
+    return await this.userRepositories.createUser(user, prospectUser);
   }
 
   public async updateUser(user: IUser) {
     await this.validateUser(user);
-    await this.userRepositories.updateUser(user);
+    return await this.userRepositories.updateUser(user);
   }
 
   public async deleteUser(userId: number) {
