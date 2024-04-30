@@ -25,6 +25,24 @@ export default class MailController {
     }
   }
 
+  public async sendMail(newEmail: IEmail, customFormat?: string) {
+    const format = customFormat ? customFormat : this.bodyFormatter(newEmail);
+    try {
+      await Mail.sendLater((message) => {
+        message
+          .from(Env.get("SMTP_SENDER_ADDRESS"))
+          .to(newEmail.receiverEmail || Env.get("SMTP_RECEIVER_ADDRESS"))
+          .replyTo(newEmail.senderEmail || Env.get("SMTP_SENDER_ADDRESS"))
+          .subject(
+            this.subjectLineFormatter(newEmail.subject, newEmail.senderName)
+          )
+          .html(format);
+      });
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
+  }
+
   private subjectLineFormatter(
     subject: string,
     senderName: string | undefined
@@ -33,7 +51,7 @@ export default class MailController {
     return `${subject}: ${sender}`;
   }
 
-  private bodyFormatter(email: IEmail) {
+  private bodyFormatter(email: IEmail): string {
     let body = "";
     if (email.messageBody.messageIntructions) {
       body += `<b>${email.messageBody.messageIntructions}</b>`;

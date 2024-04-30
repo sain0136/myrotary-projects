@@ -9,7 +9,6 @@ import { errorTranslations } from "App/Translations/Translations";
 import { AuthenticationRequestData } from "App/Utils/CommonTypes";
 
 export default class UserRepositories {
-  
   public async getAllUsers(
     isProspect: boolean,
     limit?: number,
@@ -17,31 +16,31 @@ export default class UserRepositories {
     districtId?: number
   ) {
     //Meaning user wants a pagination result
-    if(limit && currentPage){
+    if (limit && currentPage) {
       const query = Users.query()
-      .select()
-      .where({isProspect: isProspect})
-      .orderBy("created_at", "asc")
-  
-      if(districtId){
-        query.andWhere({district_id:districtId})
-      }
-      return await query.paginate(currentPage,limit)
-    }
-    //Meaning user just wants the User objects
-    else{
-      const query = Users.query()
-      .select()
-      .where({isProspect: isProspect})
-      .orderBy("created_at", "asc")
+        .select()
+        .where({ isProspect: isProspect })
+        .orderBy("created_at", "asc");
 
-      if(districtId){
+      if (districtId) {
         query.andWhere({ district_id: districtId });
       }
-      return await query
+      return await query.paginate(currentPage, limit);
+    }
+    //Meaning user just wants the User objects
+    else {
+      const query = Users.query()
+        .select()
+        .where({ isProspect: isProspect })
+        .orderBy("created_at", "asc");
+
+      if (districtId) {
+        query.andWhere({ district_id: districtId });
+      }
+      return await query;
     }
   }
-  
+
   public async authenticateUser(userCredentials: AuthenticationRequestData) {
     const authenticatedUserEmail = await Users.query()
       .select()
@@ -133,7 +132,10 @@ export default class UserRepositories {
     return user;
   }
 
-  public async createUser(user: IUser) {
+  public async createUser(
+    user: IUser,
+    prospectUser: boolean
+  ): Promise<void | Array<string>> {
     if (
       (!user.user_type && user.user_type !== "CLUB") ||
       (!user.role_type && user.role_type !== "DISTRICT")
@@ -180,9 +182,36 @@ export default class UserRepositories {
         },
       });
     }
+    let districtAdminsToEmail: string[] = [];
+    if (prospectUser && createdUser.districtId) {
+      // TODO : Refactor this query for speed in future use query to get only 5 admins
+      const admins = await Users.query().where(
+        "district_id",
+        createdUser.districtId
+      );
+      for (let i = 0; i < admins.length; i++) {
+        if (i === 5) {
+          break;
+        }
+        districtAdminsToEmail.push(
+          `<p><strong>Admin:</strong> ${admins[i].fullName}<br><strong>Email:</strong> ${admins[i].email}</p>`
+        );
+      }
+    } else if (prospectUser && createdUser.clubId) {
+      const admins = await Users.query().where("club_id", createdUser.clubId);
+      for (let i = 0; i < admins.length; i++) {
+        if (i === 5) {
+          break;
+        }
+        districtAdminsToEmail.push(
+          `<p><strong>Admin:</strong> ${admins[i].fullName}<br><strong>Email:</strong> ${admins[i].email}</p>`
+        );
+      }
+    }
+    return districtAdminsToEmail;
   }
 
-  public async updateUser(user: IUser) {
+  public async updateUser(user: IUser): Promise<void | boolean> {
     const existingUser = await Users.findOrFail(user.user_id);
     const updatedUser = await existingUser
       .merge({
@@ -220,6 +249,10 @@ export default class UserRepositories {
           club_role: user.role_type,
         },
       });
+    }
+    // This user was a prospect and now is not
+    if (existingUser.isProspect === true && updatedUser.isProspect === false) {
+      return true;
     }
   }
 

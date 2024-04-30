@@ -7,6 +7,7 @@ import { DateTime } from "luxon";
 import { IUser } from "App/Shared/Interfaces/IUser";
 import { appLogger } from "App/Utils/AppLogger";
 import Users from "App/Models/Users";
+import MailController from "App/Controllers/Http/MailController";
 
 export default class UsersController {
   private initializeServices() {
@@ -17,12 +18,17 @@ export default class UsersController {
 
   public async getAllUsers({ request, response }: HttpContextContract) {
     try {
-      const isProspect: boolean = request.input("isProspect")
-      const limit: number | undefined = request.input("limit") // it's optional, so it might be undefined
-      const currentPage:number | undefined = request.input("currentPage")
-      const districtId: number | undefined = request.input("districtId") 
+      const isProspect: boolean = request.input("isProspect");
+      const limit: number | undefined = request.input("limit"); // it's optional, so it might be undefined
+      const currentPage: number | undefined = request.input("currentPage");
+      const districtId: number | undefined = request.input("districtId");
       const { userService } = this.initializeServices();
-      const allUsers = await userService.getAllUsers(isProspect,limit,currentPage,districtId);
+      const allUsers = await userService.getAllUsers(
+        isProspect,
+        limit,
+        currentPage,
+        districtId
+      );
       return response.json(allUsers);
     } catch (error) {
       throw new CustomException(error as CustomErrorType);
@@ -92,19 +98,69 @@ export default class UsersController {
   public async createUser({ request, response }: HttpContextContract) {
     try {
       const user = request.body() as IUser;
+      const prospectUser = user.is_prospect ? true : false;
       const { userService } = this.initializeServices();
-      await userService.createUser(user);
-      return response.json(true);
+      const districtAdminsToEmail = await userService.createUser(
+        user,
+        prospectUser
+      );
+      appLogger("user_log", {
+        status: "success",
+        message: `User ${user.fullName} created successfully.${
+          prospectUser ? " This is a prospective user." : ""
+        }`,
+      } as genericLogData);
+      if (prospectUser) {
+        const mailController = new MailController();
+        let mailBodyMessage = `<strong>Hello ${user.fullName}, your account is pending approval. You will be notified when your account is approved. / Bonjour ${user.fullName}, votre compte est en attente d'approbation. Vous serez informé lorsque votre compte sera approuvé.</strong>`;
+        if (districtAdminsToEmail && districtAdminsToEmail.length > 0) {
+          mailBodyMessage += `<p>District Admins to contact for questions: / Administrateurs de district à contacter pour des questions:</p>`;
+          mailBodyMessage += districtAdminsToEmail.map((text) => {
+            return text;
+          });
+        }
+        mailController.sendMail(
+          {
+            subject:
+              "Welcome to MyRotaryProjects. Your account is pending approval. / Bienvenue sur MyRotaryProjects. Votre compte est en attente d'approbation.",
+            receiverEmail: user.email,
+            messageBody: {
+              message: mailBodyMessage,
+            },
+          },
+          mailBodyMessage
+        );
+        return response.json(true);
+      }
     } catch (error) {
       throw new CustomException(error as CustomErrorType);
     }
   }
-  
+
   public async updateUser({ request, response }: HttpContextContract) {
     try {
       const user = request.body() as IUser;
       const { userService } = this.initializeServices();
-      await userService.updateUser(user);
+      const result = await userService.updateUser(user);
+      if (result) {
+        appLogger("user_log", {
+          status: "success",
+          message: `Prospective ${user.fullName} approved and updated into a full user`,
+        } as genericLogData);
+      }
+      const mailController = new MailController();
+      let mailBodyMessage = `<strong>Hello ${user.fullName}, your account has been approved. You can now log in to your account. / Bonjour ${user.fullName}, votre compte a été approuvé. Vous pouvez maintenant vous connecter à votre compte.</strong>`;
+      mailController.sendMail(
+        {
+          subject:
+            "Welcome to MyRotaryProjects. Your account has been approved. / Bienvenue sur MyRotaryProjects. Votre compte a été approuvé.",
+          receiverEmail: user.email,
+          messageBody: {
+            message: mailBodyMessage,
+          },
+        },
+        mailBodyMessage
+      );
       return response.json(true);
     } catch (error) {
       throw new CustomException(error as CustomErrorType);
