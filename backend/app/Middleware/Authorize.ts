@@ -11,8 +11,8 @@ export default class Authorize {
       let lastApiCallTimeStamp = session.get("lastApiCallTimeStamp");
       let now = DateTime.now().toMillis();
       const oneHourInMilliseconds = 3600000;
-
-      if (now - lastApiCallTimeStamp > oneHourInMilliseconds) {
+      const twentySecondsInMilliseconds = 20000;
+      if (now - lastApiCallTimeStamp > twentySecondsInMilliseconds) {
         session.clear();
         const message =
           "You were logged out due to inactivity. Please login again.";
