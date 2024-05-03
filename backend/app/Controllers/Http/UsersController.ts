@@ -6,8 +6,8 @@ import { CustomErrorType, genericLogData } from "App/Utils/CommonTypes";
 import { DateTime } from "luxon";
 import { IUser } from "App/Shared/Interfaces/IUser";
 import { appLogger } from "App/Utils/AppLogger";
-import Users from "App/Models/Users";
 import MailController from "App/Controllers/Http/MailController";
+import Session from "App/Models/Session";
 
 export default class UsersController {
   private initializeServices() {
@@ -53,6 +53,7 @@ export default class UsersController {
       if (userData) {
         session.put("userIsLoggedIn", true);
         session.put("lastApiCallTimeStamp", DateTime.now().toMillis());
+        session.put("user_id", userData.user.userId);
       }
       await appLogger("access_log", userData.user);
       return response.json(userData);
@@ -64,13 +65,26 @@ export default class UsersController {
 
   public async logout({ request, session, response }: HttpContextContract) {
     try {
-      const user = request.body() as Users;
+      const user = request.body() as IUser;
+      session.clear();
+
+      try {
+        const foundSession = await Session.findByOrFail("user_id", user.user_id);
+        if (foundSession) {
+          await foundSession.delete();
+        }   
+      } catch (error) {
+        const log: genericLogData = {
+          status: "failed",
+          message: `Error deleting session for user ${user.fullName} with email ${user.email}`,
+        };
+        appLogger("access_log", log);
+      }
+      
       const log: genericLogData = {
         status: "success",
         message: `User ${user.fullName} with email ${user.email} logged out successfully`,
       };
-      appLogger("access_log", log);
-      session.clear();
       if (!(session as any).store.isEmpty) {
         const loggerData: genericLogData = {
           status: "failed",
@@ -78,6 +92,7 @@ export default class UsersController {
         };
         appLogger("access_log", loggerData);
       }
+      appLogger("access_log", log);
       return response.json({});
     } catch (error) {
       throw new CustomException(error as CustomErrorType);

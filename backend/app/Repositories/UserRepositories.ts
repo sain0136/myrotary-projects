@@ -3,6 +3,7 @@ import CustomException from "App/Exceptions/CustomException";
 import Clubs from "App/Models/Clubs";
 import Districts from "App/Models/Districts";
 import Projects from "App/Models/Projects";
+import Session from "App/Models/Session";
 import Users from "App/Models/Users";
 import { IRoles, IUser } from "App/Shared/Interfaces/IUser";
 import { errorTranslations } from "App/Translations/Translations";
@@ -71,7 +72,17 @@ export default class UserRepositories {
           translatedMessage: errorTranslations.badCredentials,
         });
       }
-      return await this.addUserRoles(user);
+      const userData = await this.addUserRoles(user);
+      await Session.create({
+        loginTimestamp: BigInt(Date.now()),
+        lastActivityTimestamp: BigInt(Date.now()),
+        fullName: userData.user.fullName,
+        email: userData.user.email,
+        userId: userData.user.userId,
+        districtId: userData.user.districtId || 0,
+        clubId: userData.user.clubId || 0,
+      });
+      return userData;
     } else {
       const message = "Invalid password";
       const status = 404;
