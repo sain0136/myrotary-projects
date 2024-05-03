@@ -71,9 +71,9 @@ export default sessionConfig({
   | as per https://npmjs.org/package/ms package.
   |
   | Example: `2 days`, `2.5 hrs`, `1y`, `5s` and so on.
-  |
+  | This is the age that matters for how long sessions are kept active.
   */
-  age: "2 hrs",
+  age: "24 hrs",
 
   /*
   |--------------------------------------------------------------------------
@@ -114,7 +114,7 @@ export default sessionConfig({
     httpOnly: true,
     sameSite: process.env.NODE_ENV === "production" ? "lax" : "none",
     secure: process.env.NODE_ENV === "production",
-    maxAge: 7200,
+    maxAge: 86400,
   },
 
   /*

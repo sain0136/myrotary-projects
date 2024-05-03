@@ -3,7 +3,6 @@ import { useLoggedInClub } from "@/stores/LoggedInClub";
 import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import {
-  grantType,
   projectStatus,
   type IAreaOfFocus,
   type ProjectStatus,
@@ -28,11 +27,11 @@ export const hideAprovalTab = (projectId: number | null) => {
   return false;
 };
 
-export const logoutUser = () => {
+export const logoutUser = async () => {
   router.push({ name: "Home" });
-  userStore.logOut();
-  districtStore.resetDistrict();
-  clubStore.resetClub();
+  await userStore.logOut();
+  await districtStore.resetDistrict();
+  await clubStore.resetClub();
 };
 
 export const projectDisabledStatus = (status: ProjectStatus): boolean => {
