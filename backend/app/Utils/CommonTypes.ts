@@ -91,7 +91,7 @@ export interface logDataForm {
     | "user_log"
     | "mail_log"
     | "system";
-  status: "success" | "failed" | "system error" | "not found";
+  status: string
   source: string;
   target: "system" | "";
   message: string;

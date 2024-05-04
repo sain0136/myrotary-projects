@@ -121,7 +121,7 @@ function executeLogger(
         pinoLogger.info({ rotaryLog: log });
       } else if ((logData as genericLogData)?.status === "success") {
         log.event = "logout";
-        log.status = (logData as genericLogData).status;
+        log.status = (logData as genericLogData).status.toString();
         log.source = "";
         log.target = "system";
         log.message = (logData as genericLogData)
@@ -130,7 +130,7 @@ function executeLogger(
         pinoLogger.info({ rotaryLog: log });
       } else if ((logData as genericLogData)?.status === "failed") {
         log.event = "logout";
-        log.status = (logData as genericLogData).status;
+        log.status = (logData as genericLogData).status.toString();
         log.source = "";
         log.target = "system";
         log.message = (logData as genericLogData)
@@ -141,7 +141,7 @@ function executeLogger(
       case  "user_log":
         if (logData as genericLogData){
           log.event = "user_log";
-          log.status = (logData as genericLogData).status;
+          log.status = (logData as genericLogData).status.toString();
           log.source = "system";
           log.target = "system";
           log.message = (logData as genericLogData).message;
@@ -151,7 +151,7 @@ function executeLogger(
     default:
       if (logData as genericLogData) {
         log.event = (logData as genericLogData).event ?? "system";
-        log.status = (logData as genericLogData).status;
+        log.status = (logData as genericLogData).status.toString();
         log.source = "system";
         log.target = "system";
         log.message = (logData as genericLogData).message;
