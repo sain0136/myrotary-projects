@@ -1,7 +1,7 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import CustomException from "App/Exceptions/CustomException";
 import { Translation, DatabaseError } from "App/Utils/CommonTypes";
-import { appLogger } from "App/Utils/AppLogger";
+import { appLoggerNew} from "App/Utils/AppLogger";
 const databaseErrors: { [key: string]: DatabaseError } = {
   "1062": {
     en: "Duplicate record entry",
@@ -69,7 +69,7 @@ export default class ErrorHandler {
         const errorType = error.sqlMessage
           ? "database_error"
           : "exception_error";
-        appLogger(errorType, error);
+        //appLogger(errorType, error);
         // Log or send the statusCode and type to a monitoring service
         // Handle the response
         response.status(error.status).send({

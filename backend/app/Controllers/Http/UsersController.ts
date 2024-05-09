@@ -5,9 +5,10 @@ import CustomException from "App/Exceptions/CustomException";
 import { CustomErrorType, genericLogData } from "App/Utils/CommonTypes";
 import { DateTime } from "luxon";
 import { IUser } from "App/Shared/Interfaces/IUser";
-import { appLogger } from "App/Utils/AppLogger";
+import { appLoggerNew, UserAccessEvent, LogTypes } from "App/Utils/AppLogger";
 import MailController from "App/Controllers/Http/MailController";
 import Session from "App/Models/Session";
+import Users from "App/Models/Users";
 
 export default class UsersController {
   private initializeServices() {
@@ -43,58 +44,51 @@ export default class UsersController {
     const password: string = request.input("password");
     const email: string = request.input("email");
     const webAdmin: boolean = request.input("webAdmin");
+    let userData
     try {
       const { userService } = this.initializeServices();
-      const userData = await userService.authenticateUser({
+        userData = await userService.authenticateUser({
         password,
         email,
         webAdmin,
-      });
+      }); 
       if (userData) {
         session.put("userIsLoggedIn", true);
         session.put("lastApiCallTimeStamp", DateTime.now().toMillis());
         session.put("user_id", userData.user.userId);
       }
-      await appLogger("access_log", userData.user);
+      await appLoggerNew(LogTypes.ACCESS_LOG,userData.user,UserAccessEvent.LOGIN,"success");
       return response.json(userData);
     } catch (error) {
-      appLogger("access_log", error as CustomErrorType);
+     const errorMessage = (error as CustomErrorType).message.concat(` Email used: ${email}`)
+     appLoggerNew(LogTypes.ACCESS_LOG,null,UserAccessEvent.LOGIN,"fail", errorMessage);
       throw new CustomException(error as CustomErrorType);
     }
   }
 
   public async logout({ request, session, response }: HttpContextContract) {
-    try {
-      const user = request.body() as IUser;
-      session.clear();
 
+    try {
+      const user = request.body() as Users;
+      session.clear();
       try {
-        const foundSession = await Session.findByOrFail("user_id", user.user_id);
+        const foundSession = await Session.findByOrFail("user_id", user.userId);
         if (foundSession) {
           await foundSession.delete();
         }   
       } catch (error) {
-        const log: genericLogData = {
-          status: "failed",
-          message: `Error deleting session for user ${user.fullName} with email ${user.email}`,
-        };
-        appLogger("access_log", log);
+        const errorMessage = (error as CustomErrorType).message
+        appLoggerNew(LogTypes.ACCESS_LOG, user, UserAccessEvent.LOGOUT, "fail", errorMessage);
       }
-      
-      const log: genericLogData = {
-        status: "success",
-        message: `User ${user.fullName} with email ${user.email} logged out successfully`,
-      };
       if (!(session as any).store.isEmpty) {
-        const loggerData: genericLogData = {
-          status: "failed",
-          message: `Error logging out user ${user.fullName}. Session not cleared`,
-        };
-        appLogger("access_log", loggerData);
+        const errorMessage = `Error logging out user ${user.fullName}. Session not cleared`
+        appLoggerNew(LogTypes.ACCESS_LOG, user, UserAccessEvent.LOGOUT, "fail", errorMessage);
       }
-      appLogger("access_log", log);
+      appLoggerNew(LogTypes.ACCESS_LOG, user, UserAccessEvent.LOGOUT, "success");
       return response.json({});
     } catch (error) {
+      const errorMessage = (error as CustomErrorType).message
+      appLoggerNew(LogTypes.ACCESS_LOG, null, UserAccessEvent.LOGOUT, "fail", errorMessage);
       throw new CustomException(error as CustomErrorType);
     }
   }
@@ -119,12 +113,12 @@ export default class UsersController {
         user,
         prospectUser
       );
-      appLogger("user_log", {
+      /*appLogger("user_log", {
         status: "success",
         message: `User ${user.fullName} created successfully.${
           prospectUser ? " This is a prospective user." : ""
         }`,
-      } as genericLogData);
+      } as genericLogData);*/
       if (prospectUser) {
         const mailController = new MailController();
         let mailBodyMessage = `<strong>Hello ${user.fullName}, your account is pending approval. You will be notified when your account is approved. / Bonjour ${user.fullName}, votre compte est en attente d'approbation. Vous serez informé lorsque votre compte sera approuvé.</strong>`;
@@ -158,10 +152,10 @@ export default class UsersController {
       const { userService } = this.initializeServices();
       const result = await userService.updateUser(user);
       if (result) {
-        appLogger("user_log", {
+        /*appLogger("user_log", {
           status: "success",
           message: `Prospective ${user.fullName} approved and updated into a full user`,
-        } as genericLogData);
+        } as genericLogData);*/
       }
       const mailController = new MailController();
       let mailBodyMessage = `<strong>Hello ${user.fullName}, your account has been approved. You can now log in to your account. / Bonjour ${user.fullName}, votre compte a été approuvé. Vous pouvez maintenant vous connecter à votre compte.</strong>`;

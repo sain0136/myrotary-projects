@@ -13,7 +13,19 @@ import { v4 as uuidv4 } from "uuid";
 import fs from "fs/promises";
 import Users from "App/Models/Users";
 
-type acceptedLogTypes = CustomErrorType | Users | genericLogData ;
+type acceptedLogFormTypes = CustomErrorType | Users | genericLogData;
+type outcome = "success" | "fail" // could be a boolean, but I like the readability
+
+export enum UserAccessEvent {
+  LOGIN= "login",
+  LOGOUT= "logout"
+}
+export enum LogTypes {
+  EXCEPTION_ERROR= "exception_error",
+  DATABASE_ERROR= "database_error",
+  ACCESS_LOG= "access_log",
+  USER_LOG= "user_log"
+}
 
 const senderEmail = Env.get("SMTP_SENDER_ADDRESS");
 const receiverEmail = Env.get("SMTP_RECEIVER_ADDRESS");
@@ -32,17 +44,45 @@ const pathToTransport = Application.makePath(
   `app/Utils/customTransport.${fileExtension}`
 );
 
-export async function appLogger(type: typeOfLog, logData: acceptedLogTypes) {
-  try {
-    //  First confirm that the error log file exists
-    //  If it doesn't exist, create it
-    await confirmErrorLogFile();
-    //  Then create the transport
-    //  Then create the pino logger
-    const transport = makeTransport();
-    const pinoLogger = pino(transport);
-    //  Then execute the logger
-    return executeLogger(type, logData, pinoLogger);
+//Need to create a new type of log?
+//- Edit acceptedLogFormTypes and add a new log type to the LogTypes enum if necessary
+//- Create a new class that implements ILogHandler, follow the logic
+//- Add a new case to the logHandlerFactory
+//- Add a new overloaded function to ensure type safety, then make sure edit the case to the implentation signature
+
+//Function overload assures that the correct logData type is being passed for the correct log type
+export function appLoggerNew(type: LogTypes.EXCEPTION_ERROR | LogTypes.DATABASE_ERROR, logData: CustomErrorType)
+export function appLoggerNew(type: LogTypes.ACCESS_LOG, logData: Users | null, event: UserAccessEvent, outcome: outcome, errorMessage?:string)
+export function appLoggerNew(type: LogTypes.USER_LOG, logData: genericLogData, outcome: outcome, errorMessage?: string)
+
+export async function appLoggerNew(
+  type: typeOfLog,
+  logData: acceptedLogFormTypes | null,
+  event?: any,
+  outcome?: any,
+  errorMessage?: any
+  ) 
+  {
+  try{
+  //  First confirm that the error log file exists,  If it doesn't exist, create it
+  await confirmErrorLogFile();
+  //  Create the pino logger
+  const pinoLogger = pino(makeTransport());
+  // create an logHandler instance based on the log type
+  const logHandler = logHandlerFactory(type);
+  //Handle the log
+  switch(type){
+    case ("exception_error" || "database_error"):
+      logHandler.handleLog(logData,pinoLogger);
+      break;
+    case ("access_log"):
+      console.log(`BEFORE: Event: ${event}. Outcome: ${outcome}. Error Message: ${errorMessage}`)
+      logHandler.handleLog(logData,pinoLogger,outcome,errorMessage, event)
+      break;
+    case ("user_log"):
+      logHandler.handleLog(logData,pinoLogger,outcome,errorMessage)
+      break;
+  }
   } catch (error) {
     handleError(error, logData);
   }
@@ -83,82 +123,96 @@ async function handleLoggerErrors(data?: string): Promise<void> {
   }
 }
 
-// TODO this needs to be refactored
-function executeLogger(
-  type: typeOfLog,
-  logData: acceptedLogTypes,
-  pinoLogger: Logger
-) {
-  const logId = uuidv4();
-  let log: logDataForm = defaultLog;
-  log.timeStamp = new Date().toISOString();
-  log.uniqueId = logId;
-  log.type = type;
+//Mandatory info for every log goes
+function createBaseLog():logDataForm{
+  return{
+    ...defaultLog,
+    timeStamp: new Date().toISOString(),
+    uniqueId: uuidv4()
+  }
+}
+
+//Refactor this? What if we have a new type of log that has only 3 properties: logData, logger, And then something else other than an outcome, errorMessage or event? What happens then?
+interface ILogHandler {
+  handleLog(logData: acceptedLogFormTypes | null, logger: Logger, outcome?:outcome, errorMessage?: string, event?: UserAccessEvent): void;
+}
+
+
+class ExceptionErrorLogHandler implements ILogHandler{
+  handleLog(logData: CustomErrorType, logger: Logger): void {
+    const log: logDataForm = createBaseLog()
+    log.type = 'exception_error'
+    log.event = "exception_error"
+    log.status = "system error"
+    log.message = logData.message
+    logger.error({ rotaryLog: log })
+  }
+}
+
+class DatabaseErrorLogHandler implements ILogHandler{
+  handleLog(logData: CustomErrorType, logger: Logger): void {
+    const log: logDataForm = createBaseLog()
+    log.type = 'database_error'
+    log.event = "database_error"
+    log.status = "system error"
+    log.message =
+      logData.sqlMessage ??
+      logData.message
+    logger.error({ rotaryLog: log });
+  }
+}
+
+//TODO - How to handle login fail? Should we enforce that the e-mail used to log in is passed into this function?
+class AccessLogHandler implements ILogHandler{
+  handleLog(logData: Users | null, logger: Logger, outcome: outcome, errorMessage: string, event: UserAccessEvent): void { //Should this error message be of type any? How do I know what's coming?
+    const log: logDataForm = createBaseLog()
+    console.log(`Outcome: ${outcome}. Event: ${event}`)
+    log.type = 'access_log'
+    log.target = "system"
+    log.event = event 
+    log.source = outcome === 'success' && logData ? logData.fullName : " "
+    log.status = outcome
+    errorMessage = !errorMessage ? "No error message provided" : errorMessage
+    switch(event){
+      case "login":
+        log.message = outcome === 'success' && logData ? `${logData.fullName} logged IN sucessfully with email ${logData.email}` : `LOGIN failed, error: ${errorMessage}` 
+        break;
+      case "logout":
+        log.message = outcome === 'success' && logData ? `${logData.fullName} logged OUT sucessfully with email ${logData.email}` : `LOGOUT failed, error: ${errorMessage}` 
+        break;
+    }
+    //Execute log
+    logger.info({ rotaryLog: log })
+  }
+}
+
+//Used when updating user info
+// TODO - Add user obj as a property
+// TODO - Ask Seb what we should be looking for in this log?
+class UserLogHandler implements ILogHandler{
+  handleLog(logData:genericLogData, logger:Logger, outcome: outcome, errorMessage: string){ //Should this error message be of type any? How do I know what's coming?
+    const log: logDataForm = createBaseLog()
+    log.event = "user_log"
+    log.status = logData.status.toString()
+    log.source = "system"
+    log.target = "system"
+    log.message = logData.message
+    logger.info({ rotaryLog: log })
+  }
+}
+
+function logHandlerFactory(type: typeOfLog): ILogHandler {
   switch (type) {
-    case "exception_error":
-      log.event = "exception_error";
-      log.status = "system error";
-      log.message = (logData as CustomErrorType).message;
-      pinoLogger.error({ rotaryLog: log });
-      break;
-    case "database_error":
-      log.event = "database_error";
-      log.status = "system error";
-      log.message =
-        (logData as CustomErrorType).sqlMessage ??
-        (logData as CustomErrorType).message;
-      pinoLogger.error({ rotaryLog: log });
-      break;
-    case "access_log":
-      if ((logData as Users)?.userId || (logData as Users)?.email) {
-        log.event = "login";
-        log.status = "success";
-        log.source = (logData as Users).fullName;
-        log.target = "system";
-        log.message = `${(logData as Users).fullName} logged in with email ${
-          (logData as Users).email
-        }`;
-        pinoLogger.info({ rotaryLog: log });
-      } else if ((logData as genericLogData)?.status === "success") {
-        log.event = "logout";
-        log.status = (logData as genericLogData).status.toString();
-        log.source = "";
-        log.target = "system";
-        log.message = (logData as genericLogData)
-          ? (logData as genericLogData).message
-          : `A user logged out`;
-        pinoLogger.info({ rotaryLog: log });
-      } else if ((logData as genericLogData)?.status === "failed") {
-        log.event = "logout";
-        log.status = (logData as genericLogData).status.toString();
-        log.source = "";
-        log.target = "system";
-        log.message = (logData as genericLogData)
-          ? (logData as genericLogData).message
-          : `A user failed to log out`;
-        pinoLogger.info({ rotaryLog: log });
-      }
-      case  "user_log":
-        if (logData as genericLogData){
-          log.event = "user_log";
-          log.status = (logData as genericLogData).status.toString();
-          log.source = "system";
-          log.target = "system";
-          log.message = (logData as genericLogData).message;
-          pinoLogger.info({ rotaryLog: log });
-        }
-      break;
+    case LogTypes.EXCEPTION_ERROR:
+      return new ExceptionErrorLogHandler()
+    case LogTypes.DATABASE_ERROR:
+      return new DatabaseErrorLogHandler()
+    case LogTypes.ACCESS_LOG:
+      return new AccessLogHandler()
+    case LogTypes.USER_LOG:
+      return new UserLogHandler()
     default:
-      if (logData as genericLogData) {
-        log.event = (logData as genericLogData).event ?? "system";
-        log.status = (logData as genericLogData).status.toString();
-        log.source = "system";
-        log.target = "system";
-        log.message = (logData as genericLogData).message;
-      } else {
-      pinoLogger.error({ rotaryLog: log });
-      }
-      break;
+      throw new Error(`No handler found for type: ${type}`)
   }
 }
 
@@ -180,7 +234,7 @@ function makeTransport() {
 
 async function handleError(
   error: any,
-  logData: CustomErrorType | Users | genericLogData
+  logData: acceptedLogFormTypes | null
 ) {
   console.log(error);
   const extraData = JSON.stringify({
