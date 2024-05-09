@@ -1,7 +1,7 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import CustomException from "App/Exceptions/CustomException";
 import { Translation, DatabaseError } from "App/Utils/CommonTypes";
-import { appLoggerNew} from "App/Utils/AppLogger";
+import { LogTools } from "App/Utils/AppLogger";
 const databaseErrors: { [key: string]: DatabaseError } = {
   "1062": {
     en: "Duplicate record entry",

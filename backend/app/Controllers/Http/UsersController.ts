@@ -5,7 +5,7 @@ import CustomException from "App/Exceptions/CustomException";
 import { CustomErrorType, genericLogData } from "App/Utils/CommonTypes";
 import { DateTime } from "luxon";
 import { IUser } from "App/Shared/Interfaces/IUser";
-import { appLoggerNew, UserAccessEvent, LogTypes } from "App/Utils/AppLogger";
+import { LogTools } from "App/Utils/AppLogger";
 import MailController from "App/Controllers/Http/MailController";
 import Session from "App/Models/Session";
 import Users from "App/Models/Users";
@@ -57,11 +57,11 @@ export default class UsersController {
         session.put("lastApiCallTimeStamp", DateTime.now().toMillis());
         session.put("user_id", userData.user.userId);
       }
-      await appLoggerNew(LogTypes.ACCESS_LOG,userData.user,UserAccessEvent.LOGIN,"success");
+      await LogTools.appLoggerNew(LogTools.LogTypes.ACCESS_LOG,userData.user,LogTools.UserAccessEvent.LOGIN,"success");
       return response.json(userData);
     } catch (error) {
      const errorMessage = (error as CustomErrorType).message.concat(` Email used: ${email}`)
-     appLoggerNew(LogTypes.ACCESS_LOG,null,UserAccessEvent.LOGIN,"fail", errorMessage);
+     LogTools.appLoggerNew(LogTools.LogTypes.ACCESS_LOG,null,LogTools.UserAccessEvent.LOGIN,"fail", errorMessage);
       throw new CustomException(error as CustomErrorType);
     }
   }
@@ -78,17 +78,17 @@ export default class UsersController {
         }   
       } catch (error) {
         const errorMessage = (error as CustomErrorType).message
-        appLoggerNew(LogTypes.ACCESS_LOG, user, UserAccessEvent.LOGOUT, "fail", errorMessage);
+        LogTools.appLoggerNew( LogTools.LogTypes.ACCESS_LOG, user,  LogTools.UserAccessEvent.LOGOUT, "fail", errorMessage);
       }
       if (!(session as any).store.isEmpty) {
         const errorMessage = `Error logging out user ${user.fullName}. Session not cleared`
-        appLoggerNew(LogTypes.ACCESS_LOG, user, UserAccessEvent.LOGOUT, "fail", errorMessage);
+        LogTools.appLoggerNew( LogTools.LogTypes.ACCESS_LOG, user,  LogTools.UserAccessEvent.LOGOUT, "fail", errorMessage);
       }
-      appLoggerNew(LogTypes.ACCESS_LOG, user, UserAccessEvent.LOGOUT, "success");
+      LogTools.appLoggerNew( LogTools.LogTypes.ACCESS_LOG, user,  LogTools.UserAccessEvent.LOGOUT, "success");
       return response.json({});
     } catch (error) {
       const errorMessage = (error as CustomErrorType).message
-      appLoggerNew(LogTypes.ACCESS_LOG, null, UserAccessEvent.LOGOUT, "fail", errorMessage);
+      LogTools.appLoggerNew( LogTools.LogTypes.ACCESS_LOG, null,  LogTools.UserAccessEvent.LOGOUT, "fail", errorMessage);
       throw new CustomException(error as CustomErrorType);
     }
   }
