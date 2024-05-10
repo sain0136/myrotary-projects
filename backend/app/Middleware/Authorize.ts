@@ -8,11 +8,6 @@ export default class Authorize {
     { session, request }: HttpContextContract,
     next: () => Promise<void>
   ) {
-    // if (session.get("userIsLoggedIn")) {
-    // let lastApiCallTimeStamp = session.get("lastApiCallTimeStamp");
-    // let now = DateTime.now().toMillis();
-    // const thirtyMinutesInMilliseconds = 1800000;
-    // if (now - lastApiCallTimeStamp > thirtyMinutesInMilliseconds) {
     let sessionId: string | undefined = undefined;
     if (session.get("session_id")) {
       sessionId = session.get("session_id");
@@ -38,7 +33,7 @@ export default class Authorize {
 
           session.clear();
         } catch (error) {
-          //TODO log the error in app logger that a session log was not found
+          //TODO log Error deleting session for user timed out due to inactivity
         }
         const status = 601;
         throw new CustomException({
@@ -53,13 +48,18 @@ export default class Authorize {
               "session_id",
               sessionId
             );
+            if (!sessionLog) {
+              throw new CustomException({
+                message: "Session not found",
+                status: 601,
+              });
+            }
             await sessionLog
               .merge({ lastActivityTimestamp: BigInt(now.toMillis()) })
               .save();
-            // session.put("lastApiCallTimeStamp", now);
           }
         } catch (error) {
-          //TODO log the error in app logger that a session log was not found
+          //TODO log the error in app logger that a session log was not found for the user
           await next();
         }
         await next();
