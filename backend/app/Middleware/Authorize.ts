@@ -10,23 +10,30 @@ export default class Authorize {
     { session }: HttpContextContract,
     next: () => Promise<void>
   ) {
-    if (session.get("userIsLoggedIn")) {
-      let lastApiCallTimeStamp = session.get("lastApiCallTimeStamp");
-      let now = DateTime.now().toMillis();
-      // const oneHourInMilliseconds = 3600000;
-      // const twentySecondsInMilliseconds = 20000;
-      const thirtyMinutesInMilliseconds = 1800000;
-      if (now - lastApiCallTimeStamp > thirtyMinutesInMilliseconds) {
+    // if (session.get("userIsLoggedIn")) {
+    // let lastApiCallTimeStamp = session.get("lastApiCallTimeStamp");
+    // let now = DateTime.now().toMillis();
+    // const thirtyMinutesInMilliseconds = 1800000;
+    // if (now - lastApiCallTimeStamp > thirtyMinutesInMilliseconds) {
+    const userId = session.get("user_id");
+    if (userId) {
+      const userSession = await Session.findByOrFail("user_id", userId);
+      let now = DateTime.now();
+      let lastActivityTimestamp = DateTime.fromMillis(
+        Number(userSession.lastActivityTimestamp)
+      );
+
+      let thirtyMinutesAgo = now.minus({ minutes: 30 });
+      if (lastActivityTimestamp < thirtyMinutesAgo) {
+        // More than 30 minutes have passed since the last activity
         const message =
           "You were logged out due to inactivity. Please login again.";
         try {
-          const userId = session.get("user_id");
-          if (userId) {
-            const userSession = await Session.findByOrFail("user_id", userId);
-            if (userSession) {
-              await userSession.delete();
-            }
+         
+          if (userSession) {
+            await userSession.delete();
           }
+
           session.clear();
         } catch (error) {
           const log: genericLogData = {
@@ -43,13 +50,12 @@ export default class Authorize {
       } else {
         // update the lastActivityTimestamp in the session log
         try {
-          const userId = session.get("user_id");
           if (userId) {
             const sessionLog = await Session.findByOrFail("user_id", userId);
             await sessionLog
-              .merge({ lastActivityTimestamp: BigInt(now) })
+              .merge({ lastActivityTimestamp: BigInt(now.toMillis()) })
               .save();
-            session.put("lastApiCallTimeStamp", now);
+            // session.put("lastApiCallTimeStamp", now);
           }
         } catch (error) {
           //TODO log the error in app logger that a session log was not found
