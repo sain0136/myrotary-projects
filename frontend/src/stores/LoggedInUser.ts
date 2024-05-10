@@ -10,11 +10,12 @@ export const useLoggedInUserStore = defineStore(
   "loggedInUser",
   () => {
     const loggedInUser: IUser = reactive(new User());
-
+    const SID = ref("");
     const isUserLoggedIn = ref(false);
 
-    function setLoggedInUser(user: IUser) {
+    function setLoggedInUser(user: IUser, sid: string) {
       // loggedInUser = user;
+      SID.value = sid;
       Object.assign(loggedInUser, user);
       isUserLoggedIn.value = true;
     }
@@ -44,6 +45,7 @@ export const useLoggedInUserStore = defineStore(
       isUserLoggedIn,
       logOut,
       getLoggedInUserRole,
+      SID,
     };
   },
   {

@@ -45,17 +45,17 @@ export default class UsersController {
     const webAdmin: boolean = request.input("webAdmin");
     try {
       const { userService } = this.initializeServices();
-      const userData = await userService.authenticateUser({
+      const { userData, newSession } = await userService.authenticateUser({
         password,
         email,
         webAdmin,
       });
       if (userData) {
         session.put("userIsLoggedIn", true);
-        session.put("user_id", userData.user.userId);
+        session.put("session_id", newSession.sessionId);
       }
       await appLogger("access_log", userData.user);
-      return response.json(userData);
+      return response.json({ ...userData, sid: newSession.sessionId });
     } catch (error) {
       appLogger("access_log", error as CustomErrorType);
       throw new CustomException(error as CustomErrorType);
@@ -68,10 +68,13 @@ export default class UsersController {
       session.clear();
 
       try {
-        const foundSession = await Session.findByOrFail("user_id", user.user_id);
+        const foundSession = await Session.findByOrFail(
+          "user_id",
+          user.user_id
+        );
         if (foundSession) {
           await foundSession.delete();
-        }   
+        }
       } catch (error) {
         const log: genericLogData = {
           status: "failed",
@@ -79,7 +82,7 @@ export default class UsersController {
         };
         appLogger("access_log", log);
       }
-      
+
       const log: genericLogData = {
         status: "success",
         message: `User ${user.fullName} with email ${user.email} logged out successfully`,

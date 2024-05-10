@@ -13,7 +13,7 @@ import { v4 as uuidv4 } from "uuid";
 import fs from "fs/promises";
 import Users from "App/Models/Users";
 
-type acceptedLogTypes = CustomErrorType | Users | genericLogData ;
+type acceptedLogTypes = CustomErrorType | Users | genericLogData;
 
 const senderEmail = Env.get("SMTP_SENDER_ADDRESS");
 const receiverEmail = Env.get("SMTP_RECEIVER_ADDRESS");
@@ -138,15 +138,15 @@ function executeLogger(
           : `A user failed to log out`;
         pinoLogger.info({ rotaryLog: log });
       }
-      case  "user_log":
-        if (logData as genericLogData){
-          log.event = "user_log";
-          log.status = (logData as genericLogData).status.toString();
-          log.source = "system";
-          log.target = "system";
-          log.message = (logData as genericLogData).message;
-          pinoLogger.info({ rotaryLog: log });
-        }
+    case "user_log":
+      if (logData as genericLogData) {
+        log.event = "user_log";
+        log.status = (logData as genericLogData)?.status?.toString() ?? "Error";
+        log.source = "system";
+        log.target = "system";
+        log.message = (logData as genericLogData).message;
+        pinoLogger.info({ rotaryLog: log });
+      }
       break;
     default:
       if (logData as genericLogData) {
@@ -156,7 +156,7 @@ function executeLogger(
         log.target = "system";
         log.message = (logData as genericLogData).message;
       } else {
-      pinoLogger.error({ rotaryLog: log });
+        pinoLogger.error({ rotaryLog: log });
       }
       break;
   }

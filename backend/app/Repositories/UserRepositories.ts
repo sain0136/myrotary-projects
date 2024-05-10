@@ -74,7 +74,7 @@ export default class UserRepositories {
         });
       }
       const userData = await this.addUserRoles(user);
-      await Session.create({
+      const newSession = await Session.create({
         loginTimestamp: BigInt(DateTime.now().toMillis()),
         lastActivityTimestamp: BigInt(DateTime.now().toMillis()),
         fullName: userData.user.fullName,
@@ -83,7 +83,7 @@ export default class UserRepositories {
         districtId: userData.user.districtId || 0,
         clubId: userData.user.clubId || 0,
       });
-      return userData;
+      return { userData, newSession };
     } else {
       const message = "Invalid password";
       const status = 404;
