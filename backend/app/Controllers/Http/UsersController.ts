@@ -9,6 +9,8 @@ import { LogTools } from "App/Utils/AppLogger";
 import MailController from "App/Controllers/Http/MailController";
 import Session from "App/Models/Session";
 import Users from "App/Models/Users";
+import { SessionContract } from "@ioc:Adonis/Addons/Session";
+import { RequestContract } from "@ioc:Adonis/Core/Request";
 
 export default class UsersController {
   private initializeServices() {
@@ -44,53 +46,105 @@ export default class UsersController {
     const password: string = request.input("password");
     const email: string = request.input("email");
     const webAdmin: boolean = request.input("webAdmin");
-    let userData
     try {
       const { userService } = this.initializeServices();
-        userData = await userService.authenticateUser({
+      const { userData, newSession } = await userService.authenticateUser({
         password,
         email,
         webAdmin,
-      }); 
+      });
       if (userData) {
         session.put("userIsLoggedIn", true);
-        session.put("lastApiCallTimeStamp", DateTime.now().toMillis());
-        session.put("user_id", userData.user.userId);
+        session.put("session_id", newSession.sessionId);
       }
-      await LogTools.appLoggerNew(LogTools.LogTypes.ACCESS_LOG,userData.user,LogTools.UserAccessEvent.LOGIN,"success");
-      return response.json(userData);
+      await LogTools.appLoggerNew(
+        LogTools.LogTypes.ACCESS_LOG,
+        userData.user,
+        LogTools.UserAccessEvent.LOGIN,
+        "success"
+      );
+      return response.json({ ...userData, sid: newSession.sessionId });
     } catch (error) {
-     const errorMessage = (error as CustomErrorType).message.concat(` Email used: ${email}`)
-     LogTools.appLoggerNew(LogTools.LogTypes.ACCESS_LOG,null,LogTools.UserAccessEvent.LOGIN,"fail", errorMessage);
+      const errorMessage = (error as CustomErrorType).message.concat(
+        ` Email used: ${email}`
+      );
+      LogTools.appLoggerNew(
+        LogTools.LogTypes.ACCESS_LOG,
+        null,
+        LogTools.UserAccessEvent.LOGIN,
+        "fail",
+        errorMessage
+      );
       throw new CustomException(error as CustomErrorType);
     }
   }
 
   public async logout({ request, session, response }: HttpContextContract) {
-
     try {
       const user = request.body() as Users;
       session.clear();
       try {
-        const foundSession = await Session.findByOrFail("user_id", user.userId);
-        if (foundSession) {
-          await foundSession.delete();
-        }   
+        const sessionId = this.getSessionID(session, request);
+        if (sessionId) {
+          const foundSession = await Session.findByOrFail(
+            "session_id",
+            sessionId
+          );
+          if (foundSession) {
+            await foundSession.delete();
+          }
+        }
       } catch (error) {
-        const errorMessage = (error as CustomErrorType).message
-        LogTools.appLoggerNew( LogTools.LogTypes.ACCESS_LOG, user,  LogTools.UserAccessEvent.LOGOUT, "fail", errorMessage);
+        const errorMessage = (error as CustomErrorType).message;
+        LogTools.appLoggerNew(
+          LogTools.LogTypes.ACCESS_LOG,
+          user,
+          LogTools.UserAccessEvent.LOGOUT,
+          "fail",
+          errorMessage
+        );
       }
       if (!(session as any).store.isEmpty) {
-        const errorMessage = `Error logging out user ${user.fullName}. Session not cleared`
-        LogTools.appLoggerNew( LogTools.LogTypes.ACCESS_LOG, user,  LogTools.UserAccessEvent.LOGOUT, "fail", errorMessage);
+        const errorMessage = `Error logging out user ${user.fullName}. Session not cleared`;
+        LogTools.appLoggerNew(
+          LogTools.LogTypes.ACCESS_LOG,
+          user,
+          LogTools.UserAccessEvent.LOGOUT,
+          "fail",
+          errorMessage
+        );
       }
-      LogTools.appLoggerNew( LogTools.LogTypes.ACCESS_LOG, user,  LogTools.UserAccessEvent.LOGOUT, "success");
+      LogTools.appLoggerNew(
+        LogTools.LogTypes.ACCESS_LOG,
+        user,
+        LogTools.UserAccessEvent.LOGOUT,
+        "success"
+      );
       return response.json({});
     } catch (error) {
-      const errorMessage = (error as CustomErrorType).message
-      LogTools.appLoggerNew( LogTools.LogTypes.ACCESS_LOG, null,  LogTools.UserAccessEvent.LOGOUT, "fail", errorMessage);
+      const errorMessage = (error as CustomErrorType).message;
+      LogTools.appLoggerNew(
+        LogTools.LogTypes.ACCESS_LOG,
+        null,
+        LogTools.UserAccessEvent.LOGOUT,
+        "fail",
+        errorMessage
+      );
       throw new CustomException(error as CustomErrorType);
     }
+  }
+
+  private getSessionID(
+    session: SessionContract,
+    request: RequestContract
+  ): string | undefined {
+    let sessionId: string | undefined = undefined;
+    if (session.get("session_id")) {
+      sessionId = session.get("session_id");
+    } else {
+      sessionId = request.qs().sid;
+    }
+    return sessionId;
   }
 
   public async getUser({ request, response }: HttpContextContract) {

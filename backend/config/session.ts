@@ -73,7 +73,7 @@ export default sessionConfig({
   | Example: `2 days`, `2.5 hrs`, `1y`, `5s` and so on.
   | This is the age that matters for how long sessions are kept active.
   */
-  age: "24 hrs",
+  age: "1y",
 
   /*
   |--------------------------------------------------------------------------
@@ -114,7 +114,7 @@ export default sessionConfig({
     httpOnly: true,
     sameSite: process.env.NODE_ENV === "production" ? "lax" : "none",
     secure: process.env.NODE_ENV === "production",
-    maxAge: 86400,
+    maxAge: "1y",
   },
 
   /*
