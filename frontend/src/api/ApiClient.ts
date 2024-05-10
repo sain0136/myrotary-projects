@@ -8,8 +8,12 @@ import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
 
 export class ApiClient {
   private baseURL = import.meta.env.VITE_BASE_API_URL;
-
-  constructor() {}
+  private sid: string | null = null;
+  constructor() {
+    this.sid = useLoggedInUserStore().$state.isUserLoggedIn
+      ? useLoggedInUserStore().$state.SID
+      : null;
+  }
 
   // TODO: add Return Type in future
   public async fetchWrapper(
@@ -17,7 +21,9 @@ export class ApiClient {
     endpoint: string,
     data?: object | string | FormData | null
   ): Promise<any | ICustomError> {
-    const url = `${this.baseURL}${endpoint}`;
+    const url = `${this.baseURL}${endpoint}${
+      this.sid ? `?sid=${this.sid}` : ""
+    }`;
     const options: RequestInit = {
       method,
       headers: {
@@ -54,7 +60,9 @@ export class ApiClient {
     data?: object | string | FormData | null,
     headers: Record<string, string> = {}
   ): Promise<any | ICustomError> {
-    const url = `${this.baseURL}${endpoint}`;
+    const url = `${this.baseURL}${endpoint}${
+      this.sid ? `?sid=${this.sid}` : ""
+    }`;
     const response = await axios.post(url, data, {
       headers: {
         ...headers,

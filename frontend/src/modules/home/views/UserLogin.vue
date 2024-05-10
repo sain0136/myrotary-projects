@@ -6,13 +6,13 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, onUnmounted, reactive, ref } from "vue";
+import { onMounted, reactive } from "vue";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import BaseInput from "@/components/form/BaseInput.vue";
 import { UsersApi } from "@/api/services/UserApi";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import { ApiClient } from "@/api/ApiClient";
-import type { CustomError } from "@/utils/classes/customError";
+import type { CustomError } from "@/utils/classes/CustomError";
 import { useVuelidate } from "@vuelidate/core";
 import { required, email, helpers, minLength } from "@vuelidate/validators";
 import router from "@/router";
@@ -22,7 +22,6 @@ import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
 import { useLoggedInClub } from "@/stores/LoggedInClub";
 import { useProspectUserStore } from "@/stores/ProspecUserStore";
 import { DistrictApi } from "@/api/services/DistrictsApi";
-import type { IUser } from "@/utils/interfaces/IUser";
 
 /* Data */
 const { langTranslations, customPrintf } = useLanguage();
@@ -32,11 +31,11 @@ const state = reactive({
   password: "",
 });
 const userStore = useLoggedInUserStore();
-const prospectUserStore = useProspectUserStore()
+const prospectUserStore = useProspectUserStore();
 const districtStore = useLoggedInDistrict();
 const clubStore = useLoggedInClub();
 const usersApi = new UsersApi(new ApiClient());
-const districtApi = new DistrictApi(new ApiClient())
+const districtApi = new DistrictApi(new ApiClient());
 
 /* Validations */
 const rules = {
@@ -75,7 +74,7 @@ const handleSubmit = async () => {
       state.email,
       state.password
     );
-    userStore.setLoggedInUser(response.user);
+    userStore.setLoggedInUser(response.user, response.sid);
     districtStore.setLoggedInDistrict(response.district);
     clubStore.setLoggedInClub(response.club);
     handleSuccess(
@@ -87,8 +86,13 @@ const handleSubmit = async () => {
     router.push({ name: "AdminWelcome" });
 
     // use ProspectUserStore so we can update our notification icon
-    const allProspectUsers = ((await usersApi.getAllUsers(true,undefined,undefined,userStore.loggedInUser.district_id!)))
-    prospectUserStore.setHasProspectUsers(Object(allProspectUsers).length > 0)
+    const allProspectUsers = await usersApi.getAllUsers(
+      true,
+      undefined,
+      undefined,
+      userStore.loggedInUser.district_id!
+    );
+    prospectUserStore.setHasProspectUsers(Object(allProspectUsers).length > 0);
   } catch (error) {
     handleError(error as CustomError);
   }
@@ -123,14 +127,15 @@ const handleSubmit = async () => {
           class="w-full"
           type="submit"
         />
-        <router-link :to="{ name: 'CreateAccount' }">  <!--Path-->
-              <span
-                href="#"
-                class="block py-2 pl-3 pr-4 font-bold text-gray-900 rounded hover:text-primary text-center"
-                aria-current="page"
-                >{{ langTranslations.createAccountLabel }}</span 
-              >
-            </router-link>
+        <router-link :to="{ name: 'CreateAccount' }">
+          <!--Path-->
+          <span
+            href="#"
+            class="block py-2 pl-3 pr-4 font-bold text-gray-900 rounded hover:text-primary text-center"
+            aria-current="page"
+            >{{ langTranslations.createAccountLabel }}</span
+          >
+        </router-link>
       </div>
     </form>
   </div>

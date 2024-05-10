@@ -7,7 +7,7 @@ import { genericLogData } from "App/Utils/CommonTypes";
 
 export default class Authorize {
   public async handle(
-    { session }: HttpContextContract,
+    { session, request }: HttpContextContract,
     next: () => Promise<void>
   ) {
     // if (session.get("userIsLoggedIn")) {
@@ -15,9 +15,14 @@ export default class Authorize {
     // let now = DateTime.now().toMillis();
     // const thirtyMinutesInMilliseconds = 1800000;
     // if (now - lastApiCallTimeStamp > thirtyMinutesInMilliseconds) {
-    const userId = session.get("user_id");
-    if (userId) {
-      const userSession = await Session.findByOrFail("user_id", userId);
+    let sessionId: string | undefined = undefined;
+    if (session.get("session_id")) {
+      sessionId = session.get("session_id");
+    } else {
+      sessionId = request.qs().sid;
+    }
+    if (sessionId) {
+      const userSession = await Session.findByOrFail("session_id", sessionId);
       let now = DateTime.now();
       let lastActivityTimestamp = DateTime.fromMillis(
         Number(userSession.lastActivityTimestamp)
@@ -29,7 +34,6 @@ export default class Authorize {
         const message =
           "You were logged out due to inactivity. Please login again.";
         try {
-         
           if (userSession) {
             await userSession.delete();
           }
@@ -50,8 +54,11 @@ export default class Authorize {
       } else {
         // update the lastActivityTimestamp in the session log
         try {
-          if (userId) {
-            const sessionLog = await Session.findByOrFail("user_id", userId);
+          if (sessionId) {
+            const sessionLog = await Session.findByOrFail(
+              "session_id",
+              sessionId
+            );
             await sessionLog
               .merge({ lastActivityTimestamp: BigInt(now.toMillis()) })
               .save();
