@@ -8,6 +8,12 @@ export default class Authorize {
     { session, request }: HttpContextContract,
     next: () => Promise<void>
   ) {
+    const isLogoutRoute = request.url().includes("/logout");
+    if (isLogoutRoute) {
+      // do not authorize logout route
+      await next();
+      return;
+    }
     let sessionId: string | undefined = undefined;
     if (session.get("session_id")) {
       sessionId = session.get("session_id");
@@ -15,7 +21,17 @@ export default class Authorize {
       sessionId = request.qs().sid;
     }
     if (sessionId) {
-      const userSession = await Session.findByOrFail("session_id", sessionId);
+      let userSession: Session;
+      try {
+        userSession = await Session.findByOrFail("session_id", sessionId);
+      } catch (error) {
+        //TODO log Error session not found for this user who did have SID from frontend or cookie
+        const status = 601;
+        throw new CustomException({
+          message: "Session not found",
+          status,
+        });
+      }
       let now = DateTime.now();
       let lastActivityTimestamp = DateTime.fromMillis(
         Number(userSession.lastActivityTimestamp)
@@ -27,10 +43,10 @@ export default class Authorize {
         const message =
           "You were logged out due to inactivity. Please login again.";
         try {
+          // delete the session for the user in db and session cookie
           if (userSession) {
             await userSession.delete();
           }
-
           session.clear();
         } catch (error) {
           //TODO log Error deleting session for user timed out due to inactivity
@@ -43,26 +59,22 @@ export default class Authorize {
       } else {
         // update the lastActivityTimestamp in the session log
         try {
-          if (sessionId) {
-            const sessionLog = await Session.findByOrFail(
-              "session_id",
-              sessionId
-            );
-            if (!sessionLog) {
-              throw new CustomException({
-                message: "Session not found",
-                status: 601,
-              });
-            }
-            await sessionLog
-              .merge({ lastActivityTimestamp: BigInt(now.toMillis()) })
-              .save();
+          const userSession = await Session.findByOrFail(
+            "session_id",
+            sessionId
+          );
+          if (!userSession) {
           }
+          await userSession
+            .merge({ lastActivityTimestamp: BigInt(now.toMillis()) })
+            .save();
         } catch (error) {
           //TODO log the error in app logger that a session log was not found for the user
-          await next();
+          throw new CustomException({
+            message: "Session not found",
+            status: 601,
+          });
         }
-        await next();
       }
     } else {
       await next();
