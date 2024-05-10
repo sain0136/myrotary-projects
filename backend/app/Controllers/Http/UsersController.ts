@@ -52,7 +52,6 @@ export default class UsersController {
       });
       if (userData) {
         session.put("userIsLoggedIn", true);
-        session.put("lastApiCallTimeStamp", DateTime.now().toMillis());
         session.put("user_id", userData.user.userId);
       }
       await appLogger("access_log", userData.user);

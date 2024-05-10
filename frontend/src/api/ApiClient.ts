@@ -5,8 +5,6 @@ import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import router from "@/router";
 import { useLoggedInClub } from "@/stores/LoggedInClub";
 import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
-import { modalHandler } from "@/utils/composables/ModalHandler";
-import { useLanguage } from "@/utils/languages/UseLanguage";
 
 export class ApiClient {
   private baseURL = import.meta.env.VITE_BASE_API_URL;

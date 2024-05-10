@@ -8,6 +8,7 @@ import Users from "App/Models/Users";
 import { IRoles, IUser } from "App/Shared/Interfaces/IUser";
 import { errorTranslations } from "App/Translations/Translations";
 import { AuthenticationRequestData } from "App/Utils/CommonTypes";
+import { DateTime } from "luxon";
 
 export default class UserRepositories {
   public async getAllUsers(
@@ -74,8 +75,8 @@ export default class UserRepositories {
       }
       const userData = await this.addUserRoles(user);
       await Session.create({
-        loginTimestamp: BigInt(Date.now()),
-        lastActivityTimestamp: BigInt(Date.now()),
+        loginTimestamp: BigInt(DateTime.now().toMillis()),
+        lastActivityTimestamp: BigInt(DateTime.now().toMillis()),
         fullName: userData.user.fullName,
         email: userData.user.email,
         userId: userData.user.userId,
