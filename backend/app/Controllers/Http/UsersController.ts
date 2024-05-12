@@ -47,18 +47,17 @@ export default class UsersController {
     let userData
     try {
       const { userService } = this.initializeServices();
-        userData = await userService.authenticateUser({
+      const { userData, newSession } = await userService.authenticateUser({
         password,
         email,
         webAdmin,
       }); 
       if (userData) {
         session.put("userIsLoggedIn", true);
-        session.put("lastApiCallTimeStamp", DateTime.now().toMillis());
-        session.put("user_id", userData.user.userId);
+        session.put("session_id", newSession.sessionId);
       }
       await LogTools.appLoggerNew(LogTools.LogTypes.ACCESS_LOG,userData.user,LogTools.UserAccessEvent.LOGIN,"success");
-      return response.json(userData);
+      return response.json({ ...userData, sid: newSession.sessionId });
     } catch (error) {
      const errorMessage = (error as CustomErrorType).message.concat(` Email used: ${email}`)
      LogTools.appLoggerNew(LogTools.LogTypes.ACCESS_LOG,null,LogTools.UserAccessEvent.LOGIN,"fail", errorMessage);
@@ -75,7 +74,7 @@ export default class UsersController {
         const foundSession = await Session.findByOrFail("user_id", user.userId);
         if (foundSession) {
           await foundSession.delete();
-        }   
+        }
       } catch (error) {
         const errorMessage = (error as CustomErrorType).message
         LogTools.appLoggerNew( LogTools.LogTypes.ACCESS_LOG, user,  LogTools.UserAccessEvent.LOGOUT, "fail", errorMessage);

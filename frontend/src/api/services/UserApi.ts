@@ -29,7 +29,7 @@ export class UsersApi {
     email: string,
     password: string,
     webAdmin?: boolean
-  ): Promise<{ user: IUser; district: IDistrict; club: IClub }> {
+  ): Promise<{ user: IUser; district: IDistrict; club: IClub, sid: string }> {
     return await this.apiClient.fetchWrapper(
       "POST",
       `${BASE_ROUTE}/authenticate`,
