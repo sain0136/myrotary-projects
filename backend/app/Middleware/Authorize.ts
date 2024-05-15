@@ -8,7 +8,7 @@ export default class Authorize {
     { session, request }: HttpContextContract,
     next: () => Promise<void>
   ) {
-    const isLogoutRoute = request.url().includes("/logout");
+    const isLogoutRoute = request. url().includes("/logout");
     if (isLogoutRoute) {
       // do not authorize logout route
       await next();

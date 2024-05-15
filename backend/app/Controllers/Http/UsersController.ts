@@ -11,6 +11,9 @@ import Session from "App/Models/Session";
 import Users from "App/Models/Users";
 import { SessionContract } from "@ioc:Adonis/Addons/Session";
 import { RequestContract } from "@ioc:Adonis/Core/Request";
+import { LogManager } from "App/Utils/AppLogger";
+
+const logger = new LogManager()
 
 export default class UsersController {
   private initializeServices() {
@@ -57,26 +60,20 @@ export default class UsersController {
         session.put("userIsLoggedIn", true);
         session.put("session_id", newSession.sessionId);
       }
-      await LogTools.appLoggerNew(LogTools.LogTypes.ACCESS_LOG,userData.user,LogTools.UserAccessEvent.LOGIN,"success");
+      await logger.log(LogTools.LogTypes.ACCESS_LOG,{sourceUser:userData.user,event:LogTools.UserAccessEvent.LOGIN,outcome:"success",errorMessage: null})
       return response.json({ ...userData, sid: newSession.sessionId });
     } catch (error) {
       const errorMessage = (error as CustomErrorType).message.concat(
         ` Email used: ${email}`
       );
-      LogTools.appLoggerNew(
-        LogTools.LogTypes.ACCESS_LOG,
-        null,
-        LogTools.UserAccessEvent.LOGIN,
-        "fail",
-        errorMessage
-      );
+      // TODO - ADD LOGGER HERE
       throw new CustomException(error as CustomErrorType);
     }
   }
 
   public async logout({ request, session, response }: HttpContextContract) {
     try {
-      const user = request.body() as Users;
+      const user = request.body() as IUser;
       session.clear();
       try {
         const sessionId = this.getSessionID(session, request);
@@ -91,40 +88,17 @@ export default class UsersController {
         }
       } catch (error) {
         const errorMessage = (error as CustomErrorType).message;
-        LogTools.appLoggerNew(
-          LogTools.LogTypes.ACCESS_LOG,
-          user,
-          LogTools.UserAccessEvent.LOGOUT,
-          "fail",
-          errorMessage
-        );
+       // TODO - ADD LOGGER HERE
       }
       if (!(session as any).store.isEmpty) {
         const errorMessage = `Error logging out user ${user.fullName}. Session not cleared`;
-        LogTools.appLoggerNew(
-          LogTools.LogTypes.ACCESS_LOG,
-          user,
-          LogTools.UserAccessEvent.LOGOUT,
-          "fail",
-          errorMessage
-        );
+        // TODO - ADD LOGGER HERE
       }
-      LogTools.appLoggerNew(
-        LogTools.LogTypes.ACCESS_LOG,
-        user,
-        LogTools.UserAccessEvent.LOGOUT,
-        "success"
-      );
+      // TODO - ADD LOGGER HERE
       return response.json({});
     } catch (error) {
       const errorMessage = (error as CustomErrorType).message;
-      LogTools.appLoggerNew(
-        LogTools.LogTypes.ACCESS_LOG,
-        null,
-        LogTools.UserAccessEvent.LOGOUT,
-        "fail",
-        errorMessage
-      );
+      // TODO - ADD LOGGER HERE
       throw new CustomException(error as CustomErrorType);
     }
   }
@@ -155,19 +129,17 @@ export default class UsersController {
 
   public async createUser({ request, response }: HttpContextContract) {
     try {
-      const user = request.body() as IUser;
+      //De-structuring the request body to handle the source and target user
+      const {user, sourceUser} = request.only(['user', 'sourceUser']) as {
+        user:IUser
+        sourceUser:IUser
+      }
       const prospectUser = user.is_prospect ? true : false;
       const { userService } = this.initializeServices();
       const districtAdminsToEmail = await userService.createUser(
         user,
         prospectUser
       );
-      /*appLogger("user_log", {
-        status: "success",
-        message: `User ${user.fullName} created successfully.${
-          prospectUser ? " This is a prospective user." : ""
-        }`,
-      } as genericLogData);*/
       if (prospectUser) {
         const mailController = new MailController();
         let mailBodyMessage = `<strong>Hello ${user.fullName}, your account is pending approval. You will be notified when your account is approved. / Bonjour ${user.fullName}, votre compte est en attente d'approbation. Vous serez informé lorsque votre compte sera approuvé.</strong>`;
@@ -190,7 +162,9 @@ export default class UsersController {
         );
         return response.json(true);
       }
+      // TODO - ADD LOGGER HERE
     } catch (error) {
+     // TODO - ADD LOGGER HERE
       throw new CustomException(error as CustomErrorType);
     }
   }

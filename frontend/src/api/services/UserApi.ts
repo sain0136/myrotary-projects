@@ -63,14 +63,13 @@ export class UsersApi {
   }
 
   public async createNewUser(user: IUser): Promise<boolean> {
-    //user.is_prospect = false; // this was not here before, where was it being hand0led?
     const sourceUser = this.getLoggedInUser()
     console.log("Logged in user asking to create " + sourceUser.fullName + " id: " + sourceUser.user_id )
     return await this.apiClient.fetchWrapper(
       "POST",
       `${BASE_ROUTE}/create`,
       user,
-      //sourceUser
+      sourceUser
     );
   }
 
