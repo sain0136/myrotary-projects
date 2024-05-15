@@ -1,11 +1,18 @@
 import { ApiClient } from "@/api/ApiClient";
+import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import type { IClub } from "@/utils/interfaces/IClub";
 import type { IDistrict } from "@/utils/interfaces/IDistrict";
 import type { IUser } from "@/utils/interfaces/IUser";
 import type { PaginationResult } from "@/utils/types/commonTypes";
 const BASE_ROUTE = "/user";
+
+
 export class UsersApi {
   constructor(private apiClient: ApiClient) {}
+
+  private getLoggedInUser(): IUser{
+    return useLoggedInUserStore().loggedInUser
+  }
 
   public async getAllUsers(
     isProspect: boolean,
@@ -56,10 +63,14 @@ export class UsersApi {
   }
 
   public async createNewUser(user: IUser): Promise<boolean> {
+    //user.is_prospect = false; // this was not here before, where was it being hand0led?
+    const sourceUser = this.getLoggedInUser()
+    console.log("Logged in user asking to create " + sourceUser.fullName + " id: " + sourceUser.user_id )
     return await this.apiClient.fetchWrapper(
       "POST",
       `${BASE_ROUTE}/create`,
-      user
+      user,
+      //sourceUser
     );
   }
 

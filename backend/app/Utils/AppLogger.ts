@@ -19,10 +19,18 @@ type outcome = "success" | "fail" // could be a boolean, but I like the readabil
 //Wrapping this in a namespace to make exports easier. This way we have all we need to use the log system inside of here
 //No need to guess what you have to import
 export namespace LogTools {
+
   export enum UserAccessEvent {
     LOGIN= "login",
     LOGOUT= "logout"
   }
+
+  export enum UserEditEvent{
+    CREATE = "create",
+    UPDATE = "update",
+    DELETE = "delete",
+  }
+
   export enum LogTypes {
     EXCEPTION_ERROR= "exception_error",
     DATABASE_ERROR= "database_error",
@@ -33,15 +41,16 @@ export namespace LogTools {
   //Function overload assures that the correct logData type is being passed for the correct log type
 export function appLoggerNew(type: LogTools.LogTypes.EXCEPTION_ERROR | LogTools.LogTypes.DATABASE_ERROR, logData: CustomErrorType)
 export function appLoggerNew(type: LogTools.LogTypes.ACCESS_LOG, logData: Users | null, event: LogTools.UserAccessEvent, outcome: outcome, errorMessage?:string)
-export function appLoggerNew(type: LogTools.LogTypes.USER_LOG, logData: genericLogData, outcome: outcome, errorMessage?: string)
+export function appLoggerNew(type: LogTools.LogTypes.USER_LOG, sourceUser: Users, event: LogTools.UserEditEvent, outcome: outcome, errorMessage: string | null, targetUser:Users)
 
 
 export async function appLoggerNew(
   type: typeOfLog,
   logData: acceptedLogFormTypes | null,
-  event?: any,
-  outcome?: any,
-  errorMessage?: any
+  event?: LogTools.UserAccessEvent | LogTools.UserEditEvent,
+  outcome?: outcome,
+  errorMessage?: string | null,
+  targetUser?:Users
   ) 
   {
   try{
@@ -54,14 +63,13 @@ export async function appLoggerNew(
   //Handle the log
   switch(type){
     case ("exception_error" || "database_error"):
-      logHandler.handleLog(logData,pinoLogger);
+      logHandler.handleLog(pinoLogger,logData);
       break;
     case ("access_log"):
-      console.log(`BEFORE: Event: ${event}. Outcome: ${outcome}. Error Message: ${errorMessage}`)
-      logHandler.handleLog(logData,pinoLogger,outcome,errorMessage, event)
+      logHandler.handleLog(pinoLogger,logData,outcome,errorMessage, event)
       break;
     case ("user_log"):
-      logHandler.handleLog(logData,pinoLogger,outcome,errorMessage)
+      logHandler.handleLog(pinoLogger,logData,outcome,errorMessage, event,targetUser)
       break;
   }
   } catch (error) {
@@ -134,12 +142,12 @@ function createBaseLog():logDataForm{
 
 //Refactor this? What if we have a new type of log that has only 3 properties: logData, logger, And then something else other than an outcome, errorMessage or event? What happens then?
 interface ILogHandler {
-  handleLog(logData: acceptedLogFormTypes | null, logger: Logger, outcome?:outcome, errorMessage?: string, event?: LogTools.UserAccessEvent): void;
+  handleLog(logger: Logger, logData: acceptedLogFormTypes | null,  outcome?:outcome, errorMessage?: string | null, event?: LogTools.UserAccessEvent | LogTools.UserEditEvent, targetUser?: Users): void;
 }
 
 
 class ExceptionErrorLogHandler implements ILogHandler{
-  handleLog(logData: CustomErrorType, logger: Logger): void {
+  handleLog(logger: Logger, logData: CustomErrorType): void {
     const log: logDataForm = createBaseLog()
     log.type = 'exception_error'
     log.event = "exception_error"
@@ -150,7 +158,7 @@ class ExceptionErrorLogHandler implements ILogHandler{
 }
 
 class DatabaseErrorLogHandler implements ILogHandler{
-  handleLog(logData: CustomErrorType, logger: Logger): void {
+  handleLog(logger: Logger, logData: CustomErrorType): void {
     const log: logDataForm = createBaseLog()
     log.type = 'database_error'
     log.event = "database_error"
@@ -164,7 +172,7 @@ class DatabaseErrorLogHandler implements ILogHandler{
 
 //TODO - How to handle login fail? Should we enforce that the e-mail used to log in is passed into this function?
 class AccessLogHandler implements ILogHandler{
-  handleLog(logData: Users | null, logger: Logger, outcome: outcome, errorMessage: string, event: LogTools.UserAccessEvent): void { //Should this error message be of type any? How do I know what's coming?
+  handleLog(logger: Logger, logData: Users | null,  outcome: outcome, errorMessage: string, event: LogTools.UserAccessEvent): void { //Should this error message be of type any? How do I know what's coming?
     const log: logDataForm = createBaseLog()
     log.type = 'access_log'
     log.target = "system"
@@ -191,16 +199,15 @@ class AccessLogHandler implements ILogHandler{
 }
 
 //Used when updating user info
-// TODO - Add user obj as a property
-// TODO - Ask Seb what we should be looking for in this log?
 class UserLogHandler implements ILogHandler{
-  handleLog(logData:genericLogData, logger:Logger, outcome: outcome, errorMessage: string){ //Should this error message be of type any? How do I know what's coming?
+  handleLog(logger:Logger, sourceUser:Users, outcome: outcome,errorMessage: string | null, event: LogTools.UserEditEvent, targetUser: Users){
     const log: logDataForm = createBaseLog()
-    log.event = "user_log"
-    log.status = logData.status.toString()
-    log.source = "system"
-    log.target = "system"
-    log.message = logData.message
+    log.type = "user_log"
+    log.event = event
+    log.status = outcome
+    log.source = sourceUser.fullName // change to userId?
+    log.target = targetUser.fullName // change to userId?
+    log.message === errorMessage ? `Error: ${errorMessage}` : "No error message provided"
     logger.info({ rotaryLog: log })
   }
 }

@@ -55,17 +55,7 @@ export type Currencies = {
 export type genericLogData = {
   status: "success" | "failed";
   message: string;
-  event?:
-    | "login"
-    | "logout"
-    | "exception_error"
-    | "database_error"
-    | "user_creation"
-    | "user_update"
-    | "user_deletion"
-    | "user_log"
-    | "mail_log"
-    | "system";
+  event?:string;
 };
 
 export type typeOfLog =
@@ -80,20 +70,10 @@ export interface logDataForm {
   uniqueId: string;
   type: typeOfLog;
   timeStamp: string;
-  event:
-    | "login"
-    | "logout"
-    | "exception_error"
-    | "database_error"
-    | "user_creation"
-    | "user_update"
-    | "user_deletion"
-    | "user_log"
-    | "mail_log"
-    | "system";
-  status: string
+  event: string;
+  status: string;
   source: string;
-  target: "system" | "";
+  target: string;
   message: string;
 }
 
