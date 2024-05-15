@@ -68,6 +68,7 @@ export default class Authorize {
           await userSession
             .merge({ lastActivityTimestamp: BigInt(now.toMillis()) })
             .save();
+            await next();
         } catch (error) {
           //TODO log the error in app logger that a session log was not found for the user
           throw new CustomException({
