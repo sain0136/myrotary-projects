@@ -69,10 +69,13 @@ export default class UsersController {
       session.clear();
 
       try {
-        const foundSession = await Session.findByOrFail("user_id", user.user_id);
+        const foundSession = await Session.findByOrFail(
+          "user_id",
+          user.user_id
+        );
         if (foundSession) {
           await foundSession.delete();
-        }   
+        }
       } catch (error) {
         const log: genericLogData = {
           status: "failed",
@@ -80,7 +83,7 @@ export default class UsersController {
         };
         appLogger("access_log", log);
       }
-      
+
       const log: genericLogData = {
         status: "success",
         message: `User ${user.fullName} with email ${user.email} logged out successfully`,
@@ -187,6 +190,33 @@ export default class UsersController {
       const userId: number = request.input("userId");
       const { userService } = this.initializeServices();
       await userService.deleteUser(userId);
+
+      return response.json(true);
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
+  }
+
+  public async deleteProspectUser({ request, response }: HttpContextContract) {
+    try {
+      const user = request.body() as IUser;
+      const { userService } = this.initializeServices();
+      await userService.deleteUser(user.user_id);
+      if (user.is_prospect) {
+        const mailController = new MailController();
+        let mailBodyMessage = `<strong>Hello ${user.fullName}, your account was not approved and has been deleted. / Bonjour ${user.fullName}, votre compte a été supprimé. </strong>`;
+        mailController.sendMail(
+          {
+            subject:
+              "MyRotaryProjects. Your account was not approved. / MyRotaryProjects. Votre compte n'a pas été approuvé.",
+            receiverEmail: user.email,
+            messageBody: {
+              message: mailBodyMessage,
+            },
+          },
+          mailBodyMessage
+        );
+      }
       return response.json(true);
     } catch (error) {
       throw new CustomException(error as CustomErrorType);

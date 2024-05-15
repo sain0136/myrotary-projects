@@ -16,12 +16,12 @@ import type { IUser } from "@/utils/interfaces/IUser";
 import { UsersApi } from "@/api/services/UserApi";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import { useProspectUserStore } from "@/stores/ProspecUserStore";
+import { modalHandler } from "@/utils/composables/ModalHandler";
 
 /* Data */
+const { changeShowModal, setModal } = modalHandler();
 const userStore = useLoggedInUserStore();
 const prospectUserStore = useProspectUserStore();
-
-//
 const { langTranslations } = useLanguage();
 const { handleError, handleSuccess, handleInfo } = errorHandler();
 const userApi = new UsersApi(new ApiClient());
@@ -107,8 +107,15 @@ const approveUser = async (user: IUser) => {
 };
 
 const denyUser = async (user: IUser) => {
-  //TODO: Grab user.email address and send e-mail notification
-  await userApi.deleteUser(user.user_id);
+  setModal(
+    langTranslations.value.deleteLabel,
+    langTranslations.value.confirmationDelete + " " + (user as IUser).fullName
+  );
+  const confirmed = await changeShowModal(true);
+  if (!confirmed) return;
+  await userApi.deleteProspectUser(user);
+  await refreshPage();
+  handleInfo(langTranslations.value.toastDenyProspect,true);
 };
 
 const refreshPage = async () => {
@@ -139,8 +146,6 @@ const refreshPage = async () => {
         show: true,
         callBack: async (user) => {
           await denyUser(user as IUser)
-          await refreshPage()
-          handleInfo(langTranslations.toastDenyProspect,true);
         },
       }"
       :view-details-button="{
@@ -158,7 +163,10 @@ const refreshPage = async () => {
         },
       ]"
     />
-    <h1 class="text-4xl font-bold no-users" v-if="allProspectUsers.length === 0">
+    <h1
+      class="text-4xl font-bold no-users"
+      v-if="allProspectUsers.length === 0"
+    >
       {{ langTranslations.noProspectUserAvailable }}
     </h1>
   </div>
