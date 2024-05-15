@@ -85,4 +85,12 @@ export class UsersApi {
       userId,
     });
   }
+
+  public async deleteProspectUser(user: IUser): Promise<boolean> {
+    return await this.apiClient.fetchWrapper(
+      "POST",
+      `${BASE_ROUTE}/deleteProspectUser`,
+        user,
+    );
+  }
 }
