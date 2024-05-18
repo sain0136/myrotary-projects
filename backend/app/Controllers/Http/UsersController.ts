@@ -2,7 +2,7 @@ import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import UserRepositories from "App/Repositories/UserRepositories";
 import UserService from "App/Services/UserService";
 import CustomException from "App/Exceptions/CustomException";
-import { CustomErrorType, genericLogData } from "App/Utils/CommonTypes";
+import { CustomErrorType} from "App/Utils/CommonTypes";
 import { DateTime } from "luxon";
 import { IUser } from "App/Shared/Interfaces/IUser";
 import { LogTools } from "App/Utils/AppLogger";
@@ -12,6 +12,7 @@ import Users from "App/Models/Users";
 import { SessionContract } from "@ioc:Adonis/Addons/Session";
 import { RequestContract } from "@ioc:Adonis/Core/Request";
 import { LogManager } from "App/Utils/AppLogger";
+import { errorTranslations } from "App/Translations/Translations";
 
 const logger = new LogManager()
 
@@ -60,13 +61,10 @@ export default class UsersController {
         session.put("userIsLoggedIn", true);
         session.put("session_id", newSession.sessionId);
       }
-      await logger.log(LogTools.LogTypes.ACCESS_LOG,{sourceUser:userData.user,event:LogTools.UserAccessEvent.LOGIN,outcome:"success",errorMessage: null})
+      logger.log(LogTools.LogTypes.ACCESS_LOG,{sourceUser:userData.user,event:LogTools.UserAccessEvent.LOGIN,outcome:"success",errorMessage: null})
       return response.json({ ...userData, sid: newSession.sessionId });
     } catch (error) {
-      const errorMessage = (error as CustomErrorType).message.concat(
-        ` Email used: ${email}`
-      );
-      // TODO - ADD LOGGER HERE
+      logger.log(LogTools.LogTypes.ACCESS_LOG,{sourceUser:null,event:LogTools.UserAccessEvent.LOGIN,outcome:"fail", errorMessage:error, customMessage: `Email used: ${email}`})
       throw new CustomException(error as CustomErrorType);
     }
   }
@@ -87,18 +85,16 @@ export default class UsersController {
           }
         }
       } catch (error) {
-        const errorMessage = (error as CustomErrorType).message;
-       // TODO - ADD LOGGER HERE
+       logger.log(LogTools.LogTypes.ACCESS_LOG,{sourceUser: user,event: LogTools.UserAccessEvent.LOGOUT, outcome: 'fail', errorMessage:error})
       }
       if (!(session as any).store.isEmpty) {
         const errorMessage = `Error logging out user ${user.fullName}. Session not cleared`;
-        // TODO - ADD LOGGER HERE
+        logger.log(LogTools.LogTypes.ACCESS_LOG,{sourceUser: user,event: LogTools.UserAccessEvent.LOGOUT, outcome: 'fail', errorMessage:errorMessage})
       }
-      // TODO - ADD LOGGER HERE
+      logger.log(LogTools.LogTypes.ACCESS_LOG,{sourceUser: user,event: LogTools.UserAccessEvent.LOGOUT, outcome: 'success',errorMessage:null,customMessage:'User logged out sucessfully!'})
       return response.json({});
     } catch (error) {
-      const errorMessage = (error as CustomErrorType).message;
-      // TODO - ADD LOGGER HERE
+      logger.log(LogTools.LogTypes.ACCESS_LOG,{sourceUser: null,event: LogTools.UserAccessEvent.LOGOUT, outcome: 'fail', errorMessage:error})
       throw new CustomException(error as CustomErrorType);
     }
   }
@@ -162,23 +158,25 @@ export default class UsersController {
         );
         return response.json(true);
       }
-      // TODO - ADD LOGGER HERE
+      logger.log(LogTools.LogTypes.USER_LOG,{sourceUser: sourceUser,targetUser: user, event: LogTools.UserEditEvent.CREATE, outcome: 'success', errorMessage:null})
     } catch (error) {
-     // TODO - ADD LOGGER HERE
+      logger.log(LogTools.LogTypes.USER_LOG,{sourceUser: null,targetUser: null, event: LogTools.UserEditEvent.CREATE, outcome: 'success', errorMessage:error})
       throw new CustomException(error as CustomErrorType);
     }
   }
 
   public async updateUser({ request, response }: HttpContextContract) {
     try {
-      const user = request.body() as IUser;
+      //De-structuring the request body to handle the source and target user
+      const {user, sourceUser} = request.only(['user', 'sourceUser']) as {
+        user:IUser
+        sourceUser:IUser
+      }
       const { userService } = this.initializeServices();
       const result = await userService.updateUser(user);
       if (result) {
-        /*appLogger("user_log", {
-          status: "success",
-          message: `Prospective ${user.fullName} approved and updated into a full user`,
-        } as genericLogData);*/
+        const customMessage = `Prospective ${user.fullName} approved and updated into a full user`
+        logger.log(LogTools.LogTypes.USER_LOG,{sourceUser: sourceUser,targetUser: user, event: LogTools.UserEditEvent.UPDATE, outcome: 'success', errorMessage:null, customMessage: customMessage})
       }
       const mailController = new MailController();
       let mailBodyMessage = `<strong>Hello ${user.fullName}, your account has been approved. You can now log in to your account. / Bonjour ${user.fullName}, votre compte a été approuvé. Vous pouvez maintenant vous connecter à votre compte.</strong>`;
@@ -195,6 +193,7 @@ export default class UsersController {
       );
       return response.json(true);
     } catch (error) {
+      logger.log(LogTools.LogTypes.USER_LOG,{sourceUser:null,targetUser:null, event: LogTools.UserEditEvent.UPDATE, outcome: 'fail', errorMessage:error})
       throw new CustomException(error as CustomErrorType);
     }
   }

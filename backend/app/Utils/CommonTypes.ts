@@ -51,39 +51,3 @@ export type Currency = {
 export type Currencies = {
   [key: string]: Currency;
 };
-
-export type genericLogData = {
-  status: "success" | "failed";
-  message: string;
-  event?:string;
-};
-
-export type typeOfLog =
-  | "exception_error"
-  | "database_error"
-  | "access_log"
-  | "user_log"
-  | "mail_log"
-  | { [key: string]: any };
-
-export interface logDataForm {
-  uniqueId: string;
-  type: typeOfLog;
-  timeStamp: string;
-  event: string;
-  status: string;
-  source: string;
-  target: string;
-  message: string;
-}
-
-export const defaultLog: logDataForm = {
-  uniqueId: "",
-  type: "exception_error",
-  event: "exception_error",
-  status: "not found",
-  source: "",
-  target: "",
-  message: "",
-  timeStamp: "",
-};

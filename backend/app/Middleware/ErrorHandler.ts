@@ -2,6 +2,7 @@ import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import CustomException from "App/Exceptions/CustomException";
 import { Translation, DatabaseError } from "App/Utils/CommonTypes";
 import { LogTools } from "App/Utils/AppLogger";
+import { LogManager } from "App/Utils/AppLogger";
 const databaseErrors: { [key: string]: DatabaseError } = {
   "1062": {
     en: "Duplicate record entry",
@@ -28,6 +29,8 @@ const databaseErrors: { [key: string]: DatabaseError } = {
     fr: "Impossible de supprimer ou de mettre à jour cet enregistrement, contactez l'administrateur",
   },
 };
+
+const logger = new LogManager()
 
 const handleDatabaseError = (errno: number, url: string): Translation => {
   if (errno === 1062 && url.includes("user")) {
@@ -64,13 +67,10 @@ export default class ErrorHandler {
       await next();
     } catch (error) {
       if (error instanceof CustomException) {
-        // Log or send the statusCode and type to a monitoring service
-        // Log or send the statusCode and type to a monitoring service
         const errorType = error.sqlMessage
-          ? "database_error"
-          : "exception_error";
-        //appLogger(errorType, error);
-        // Log or send the statusCode and type to a monitoring service
+          ? LogTools.LogTypes.DATABASE_ERROR
+          : LogTools.LogTypes.EXCEPTION_ERROR;
+        logger.log(errorType,{error: error})
         // Handle the response
         response.status(error.status).send({
           statusCode: error.status,

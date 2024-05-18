@@ -1,11 +1,6 @@
-import { CustomErrorType, defaultLog } from "./CommonTypes";
+import { CustomErrorType} from "./CommonTypes";
 import Application from "@ioc:Adonis/Core/Application";
 import Env from "@ioc:Adonis/Core/Env";
-import type {
-  genericLogData,
-  logDataForm,
-  typeOfLog,
-} from "App/Utils/CommonTypes";
 const pino = require("pino");
 import { Logger } from "pino";
 import Mail from "@ioc:Adonis/Addons/Mail";
@@ -17,6 +12,35 @@ import { IUser } from "App/Shared/Interfaces/IUser";
 type acceptedLogFormTypes = CustomErrorType | IUser | Users | genericLogData;
 type outcome = "success" | "fail"; // could be a boolean, but I like the readability
 
+type genericLogData = {
+  status: "success" | "failed";
+  message: string;
+  event?:string;
+};
+
+interface logDataForm {
+  uniqueId: string;
+  type: any; // TODO - Define types here?
+  timeStamp: string;
+  event: string;
+  status: string;
+  source: string;
+  target: string;
+  message: string;
+  customMessage: string;
+}
+
+const defaultLog: logDataForm = {
+  uniqueId: "",
+  type: "exception_error",
+  timeStamp: "",
+  event: "exception_error",
+  status: "not found",
+  source: "",
+  target: "",
+  message: "",
+  customMessage: "",
+};
 //Wrapping this in a namespace to make exports easier. This way we have all we need to use the log system inside of here
 //No need to guess what you have to import
 export namespace LogTools {
@@ -36,6 +60,7 @@ export namespace LogTools {
     DATABASE_ERROR = "database_error",
     ACCESS_LOG = "access_log",
     USER_LOG = "user_log",
+    CUSTOM_LOG = "custom_log",
   }
 }
 const senderEmail = Env.get("SMTP_SENDER_ADDRESS");
@@ -93,7 +118,7 @@ async function handleLoggerErrors(data?: string): Promise<void> {
 //Interfaces for each log type (containing all the info we need to gather for each log type)
 
 interface ExceptionAndDatabaseLogParams {
-  logData: CustomErrorType;
+  error: CustomErrorType;
   customMessage?: string;
 }
 
@@ -114,8 +139,18 @@ interface UserLogParams {
   customMessage?: string;
 }
 
+interface CustomLogParams{
+  type:string
+  event?: string;
+  status?: string;
+  source?: string;
+  target?: string;
+  message?: string;
+  customMessage?: string;
+}
+
 export class LogManager {
-  private logger = pino(makeTransport());
+  private logger: Logger = pino(makeTransport());
 
   //Function overload assures that the correct logData type is being passed for the correct log type
 
@@ -126,6 +161,7 @@ export class LogManager {
   ): void;
   log(type: LogTools.LogTypes.ACCESS_LOG, params: AcessLogParams): void;
   log(type: LogTools.LogTypes.USER_LOG, params: UserLogParams): void;
+  log(type:LogTools.LogTypes.CUSTOM_LOG, params:CustomLogParams): void;
 
   //Overload implementation
   // replace any for the accepted interfaces?
@@ -134,10 +170,8 @@ export class LogManager {
       await confirmErrorLogFile() // TODO - Check if this is necessary
       switch (type) {
         case LogTools.LogTypes.EXCEPTION_ERROR:
-          this.ExceptionErrorLogHandler(params);
-          break;
         case LogTools.LogTypes.DATABASE_ERROR:
-          this.DatabaseErrorHandler(params);
+          this.ExceptionAndDatabaseErrorLogHandler(type, params);
           break;
         case LogTools.LogTypes.ACCESS_LOG:
           this.AccessLogHandler(params);
@@ -145,17 +179,17 @@ export class LogManager {
         case LogTools.LogTypes.USER_LOG:
           this.UserLogHandler(params);
           break;
+        case LogTools.LogTypes.CUSTOM_LOG:
+          this.CustomLogHandler(params)
       }
     }
     catch(error){
       handleError(error, null) //TODO - Handle this null, replace for the form data?
     }
-    
-   
   }
 
   //Base log for every log data form
- createBaseLog(): logDataForm {
+ private createBaseLog(): logDataForm {
   return {
     ...defaultLog,
     timeStamp: new Date().toISOString(),
@@ -164,26 +198,18 @@ export class LogManager {
 }
 
 // Log Handler Implementations
-  private ExceptionErrorLogHandler(params: ExceptionAndDatabaseLogParams) {
+  private ExceptionAndDatabaseErrorLogHandler(type: LogTools.LogTypes.EXCEPTION_ERROR | LogTools.LogTypes.DATABASE_ERROR ,params: ExceptionAndDatabaseLogParams) {
     const log: logDataForm = this.createBaseLog();
-    log.type = "exception_error";
-    log.event = "exception_error";
+    LogTools.LogTypes.EXCEPTION_ERROR
+    log.type = type === LogTools.LogTypes.EXCEPTION_ERROR ? "exception_error" : "database_error";
+    log.event = type === LogTools.LogTypes.EXCEPTION_ERROR ? "exception_error" : "database_error";
     log.status = "system error";
-    log.message = params.logData.message;
-    this.logger.error({ rotaryLog: log });
-  }
-
-  private DatabaseErrorHandler(params: ExceptionAndDatabaseLogParams) {
-    const log: logDataForm = this.createBaseLog();
-    log.type = "database_error";
-    log.event = "database_error";
-    log.status = "system error";
-    log.message = params.logData.sqlMessage ?? params.logData.message;
+    log.message = type === LogTools.LogTypes.EXCEPTION_ERROR ? params.error.message : (params.error.sqlMessage ?? params.error.message);
+    log.customMessage = params.customMessage?? ''
     this.logger.error({ rotaryLog: log });
   }
 
   private AccessLogHandler(params: AcessLogParams) {
-    //Should this error message be of type any? How do I know what's coming?
     const log: logDataForm = this.createBaseLog();
     log.type = "access_log";
     log.target = "system";
@@ -214,6 +240,7 @@ export class LogManager {
         }
         break;
     }
+    log.customMessage = params.customMessage?? ''
     //Execute log
     this.logger.info({ rotaryLog: log });
   }
@@ -224,17 +251,31 @@ export class LogManager {
     log.event = params.event;
     log.status = params.outcome;
     log.source = params.sourceUser
-      ? params.sourceUser.fullName
-      : "No source user provided"; // change to userId?
+      ? params.sourceUser.fullName // change to userId?
+      : "No source user provided"; 
     log.target = params.targetUser
-      ? params.targetUser.fullName
-      : "No target user provided"; // change to userId?
+      ? params.targetUser.fullName // change to userId?
+      : "No target user provided"; 
     log.message === params.errorMessage
       ? `Error: ${params.errorMessage}`
       : "No error message provided";
+    log.customMessage = params.customMessage?? ''
     this.logger.info({ rotaryLog: log });
   }
+
+  private CustomLogHandler(params: CustomLogParams){
+    const log: logDataForm = this.createBaseLog();
+    log.type = "user_log";
+    log.event = params.event?? ''
+    log.status = params.status?? ''
+    log.source = params.source?? ''
+    log.target = params.target?? ''
+    log.message = params.message?? ''
+    log.customMessage = params.customMessage?? ''
+    this.logger.info({ rotaryLog: log })
+  }
 }
+
 
 function makeTransport() {
   const transport = pino.transport({
