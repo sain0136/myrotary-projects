@@ -74,7 +74,7 @@ console.log("destination for log file", destination);
 const errorFile =
   environment === "development"
     ? "appLoggerErrorsDev.txt"
-    : "appLoggerErrors.txt";
+    : "appLoggerErrors.txt";// TODO - change this to an env variable
 const fileExtension = environment === "development" ? "ts" : "js";
 const pathToTransport = Application.makePath(
   `app/Utils/customTransport.${fileExtension}`
