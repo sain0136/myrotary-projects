@@ -2,19 +2,18 @@ import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import { DateTime } from "luxon";
 import CustomException from "App/Exceptions/CustomException";
 import Session from "App/Models/Session";
-import { appLogger } from "App/Utils/AppLogger";
-import { genericLogData } from "App/Utils/CommonTypes";
 
 export default class Authorize {
   public async handle(
     { session, request }: HttpContextContract,
     next: () => Promise<void>
   ) {
-    // if (session.get("userIsLoggedIn")) {
-    // let lastApiCallTimeStamp = session.get("lastApiCallTimeStamp");
-    // let now = DateTime.now().toMillis();
-    // const thirtyMinutesInMilliseconds = 1800000;
-    // if (now - lastApiCallTimeStamp > thirtyMinutesInMilliseconds) {
+    const isLogoutRoute = request. url().includes("/logout");
+    if (isLogoutRoute) {
+      // do not authorize logout route
+      await next();
+      return;
+    }
     let sessionId: string | undefined = undefined;
     if (session.get("session_id")) {
       sessionId = session.get("session_id");
@@ -22,7 +21,17 @@ export default class Authorize {
       sessionId = request.qs().sid;
     }
     if (sessionId) {
-      const userSession = await Session.findByOrFail("session_id", sessionId);
+      let userSession: Session;
+      try {
+        userSession = await Session.findByOrFail("session_id", sessionId);
+      } catch (error) {
+        //TODO log Error session not found for this user who did have SID from frontend or cookie
+        const status = 601;
+        throw new CustomException({
+          message: "Session not found",
+          status,
+        });
+      }
       let now = DateTime.now();
       let lastActivityTimestamp = DateTime.fromMillis(
         Number(userSession.lastActivityTimestamp)
@@ -34,17 +43,13 @@ export default class Authorize {
         const message =
           "You were logged out due to inactivity. Please login again.";
         try {
+          // delete the session for the user in db and session cookie
           if (userSession) {
             await userSession.delete();
           }
-
           session.clear();
         } catch (error) {
-          const log: genericLogData = {
-            status: "failed",
-            message: `Error deleting session for user timed out due to inactivity`,
-          };
-          appLogger("access_log", log);
+          //TODO log Error deleting session for user timed out due to inactivity
         }
         const status = 601;
         throw new CustomException({
@@ -54,21 +59,23 @@ export default class Authorize {
       } else {
         // update the lastActivityTimestamp in the session log
         try {
-          if (sessionId) {
-            const sessionLog = await Session.findByOrFail(
-              "session_id",
-              sessionId
-            );
-            await sessionLog
-              .merge({ lastActivityTimestamp: BigInt(now.toMillis()) })
-              .save();
-            // session.put("lastApiCallTimeStamp", now);
+          const userSession = await Session.findByOrFail(
+            "session_id",
+            sessionId
+          );
+          if (!userSession) {
           }
+          await userSession
+            .merge({ lastActivityTimestamp: BigInt(now.toMillis()) })
+            .save();
+            await next();
         } catch (error) {
-          //TODO log the error in app logger that a session log was not found
-          await next();
+          //TODO log the error in app logger that a session log was not found for the user
+          throw new CustomException({
+            message: "Session not found",
+            status: 601,
+          });
         }
-        await next();
       }
     } else {
       await next();
