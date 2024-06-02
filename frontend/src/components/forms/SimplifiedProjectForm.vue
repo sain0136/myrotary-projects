@@ -900,7 +900,7 @@ const setClubId = (clubId: number) => {
           useLoggedInUserStore().loggedInUser.district_id ||
           useLoggedInDistrict().loggedInDistrict.district_id
         "
-        :role="'superUser'"
+        :role="useLoggedInUserStore().getLoggedInUserRole()"
         @updateDistrictId="(districtId: number) => setDistrictId(districtId)"
         @update-club-id="(clubId: number) =>  setClubId(clubId)"
       />
