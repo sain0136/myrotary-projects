@@ -22,7 +22,7 @@ export default class DistrictsService {
   }
 
   public async updateDistrict(district: IDistrict) {
-    await this.districtsRepositories.updateDistrict(district);
+    return await this.districtsRepositories.updateDistrict(district);
   }
 
   public async getById(id: number) {

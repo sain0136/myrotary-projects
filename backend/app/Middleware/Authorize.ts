@@ -13,8 +13,9 @@ export default class Authorize {
     { session, request }: HttpContextContract,
     next: () => Promise<void>
   ) {
-    const isLogoutRoute = request. url().includes("/logout");
-    if (isLogoutRoute) {
+    const exemptroutes = ["getAllDistricts", "logout", "getAllProjects", "getRotaryYears"];
+    const route = request.url().split("/").pop();
+    if (exemptroutes.includes(route as string)) {
       // do not authorize logout route
       await next();
       return;
@@ -69,11 +70,11 @@ export default class Authorize {
             sessionId
           );
           if (!userSession) {
+            throw new Error("Session not found");
           }
           await userSession
             .merge({ lastActivityTimestamp: BigInt(now.toMillis()) })
             .save();
-            await next();
         } catch (error) {
           //TODO log the error in app logger that a session log was not found for the user
           throw new CustomException({
@@ -82,6 +83,7 @@ export default class Authorize {
           });
         }
       }
+      await next();
     } else {
       await next();
     }

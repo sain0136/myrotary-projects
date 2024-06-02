@@ -46,7 +46,7 @@ export type formType =
   | "myProfile"
   | "clubAdmin"
   | "districtAdmin"
-  | "newAccount"
+  | "newAccount" // new account is for when a user is creating an account for the first time for prospective user
   | null;
 
 /* Data */
@@ -458,6 +458,14 @@ const choosenDistrictError = computed((): string => {
         v-model="user.role_type"
         :label="langTranslations.roleLabel"
         :options="districtRole.filter((role) => role !== 'Webmaster')"
+        :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined"
+      />
+      <BaseSelect
+        v-if="formType === 'clubAdmin'"
+        class="w-1/2"
+        v-model="user.role_type"
+        :label="langTranslations.roleLabel"
+        :options="clubRoles.filter((role) => role !== 'Guest')"
         :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined"
       />
       <BaseSelect

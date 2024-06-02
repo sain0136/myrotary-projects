@@ -29,7 +29,7 @@ export default class DistrictsRepositories {
     });
   }
 
-  public async updateDistrict(district: IDistrict) {
+  public async updateDistrict(district: IDistrict): Promise<Districts> {
     const currentDistrict = await Districts.findOrFail(district.district_id);
     await currentDistrict
       .merge({
@@ -42,6 +42,9 @@ export default class DistrictsRepositories {
         districtDetails: JSON.stringify(district.district_details),
       })
       .save();
+    const updatedDistrict = await Districts.findOrFail(district.district_id);
+
+    return updatedDistrict;
   }
 
   public async getById(id: number): Promise<Districts> {

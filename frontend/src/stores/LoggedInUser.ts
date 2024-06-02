@@ -5,12 +5,13 @@ import User from "@/utils/classes/User";
 
 import { UsersApi } from "@/api/services/UserApi";
 import { ApiClient } from "@/api/ApiClient";
+import type { ClubRole, DistrictRole } from "@/utils/types/commonTypes";
 
 export const useLoggedInUserStore = defineStore(
   "loggedInUser",
   () => {
     const loggedInUser: IUser = reactive(new User());
-    const SID = ref("");
+    const SID = ref<string | null>("");
     const isUserLoggedIn = ref(false);
 
     function setLoggedInUser(user: IUser, sid: string) {
@@ -24,18 +25,23 @@ export const useLoggedInUserStore = defineStore(
       const usersApi = new UsersApi(new ApiClient());
       await usersApi.logoutUser(loggedInUser);
       isUserLoggedIn.value = false;
+      SID.value = null;
       Object.assign(loggedInUser, new User());
     }
 
-    function getLoggedInUserRole() {
-      if (!loggedInUser) return;
-      if (loggedInUser.user_id === 2) {
-        return "Webmaster";
+    function getLoggedInUserRole():
+      | DistrictRole
+      | ClubRole
+      | "SuperAdmin"
+      | "" {
+      if (!loggedInUser) return "";
+      if (loggedInUser.user_type === "SUPER") {
+        return "SuperAdmin";
       }
       if (loggedInUser.user_type === "CLUB") {
-        return loggedInUser.role;
+        return loggedInUser.role as ClubRole;
       } else {
-        return loggedInUser.role;
+        return loggedInUser.role as DistrictRole;
       }
     }
 
