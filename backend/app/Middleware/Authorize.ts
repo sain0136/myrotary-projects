@@ -7,6 +7,7 @@ import { LogManager } from "App/Utils/AppLogger";
 
 const logger = new LogManager()
 
+
 export default class Authorize {
   public async handle(
     { session, request }: HttpContextContract,

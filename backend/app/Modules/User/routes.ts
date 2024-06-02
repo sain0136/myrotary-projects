@@ -8,3 +8,4 @@ Route.post("user/create/", "UsersController.createUser");
 Route.post("user/update/", "UsersController.updateUser");
 Route.post("user/getuser/", "UsersController.getUser");
 Route.post("user/delete/", "UsersController.deleteUser");
+Route.post("user/deleteProspectUser/", "UsersController.deleteProspectUser");
