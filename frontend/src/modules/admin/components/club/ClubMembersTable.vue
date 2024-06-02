@@ -193,7 +193,7 @@ const createNewClubMember = () => {
     router.push({
       name: "UserAddEdit",
       query: {
-        formType: "DistrictAdmin",
+        formType: 'districtAdmin',
         userType: "clubUser",
         clubId: chosenId.value,
       },

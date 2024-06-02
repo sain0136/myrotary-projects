@@ -28,7 +28,7 @@ export const hideAprovalTab = (projectId: number | null) => {
 };
 
 export const logoutUser = async () => {
-  router.push({ name: "Home" });
+  router.push({ name: "UserLogin" });
   await userStore.logOut();
   await districtStore.resetDistrict();
   await clubStore.resetClub();

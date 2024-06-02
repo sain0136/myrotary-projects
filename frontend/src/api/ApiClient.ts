@@ -10,11 +10,7 @@ import type { IUser } from "@/utils/interfaces/IUser";
 export class ApiClient {
   private baseURL = import.meta.env.VITE_BASE_API_URL;
   private sid: string | null = null;
-  constructor() {
-    this.sid = useLoggedInUserStore().$state.isUserLoggedIn
-      ? useLoggedInUserStore().$state.SID
-      : null;
-  }
+  constructor() {}
 
   // TODO: add Return Type in future
   public async fetchWrapper(
@@ -23,6 +19,9 @@ export class ApiClient {
     data?: object | string | FormData | null,
     sourceUser?: IUser // The user who is making the api call
   ): Promise<any | ICustomError> {
+    this.sid = useLoggedInUserStore().$state.isUserLoggedIn
+      ? useLoggedInUserStore().$state.SID
+      : null;
     const url = `${this.baseURL}${endpoint}${
       this.sid ? `?sid=${this.sid}` : ""
     }`;
@@ -62,6 +61,9 @@ export class ApiClient {
     data?: object | string | FormData | null,
     headers: Record<string, string> = {}
   ): Promise<any | ICustomError> {
+    this.sid = useLoggedInUserStore().$state.isUserLoggedIn
+      ? useLoggedInUserStore().$state.SID
+      : null;
     const url = `${this.baseURL}${endpoint}${
       this.sid ? `?sid=${this.sid}` : ""
     }`;

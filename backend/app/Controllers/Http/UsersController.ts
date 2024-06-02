@@ -3,18 +3,10 @@ import UserRepositories from "App/Repositories/UserRepositories";
 import UserService from "App/Services/UserService";
 import CustomException from "App/Exceptions/CustomException";
 import { CustomErrorType} from "App/Utils/CommonTypes";
-import { DateTime } from "luxon";
 import { IUser } from "App/Shared/Interfaces/IUser";
 import { LogTools } from "App/Utils/AppLogger";
 import MailController from "App/Controllers/Http/MailController";
 import Session from "App/Models/Session";
-import Users from "App/Models/Users";
-import { SessionContract } from "@ioc:Adonis/Addons/Session";
-import { RequestContract } from "@ioc:Adonis/Core/Request";
-import { LogManager } from "App/Utils/AppLogger";
-import { errorTranslations } from "App/Translations/Translations";
-
-const logger = new LogManager()
 
 export default class UsersController {
   private initializeServices() {
@@ -123,7 +115,7 @@ export default class UsersController {
     }
   }
 
-  public async createUser({ request, response }: HttpContextContract) {
+  public async createUser({ request }: HttpContextContract) {
     try {
       //De-structuring the request body to handle the source and target user
       const {user, sourceUser} = request.only(['user', 'sourceUser']) as {
@@ -156,7 +148,6 @@ export default class UsersController {
           },
           mailBodyMessage
         );
-        return response.json(true);
       }
       logger.log(LogTools.LogTypes.USER_LOG,{sourceUser: sourceUser,targetUser: user, event: LogTools.UserEditEvent.CREATE, outcome: 'success', errorMessage:null})
     } catch (error) {

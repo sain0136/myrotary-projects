@@ -74,14 +74,15 @@ export default class UserRepositories {
         });
       }
       const userData = await this.addUserRoles(user);
+      const club = await Clubs.findOrFail(userData.user.clubId);
       const newSession = await Session.create({
         loginTimestamp: BigInt(DateTime.now().toMillis()),
         lastActivityTimestamp: BigInt(DateTime.now().toMillis()),
         fullName: userData.user.fullName,
         email: userData.user.email,
         userId: userData.user.userId,
-        districtId: userData.user.districtId || 0,
-        clubId: userData.user.clubId || 0,
+        districtId: userData.user.districtId || club.districtId,
+        clubId: userData.user.clubId,
       });
       return { userData, newSession };
     } else {
@@ -119,6 +120,7 @@ export default class UserRepositories {
     }
     // User should Always have a clubid at least
     const club = await Clubs.findOrFail(user.clubId);
+    district = await Districts.findOrFail(club.districtId);
     return {
       user,
       district,

@@ -1,4 +1,5 @@
 export interface Translation {
+  createProjectOnBehalfLabel: string;
   contactPage: {
     calloutMessage: string;
     calloutDescription: string;
@@ -252,9 +253,9 @@ export interface Translation {
     firstNameLabel: string;
     lastNameLabel: string;
   };
-  prospectUserForm:{
-    districtLabel:string
-  }
+  prospectUserForm: {
+    districtLabel: string;
+  };
   districtForm: {
     districtNameLabel: string;
     govLabel: string;
@@ -280,9 +281,9 @@ export interface Translation {
   french: string;
   toastError: string;
   toastSuccess: string;
-  toastSucessCreateProspect: string
-  toastSucessApproveProspect:string
-  toastDenyProspect: string
+  toastSucessCreateProspect: string;
+  toastSucessApproveProspect: string;
+  toastDenyProspect: string;
   toastWarning: string;
   toastInfo: string;
   notfoundText: string;
@@ -354,14 +355,17 @@ export interface Translation {
   fileUploadLabelFormats: string;
   myRotaryProjectsLabel: string;
   createAccountLabel: string;
-  createNewAccountBanner:string;
+  createNewAccountBanner: string;
   prospectUserLabel: string;
-  noProspectUserAvailable:string;
+  noProspectUserAvailable: string;
 }
 
 export const translations: Record<string, Translation> = {
   en: {
-    sessionTimeoutBody:"You were logged out due to inactivity. Please login again.",
+    createProjectOnBehalfLabel:
+      "If you are creating a project on behalf of another club, select the district and club.",
+    sessionTimeoutBody:
+      "You were logged out due to inactivity. Please login again.",
     contactPage: {
       calloutMessage: "Send Us A Message",
       calloutDescription:
@@ -635,8 +639,8 @@ export const translations: Record<string, Translation> = {
       firstNameLabel: "First Name",
       lastNameLabel: "Last Name",
     },
-    prospectUserForm:{
-      districtLabel: "District"
+    prospectUserForm: {
+      districtLabel: "District",
     },
     userFormHeader: "User Form",
     roleLabel: "Role",
@@ -684,7 +688,8 @@ export const translations: Record<string, Translation> = {
     french: "French",
     toastError: "Error occurred",
     toastSuccess: "Operation successful",
-    toastSucessCreateProspect:"Sucess! Your request has been sent to the administrator for approval",
+    toastSucessCreateProspect:
+      "Sucess! Your request has been sent to the administrator for approval",
     toastSucessApproveProspect: "The user has been successfully approved!",
     toastDenyProspect: "User denied. An e-mail notification was sent",
     toastWarning: "Warning",
@@ -761,16 +766,19 @@ export const translations: Record<string, Translation> = {
     myRotaryProjectsLabel: "MyRotaryProjects",
     createAccountLabel: "Don't have an account? Sign Up here!",
     createNewAccountBanner: "Register",
-    prospectUserLabel: "Prospect Users",  
-    noProspectUserAvailable: "There are no prospective users at this moment"
+    prospectUserLabel: "Prospect Users",
+    noProspectUserAvailable: "There are no prospective users at this moment",
   },
   fr: {
-    sessionTimeoutBody:"Vous avez été déconnecté suite à l'inactivité. Veuillez vous reconnecter.",
+    createProjectOnBehalfLabel:
+      "Si vous créez un projet au nom d'un autre club, sélectionnez le district et le club.",
+    sessionTimeoutBody:
+      "Vous avez été déconnecté suite à l'inactivité. Veuillez vous reconnecter.",
     contactPage: {
       calloutMessage: "Envoyez-nous un message",
       calloutDescription:
         "Vous avez des questions sur l'adhésion à Rotary ou sur les promesses? Remplissez le formulaire ci-dessous pour poser des questions sur Rotary, comment faire une promesse ou comment utiliser/naviguer sur ce site. Nous sommes ravis de vous entendre.",
-        contactDetailsTitle: "Coordonnées",
+      contactDetailsTitle: "Coordonnées",
     },
     totalPledgesLabel: "Promesses totales:",
     totalBudgetsLabel: "Budget Allocation pour les projets:",
@@ -1045,8 +1053,8 @@ export const translations: Record<string, Translation> = {
       firstNameLabel: "Prénom",
       lastNameLabel: "Nom de Famillle",
     },
-    prospectUserForm:{
-      districtLabel: "District"
+    prospectUserForm: {
+      districtLabel: "District",
     },
     userFormHeader: "User Form",
     roleLabel: "Role",
@@ -1096,9 +1104,11 @@ export const translations: Record<string, Translation> = {
     french: "Français",
     toastError: "Une erreur s'est produite",
     toastSuccess: "Opération réussie",
-    toastSucessCreateProspect: "Sucess! Votre demande a été envoyée à l’administrateur pour approbation",
+    toastSucessCreateProspect:
+      "Sucess! Votre demande a été envoyée à l’administrateur pour approbation",
     toastSucessApproveProspect: "L’utilisateur a été approuvé avec succès!",
-    toastDenyProspect: "Utilisateur refusé. Une notification par e-mail a été envoyée",
+    toastDenyProspect:
+      "Utilisateur refusé. Une notification par e-mail a été envoyée",
     toastWarning: "Avertissement",
     toastInfo: "Information",
     notfoundText: "La page que vous cherchez n'a pas pu être trouvée",
@@ -1173,8 +1183,9 @@ export const translations: Record<string, Translation> = {
     fileUploadLabelFormats: "PNG, JPG ou GIF (MAX. 10 GB).",
     myRotaryProjectsLabel: "MyRotaryProjects",
     createAccountLabel: "Vous n'avez pas de compte ? Inscrivez-vous ici !",
-    createNewAccountBanner:"S'inscrire",
-    prospectUserLabel:"Inscriptions en attente",
-    noProspectUserAvailable: "Il n'y a pas d'utilisateurs potentiels pour le moment"
+    createNewAccountBanner: "S'inscrire",
+    prospectUserLabel: "Inscriptions en attente",
+    noProspectUserAvailable:
+      "Il n'y a pas d'utilisateurs potentiels pour le moment",
   },
 };

@@ -6,10 +6,10 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { computed, onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import District from "@/utils/classes/District";
-import { useVuelidate, type ValidationRuleWithParams } from "@vuelidate/core";
+import { useVuelidate } from "@vuelidate/core";
 import router from "@/router";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import H3 from "@/components/headings/H3.vue";
@@ -34,9 +34,10 @@ import { useRoute } from "vue-router";
 import type { uploadFileData, uploadedFile } from "@/utils/types/commonTypes";
 import type { CustomErrors } from "@/utils/classes/CustomErrors";
 import { UploadsApi } from "@/api/services/UploadsApi";
-const uploadsApi = new UploadsApi(new ApiClient());
+import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
 
 /* Data */
+const uploadsApi = new UploadsApi(new ApiClient());
 const districtFilesReqData = {
   databaseTarget: "district-report-files",
   storagePath: "./districts",
@@ -281,9 +282,9 @@ const validateAndSubmit = async () => {
     return;
   }
   try {
-    //TODO Should i udate store data?
     if (isEdit.value) {
-      await districtApi.updateDistrict(district);
+     const response =  await districtApi.updateDistrict(district);
+     useLoggedInDistrict().setLoggedInDistrict(response);
     } else {
       await districtApi.createDistrict(district);
     }

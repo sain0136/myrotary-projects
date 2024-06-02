@@ -52,6 +52,9 @@ import ErrorValidation from "@/components/forms/ErrorValidation.vue";
 import { hideAprovalTab, projectDisabledStatus } from "@/utils/utils";
 import { type ProjectStatus } from "@/utils/types/commonTypes";
 import { processAreaOfFocus } from "@/utils/utils";
+import ProjectOverride from "@/components/forms/components/ProjectOverride.vue";
+import { useLoggedInClub } from "@/stores/LoggedInClub";
+import { districtRoles } from "@/utils/types/commonTypes";
 
 /* Data */
 const showModal = ref({
@@ -173,7 +176,8 @@ onMounted(async () => {
         project.club_id = useLoggedInUserStore().loggedInUser.club_id;
         project.district_id =
           useLoggedInUserStore().loggedInUser.district_id ||
-          useLoggedInDistrict().loggedInDistrict.district_id;
+          useLoggedInDistrict().loggedInDistrict.district_id ||
+          useLoggedInClub().loggedInClub.district_id;
         originalAmountofAnitcipated.value = Dinero({
           amount: project.anticipated_funding + project.total_pledges,
         });
@@ -793,6 +797,14 @@ const setActiveTab = (tabName: string) => {
   activeTab.value = tabName;
   sessionStorage.setItem("projectsLastActiveTab", tabName);
 };
+
+const setDistrictId = (districtId: number) => {
+  project.district_id = districtId;
+};
+
+const setClubId = (clubId: number) => {
+  project.club_id = clubId;
+};
 </script>
 
 <template>
@@ -882,6 +894,16 @@ const setActiveTab = (tabName: string) => {
       class="fluid-container pt-8 p-2"
       v-if="activeTab === 'form'"
     >
+    <ProjectOverride
+        v-if="useLoggedInUserStore().getLoggedInUserRole() === 'SuperAdmin' || districtRoles.includes(useLoggedInUserStore().getLoggedInUserRole() as string) "
+        :district-id-parent-value="
+          useLoggedInUserStore().loggedInUser.district_id ||
+          useLoggedInDistrict().loggedInDistrict.district_id
+        "
+        :role="'superUser'"
+        @updateDistrictId="(districtId: number) => setDistrictId(districtId)"
+        @update-club-id="(clubId: number) =>  setClubId(clubId)"
+      />
       <ul v-if="!viewerMode" class="my-8 px-4">
         <li
           class="list-disc"

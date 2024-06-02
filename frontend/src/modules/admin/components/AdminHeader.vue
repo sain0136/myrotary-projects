@@ -233,7 +233,7 @@ const logoutAdmin = async () => {
               </li>
               <li>
                 <router-link
-                  :to="{ name: 'Home' }"
+                  :to="{ name: 'UserLogin' }"
                   @click="logoutAdmin"
                   href="#"
                   class="block py-2 px-4 text-sm hover:bg-gray-100 hover:text-nearBlack"

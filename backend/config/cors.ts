@@ -15,6 +15,7 @@ const origin =
         "https://test2.myrotaryprojects.org",
         "https://test1.myrotaryprojects.org/",
         "https://test1.myrotaryprojects.org",
+        "https://myrotaryprojects.org/",
       ]
     : "*";
 const corsConfig: CorsConfig = {

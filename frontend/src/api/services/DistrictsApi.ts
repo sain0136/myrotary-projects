@@ -30,7 +30,7 @@ export class DistrictApi {
     );
   }
 
-  public async updateDistrict(district: IDistrict): Promise<boolean> {
+  public async updateDistrict(district: IDistrict): Promise<IDistrict> {
     return await this.apiClient.fetchWrapper(
       "POST",
       `${BASE_ROUTE}/updateDistrict`,

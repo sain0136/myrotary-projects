@@ -15,7 +15,7 @@ import { CustomErrors } from "@/utils/classes/CustomErrors";
 import ClubProject from "@/utils/classes/ClubProject";
 import useVuelidate from "@vuelidate/core";
 import Banners from "@/components/banners/Banners.vue";
-
+import { districtRoles } from "@/utils/types/commonTypes";
 import {
   helpers,
   maxLength,
@@ -45,6 +45,8 @@ import ProjectApproval from "@/components/forms/tabs/ProjectApproval.vue";
 import H1 from "@/components/headings/H1.vue";
 import { hideAprovalTab, projectDisabledStatus } from "@/utils/utils";
 import { processAreaOfFocus } from "@/utils/utils";
+import ProjectOverride from "@/components/forms/components/ProjectOverride.vue";
+import { useLoggedInClub } from "@/stores/LoggedInClub";
 
 /* Data */
 const viewerMode = ref(false);
@@ -117,7 +119,6 @@ const activeTab = ref(
     ? sessionStorage.getItem("projectsLastActiveTab")
     : "form"
 );
-// TODO
 
 /* Hooks */
 onMounted(async () => {
@@ -129,13 +130,15 @@ onMounted(async () => {
     if (projectId) {
       await getProject();
     } else {
+      console.log(useLoggedInDistrict().loggedInDistrict.district_id)
       try {
         project.grant_type = grantType.CLUBPROJECT;
         project.created_by = useLoggedInUserStore().loggedInUser.user_id;
         project.club_id = useLoggedInUserStore().loggedInUser.club_id;
         project.district_id =
           useLoggedInUserStore().loggedInUser.district_id ||
-          useLoggedInDistrict().loggedInDistrict.district_id;
+          useLoggedInDistrict().loggedInDistrict.district_id ||
+          useLoggedInClub().loggedInClub.district_id;
       } catch (error) {
         throw new CustomErrors(900, "Project Erorr", {
           en: langTranslations.value.projectFormLabels
@@ -370,6 +373,14 @@ const setActiveTab = (tabName: string) => {
   activeTab.value = tabName;
   sessionStorage.setItem("projectsLastActiveTab", tabName);
 };
+
+const setDistrictId = (districtId: number) => {
+  project.district_id = districtId;
+};
+
+const setClubId = (clubId: number) => {
+  project.club_id = clubId;
+};
 </script>
 
 <template>
@@ -405,6 +416,16 @@ const setActiveTab = (tabName: string) => {
       class="fluid-container pt-8 p-2"
       v-if="activeTab === 'form'"
     >
+      <ProjectOverride
+        v-if="useLoggedInUserStore().getLoggedInUserRole() === 'SuperAdmin' || districtRoles.includes(useLoggedInUserStore().getLoggedInUserRole() as string) "
+        :district-id-parent-value="
+          useLoggedInUserStore().loggedInUser.district_id ||
+          useLoggedInDistrict().loggedInDistrict.district_id
+        "
+        :role="useLoggedInUserStore().getLoggedInUserRole()"
+        @updateDistrictId="(districtId: number) => setDistrictId(districtId)"
+        @update-club-id="(clubId: number) =>  setClubId(clubId)"
+      />
       <div class="form-block">
         <BaseInput
           v-model="project.project_name"

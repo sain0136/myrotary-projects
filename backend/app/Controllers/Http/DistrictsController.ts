@@ -44,8 +44,8 @@ export default class DistrictsController {
     try {
       const district = request.body() as IDistrict;
       const { districtsService } = this.initializeServices();
-      await districtsService.updateDistrict(district);
-      return response.json(true);
+      const updatedDistrict = await districtsService.updateDistrict(district);
+      return response.json(updatedDistrict);
     } catch (error) {
       throw new CustomException(error as CustomErrorType);
     }
