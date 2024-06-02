@@ -5,6 +5,7 @@ import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import router from "@/router";
 import { useLoggedInClub } from "@/stores/LoggedInClub";
 import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
+import type { IUser } from "@/utils/interfaces/IUser";
 
 export class ApiClient {
   private baseURL = import.meta.env.VITE_BASE_API_URL;
@@ -19,7 +20,8 @@ export class ApiClient {
   public async fetchWrapper(
     method: string,
     endpoint: string,
-    data?: object | string | FormData | null
+    data?: object | string | FormData | null,
+    sourceUser?: IUser // The user who is making the api call
   ): Promise<any | ICustomError> {
     const url = `${this.baseURL}${endpoint}${
       this.sid ? `?sid=${this.sid}` : ""

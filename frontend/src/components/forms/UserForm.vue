@@ -354,7 +354,10 @@ const validateAndSubmit = async () => {
         await userApi.createProspectUser(user);
         handleSuccess(langTranslations.value.toastSucessCreateProspect, true);
       } else {
+        console.log("Is prospect before: " + user.is_prospect)
+
         await userApi.createNewUser(user);
+        console.log("Is prospect after: " + user.is_prospect)
         handleSuccess(langTranslations.value.toastSuccess);
       }
     }

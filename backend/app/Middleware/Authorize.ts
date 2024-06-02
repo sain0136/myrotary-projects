@@ -2,6 +2,11 @@ import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import { DateTime } from "luxon";
 import CustomException from "App/Exceptions/CustomException";
 import Session from "App/Models/Session";
+import { LogTools } from "App/Utils/AppLogger";
+import { LogManager } from "App/Utils/AppLogger";
+
+const logger = new LogManager()
+
 
 export default class Authorize {
   public async handle(

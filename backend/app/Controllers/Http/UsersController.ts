@@ -2,12 +2,19 @@ import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import UserRepositories from "App/Repositories/UserRepositories";
 import UserService from "App/Services/UserService";
 import CustomException from "App/Exceptions/CustomException";
-import { CustomErrorType, genericLogData } from "App/Utils/CommonTypes";
+import { CustomErrorType} from "App/Utils/CommonTypes";
 import { DateTime } from "luxon";
 import { IUser } from "App/Shared/Interfaces/IUser";
-import { appLogger } from "App/Utils/AppLogger";
+import { LogTools } from "App/Utils/AppLogger";
 import MailController from "App/Controllers/Http/MailController";
 import Session from "App/Models/Session";
+import Users from "App/Models/Users";
+import { SessionContract } from "@ioc:Adonis/Addons/Session";
+import { RequestContract } from "@ioc:Adonis/Core/Request";
+import { LogManager } from "App/Utils/AppLogger";
+import { errorTranslations } from "App/Translations/Translations";
+
+const logger = new LogManager()
 
 export default class UsersController {
   private initializeServices() {
@@ -54,10 +61,10 @@ export default class UsersController {
         session.put("userIsLoggedIn", true);
         session.put("session_id", newSession.sessionId);
       }
-      await appLogger("access_log", userData.user);
+      logger.log(LogTools.LogTypes.ACCESS_LOG,{sourceUser:userData.user,event:LogTools.UserAccessEvent.LOGIN,outcome:"success",errorMessage: null})
       return response.json({ ...userData, sid: newSession.sessionId });
     } catch (error) {
-      appLogger("access_log", error as CustomErrorType);
+      logger.log(LogTools.LogTypes.ACCESS_LOG,{sourceUser:null,event:LogTools.UserAccessEvent.LOGIN,outcome:"fail", errorMessage:error, customMessage: `Email used: ${email}`})
       throw new CustomException(error as CustomErrorType);
     }
   }
@@ -66,39 +73,43 @@ export default class UsersController {
     try {
       const user = request.body() as IUser;
       session.clear();
-
       try {
-        const foundSession = await Session.findByOrFail(
-          "user_id",
-          user.user_id
-        );
-        if (foundSession) {
-          await foundSession.delete();
+        const sessionId = this.getSessionID(session, request);
+        if (sessionId) {
+          const foundSession = await Session.findByOrFail(
+            "session_id",
+            sessionId
+          );
+          if (foundSession) {
+            await foundSession.delete();
+          }
         }
       } catch (error) {
-        const log: genericLogData = {
-          status: "failed",
-          message: `Error deleting session for user ${user.fullName} with email ${user.email}`,
-        };
-        appLogger("access_log", log);
+       logger.log(LogTools.LogTypes.ACCESS_LOG,{sourceUser: user,event: LogTools.UserAccessEvent.LOGOUT, outcome: 'fail', errorMessage:error})
       }
-
-      const log: genericLogData = {
-        status: "success",
-        message: `User ${user.fullName} with email ${user.email} logged out successfully`,
-      };
       if (!(session as any).store.isEmpty) {
-        const loggerData: genericLogData = {
-          status: "failed",
-          message: `Error logging out user ${user.fullName}. Session not cleared`,
-        };
-        appLogger("access_log", loggerData);
+        const errorMessage = `Error logging out user ${user.fullName}. Session not cleared`;
+        logger.log(LogTools.LogTypes.ACCESS_LOG,{sourceUser: user,event: LogTools.UserAccessEvent.LOGOUT, outcome: 'fail', errorMessage:errorMessage})
       }
-      appLogger("access_log", log);
+      logger.log(LogTools.LogTypes.ACCESS_LOG,{sourceUser: user,event: LogTools.UserAccessEvent.LOGOUT, outcome: 'success',errorMessage:null,customMessage:'User logged out sucessfully!'})
       return response.json({});
     } catch (error) {
+      logger.log(LogTools.LogTypes.ACCESS_LOG,{sourceUser: null,event: LogTools.UserAccessEvent.LOGOUT, outcome: 'fail', errorMessage:error})
       throw new CustomException(error as CustomErrorType);
     }
+  }
+
+  private getSessionID(
+    session: SessionContract,
+    request: RequestContract
+  ): string | undefined {
+    let sessionId: string | undefined = undefined;
+    if (session.get("session_id")) {
+      sessionId = session.get("session_id");
+    } else {
+      sessionId = request.qs().sid;
+    }
+    return sessionId;
   }
 
   public async getUser({ request, response }: HttpContextContract) {
@@ -114,19 +125,17 @@ export default class UsersController {
 
   public async createUser({ request, response }: HttpContextContract) {
     try {
-      const user = request.body() as IUser;
+      //De-structuring the request body to handle the source and target user
+      const {user, sourceUser} = request.only(['user', 'sourceUser']) as {
+        user:IUser
+        sourceUser:IUser
+      }
       const prospectUser = user.is_prospect ? true : false;
       const { userService } = this.initializeServices();
       const districtAdminsToEmail = await userService.createUser(
         user,
         prospectUser
       );
-      appLogger("user_log", {
-        status: "success",
-        message: `User ${user.fullName} created successfully.${
-          prospectUser ? " This is a prospective user." : ""
-        }`,
-      } as genericLogData);
       if (prospectUser) {
         const mailController = new MailController();
         let mailBodyMessage = `<strong>Hello ${user.fullName}, your account is pending approval. You will be notified when your account is approved. / Bonjour ${user.fullName}, votre compte est en attente d'approbation. Vous serez informé lorsque votre compte sera approuvé.</strong>`;
@@ -149,21 +158,25 @@ export default class UsersController {
         );
         return response.json(true);
       }
+      logger.log(LogTools.LogTypes.USER_LOG,{sourceUser: sourceUser,targetUser: user, event: LogTools.UserEditEvent.CREATE, outcome: 'success', errorMessage:null})
     } catch (error) {
+      logger.log(LogTools.LogTypes.USER_LOG,{sourceUser: null,targetUser: null, event: LogTools.UserEditEvent.CREATE, outcome: 'success', errorMessage:error})
       throw new CustomException(error as CustomErrorType);
     }
   }
 
   public async updateUser({ request, response }: HttpContextContract) {
     try {
-      const user = request.body() as IUser;
+      //De-structuring the request body to handle the source and target user
+      const {user, sourceUser} = request.only(['user', 'sourceUser']) as {
+        user:IUser
+        sourceUser:IUser
+      }
       const { userService } = this.initializeServices();
       const result = await userService.updateUser(user);
       if (result) {
-        appLogger("user_log", {
-          status: "success",
-          message: `Prospective ${user.fullName} approved and updated into a full user`,
-        } as genericLogData);
+        const customMessage = `Prospective ${user.fullName} approved and updated into a full user`
+        logger.log(LogTools.LogTypes.USER_LOG,{sourceUser: sourceUser,targetUser: user, event: LogTools.UserEditEvent.UPDATE, outcome: 'success', errorMessage:null, customMessage: customMessage})
       }
       const mailController = new MailController();
       let mailBodyMessage = `<strong>Hello ${user.fullName}, your account has been approved. You can now log in to your account. / Bonjour ${user.fullName}, votre compte a été approuvé. Vous pouvez maintenant vous connecter à votre compte.</strong>`;
@@ -180,6 +193,7 @@ export default class UsersController {
       );
       return response.json(true);
     } catch (error) {
+      logger.log(LogTools.LogTypes.USER_LOG,{sourceUser:null,targetUser:null, event: LogTools.UserEditEvent.UPDATE, outcome: 'fail', errorMessage:error})
       throw new CustomException(error as CustomErrorType);
     }
   }

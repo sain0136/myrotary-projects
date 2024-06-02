@@ -1,20 +1,68 @@
-import { CustomErrorType, defaultLog } from "./CommonTypes";
+import { CustomErrorType} from "./CommonTypes";
 import Application from "@ioc:Adonis/Core/Application";
 import Env from "@ioc:Adonis/Core/Env";
-import type {
-  genericLogData,
-  logDataForm,
-  typeOfLog,
-} from "App/Utils/CommonTypes";
 const pino = require("pino");
 import { Logger } from "pino";
 import Mail from "@ioc:Adonis/Addons/Mail";
 import { v4 as uuidv4 } from "uuid";
 import fs from "fs/promises";
 import Users from "App/Models/Users";
+import { IUser } from "App/Shared/Interfaces/IUser";
 
-type acceptedLogTypes = CustomErrorType | Users | genericLogData;
+type acceptedLogFormTypes = CustomErrorType | IUser | Users | genericLogData;
+type outcome = "success" | "fail"; // could be a boolean, but I like the readability
 
+type genericLogData = {
+  status: "success" | "failed";
+  message: string;
+  event?:string;
+};
+
+interface logDataForm {
+  uniqueId: string;
+  type: any; // TODO - Define types here?
+  timeStamp: string;
+  event: string;
+  status: string;
+  source: string;
+  target: string;
+  message: string;
+  customMessage: string;
+}
+
+const defaultLog: logDataForm = {
+  uniqueId: "",
+  type: "exception_error",
+  timeStamp: "",
+  event: "exception_error",
+  status: "not found",
+  source: "",
+  target: "",
+  message: "",
+  customMessage: "",
+};
+//Wrapping this in a namespace to make exports easier. This way we have all we need to use the log system inside of here
+//No need to guess what you have to import
+export namespace LogTools {
+  export enum UserAccessEvent {
+    LOGIN = "login",
+    LOGOUT = "logout",
+  }
+
+  export enum UserEditEvent {
+    CREATE = "create",
+    UPDATE = "update",
+    DELETE = "delete",
+  }
+
+  export enum LogTypes {
+    EXCEPTION_ERROR = "exception_error",
+    DATABASE_ERROR = "database_error",
+    ACCESS_LOG = "access_log",
+    USER_LOG = "user_log",
+    CUSTOM_LOG = "custom_log",
+  }
+}
 const senderEmail = Env.get("SMTP_SENDER_ADDRESS");
 const receiverEmail = Env.get("SMTP_RECEIVER_ADDRESS");
 const environment = Env.get("NODE_ENV");
@@ -26,29 +74,13 @@ console.log("destination for log file", destination);
 const errorFile =
   environment === "development"
     ? "appLoggerErrorsDev.txt"
-    : "appLoggerErrors.txt";
+    : "appLoggerErrors.txt";// TODO - change this to an env variable
 const fileExtension = environment === "development" ? "ts" : "js";
 const pathToTransport = Application.makePath(
   `app/Utils/customTransport.${fileExtension}`
 );
 
-export async function appLogger(type: typeOfLog, logData: acceptedLogTypes) {
-  try {
-    //  First confirm that the error log file exists
-    //  If it doesn't exist, create it
-    await confirmErrorLogFile();
-    //  Then create the transport
-    //  Then create the pino logger
-    const transport = makeTransport();
-    const pinoLogger = pino(transport);
-    //  Then execute the logger
-    return executeLogger(type, logData, pinoLogger);
-  } catch (error) {
-    handleError(error, logData);
-  }
-}
-
-/**
+/*
  * Handles logger errors by appending the error data to the error file and sending an email notification.
  *
  * @param {string} [data] - The error data to be appended to the error file. If not provided, a default message is used.
@@ -83,84 +115,167 @@ async function handleLoggerErrors(data?: string): Promise<void> {
   }
 }
 
-// TODO this needs to be refactored
-function executeLogger(
-  type: typeOfLog,
-  logData: acceptedLogTypes,
-  pinoLogger: Logger
-) {
-  const logId = uuidv4();
-  let log: logDataForm = defaultLog;
-  log.timeStamp = new Date().toISOString();
-  log.uniqueId = logId;
-  log.type = type;
-  switch (type) {
-    case "exception_error":
-      log.event = "exception_error";
-      log.status = "system error";
-      log.message = (logData as CustomErrorType).message;
-      pinoLogger.error({ rotaryLog: log });
-      break;
-    case "database_error":
-      log.event = "database_error";
-      log.status = "system error";
-      log.message =
-        (logData as CustomErrorType).sqlMessage ??
-        (logData as CustomErrorType).message;
-      pinoLogger.error({ rotaryLog: log });
-      break;
-    case "access_log":
-      if ((logData as Users)?.userId || (logData as Users)?.email) {
-        log.event = "login";
-        log.status = "success";
-        log.source = (logData as Users).fullName;
-        log.target = "system";
-        log.message = `${(logData as Users).fullName} logged in with email ${
-          (logData as Users).email
-        }`;
-        pinoLogger.info({ rotaryLog: log });
-      } else if ((logData as genericLogData)?.status === "success") {
-        log.event = "logout";
-        log.status = (logData as genericLogData).status.toString();
-        log.source = "";
-        log.target = "system";
-        log.message = (logData as genericLogData)
-          ? (logData as genericLogData).message
-          : `A user logged out`;
-        pinoLogger.info({ rotaryLog: log });
-      } else if ((logData as genericLogData)?.status === "failed") {
-        log.event = "logout";
-        log.status = (logData as genericLogData).status.toString();
-        log.source = "";
-        log.target = "system";
-        log.message = (logData as genericLogData)
-          ? (logData as genericLogData).message
-          : `A user failed to log out`;
-        pinoLogger.info({ rotaryLog: log });
+//Interfaces for each log type (containing all the info we need to gather for each log type)
+
+interface ExceptionAndDatabaseLogParams {
+  error: CustomErrorType;
+  customMessage?: string;
+}
+
+interface AcessLogParams {
+  sourceUser: IUser | Users | null;
+  event: LogTools.UserAccessEvent;
+  outcome: outcome;
+  errorMessage: string | null;
+  customMessage?: string;
+}
+
+interface UserLogParams {
+  sourceUser: IUser | Users | null;
+  targetUser: IUser | Users | null;
+  event: LogTools.UserEditEvent;
+  outcome: outcome;
+  errorMessage: string | null;
+  customMessage?: string;
+}
+
+interface CustomLogParams{
+  type:string
+  event?: string;
+  status?: string;
+  source?: string;
+  target?: string;
+  message?: string;
+  customMessage?: string;
+}
+
+export class LogManager {
+  private logger: Logger = pino(makeTransport());
+
+  //Function overload assures that the correct logData type is being passed for the correct log type
+
+  //Overload Signatures
+  log(
+    type: LogTools.LogTypes.EXCEPTION_ERROR | LogTools.LogTypes.DATABASE_ERROR,
+    params: ExceptionAndDatabaseLogParams
+  ): void;
+  log(type: LogTools.LogTypes.ACCESS_LOG, params: AcessLogParams): void;
+  log(type: LogTools.LogTypes.USER_LOG, params: UserLogParams): void;
+  log(type:LogTools.LogTypes.CUSTOM_LOG, params:CustomLogParams): void;
+
+  //Overload implementation
+  // replace any for the accepted interfaces?
+  async log(type: LogTools.LogTypes, params: any) { // TODO - Check if async keyword needs to be present on the signatures too
+    try{
+      await confirmErrorLogFile() // TODO - Check if this is necessary
+      switch (type) {
+        case LogTools.LogTypes.EXCEPTION_ERROR:
+        case LogTools.LogTypes.DATABASE_ERROR:
+          this.ExceptionAndDatabaseErrorLogHandler(type, params);
+          break;
+        case LogTools.LogTypes.ACCESS_LOG:
+          this.AccessLogHandler(params);
+          break;
+        case LogTools.LogTypes.USER_LOG:
+          this.UserLogHandler(params);
+          break;
+        case LogTools.LogTypes.CUSTOM_LOG:
+          this.CustomLogHandler(params)
       }
-    case "user_log":
-      if (logData as genericLogData) {
-        log.event = "user_log";
-        log.status = (logData as genericLogData)?.status?.toString() ?? "Error";
-        log.source = "system";
-        log.target = "system";
-        log.message = (logData as genericLogData).message;
-        pinoLogger.info({ rotaryLog: log });
-      }
-      break;
-    default:
-      if (logData as genericLogData) {
-        log.event = (logData as genericLogData).event ?? "system";
-        log.status = (logData as genericLogData).status.toString();
-        log.source = "system";
-        log.target = "system";
-        log.message = (logData as genericLogData).message;
-      } else {
-        pinoLogger.error({ rotaryLog: log });
-      }
-      break;
+    }
+    catch(error){
+      handleError(error, null) //TODO - Handle this null, replace for the form data?
+    }
+  }
+
+  //Base log for every log data form
+ private createBaseLog(): logDataForm {
+  return {
+    ...defaultLog,
+    timeStamp: new Date().toISOString(),
+    uniqueId: uuidv4(),
+  };
+}
+
+// Log Handler Implementations
+  private ExceptionAndDatabaseErrorLogHandler(type: LogTools.LogTypes.EXCEPTION_ERROR | LogTools.LogTypes.DATABASE_ERROR ,params: ExceptionAndDatabaseLogParams) {
+    const log: logDataForm = this.createBaseLog();
+    LogTools.LogTypes.EXCEPTION_ERROR
+    log.type = type === LogTools.LogTypes.EXCEPTION_ERROR ? "exception_error" : "database_error";
+    log.event = type === LogTools.LogTypes.EXCEPTION_ERROR ? "exception_error" : "database_error";
+    log.status = "system error";
+    log.message = type === LogTools.LogTypes.EXCEPTION_ERROR ? params.error.message : (params.error.sqlMessage ?? params.error.message);
+    log.customMessage = params.customMessage?? ''
+    this.logger.error({ rotaryLog: log });
+  }
+
+  private AccessLogHandler(params: AcessLogParams) {
+    const log: logDataForm = this.createBaseLog();
+    log.type = "access_log";
+    log.target = "system";
+    log.event = params.event;
+    log.source =
+      params.outcome === "success" && params.sourceUser
+        ? params.sourceUser.fullName
+        : " ";
+    log.status = params.outcome;
+    params.errorMessage = !params.errorMessage
+      ? "No error message provided"
+      : params.errorMessage;
+    switch (params.event) {
+      case LogTools.UserAccessEvent.LOGIN:
+        log.message =
+          params.outcome === "success" && params.sourceUser
+            ? `${params.sourceUser.fullName} logged IN sucessfully with email ${params.sourceUser.email}`
+            : `LOGIN failed, error: ${params.errorMessage}`;
+        break;
+      case LogTools.UserAccessEvent.LOGOUT:
+        if (params.outcome === "success" && params.sourceUser) {
+          log.message = `${params.sourceUser.fullName} logged OUT successfully with email ${params.sourceUser.email}`;
+        } else {
+          // Check if logData is not null to include user name in the failed message
+          log.message = params.sourceUser
+            ? `LOGOUT failed for ${params.sourceUser.fullName}, error: ${params.errorMessage}`
+            : `LOGOUT failed, error: ${params.errorMessage}`;
+        }
+        break;
+    }
+    log.customMessage = params.customMessage?? ''
+    //Execute log
+    this.logger.info({ rotaryLog: log });
+  }
+
+  private UserLogHandler(params: UserLogParams) {
+    const log: logDataForm = this.createBaseLog();
+    log.type = "user_log";
+    log.event = params.event;
+    log.status = params.outcome;
+    log.source = params.sourceUser
+      ? params.sourceUser.fullName // change to userId?
+      : "No source user provided"; 
+    log.target = params.targetUser
+      ? params.targetUser.fullName // change to userId?
+      : "No target user provided"; 
+    log.message === params.errorMessage
+      ? `Error: ${params.errorMessage}`
+      : "No error message provided";
+    log.customMessage = params.customMessage?? ''
+    this.logger.info({ rotaryLog: log });
+  }
+
+  private CustomLogHandler(params: CustomLogParams){
+    const log: logDataForm = this.createBaseLog();
+    log.type = "user_log";
+    log.event = params.event?? ''
+    log.status = params.status?? ''
+    log.source = params.source?? ''
+    log.target = params.target?? ''
+    log.message = params.message?? ''
+    log.customMessage = params.customMessage?? ''
+    this.logger.info({ rotaryLog: log })
   }
 }
+
 
 function makeTransport() {
   const transport = pino.transport({
@@ -178,10 +293,7 @@ function makeTransport() {
   return transport;
 }
 
-async function handleError(
-  error: any,
-  logData: CustomErrorType | Users | genericLogData
-) {
+async function handleError(error: any, logData: acceptedLogFormTypes | null) {
   console.log(error);
   const extraData = JSON.stringify({
     message: error.message,
