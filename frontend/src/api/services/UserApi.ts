@@ -6,12 +6,11 @@ import type { IUser } from "@/utils/interfaces/IUser";
 import type { PaginationResult } from "@/utils/types/commonTypes";
 const BASE_ROUTE = "/user";
 
-
 export class UsersApi {
   constructor(private apiClient: ApiClient) {}
 
-  private getLoggedInUser(): IUser{
-    return useLoggedInUserStore().loggedInUser
+  private getLoggedInUser(): IUser {
+    return useLoggedInUserStore().loggedInUser;
   }
 
   public async getAllUsers(
@@ -36,7 +35,7 @@ export class UsersApi {
     email: string,
     password: string,
     webAdmin?: boolean
-  ): Promise<{ user: IUser; district: IDistrict; club: IClub, sid: string }> {
+  ): Promise<{ user: IUser; district: IDistrict; club: IClub; sid: string }> {
     return await this.apiClient.fetchWrapper(
       "POST",
       `${BASE_ROUTE}/authenticate`,
@@ -62,40 +61,39 @@ export class UsersApi {
     });
   }
 
-  public async createNewUser(user: IUser): Promise<boolean> {
-    const sourceUser = this.getLoggedInUser()
-    console.log("Logged in user asking to create " + sourceUser.fullName + " id: " + sourceUser.user_id )
-    return await this.apiClient.fetchWrapper(
-      "POST",
-      `${BASE_ROUTE}/create`,
-      user,
-      sourceUser
+  public async createNewUser(user: IUser): Promise<void> {
+    const sourceUser = this.getLoggedInUser();
+    console.log(
+      "Logged in user asking to create " +
+        sourceUser.fullName +
+        " id: " +
+        sourceUser.user_id
     );
+    await this.apiClient.fetchWrapper("POST", `${BASE_ROUTE}/create`, {
+      user,
+      sourceUser,
+    });
   }
 
   public async createProspectUser(user: IUser): Promise<boolean> {
-    const sourceUser = this.getLoggedInUser()
+    const sourceUser = this.getLoggedInUser();
     user.is_prospect = true;
-    return await this.apiClient.fetchWrapper(
-      "POST",
-      `${BASE_ROUTE}/create`,
+    return await this.apiClient.fetchWrapper("POST", `${BASE_ROUTE}/create`, {
       user,
-      sourceUser
-    );
+      sourceUser,
+    });
   }
 
   public async updateUser(user: IUser) {
-    const sourceUser = this.getLoggedInUser()
-    return await this.apiClient.fetchWrapper(
-      "POST",
-      `${BASE_ROUTE}/update`,
+    const sourceUser = this.getLoggedInUser();
+    return await this.apiClient.fetchWrapper("POST", `${BASE_ROUTE}/update`, {
       user,
-      sourceUser
-    );
+      sourceUser,
+    });
   }
 
   public async deleteUser(userId: number): Promise<boolean> {
-    const sourceUser = this.getLoggedInUser()
+    const sourceUser = this.getLoggedInUser();
     return await this.apiClient.fetchWrapper("POST", `${BASE_ROUTE}/delete`, {
       userId,
       sourceUser,
@@ -106,7 +104,7 @@ export class UsersApi {
     return await this.apiClient.fetchWrapper(
       "POST",
       `${BASE_ROUTE}/deleteProspectUser`,
-        user,
+      user
     );
   }
 }

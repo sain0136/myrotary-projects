@@ -3,6 +3,7 @@ import CustomException from "App/Exceptions/CustomException";
 import { Translation, DatabaseError } from "App/Utils/CommonTypes";
 import { LogTools } from "App/Utils/AppLogger";
 import { LogManager } from "App/Utils/AppLogger";
+
 const databaseErrors: { [key: string]: DatabaseError } = {
   "1062": {
     en: "Duplicate record entry",
@@ -30,7 +31,7 @@ const databaseErrors: { [key: string]: DatabaseError } = {
   },
 };
 
-const logger = new LogManager()
+const logger = new LogManager();
 
 const handleDatabaseError = (errno: number, url: string): Translation => {
   if (errno === 1062 && url.includes("user")) {
@@ -70,7 +71,10 @@ export default class ErrorHandler {
         const errorType = error.sqlMessage
           ? LogTools.LogTypes.DATABASE_ERROR
           : LogTools.LogTypes.EXCEPTION_ERROR;
-        logger.log(errorType,{error: error})
+        logger.log(errorType, {
+          error,
+          customMessage: error.stack ?? "No stack trace available",
+        });
         // Handle the response
         response.status(error.status).send({
           statusCode: error.status,

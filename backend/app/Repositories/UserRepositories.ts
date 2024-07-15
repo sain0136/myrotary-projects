@@ -149,7 +149,7 @@ export default class UserRepositories {
   public async createUser(
     user: IUser,
     prospectUser: boolean
-  ): Promise<void | Array<string>> {
+  ): Promise<{ districtAdminsToEmail: string[]; createdUser: Users }> {
     if (
       (!user.user_type && user.user_type !== "CLUB") ||
       (!user.role_type && user.role_type !== "DISTRICT")
@@ -222,10 +222,12 @@ export default class UserRepositories {
         );
       }
     }
-    return districtAdminsToEmail;
+    return { districtAdminsToEmail, createdUser };
   }
 
-  public async updateUser(user: IUser): Promise<void | boolean> {
+  public async updateUser(
+    user: IUser
+  ): Promise<{ updatedUser: Users; prospectApproved: boolean }> {
     const existingUser = await Users.findOrFail(user.user_id);
     const updatedUser = await existingUser
       .merge({
@@ -264,29 +266,35 @@ export default class UserRepositories {
         },
       });
     }
-    // This user was a prospect and now is not
-    if (existingUser.isProspect === true && updatedUser.isProspect === false) {
-      return true;
-    }
+
+    return {
+      updatedUser,
+      // This user was a prospect and now is not
+      prospectApproved:
+        existingUser.isProspect === true && updatedUser.isProspect === false
+          ? true
+          : false,
+    };
   }
 
-  public async deleteUser(userId: number) {
-    const user = await Users.findOrFail(userId);
+  public async deleteUser(userId: number): Promise<Users> {
+    const foundUser = await Users.findOrFail(userId);
     // TODO : REfoctor Db query for speed in future
     const projects = await Projects.all();
     const found = projects.find((project) => {
-      if (project.createdBy === user.userId) {
+      if (project.createdBy === foundUser.userId) {
         return true;
       }
     });
     if (!found) {
-      if (user.userType === "DISTRICT") {
-        await user.related("districtRole").detach();
-        await user.delete();
+      if (foundUser.userType === "DISTRICT") {
+        await foundUser.related("districtRole").detach();
+        await foundUser.delete();
       } else {
-        await user.related("clubRole").detach();
-        await user.delete();
+        await foundUser.related("clubRole").detach();
+        await foundUser.delete();
       }
+      return foundUser;
     } else {
       throw new CustomException({
         message: "Cannot delete user",
