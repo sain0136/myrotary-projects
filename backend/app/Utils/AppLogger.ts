@@ -168,11 +168,10 @@ export class LogManager {
     // TODO - Check if async keyword needs to be present on the signatures too
     try {
       await confirmErrorLogFile(); // TODO - Check if this is necessary
-      throw new Error("Test error");
       switch (type) {
         case LogTools.LogTypes.EXCEPTION_ERROR:
         case LogTools.LogTypes.DATABASE_ERROR:
-          // this.ExceptionAndDatabaseErrorLogHandler(type, params);
+          this.ExceptionAndDatabaseErrorLogHandler(type, params);
           break;
         case LogTools.LogTypes.ACCESS_LOG:
           this.AccessLogHandler(params);
