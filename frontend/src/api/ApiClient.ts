@@ -17,7 +17,6 @@ export class ApiClient {
     method: string,
     endpoint: string,
     data?: object | string | FormData | null,
-    sourceUser?: IUser // The user who is making the api call
   ): Promise<any | ICustomError> {
     this.sid = useLoggedInUserStore().$state.isUserLoggedIn
       ? useLoggedInUserStore().$state.SID

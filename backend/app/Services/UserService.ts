@@ -52,7 +52,7 @@ export default class UserService {
   }
 
   public async deleteUser(userId: number) {
-    await this.userRepositories.deleteUser(userId);
+    return await this.userRepositories.deleteUser(userId);
   }
 
   private async validateUser(user: IUser) {

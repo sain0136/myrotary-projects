@@ -10,6 +10,7 @@ import Session from "App/Models/Session";
 import { SessionContract } from "@ioc:Adonis/Addons/Session";
 import { RequestContract } from "@ioc:Adonis/Core/Request";
 import { LogManager } from "App/Utils/AppLogger";
+import { logger } from "Config/app";
 
 export default class UsersController {
   private initializeServices() {
@@ -100,6 +101,7 @@ export default class UsersController {
           outcome: "fail",
           errorMessage: error,
         });
+        throw new CustomException(error as CustomErrorType);
       }
       if (!(session as any).store.isEmpty) {
         const errorMessage = `Error logging out user ${user.fullName}. Session not cleared`;
@@ -153,20 +155,18 @@ export default class UsersController {
     }
   }
 
-  public async createUser({ request }: HttpContextContract) {
+  public async createUser({ request, response }: HttpContextContract) {
     const logger = new LogManager();
+    //De-structuring the request body to handle the source and target user
+    const { user, sourceUser } = request.only(["user", "sourceUser"]) as {
+      user: IUser;
+      sourceUser: IUser;
+    };
     try {
-      //De-structuring the request body to handle the source and target user
-      const { user, sourceUser } = request.only(["user", "sourceUser"]) as {
-        user: IUser;
-        sourceUser: IUser;
-      };
       const prospectUser = user.is_prospect ? true : false;
       const { userService } = this.initializeServices();
-      const districtAdminsToEmail = await userService.createUser(
-        user,
-        prospectUser
-      );
+      const { districtAdminsToEmail, createdUser } =
+        await userService.createUser(user, prospectUser);
       if (prospectUser) {
         const mailController = new MailController();
         let mailBodyMessage = `<strong>Hello ${user.fullName}, your account is pending approval. You will be notified when your account is approved. / Bonjour ${user.fullName}, votre compte est en attente d'approbation. Vous serez informé lorsque votre compte sera approuvé.</strong>`;
@@ -190,18 +190,25 @@ export default class UsersController {
       }
       logger.log(LogTools.LogTypes.USER_LOG, {
         sourceUser: sourceUser,
-        targetUser: user,
+        targetUser: createdUser,
         event: LogTools.UserEditEvent.CREATE,
         outcome: "success",
         errorMessage: null,
+        customMessage: createdUser.isProspect
+          ? `Prospective ${createdUser.fullName} created`
+          : `User ${createdUser.fullName} created`,
       });
+      return response.json(true);
     } catch (error) {
       logger.log(LogTools.LogTypes.USER_LOG, {
-        sourceUser: null,
-        targetUser: null,
+        sourceUser: sourceUser,
+        targetUser: user,
         event: LogTools.UserEditEvent.CREATE,
-        outcome: "success",
+        outcome: "fail",
         errorMessage: error,
+        customMessage: `User ${
+          user.firstname + " " + user.lastname
+        } creation failed`,
       });
       throw new CustomException(error as CustomErrorType);
     }
@@ -216,9 +223,13 @@ export default class UsersController {
         sourceUser: IUser;
       };
       const { userService } = this.initializeServices();
-      const result = await userService.updateUser(user);
-      if (result) {
-        const customMessage = `Prospective ${user.fullName} approved and updated into a full user`;
+      const { updatedUser, prospectApproved } = await userService.updateUser(
+        user
+      );
+      if (updatedUser) {
+        const customMessage = prospectApproved
+          ? `Prospective ${updatedUser.fullName} approved and updated into a full user`
+          : `User ${updatedUser.fullName} updated`;
         logger.log(LogTools.LogTypes.USER_LOG, {
           sourceUser: sourceUser,
           targetUser: user,
@@ -255,13 +266,36 @@ export default class UsersController {
   }
 
   public async deleteUser({ request, response }: HttpContextContract) {
+    let source: IUser | null = null;
+    let id: number | null = null;
     try {
-      const userId: number = request.input("userId");
+      const logger = new LogManager();
+      const { userId, sourceUser } = request.only(["userId", "sourceUser"]) as {
+        userId: number;
+        sourceUser: IUser;
+      };
+      source = sourceUser;
+      id = userId;
       const { userService } = this.initializeServices();
-      await userService.deleteUser(userId);
-
+      const deletedUser = await userService.deleteUser(userId);
+      logger.log(LogTools.LogTypes.USER_LOG, {
+        sourceUser: sourceUser,
+        targetUser: deletedUser,
+        event: LogTools.UserEditEvent.DELETE,
+        outcome: "success",
+        errorMessage: null,
+        customMessage: `User ${deletedUser.fullName} deleted`,
+      });
       return response.json(true);
     } catch (error) {
+      logger.log(LogTools.LogTypes.USER_LOG, {
+        sourceUser: source,
+        targetUser: null,
+        event: LogTools.UserEditEvent.DELETE,
+        outcome: "fail",
+        errorMessage: error,
+        customMessage: `User deletion failed for user id: ${id}`,
+      });
       throw new CustomException(error as CustomErrorType);
     }
   }
