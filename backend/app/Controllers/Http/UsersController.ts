@@ -62,7 +62,7 @@ export default class UsersController {
         outcome: "success",
         errorMessage: null,
       });
-      return response.json({ ...userData, sid: newSession.sessionId });
+      return response.json({ ...userData });
     } catch (error) {
       logger.log(LogTools.LogTypes.ACCESS_LOG, {
         sourceUser: null,

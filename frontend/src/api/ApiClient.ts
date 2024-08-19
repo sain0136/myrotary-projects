@@ -9,21 +9,15 @@ import type { IUser } from "@/utils/interfaces/IUser";
 
 export class ApiClient {
   private baseURL = import.meta.env.VITE_BASE_API_URL;
-  private sid: string | null = null;
   constructor() {}
 
   // TODO: add Return Type in future
   public async fetchWrapper(
     method: string,
     endpoint: string,
-    data?: object | string | FormData | null,
+    data?: object | string | FormData | null
   ): Promise<any | ICustomError> {
-    this.sid = useLoggedInUserStore().$state.isUserLoggedIn
-      ? useLoggedInUserStore().$state.SID
-      : null;
-    const url = `${this.baseURL}${endpoint}${
-      this.sid ? `?sid=${this.sid}` : ""
-    }`;
+    const url = `${this.baseURL}${endpoint}`;
     const options: RequestInit = {
       method,
       headers: {
@@ -60,12 +54,7 @@ export class ApiClient {
     data?: object | string | FormData | null,
     headers: Record<string, string> = {}
   ): Promise<any | ICustomError> {
-    this.sid = useLoggedInUserStore().$state.isUserLoggedIn
-      ? useLoggedInUserStore().$state.SID
-      : null;
-    const url = `${this.baseURL}${endpoint}${
-      this.sid ? `?sid=${this.sid}` : ""
-    }`;
+    const url = `${this.baseURL}${endpoint}`;
     const response = await axios.post(url, data, {
       headers: {
         ...headers,

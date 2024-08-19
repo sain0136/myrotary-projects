@@ -74,7 +74,7 @@ const handleSubmit = async () => {
       state.email,
       state.password
     );
-    userStore.setLoggedInUser(response.user, response.sid);
+    userStore.setLoggedInUser(response.user);
     districtStore.setLoggedInDistrict(response.district);
     clubStore.setLoggedInClub(response.club);
     handleSuccess(

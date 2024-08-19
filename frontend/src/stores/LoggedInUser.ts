@@ -11,12 +11,10 @@ export const useLoggedInUserStore = defineStore(
   "loggedInUser",
   () => {
     const loggedInUser: IUser = reactive(new User());
-    const SID = ref<string | null>("");
     const isUserLoggedIn = ref(false);
 
-    function setLoggedInUser(user: IUser, sid: string) {
+    function setLoggedInUser(user: IUser) {
       // loggedInUser = user;
-      SID.value = sid;
       Object.assign(loggedInUser, user);
       isUserLoggedIn.value = true;
     }
@@ -25,7 +23,6 @@ export const useLoggedInUserStore = defineStore(
       const usersApi = new UsersApi(new ApiClient());
       await usersApi.logoutUser(loggedInUser);
       isUserLoggedIn.value = false;
-      SID.value = null;
       Object.assign(loggedInUser, new User());
     }
 
@@ -51,7 +48,6 @@ export const useLoggedInUserStore = defineStore(
       isUserLoggedIn,
       logOut,
       getLoggedInUserRole,
-      SID,
     };
   },
   {

@@ -35,7 +35,7 @@ export class UsersApi {
     email: string,
     password: string,
     webAdmin?: boolean
-  ): Promise<{ user: IUser; district: IDistrict; club: IClub; sid: string }> {
+  ): Promise<{ user: IUser; district: IDistrict; club: IClub }> {
     return await this.apiClient.fetchWrapper(
       "POST",
       `${BASE_ROUTE}/authenticate`,
