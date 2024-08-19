@@ -82,36 +82,36 @@ export default class UsersController {
     const logger = new LogManager();
     try {
       const user = request.body() as IUser;
-      session.clear();
-      try {
-        const sessionId = this.getSessionID(session, request);
-        if (sessionId) {
-          const foundSession = await Session.findByOrFail(
-            "session_id",
-            sessionId
-          );
-          if (foundSession) {
-            await foundSession.delete();
-          }
-        }
-      } catch (error) {
-        logger.log(LogTools.LogTypes.ACCESS_LOG, {
-          sourceUser: user,
-          event: LogTools.UserAccessEvent.LOGOUT,
-          outcome: "fail",
-          errorMessage: error,
-        });
-        throw new CustomException(error as CustomErrorType);
-      }
-      if (!(session as any).store.isEmpty) {
-        const errorMessage = `Error logging out user ${user.fullName}. Session not cleared`;
-        logger.log(LogTools.LogTypes.ACCESS_LOG, {
-          sourceUser: user,
-          event: LogTools.UserAccessEvent.LOGOUT,
-          outcome: "fail",
-          errorMessage: errorMessage,
-        });
-      }
+      // session.clear();
+      // try {
+      //   const sessionId = this.getSessionID(session, request);
+      //   if (sessionId) {
+      //     const foundSession = await Session.findByOrFail(
+      //       "session_id",
+      //       sessionId
+      //     );
+      //     if (foundSession) {
+      //       await foundSession.delete();
+      //     }
+      //   }
+      // } catch (error) {
+      //   logger.log(LogTools.LogTypes.ACCESS_LOG, {
+      //     sourceUser: user,
+      //     event: LogTools.UserAccessEvent.LOGOUT,
+      //     outcome: "fail",
+      //     errorMessage: error,
+      //   });
+      //   throw new CustomException(error as CustomErrorType);
+      // }
+      // if (!(session as any).store.isEmpty) {
+      //   const errorMessage = `Error logging out user ${user.fullName}. Session not cleared`;
+      //   logger.log(LogTools.LogTypes.ACCESS_LOG, {
+      //     sourceUser: user,
+      //     event: LogTools.UserAccessEvent.LOGOUT,
+      //     outcome: "fail",
+      //     errorMessage: errorMessage,
+      //   });
+      // }
       logger.log(LogTools.LogTypes.ACCESS_LOG, {
         sourceUser: user,
         event: LogTools.UserAccessEvent.LOGOUT,
@@ -131,18 +131,18 @@ export default class UsersController {
     }
   }
 
-  private getSessionID(
-    session: SessionContract,
-    request: RequestContract
-  ): string | undefined {
-    let sessionId: string | undefined = undefined;
-    if (session.get("session_id")) {
-      sessionId = session.get("session_id");
-    } else {
-      sessionId = request.qs().sid;
-    }
-    return sessionId;
-  }
+  // private getSessionID(
+  //   session: SessionContract,
+  //   request: RequestContract
+  // ): string | undefined {
+  //   let sessionId: string | undefined = undefined;
+  //   if (session.get("session_id")) {
+  //     sessionId = session.get("session_id");
+  //   } else {
+  //     sessionId = request.qs().sid;
+  //   }
+  //   return sessionId;
+  // }
 
   public async getUser({ request, response }: HttpContextContract) {
     try {
