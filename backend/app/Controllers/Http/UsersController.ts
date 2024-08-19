@@ -78,7 +78,7 @@ export default class UsersController {
     }
   }
 
-  public async logout({ request, session, response }: HttpContextContract) {
+  public async logout({ request, response }: HttpContextContract) {
     const logger = new LogManager();
     try {
       const user = request.body() as IUser;
@@ -119,7 +119,7 @@ export default class UsersController {
         errorMessage: null,
         customMessage: "User logged out sucessfully!",
       });
-      return response.json({});
+      return response.json({ message: "User logged out sucessfully!" });
     } catch (error) {
       logger.log(LogTools.LogTypes.ACCESS_LOG, {
         sourceUser: null,
