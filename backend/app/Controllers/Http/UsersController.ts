@@ -6,9 +6,6 @@ import { CustomErrorType } from "App/Utils/CommonTypes";
 import { IUser } from "App/Shared/Interfaces/IUser";
 import { LogTools } from "App/Utils/AppLogger";
 import MailController from "App/Controllers/Http/MailController";
-import Session from "App/Models/Session";
-import { SessionContract } from "@ioc:Adonis/Addons/Session";
-import { RequestContract } from "@ioc:Adonis/Core/Request";
 import { LogManager } from "App/Utils/AppLogger";
 import { logger } from "Config/app";
 
