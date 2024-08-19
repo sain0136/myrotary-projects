@@ -128,7 +128,7 @@ export default class UsersController {
     }
   }
 
-  // private getSessionID(
+  // private getSessionID( 
   //   session: SessionContract,
   //   request: RequestContract
   // ): string | undefined {
