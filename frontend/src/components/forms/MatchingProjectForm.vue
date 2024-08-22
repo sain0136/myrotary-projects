@@ -907,7 +907,7 @@ const setClubId = (clubId: number) => {
       v-if="activeTab === 'form'"
     >
       <ProjectOverride
-        v-if="useLoggedInUserStore().getLoggedInUserRole() === 'SuperAdmin' || districtRoles.includes(useLoggedInUserStore().getLoggedInUserRole() as string) "
+        v-if="!projectId &&(useLoggedInUserStore().getLoggedInUserRole() === 'SuperAdmin' || districtRoles.includes(useLoggedInUserStore().getLoggedInUserRole() as string)) "
         :district-id-parent-value="
           useLoggedInUserStore().loggedInUser.district_id ||
           useLoggedInDistrict().loggedInDistrict.district_id

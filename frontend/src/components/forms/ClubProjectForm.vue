@@ -48,19 +48,21 @@ import { processAreaOfFocus } from "@/utils/utils";
 import ProjectOverride from "@/components/forms/components/ProjectOverride.vue";
 import { useLoggedInClub } from "@/stores/LoggedInClub";
 
-/* Data */
-const viewerMode = ref(false);
-const disabledMode = ref(false);
-type formType = "normalView" | "readOnlyView";
-const route = useRoute();
 /* required form data*/
+const route = useRoute();
 const projectId =
   route.params.projectId !== "" ? Number(route.params.projectId) : null;
 const formType = route.query.formType
   ? (route.query.formType as formType)
   : "normalView";
-/**/
+
+/* Data */
+const viewerMode = ref(false);
+const disabledMode = ref(false);
+type formType = "normalView" | "readOnlyView";
 const { convertCentsToFloat, convertFloatToCents } = useCurrencyFormatter();
+const { langTranslations, languagePref, customPrintf } = useLanguage();
+const { handleError, handleSuccess } = errorHandler();
 const submitLabel: { [key: string]: string } = projectId
   ? {
       en: "Update",
@@ -72,8 +74,6 @@ const submitLabel: { [key: string]: string } = projectId
     };
 const FUNDING_GOAL_LIMIT = 1000000000;
 const projectsApi = new ProjectsApi(new ApiClient());
-const { langTranslations, languagePref, customPrintf } = useLanguage();
-const { handleError, handleSuccess } = errorHandler();
 
 const tabs = ref([
   {
@@ -130,7 +130,7 @@ onMounted(async () => {
     if (projectId) {
       await getProject();
     } else {
-      console.log(useLoggedInDistrict().loggedInDistrict.district_id)
+      console.log(useLoggedInDistrict().loggedInDistrict.district_id);
       try {
         project.grant_type = grantType.CLUBPROJECT;
         project.created_by = useLoggedInUserStore().loggedInUser.user_id;
@@ -417,7 +417,7 @@ const setClubId = (clubId: number) => {
       v-if="activeTab === 'form'"
     >
       <ProjectOverride
-        v-if="useLoggedInUserStore().getLoggedInUserRole() === 'SuperAdmin' || districtRoles.includes(useLoggedInUserStore().getLoggedInUserRole() as string) "
+        v-if="!projectId &&(useLoggedInUserStore().getLoggedInUserRole() === 'SuperAdmin' || districtRoles.includes(useLoggedInUserStore().getLoggedInUserRole() as string)) "
         :district-id-parent-value="
           useLoggedInUserStore().loggedInUser.district_id ||
           useLoggedInDistrict().loggedInDistrict.district_id
