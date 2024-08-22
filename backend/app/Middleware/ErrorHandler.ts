@@ -64,7 +64,6 @@ export default class ErrorHandler {
     next: () => Promise<void>
   ) {
     try {
-      // console.log(`-> ${request.method()}: ${request.url()}`);
       await next();
     } catch (error) {
       if (error instanceof CustomException) {
