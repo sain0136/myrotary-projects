@@ -9,29 +9,38 @@ import {
 } from "@/utils/types/commonTypes";
 import ResourceList from "@/utils/classes/ResourceList";
 import { useLanguage } from "@/utils/languages/UseLanguage";
+import { errorHandler } from "@/utils/composables/ErrorHandler";
+import { CustomErrors } from "@/utils/classes/CustomErrors";
+
+// Initialize stores and other dependencies
 const userStore = useLoggedInUserStore();
 const districtStore = useLoggedInDistrict();
 const clubStore = useLoggedInClub();
 const { languagePref } = useLanguage();
+const { handleError } = errorHandler();
 
 export const hideAprovalTab = (projectId: number | null) => {
   if (!projectId) {
     return true;
   }
   if (
-    useLoggedInUserStore().loggedInUser.role !== "District Grants Chair" &&
-    useLoggedInUserStore().loggedInUser.role !== "District Admin"
+    userStore.loggedInUser.role !== "District Grants Chair" &&
+    userStore.loggedInUser.role !== "District Admin"
   ) {
     return true;
   }
   return false;
 };
 
-export const logoutUser = async () => {
-  router.push({ name: "UserLogin" });
-  await userStore.logOut();
-  await districtStore.resetDistrict();
-  await clubStore.resetClub();
+export const logoutUser = async (route = "UserLogin") => {
+  try {
+    await districtStore.resetDistrict();
+    await clubStore.resetClub();
+    router.push({ name: route });
+    await userStore.logOut();
+  } catch (error) {
+    handleError(error as CustomErrors);
+  }
 };
 
 export const projectDisabledStatus = (status: ProjectStatus): boolean => {
@@ -53,8 +62,6 @@ export const loggedInRoleForAccessControl = (): string => {
     return "Webmaster";
   } else if (userStore.loggedInUser.user_type === "SUPER") {
     return "SuperAdmin";
-  } else if (userStore.loggedInUser.role) {
-    return userStore.loggedInUser.role;
   } else if (userStore.loggedInUser.role) {
     return userStore.loggedInUser.role;
   } else {

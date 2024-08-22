@@ -1,11 +1,6 @@
 import { CustomErrors } from "@/utils/classes/CustomErrors";
 import type { ICustomError } from "@/utils/interfaces/ICustomError";
 import axios from "axios";
-import { useLoggedInUserStore } from "@/stores/LoggedInUser";
-import router from "@/router";
-import { useLoggedInClub } from "@/stores/LoggedInClub";
-import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
-import type { IUser } from "@/utils/interfaces/IUser";
 
 export class ApiClient {
   private baseURL = import.meta.env.VITE_BASE_API_URL;
@@ -83,13 +78,9 @@ export class ApiClient {
       //   langTranslations.value.sessionTimeoutBody
       // );
       // changeShowModal();
-      const userStore = useLoggedInUserStore();
-      const districtStore = useLoggedInDistrict();
-      const clubStore = useLoggedInClub();
-      await userStore.logOut();
-      districtStore.resetDistrict();
-      clubStore.resetClub();
-      router.push({ name: "UserLogin" });
+      const { logoutUser } = await import("@/utils/utils");
+
+      await logoutUser();
       return;
     } catch (error) {
       console.log(error);

@@ -26,7 +26,7 @@ import ResourceList from "@/utils/classes/ResourceList";
 import type { ProjectFilters } from "@/utils/types/commonTypes";
 
 /* Data */
-const { handleError, handleSuccess } = errorHandler();
+const { handleError } = errorHandler();
 const { langTranslations } = useLanguage();
 const filterSearchMode = ref(false);
 const projectsApi = new ProjectsApi(new ApiClient());

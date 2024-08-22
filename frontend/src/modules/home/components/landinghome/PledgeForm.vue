@@ -235,7 +235,7 @@ const validateAndSubmit = async () => {
         fr: "Veuillez reessayer plus tard",
       });
     }
-    handleSuccess(langTranslations.value.toastSuccess, {
+    handleSuccess(langTranslations.value.toastSuccess, undefined, {
       path: "Home",
     });
   } catch (error) {

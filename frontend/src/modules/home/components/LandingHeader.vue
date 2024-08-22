@@ -11,6 +11,7 @@ import { useSiteAssets } from "@/stores/SiteAssets";
 import { Icon } from "@iconify/vue";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
+import { logoutUser } from "@/utils/utils";
 
 /* Data */
 const { langTranslations, setLanguage, languagePref } = useLanguage();
@@ -54,6 +55,10 @@ const changeLanguage = () => {
   } else {
     setLanguage("en");
   }
+};
+
+const logout = async () => {
+   logoutUser("Home");
 };
 </script>
 
@@ -165,17 +170,19 @@ const changeLanguage = () => {
         :class="showMenu ? 'block' : 'hidden'"
         id="navbar-default"
       >
-        <ul 
+        <ul
           class="font-medium flex flex-col p-4 md:p-0 mt-4 border rounded-lg bg-nearWhite md:flex-row md:space-x-8 md:mt-0 md:border-0"
         >
           <li v-for="item in navLinks" :key="item.link">
             <!--This creates clickable links to the different pages, containing the name of the button and the path to the page -->
-            <router-link v-if="!item.disabled" :to="{ name: item.link }">  <!--Path-->
+            <router-link v-if="!item.disabled" :to="{ name: item.link }">
+              <!--Path-->
               <span
                 href="#"
                 class="block py-2 pl-3 pr-4 font-bold text-gray-900 rounded hover:text-primary"
                 aria-current="page"
-                >{{ item.label }} <!--Header Names--></span 
+                >{{ item.label }}
+                <!--Header Names--></span
               >
             </router-link>
           </li>
@@ -193,12 +200,7 @@ const changeLanguage = () => {
             <a
               class="block py-2 pl-3 pr-4 font-bold text-gray-900 rounded hover:text-primary"
               href=""
-              @click="
-                () => {
-                  useLoggedInUserStore().logOut();
-                  $router.push({ name: 'Home' });
-                }
-              "
+              @click="logout()"
             >
               {{ langTranslations.logoutLabel }}
             </a>

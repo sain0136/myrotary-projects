@@ -1,9 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
-import type { IUser } from "@/utils/interfaces/IUser";
-import type { UserType } from "@/utils/types/commonTypes";
-import type {UserTypeForm} from "@/components/forms/UserForm.vue";
-import type { formType } from "@/components/forms/UserForm.vue";
 // import SiteAdminRoutes from "@/modules/admin/routes/routes"
 // import LandingRoutes from "@/modules/home/views/Landing.vue"
 const routes = [
@@ -35,7 +31,7 @@ const routes = [
       },
       {
         path: "/contact",
-        name: "Contact", 
+        name: "Contact",
         component: () => import("@/modules/home/views/Contact.vue"),
       },
       {
@@ -90,7 +86,7 @@ const routes = [
       {
         path: "/create-account",
         name: "CreateAccount",
-        component: () => import("@/modules/home/views/CreateAccount.vue")
+        component: () => import("@/modules/home/views/CreateAccount.vue"),
       },
     ],
   },
@@ -100,8 +96,8 @@ const routes = [
     name: "SiteAdmin",
     component: () => import("@/modules/admin/views/SiteAdmin.vue"),
     beforeEnter: () => {
-      const { isUserLoggedIn } = useLoggedInUserStore();
-      if (!isUserLoggedIn) {
+      const store = useLoggedInUserStore();
+      if (!store.$state.isUserLoggedIn) {
         return "/admin-login";
       }
     },
@@ -164,10 +160,10 @@ const routes = [
         component: () => import("@/modules/admin/views/ProspectUsers.vue"),
       },
       {
-        path: '/prospect-userform/:userId',
-        name: 'ProspectUserForm',
+        path: "/prospect-userform/:userId",
+        name: "ProspectUserForm",
         component: () => import("@/components/forms/ProspectUserForm.vue"),
-        props: true
+        props: true,
       },
       {
         path: "district-clubs",
