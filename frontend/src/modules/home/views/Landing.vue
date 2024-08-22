@@ -7,7 +7,6 @@ export default {
 <script setup lang="ts">
 import LandingHeader from "@/modules/home/components/LandingHeader.vue";
 import LandingFooter from "@/modules/home/components/LandingFooter.vue";
-import { useLanguage } from "@/utils/languages/UseLanguage";
 </script>
 
 <template>

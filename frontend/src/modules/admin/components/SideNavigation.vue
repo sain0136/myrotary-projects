@@ -13,11 +13,6 @@ import type { AllUserRoles } from "@/utils/composables/UseAccessControl";
 import { useAccessControl } from "@/utils/composables/UseAccessControl";
 import ResourceList from "@/utils/classes/ResourceList";
 import { logoutUser } from "@/utils/utils";
-import { errorHandler } from "@/utils/composables/ErrorHandler";
-import { CustomErrors } from "@/utils/classes/CustomErrors";
-import { UsersApi } from "@/api/services/UserApi";
-import { ApiClient } from "@/api/ApiClient";
-import User from "@/utils/classes/User";
 
 /* Data */
 
@@ -31,7 +26,6 @@ const prospectUserStore = useProspectUserStore()
 const { hasAccess } = useAccessControl();
 const { langTranslations } = useLanguage();
 const loggedinRole = ref("");
-const { handleError, handleSuccess, handleValidationForm } = errorHandler();
 if (
   userStore.loggedInUser.user_id === 2 ||
   userStore.loggedInUser.user_id === 10
@@ -195,13 +189,7 @@ const sideBarItems: Record<
 onMounted(async () => {});
 
 /* Methods */
-const logout = () => {
-  try {
-    logoutUser();
-  } catch (error) {
-    handleError(error as CustomErrors);
-  }
-};
+
 </script>
 
 <template>
@@ -264,7 +252,7 @@ const logout = () => {
       <div class="flex flex-col justify-end h-full">
         <p
           class="text-base font-bold text-nearWhite cursor-pointer"
-          @click="logout"
+          @click="logoutUser()"
         >
           {{ langTranslations.logoutLabel }}
         </p>

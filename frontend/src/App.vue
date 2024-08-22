@@ -3,9 +3,9 @@ export default {
   name: "App",
 };
 </script>
+
 <script setup lang="ts">
 import { useToast } from "primevue/usetoast";
-
 import { onMounted, ref, watch } from "vue";
 import { toastHandler } from "@/utils/composables/ToastHandler";
 import BaseModal from "./components/modal/BaseModal.vue";
@@ -16,19 +16,17 @@ import { useLanguage } from "@/utils/languages/UseLanguage";
 
 const assetsStore = useSiteAssets();
 const { setLocalLanguage } = useLanguage();
-
-onMounted(() => {
-  setLocalLanguage();
-});
 const { toastRecord, refCounter } = toastHandler();
 const toast = useToast();
 const assetsApi = new AssetsApi(new ApiClient());
+
 watch(refCounter, () => {
   toast.add(toastRecord);
 });
 
 onMounted(async () => {
   try {
+    setLocalLanguage();
     if (!sessionStorage.getItem("siteAssets")) {
       const response = await assetsApi.getMainAssets();
       assetsStore.setSiteAssets(response);

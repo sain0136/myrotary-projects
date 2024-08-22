@@ -9,17 +9,11 @@ import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import router from "@/router";
-import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
-import { useLoggedInClub } from "@/stores/LoggedInClub";
-import { CustomErrors } from "@/utils/classes/CustomErrors";
-import { errorHandler } from "@/utils/composables/ErrorHandler";
+import { logoutUser } from "@/utils/utils";
 
 /* Data */
 const showSub = ref(false);
 const userStore = useLoggedInUserStore();
-const districtStore = useLoggedInDistrict();
-const clubStore = useLoggedInClub();
-const { handleError, handleSuccess, handleValidationForm } = errorHandler();
 defineEmits(["update:modelValue"]);
 defineProps<{
   drawerVal: boolean;
@@ -35,6 +29,7 @@ onBeforeUnmount(() => {
   // Cleanup: Remove event listener to avoid memory leaks
   document.removeEventListener("click", hideDropdown);
 });
+
 /* Methods */
 const changeLanguage = (pref: "en" | "fr") => {
   showSub.value = false;
@@ -58,16 +53,6 @@ const hideDropdown = (event: Event): void => {
   if (rootElement.value && !rootElement.value.contains(target)) {
     show.value = false;
     document.removeEventListener("click", hideDropdown);
-  }
-};
-
-const logoutAdmin = async () => {
-  try {
-    userStore.logOut();
-    districtStore.resetDistrict();
-    clubStore.resetClub();
-  } catch (error) {
-    handleError(error as CustomErrors);
   }
 };
 </script>
@@ -234,7 +219,7 @@ const logoutAdmin = async () => {
               <li>
                 <router-link
                   :to="{ name: 'UserLogin' }"
-                  @click="logoutAdmin"
+                  @click="logoutUser()"
                   href="#"
                   class="block py-2 px-4 text-sm hover:bg-gray-100 hover:text-nearBlack"
                   >{{ langTranslations.logoutLabel }}
