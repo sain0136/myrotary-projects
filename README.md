@@ -21,13 +21,10 @@ This project was commissioned by Rotary District 7040 to streamline and digitize
 - **Grant Application Management:** Streamline the process of applying for Rotary grants with an intuitive and user-friendly interface.
 - **Pledge Tracking:** Keep track of pledges made by members and ensure transparency and accountability in the pledge management process.
 - **Reporting:** Generate detailed reports on grant applications, pledges, and project statuses to keep all stakeholders informed.
-- **User Authentication:** Secure login and authentication system to ensure that only authorized users can access the application.
-- **Role-Based Access Control:** Differentiate access levels and permissions based on user roles (e.g., admin, member).
-- **Real-Time Notifications:** Receive real-time notifications for important events such as new grant applications, pledge updates, and report submissions.
+- **User Authentication:** Secure login and authentication system to ensure that only authorized users can access the application admin panel.
+- **Role-Based Access Control:** Differentiate access levels and permissions based on user roles (e.g., admin, standard member).
 - **Data Visualization:** Utilize Chart.js to provide visual representations of data, making it easier to understand trends and insights.
 - **Responsive Design:** Ensure the application is accessible and functional on various devices, including desktops, tablets, and smartphones.
-- **Automated Workflows:** Automate repetitive tasks and workflows to increase efficiency and reduce manual effort.
-- **API Integration:** Integrate with external APIs to enhance the functionality and interoperability of the application.
 
 ## Technologies Used
 
