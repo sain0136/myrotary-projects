@@ -8,14 +8,9 @@ A custom full-stack web application built in TypeScript using AdonisJS for the b
 2. [Features](#features)
 3. [Technologies Used](#technologies-used)
 4. [Installation and Setup](#installation-and-setup)
-5. [Usage Instructions](#usage-instructions)
-6. [Testing](#testing)
-7. [Deployment Strategy](#deployment-strategy)
-8. [Security](#security)
-9. [Contributing](#contributing)
-10. [License](#license)
-11. [Acknowledgments](#acknowledgments)
-12. [Contact Information](#contact-information)
+5. [Contributing](#contributing)
+6. [License](#license)
+7. [Contact Information](#contact-information)
 
 ## Project Overview
 
@@ -74,12 +69,49 @@ This project was commissioned by Rotary District 7040 to streamline and digitize
 
 ### Prerequisites
 
-- Node.js (version X.X.X or higher)
-- MySQL (version X.X.X or higher)
-- [Any other dependencies]
+- Node.js (version 14 or higher)
 
 ### Installation
 
+Important: Contact me at jssr26@gmail.com to obtain the necessary environment files for both frontend and backend.
+
 1. Clone the repository:
+
    ```bash
-   git clone https://github.com/your-repo.git
+   git clone https://github.com/sain0136/myrotary-projects.git
+
+   ```
+
+2. Navigate to the cloned repository:
+
+   ```bash
+   cd myrotary-projects
+
+   ```
+
+3. Install dependencies:
+   cd frontend
+   npm install
+   npm run dev
+   cd ../backend
+   npm install
+   node ace serve --watch
+   ```
+
+   ```
+
+## Contributing
+
+If you're interested in contributing, please contact me directly at [jssr26@gmail.com](mailto:jssr26@gmail.com).
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contact Information
+
+If you have any questions, feedback, or would like to contribute to the project, please feel free to reach out:
+
+- **Email:** [jssr26@gmail.com](mailto:jssr26@gmail.com)
+- **LinkedIn:** [Your LinkedIn Profile](https://www.linkedin.com/in/sebastien-saintrose/)
+- **GitHub:** [Your GitHub Profile](https://github.com/sain0136)
