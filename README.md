@@ -1,33 +1,50 @@
-# Rotary Club Development 
-A custom full-stack web application in Typescript using an AdonisJS for the backend and Vue.js for the frontend to replace the previously manual project lifecycle management process used by the district. 
-## Project Status:
-This project is currently in at Version 1.0.0
-## Reflection: 
-This project was contracted out from Rotary District 7040 to me. A Rotary District 7040 district chair member desired a way for his district to move their Rotary grant application, pledge tracking, and reporting processes to a web application. I took the contract on in Jan 2022, as a soon to be graduate of the two-year Computer Programming Ontario College Diploma program from Algonquin College. I have worked on this contract part-time while finishing the program and then transitioning to working full-time as an Software Developer/Information Technology Support Technician based out of Cornwall with the Canadian Mental Health Association - Champlain East,
-since December 2021. The experience has been amazing, and I will continue to improve and make this app ready for real world deployment and scalable growth to the satisfaction of Rotary District 7040 and any future districts that will use my website.
+# Rotary Club Development
 
-## Synopsis
-The technologies that are implemented in this project are Vue.js 3 with Typescript for the front-end and Adonis.js for the backend. I provisioned the server on Digital Ocean with Ubuntu Server 20.04, Nginx, Node.js, and PM2. I wrote YAML Scripts for Github Actions for continuous integration and deployment. I used Insomnia for API testing.
+A custom full-stack web application built in TypeScript using AdonisJS for the backend and Vue.js for the frontend to replace the previously manual project lifecycle management process used by Rotary District 7040.
 
-![image](https://user-images.githubusercontent.com/55252053/193883293-1a0bd246-00e5-47d6-b78c-f0e2d05f92f7.png)
+## Table of Contents
 
-![image](https://user-images.githubusercontent.com/55252053/193884577-8a1b71a2-cb44-46c3-bef3-1438208fc9cb.png)
+1. [Project Overview](#project-overview)
+2. [Features](#features)
+3. [Technologies Used](#technologies-used)
+    - [Frontend](#frontend)
+    - [Backend](#backend)
+    - [Database](#database)
+    - [API Testing](#api-testing)
+    - [Deployment](#deployment)
+    - [Server](#server)
+4. [Installation and Setup](#installation-and-setup)
+5. [Usage Instructions](#usage-instructions)
+6. [Testing](#testing)
+7. [Deployment Strategy](#deployment-strategy)
+8. [Security](#security)
+9. [Contributing](#contributing)
+10. [License](#license)
+11. [Acknowledgments](#acknowledgments)
+12. [Contact Information](#contact-information)
 
-## Contact Me
-How to reach me: jssr26@gmail.com
+## Project Overview
 
-Technologies:
+This project was commissioned by Rotary District 7040 to streamline and digitize their Rotary grant application, pledge tracking, and reporting processes. The development of this application started in January 2022, as part of my final year project while I was a student at Algonquin College. The application is currently in Version 1.0.0, with plans for continuous improvement and scalability to support future districts.
 
-## Frontend
-- Vue.js 3 composition API
+## Features
+
+- **Feature 1:** [Brief description]
+- **Feature 2:** [Brief description]
+- **Feature 3:** [Brief description]
+
+## Technologies Used
+
+### Frontend
+
+- Vue.js 3 Composition API
 - TypeScript
-- CSS
-- SCSS
+- CSS/SCSS
 - HTML5
 - Tailwind CSS
 - Vite
 - Chart.js
-- Niave UI
+- Naive UI
 - Vue Router 4
 - Pinia
 - Vuelidate
@@ -37,27 +54,38 @@ Technologies:
 - Pdfmake
 - Luxon
 
- 
-## Backend
-- Adonis.js
+### Backend
+
+- AdonisJS
 - TypeScript
 
-## Database
+### Database
+
 - MySQL
 
-## Api Testing
+### API Testing
+
 - Insomnia
 
-## Deployment
-- Github actions
+### Deployment
 
-## Server
-
-### Hosting
-- Digital Ocean
+- GitHub Actions
 
 ### Server
-- Ubuntu Server 
-- Nginx
-- Node.js
-- PM2
+
+- **Hosting:** Digital Ocean
+- **Server:** Ubuntu Server 20.04, Nginx, Node.js, PM2
+
+## Installation and Setup
+
+### Prerequisites
+
+- Node.js (version X.X.X or higher)
+- MySQL (version X.X.X or higher)
+- [Any other dependencies]
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-repo.git
