@@ -118,5 +118,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 If you have any questions, feedback, or would like to contribute to the project, please feel free to reach out:
 
 - **Email:** [jssr26@gmail.com](mailto:jssr26@gmail.com)
-- **LinkedIn:** [Your LinkedIn Profile](https://www.linkedin.com/in/sebastien-saintrose/)
-- **GitHub:** [Your GitHub Profile](https://github.com/sain0136)
+- **LinkedIn:** [sebastien-saintrose](https://www.linkedin.com/in/sebastien-saintrose/)
+- **GitHub:** [sain0136](https://github.com/sain0136)
