@@ -14,7 +14,7 @@ A custom full-stack web application built in TypeScript using AdonisJS for the b
 
 ## Project Overview
 
-This project was commissioned by Rotary District 7040 to streamline and digitize their Rotary grant application, pledge tracking, and reporting processes. The development of this application started in January 2022, during my final semesters as a student at Algonquin College computer programmer diploma. The application is currently in Version 1.0.0, with plans for continuous improvement and scalability to support future districts.
+This project was commissioned by Rotary District 7040 to streamline and digitize their Rotary grant application, pledge tracking, and reporting processes. The development of this application began in January 2022, during my final semesters as a student in the Computer Programmer Diploma program at Algonquin College. The application is currently at Version 1.0.0, with plans for continuous improvement and scalability to support additional districts in the future.
 
 ## Features
 
