@@ -30,7 +30,7 @@ jobs:
             if [ -d "$BUILD_DIR" ]; then
               rm -rf "$BUILD_DIR"
             fi
-            npm install
+            sudo npm install
             node ace build --production --ignore-ts-errors
             sudo chown -R servicehost:servicehost /home/servicehost/myrotary-projects/backend/build
             sudo chmod -R u+rwX /home/servicehost/myrotary-projects/backend/build
