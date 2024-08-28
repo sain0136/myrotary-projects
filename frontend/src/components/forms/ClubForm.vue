@@ -164,7 +164,7 @@ const validateAndSubmit = async () => {
     } else if (formType === "siteAdmin" && !clubId) {
       await clubApi.createClub(club);
     }
-    handleSuccess(langTranslations.value.toastSuccess, {
+    handleSuccess(langTranslations.value.toastSuccess, false, {
       path: "club",
     });
     redirect();
