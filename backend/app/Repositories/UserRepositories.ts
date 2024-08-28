@@ -248,8 +248,8 @@ export default class UserRepositories {
         extraDetails: JSON.stringify(user.extra_details),
       })
       .save();
-    // TODO: Do i even do this ir no change in role type
-    if (user.user_type === "DISTRICT") {
+    // TODO: Do i even do this if no change in role type
+    if (user.user_type === "DISTRICT" && user.role_type) {
       await updatedUser.related("districtRole").detach();
       const district: Districts = await Districts.findOrFail(user.district_id);
       await updatedUser.related("districtRole").attach({
@@ -257,7 +257,7 @@ export default class UserRepositories {
           district_role: user.role_type,
         },
       });
-    } else {
+    } else if (user.user_type === "CLUB" && user.role_type) {
       await updatedUser.related("clubRole").detach();
       const club: Clubs = await Clubs.findOrFail(user.club_id);
       await updatedUser.related("clubRole").attach({

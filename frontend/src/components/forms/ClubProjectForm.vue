@@ -426,6 +426,12 @@ const setClubId = (clubId: number) => {
         @updateDistrictId="(districtId: number) => setDistrictId(districtId)"
         @update-club-id="(clubId: number) =>  setClubId(clubId)"
       />
+      <div v-if="projectId" class="italic text-gray-500 w-full p-1">
+        {{
+          langTranslations.createdByLabel +
+          `${project.projectDetails?.creatorData?.fullName || "N/A"}`
+        }}
+      </div>
       <div class="form-block">
         <BaseInput
           v-model="project.project_name"

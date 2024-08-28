@@ -1,4 +1,7 @@
 export interface Translation {
+  myClubProjectsLabel: string;
+  myProjectsLabel: string;
+  createdByLabel: string;
   createProjectOnBehalfLabel: string;
   contactPage: {
     calloutMessage: string;
@@ -362,6 +365,9 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    myClubProjectsLabel: "All Club Projects",
+    myProjectsLabel: "My Projects",
+    createdByLabel: "Created by: ",
     createProjectOnBehalfLabel:
       "If you are creating a project on behalf of another club, select the district and club.",
     sessionTimeoutBody:
@@ -770,6 +776,9 @@ export const translations: Record<string, Translation> = {
     noProspectUserAvailable: "There are no prospective users at this moment",
   },
   fr: {
+    myClubProjectsLabel: "Tous les projets du club",
+    myProjectsLabel: "Mes projets",
+    createdByLabel: "Crée par",
     createProjectOnBehalfLabel:
       "Si vous créez un projet au nom d'un autre club, sélectionnez le district et le club.",
     sessionTimeoutBody:

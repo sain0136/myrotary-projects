@@ -26,7 +26,7 @@ export const districtRole: DistrictRole[] = [
   "District Stewardship",
 ];
 
-export const districtRoles:string[] = [
+export const districtRoles: string[] = [
   "Webmaster",
   "District Admin",
   "District Grants Chair",
@@ -151,3 +151,15 @@ export type IAreaOfFocus = {
   Economic_And_Community_Development: boolean;
   Environment: boolean;
 };
+
+// newUser type = when user is creating account for first time this is user submitted and they will become a prospective user
+export type UserTypeForm = "districtAdmin" | "clubUser" | "newUser" | null;
+
+export type formType =
+  | "siteAdminClub"
+  | "siteAdminDistrict"
+  | "myProfile"
+  | "clubAdmin"
+  | "districtAdmin"
+  | "newAccount" // new account is for when a user is creating an account for the first time for prospective user
+  | null;
