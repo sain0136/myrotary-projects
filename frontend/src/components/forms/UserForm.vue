@@ -15,13 +15,6 @@ import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import H2 from "@/components/headings/H2.vue";
 import Hr from "@/components/hr/Hr.vue";
 import BaseInput from "@/components/form/BaseInput.vue";
-import {
-  email,
-  helpers,
-  maxLength,
-  minLength,
-  required,
-} from "@vuelidate/validators/dist/index.mjs";
 import { UsersApi } from "@/api/services/UserApi";
 import { ApiClient } from "@/api/ApiClient";
 import { CustomErrors } from "@/utils/classes/CustomErrors";
@@ -32,29 +25,23 @@ import { DistrictApi } from "@/api/services/DistrictsApi";
 import ResourceList from "@/utils/classes/ResourceList";
 import { ClubApi } from "@/api/services//ClubApi";
 import type { IClub } from "@/utils/interfaces/IClub";
-import { districtRole } from "@/utils/types/commonTypes";
-import { districtRoles } from "@/utils/types/commonTypes";
+import {
+  districtRole,
+  districtRoles,
+  type UserTypeForm,
+  type formType,
+} from "@/utils/types/commonTypes";
 import { clubRoles } from "@/utils/types/commonTypes";
 import Banners from "@/components/banners/Banners.vue";
-
-/* Types */
-// newUser type = when user is creating account for first time this is user submitted and they will become a prospective user
-export type UserTypeForm = "districtAdmin" | "clubUser" | "newUser" | null;
-export type formType =
-  | "siteAdminClub"
-  | "siteAdminDistrict"
-  | "myProfile"
-  | "clubAdmin"
-  | "districtAdmin"
-  | "newAccount" // new account is for when a user is creating an account for the first time for prospective user
-  | null;
+import { userFormRules } from "@/utils/validations/FormRules";
 
 /* Data */
 const route = useRoute();
-const { langTranslations, languagePref, customPrintf } = useLanguage();
+const { langTranslations, languagePref } = useLanguage();
+const { handleError, handleSuccess, handleValidationForm } = errorHandler();
 
 // Route data -- When using form from url
-const userId = ref(route.params.userId);
+const userId = ref(route.params.userId ?? null);
 const userType = ref(
   route.query.userType ? (route.query.userType as UserTypeForm) : null
 );
@@ -76,14 +63,14 @@ const { userIdProp, userTypeProp, clubIdProp, formTypeProp, isEditProp } =
     formTypeProp?: formType;
     isEditProp?: boolean;
   }>();
-userId.value = userIdProp ? userIdProp : userId.value;
-userType.value = userTypeProp ? userTypeProp : userType.value;
-clubId.value = clubIdProp ? clubIdProp : clubId.value;
-formType.value = formTypeProp ? formTypeProp : formType.value;
-isEdit.value = isEditProp ? isEditProp : isEdit.value;
+
+userId.value = userIdProp ?? userId.value;
+userType.value = userTypeProp ?? userType.value;
+clubId.value = clubIdProp ?? clubId.value;
+formType.value = formTypeProp ?? formType.value;
+isEdit.value = isEditProp ?? isEdit.value;
 
 const user = reactive(new User());
-const { handleError, handleSuccess, handleValidationForm } = errorHandler();
 const userApi = new UsersApi(new ApiClient());
 const clubApi = new ClubApi(new ApiClient());
 const districtApi = new DistrictApi(new ApiClient());
@@ -108,10 +95,7 @@ const submitLabel = userId.value
       en: "Create",
       fr: "Créer",
     };
-const maxLengthPostal = {
-  en: "Must be at most 32 characters",
-  fr: "Doit contenir au plus 32 caractères",
-};
+
 const passwordReset = ref({
   resetSet: false,
   newPassword: "",
@@ -119,135 +103,11 @@ const passwordReset = ref({
 const submitted = ref(false);
 
 /* Validations */
-const rules = {
-  firstname: {
-    required: helpers.withMessage(
-      langTranslations.value.formErorrText.required,
-      required
-    ),
-    maxLength: helpers.withMessage(
-      customPrintf(langTranslations.value.maxLengthMessage, "50"),
-      maxLength(50)
-    ),
-  },
-  lastname: {
-    required: helpers.withMessage(
-      langTranslations.value.formErorrText.required,
-      required
-    ),
-    maxLength: helpers.withMessage(
-      customPrintf(langTranslations.value.maxLengthMessage, "50"),
-      maxLength(50)
-    ),
-  },
-  address: {
-    required: helpers.withMessage(
-      langTranslations.value.formErorrText.required,
-      required
-    ),
-    maxLength: helpers.withMessage(
-      customPrintf(langTranslations.value.maxLengthMessage, "100"),
-      maxLength(100)
-    ),
-  },
-  user_postal: {
-    required: helpers.withMessage(
-      langTranslations.value.formErorrText.required,
-      required
-    ),
-    maxLength: helpers.withMessage(
-      maxLengthPostal[languagePref.value],
-      maxLength(32)
-    ),
-  },
-  user_province: {
-    required: helpers.withMessage(
-      langTranslations.value.formErorrText.required,
-      required
-    ),
-    maxLength: helpers.withMessage(
-      customPrintf(langTranslations.value.maxLengthMessage, "100"),
-      maxLength(100)
-    ),
-  },
-  user_city: {
-    required: helpers.withMessage(
-      langTranslations.value.formErorrText.required,
-      required
-    ),
-    maxLength: helpers.withMessage(
-      customPrintf(langTranslations.value.maxLengthMessage, "50"),
-      maxLength(50)
-    ),
-  },
-  user_country: {
-    required: helpers.withMessage(
-      langTranslations.value.formErorrText.required,
-      required
-    ),
-    maxLength: helpers.withMessage(
-      customPrintf(langTranslations.value.maxLengthMessage, "50"),
-      maxLength(50)
-    ),
-  },
-  phone: {
-    required: helpers.withMessage(
-      langTranslations.value.formErorrText.required,
-      required
-    ),
-    maxLength: helpers.withMessage(
-      customPrintf(langTranslations.value.maxLengthMessage, "180"),
-      maxLength(180)
-    ),
-  },
-  role_type: {
-    required: helpers.withMessage(
-      langTranslations.value.formErorrText.required,
-      required
-    ),
-  },
-  email: {
-    emailFormat: helpers.withMessage(
-      langTranslations.value.formErorrText.emailFormat,
-      email
-    ),
-    required: helpers.withMessage(
-      langTranslations.value.formErorrText.required,
-      required
-    ),
-    maxLength: helpers.withMessage(
-      customPrintf(langTranslations.value.maxLengthMessage, "254"),
-      maxLength(254)
-    ),
-  },
-  password: {
-    required: helpers.withMessage(
-      langTranslations.value.formErorrText.required,
-      required
-    ),
-    minLength: helpers.withMessage(
-      customPrintf(
-        langTranslations.value.formErorrText.passwordMinLength,
-        "10"
-      ),
-      minLength(10)
-    ),
-    regexValidation: helpers.withMessage(
-      langTranslations.value.formErorrText.passwordRegex,
-      (value: string) => {
-        const regex = new RegExp(
-          "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])"
-        );
-        return regex.test(value);
-      }
-    ),
-  },
-};
-const v$ = useVuelidate(rules, user);
+const v$ = useVuelidate(userFormRules, user);
 
 /* Hooks */
 
-//Dinamically update clubMap based on changes to chosenDistrict
+//Dynamically update clubMap based on changes to chosenDistrict
 watch(chosenDistrict, async () => {
   try {
     const id = districtMap.get(chosenDistrict.value) as number;
@@ -381,7 +241,7 @@ const redirect = () => {
       router.push({
         name: "ClubMembers",
         query: {
-          tableView: "clubUsers",
+          tableView: "clubAdmins",
         },
       });
       return;
@@ -397,7 +257,14 @@ const redirect = () => {
 };
 
 const choosenDistrictError = computed((): string => {
+  const exempt: Array<formType> = [
+    "siteAdminClub",
+    "districtAdmin",
+    "siteAdminDistrict",
+    "clubAdmin",
+  ];
   if (
+    !exempt.includes(formType.value) &&
     (chosenDistrict.value === "" || chosenClub.value === "") &&
     !clubId.value &&
     !isEdit.value &&
@@ -458,7 +325,7 @@ const choosenDistrictError = computed((): string => {
         :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined"
       />
       <BaseSelect
-        v-if="formType === 'clubAdmin'"
+        v-if="formType === 'clubAdmin' || formType === 'siteAdminClub' || formType === 'districtAdmin'"
         class="w-1/2"
         v-model="user.role_type"
         :label="langTranslations.roleLabel"

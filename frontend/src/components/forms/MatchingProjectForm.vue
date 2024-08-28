@@ -934,6 +934,12 @@ const setClubId = (clubId: number) => {
           class="text-center underline py-8"
           :content="langTranslations.projectFormLabels.sectionAHeader"
         />
+        <div v-if="projectId" class="italic text-gray-500 w-full p-1">
+          {{
+            langTranslations.createdByLabel +
+            `${project.projectDetails?.creatorData?.fullName || "N/A"}`
+          }}
+        </div>
         <div class="form-block">
           <BaseInput
             :disabled="disabledMode"

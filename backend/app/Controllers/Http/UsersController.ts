@@ -265,8 +265,8 @@ export default class UsersController {
   public async deleteUser({ request, response }: HttpContextContract) {
     let source: IUser | null = null;
     let id: number | null = null;
+    const logger = new LogManager();
     try {
-      const logger = new LogManager();
       const { userId, sourceUser } = request.only(["userId", "sourceUser"]) as {
         userId: number;
         sourceUser: IUser;

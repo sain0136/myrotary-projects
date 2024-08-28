@@ -74,20 +74,18 @@ const tabs = ref([
   },
   {
     name: "clubProjects",
-    label:
-      langTranslations.value.clubLabel +
-      " " +
-      langTranslations.value.projectsLabel,
+    label: langTranslations.value.myClubProjectsLabel,
     hide: !access.clubAllProjects,
   },
   {
     name: "created",
-    label: langTranslations.value.myprojectsView.createdProjectsLabel,
+    label: langTranslations.value.myProjectsLabel,
   },
   {
     name: "administrating",
     label: langTranslations.value.myprojectsView.administratingProjectsLabel,
-    toolTip: langTranslations.value.myprojectsView.administratingProjectsToolTip,
+    toolTip:
+      langTranslations.value.myprojectsView.administratingProjectsToolTip,
   },
   {
     name: "newProject",
@@ -116,7 +114,7 @@ const setActiveTab = (tabName: string) => {
         class="inline-block cursor-pointer rounded-t-lg p-4 text-2xl hover:bg-gray-300 hover:text-gray-600"
         :class="{
           ' active  bg-gray-100 text-nearBlack': tab.name === activeTab,
-          'flex flex-nowrap' : tab.toolTip
+          'flex flex-nowrap': tab.toolTip,
         }"
       >
         {{ tab.label }}

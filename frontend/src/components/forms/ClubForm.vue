@@ -17,13 +17,6 @@ import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import H2 from "@/components/headings/H2.vue";
 import Hr from "@/components/hr/Hr.vue";
 import BaseInput from "@/components/form/BaseInput.vue";
-import {
-  email,
-  helpers,
-  maxLength,
-  minLength,
-  required,
-} from "@vuelidate/validators/dist/index.mjs";
 import { DistrictApi } from "@/api/services/DistrictsApi";
 import { ApiClient } from "@/api/ApiClient";
 import { CustomErrors } from "@/utils/classes/CustomErrors";
@@ -31,24 +24,31 @@ import Club from "@/utils/classes/Club";
 import { ClubApi } from "@/api/services/ClubApi";
 import { useRoute } from "vue-router";
 import BaseSelect from "@/components/form/BaseSelect.vue";
-
+import { clubFormRules } from "@/utils/validations/FormRules";
+import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
 /* Data */
 type formType = "siteAdmin" | "clubAdmin" | "districtAdmin" | undefined;
 const route = useRoute();
 const districtApi = new DistrictApi(new ApiClient());
-const { langTranslations, languagePref, customPrintf } = useLanguage();
-const { handleError, handleSuccess, handleValidationForm } = errorHandler();
+const { langTranslations, languagePref } = useLanguage();
+const { handleError, handleSuccess } = errorHandler();
 const club = reactive(new Club());
-// required form data
-const clubId = route.params.clubId ?? null;
-const formType = route.query.formType
+
+/* Query Props */
+const clubIdParam = route.params.clubId ?? null;
+const routeQueryFormType = route.query.formType
   ? (route.query.formType as formType)
   : undefined;
-//
+/* Query Props */
+
+const formData = reactive({
+  clubId: clubIdParam,
+  formType: routeQueryFormType,
+});
 const clubApi = new ClubApi(new ApiClient());
 const districtMap = reactive<Map<string, number>>(new Map());
 const chosenDistrict = ref("");
-const submitLabel: { [key: string]: string } = clubId
+const submitLabel: { [key: string]: string } = clubIdParam
   ? {
       en: "Update",
       fr: "Modifier",
@@ -59,79 +59,30 @@ const submitLabel: { [key: string]: string } = clubId
     };
 
 /* Validations */
-const rules = {
-  club_name: {
-    required: helpers.withMessage(
-      langTranslations.value.formErorrText.required,
-      required
-    ),
-    maxLength: helpers.withMessage(
-      customPrintf(langTranslations.value.maxLengthMessage, "50"),
-      maxLength(50)
-    ),
-    minLenght: helpers.withMessage(
-      customPrintf(langTranslations.value.minLengthMessage, "5"),
-      minLength(5)
-    ),
-  },
-  club_address: {
-    required: helpers.withMessage(
-      langTranslations.value.formErorrText.required,
-      required
-    ),
-    maxLength: helpers.withMessage(
-      customPrintf(langTranslations.value.maxLengthMessage, "100"),
-      maxLength(100)
-    ),
-  },
-  club_city: {
-    required: helpers.withMessage(
-      langTranslations.value.formErorrText.required,
-      required
-    ),
-    maxLength: helpers.withMessage(
-      customPrintf(langTranslations.value.maxLengthMessage, "50"),
-      maxLength(50)
-    ),
-  },
-  club_country: {
-    required: helpers.withMessage(
-      langTranslations.value.formErorrText.required,
-      required
-    ),
-    maxLength: helpers.withMessage(
-      customPrintf(langTranslations.value.maxLengthMessage, "50"),
-      maxLength(50)
-    ),
-  },
-  club_email: {
-    required: helpers.withMessage(
-      langTranslations.value.formErorrText.required,
-      required
-    ),
-    email: helpers.withMessage(
-      langTranslations.value.formErorrText.emailFormat,
-      email
-    ),
-    maxLength: helpers.withMessage(
-      customPrintf(langTranslations.value.maxLengthMessage, "254"),
-      maxLength(254)
-    ),
-  },
-};
-const v$ = useVuelidate(rules, club);
+const v$ = useVuelidate(clubFormRules, club);
 
 /* Hooks */
 onMounted(async () => {
   try {
-    if (formType === "siteAdmin" && !clubId) {
+    if (
+      (formData.formType === "siteAdmin" ||
+        formData.formType === "districtAdmin") &&
+      !formData.clubId
+    ) {
       const response = (await districtApi.getAllDistricts(true)) as District[];
-      response.forEach((district) => {
-        districtMap.set(district.district_name, district.district_id);
-      });
+      if (formData.formType === "siteAdmin") {
+        response.forEach((district) => {
+          districtMap.set(district.district_name, district.district_id);
+        });
+      } else if (formData.formType === "districtAdmin") {
+        const districtName =
+          useLoggedInDistrict().loggedInDistrict.district_name;
+        const districtId = useLoggedInDistrict().loggedInDistrict.district_id;
+        districtMap.set(districtName, districtId);
+      }
     }
-    if (clubId) {
-      const response = await clubApi.getById(Number(clubId as string));
+    if (formData.clubId) {
+      const response = await clubApi.getById(Number(formData.clubId as string));
       Object.assign(club, response);
     }
   } catch (error) {
@@ -140,7 +91,7 @@ onMounted(async () => {
 });
 
 watch(chosenDistrict, async () => {
-  if (!clubId) {
+  if (!formData.clubId) {
     const id = districtMap.get(chosenDistrict.value) as number;
     club.district_id = id;
   }
@@ -153,15 +104,19 @@ const validateAndSubmit = async () => {
     return;
   }
   try {
-    if (formType === "siteAdmin" && !clubId && chosenDistrict.value === "") {
+    if (
+      formData.formType === "siteAdmin" &&
+      !formData.clubId &&
+      chosenDistrict.value === ""
+    ) {
       throw new CustomErrors(900, "Must chose a district", {
         en: "Must assign club to a district",
         fr: "Doit assigner le club a un district",
       });
     }
-    if (clubId) {
+    if (formData.clubId) {
       await clubApi.updateClub(club);
-    } else if (formType === "siteAdmin" && !clubId) {
+    } else if (!formData.clubId) {
       await clubApi.createClub(club);
     }
     handleSuccess(langTranslations.value.toastSuccess, false, {
@@ -173,13 +128,13 @@ const validateAndSubmit = async () => {
   }
 };
 const redirect = () => {
-  if (formType === "siteAdmin") {
+  if (formData.formType === "siteAdmin") {
     router.push({ name: "Club" });
   }
-  if (formType === "clubAdmin") {
+  if (formData.formType === "clubAdmin") {
     router.go(0);
   }
-  if (formType === "districtAdmin") {
+  if (formData.formType === "districtAdmin") {
     router.push({ name: "ClubsAdmin" });
   }
 };
@@ -194,7 +149,11 @@ const redirect = () => {
     <Hr />
     <div class="flex-block flex-col items-center justify-center">
       <BaseSelect
-        v-if="formType === 'siteAdmin' && !clubId"
+        v-if="
+          (formData.formType === 'siteAdmin' ||
+            formData.formType === 'districtAdmin') &&
+          !formData.clubId
+        "
         class="w-1/2"
         :label="langTranslations.userForm.districtSelectLabel"
         :options="[...districtMap.keys()]"
@@ -261,7 +220,7 @@ const redirect = () => {
         :theme="'primary'"
         :label="langTranslations.cancelLabel"
         @click="redirect()"
-        v-if="formType !== 'clubAdmin'"
+        v-if="formData.formType !== 'clubAdmin'"
       />
     </div>
   </form>

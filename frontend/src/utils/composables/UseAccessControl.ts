@@ -2,7 +2,7 @@ import { ref, computed } from "vue";
 import type { ClubRole, DistrictRole } from "@/utils/types/commonTypes";
 
 type PermissionTypes =
-  | "webadmin-settings-view"
+  | "webadmin-settings-view" 
   | "webadmin-district-settings-view"
   | "webadmin-club-settings-view"
   | "myprofile-view"
@@ -71,17 +71,26 @@ const rolePermissions: RolePermissions = {
     "approve-projects",
     "approve-projects-reports",
     "district-all-projects-tab",
+    "districtadmin-clubadmin-view",
+    "districtadmin-district-settings-view",
   ],
   "District Foundations Chair": [
     "myprofile-view",
     "myprojects-view",
     "approvals-view",
+    "districtadmin-district-settings-view",
+    "districtadmin-clubadmin-view",
+    "district-all-projects-tab",
+    "approve-projects-reports",
+    "prospect-users-view",
   ],
   "District Stewardship": [
     "myprofile-view",
     "myprojects-view",
     "approvals-view",
     "approve-projects-reports",
+    "clubadmin-club-settings-view",
+    "club-all-projects-tab",
   ],
   "District International Chair": [
     "myprofile-view",

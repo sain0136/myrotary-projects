@@ -105,7 +105,7 @@ const sideBarItems: Record<
     label:
       langTranslations.value.districtView.distictTabLabel +
       " " +
-      langTranslations.value.settingsLabel,
+      langTranslations.value.adminDash.profile,
     icon: ResourceList.sidebarIcons.districtIcon,
     link: "DistrictAddEdit",
     params: {

@@ -22,6 +22,7 @@ import H3 from "@/components/headings/H3.vue";
 import type { IClub } from "@/utils/interfaces/IClub";
 import type District from "@/utils/classes/District";
 import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
+import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 
 /* Data */
 type tableView = "districtAdmin";
@@ -46,7 +47,11 @@ const { tableView, districtId } = defineProps<{
   districtId?: number;
 }>();
 const loaded = ref(false);
-
+const tableFormType =
+  useLoggedInUserStore().$state.loggedInUser?.user_type === "DISTRICT"
+    ? "districtAdmin"
+    : "siteAdmin";
+    
 /* Hooks */
 watch(chosenDistrict, () => {
   if (chosenDistrict.value !== undefined && !tableView) {
@@ -219,7 +224,7 @@ const updateLimit = (limit: number) => {
           router.push({
             name: 'ClubAddEdit',
             query: {
-              formType: 'siteAdmin',
+              formType: tableFormType,
             },
           })
         "
