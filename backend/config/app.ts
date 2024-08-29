@@ -26,7 +26,6 @@ import type { ValidatorConfig } from "@ioc:Adonis/Core/Validator";
 |
 */
 export const appKey: string = Env.get("APP_KEY");
-
 /*
 |--------------------------------------------------------------------------
 | Http server configuration
@@ -102,12 +101,12 @@ export const http: ServerConfig = {
   |--------------------------------------------------------------------------
   */
   cookie: {
-    domain: "",
+    domain: "", // Keep as is unless you need cross-subdomain cookies
     path: "/",
-    maxAge: "2h",
-    httpOnly: true,
-    secure: false,
-    sameSite: false,
+    maxAge: "1y",
+    httpOnly: true, // Generally good to keep true in all environments
+    secure: Env.get("NODE_ENV") === "production" ? true : false,
+    sameSite: Env.get("NODE_ENV") === "production" ? "strict" : false,
   },
 
   /*

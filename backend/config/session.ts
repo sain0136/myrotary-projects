@@ -19,7 +19,7 @@ export default sessionConfig({
   | entire application
   |
   */
-  enabled: true,
+  enabled: false,
 
   /*
   |--------------------------------------------------------------------------
@@ -73,7 +73,7 @@ export default sessionConfig({
   | Example: `2 days`, `2.5 hrs`, `1y`, `5s` and so on.
   | This is the age that matters for how long sessions are kept active.
   */
-  age: "1y",
+  age: "2.5 hrs",
 
   /*
   |--------------------------------------------------------------------------
@@ -112,9 +112,11 @@ export default sessionConfig({
   cookie: {
     path: "/", //Setting it to '/' means that the cookie will be sent for all paths on your domain. If you set it to '/admin', the cookie will only be sent when the requested URL starts with /admin.
     httpOnly: true,
-    sameSite: process.env.NODE_ENV === "production" ? "lax" : "none",
-    secure: process.env.NODE_ENV === "production",
-    maxAge: "1y",
+    sameSite: false,
+    secure: false,
+    // sameSite: process.env.NODE_ENV === "production" ? "lax" : "none",
+    // secure: process.env.NODE_ENV === "production",
+    maxAge: "2.5 hrs",
   },
 
   /*
