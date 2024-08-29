@@ -17,7 +17,38 @@ const origin =
         "https://test1.myrotaryprojects.org",
         "https://myrotaryprojects.org/",
       ]
-    : "*";
+    : ["http://localhost:5173"];
+const allowedHeaders =
+  Env.get("NODE_ENV") === "production"
+    ? [
+        "Content-Type",
+        "Authorization",
+        "Access-Control-Allow-Origin",
+        "Access-Control-Allow-Credentials",
+      ]
+    : true;
+const allowedExposeHeaders =
+  Env.get("NODE_ENV") === "production"
+    ? [
+        "cache-control",
+        "content-language",
+        "content-type",
+        "expires",
+        "last-modified",
+        "pragma",
+        "Content-Range",
+      ]
+    : [
+        "cache-control",
+        "content-language",
+        "content-type",
+        "expires",
+        "last-modified",
+        "pragma",
+        "Content-Range",
+        "Authorization",
+        "X-Refresh-Token",
+      ];
 const corsConfig: CorsConfig = {
   /*
   |--------------------------------------------------------------------------
@@ -90,12 +121,7 @@ const corsConfig: CorsConfig = {
   | Function          - Receives the current header and should return one of the above values.
   |
   */
-  headers: [
-    "Content-Type",
-    "Authorization",
-    "Access-Control-Allow-Origin",
-    "Access-Control-Allow-Credentials",
-  ],
+  headers: allowedHeaders,
 
   /*
   |--------------------------------------------------------------------------
@@ -117,15 +143,7 @@ const corsConfig: CorsConfig = {
   | https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
   |
   */
-  exposeHeaders: [
-    "cache-control",
-    "content-language",
-    "content-type",
-    "expires",
-    "last-modified",
-    "pragma",
-    "Content-Range",
-  ],
+  exposeHeaders: allowedExposeHeaders,
 
   /*
   |--------------------------------------------------------------------------

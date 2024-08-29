@@ -8,6 +8,7 @@ import { LogTools } from "App/Utils/AppLogger";
 import MailController from "App/Controllers/Http/MailController";
 import { LogManager } from "App/Utils/AppLogger";
 import { logger } from "Config/app";
+import Session from "App/Models/Session";
 
 export default class UsersController {
   private initializeServices() {
@@ -35,15 +36,10 @@ export default class UsersController {
     }
   }
 
-  public async authenticateUser({
-    request,
-    response,
-    session,
-  }: HttpContextContract) {
+  public async authenticateUser({ request, response }: HttpContextContract) {
     const password: string = request.input("password");
     const email: string = request.input("email");
     const webAdmin: boolean = request.input("webAdmin");
-    const logger = new LogManager();
     try {
       const { userService } = this.initializeServices();
       const { userData, newSession } = await userService.authenticateUser({
@@ -52,10 +48,12 @@ export default class UsersController {
         webAdmin,
       });
       if (userData) {
-        session.put("userIsLoggedIn", true);
-        session.put("session_id", newSession.sessionId);
+        response.cookie("session_id", {
+          value: newSession.sessionId,
+          lastActivity: new Date().toISOString(),
+        });
       }
-
+      const logger = new LogManager();
       logger.log(LogTools.LogTypes.ACCESS_LOG, {
         sourceUser: userData.user,
         event: LogTools.UserAccessEvent.LOGIN,
@@ -79,36 +77,27 @@ export default class UsersController {
     const logger = new LogManager();
     try {
       const user = request.body() as IUser;
-      // session.clear();
-      // try {
-      //   const sessionId = this.getSessionID(session, request);
-      //   if (sessionId) {
-      //     const foundSession = await Session.findByOrFail(
-      //       "session_id",
-      //       sessionId
-      //     );
-      //     if (foundSession) {
-      //       await foundSession.delete();
-      //     }
-      //   }
-      // } catch (error) {
-      //   logger.log(LogTools.LogTypes.ACCESS_LOG, {
-      //     sourceUser: user,
-      //     event: LogTools.UserAccessEvent.LOGOUT,
-      //     outcome: "fail",
-      //     errorMessage: error,
-      //   });
-      //   throw new CustomException(error as CustomErrorType);
-      // }
-      // if (!(session as any).store.isEmpty) {
-      //   const errorMessage = `Error logging out user ${user.fullName}. Session not cleared`;
-      //   logger.log(LogTools.LogTypes.ACCESS_LOG, {
-      //     sourceUser: user,
-      //     event: LogTools.UserAccessEvent.LOGOUT,
-      //     outcome: "fail",
-      //     errorMessage: errorMessage,
-      //   });
-      // }
+
+      const sessionId: undefined | { value: string; lastActivity: string } =
+        request.cookie("session_id");
+
+      if (!sessionId?.value) {
+        return response.json({ message: "User logged out sucessfully!" });
+      }
+      const userSession = await Session.findByOrFail(
+        "session_id",
+        sessionId.value
+      );
+      if (userSession) {
+        await userSession.delete();
+        response.clearCookie("session_id");
+      } else {
+        throw new CustomException({
+          message: "Session not found in database",
+          status: 601,
+        });
+      }
+
       logger.log(LogTools.LogTypes.ACCESS_LOG, {
         sourceUser: user,
         event: LogTools.UserAccessEvent.LOGOUT,
@@ -127,19 +116,6 @@ export default class UsersController {
       throw new CustomException(error as CustomErrorType);
     }
   }
-
-  // private getSessionID( 
-  //   session: SessionContract,
-  //   request: RequestContract
-  // ): string | undefined {
-  //   let sessionId: string | undefined = undefined;
-  //   if (session.get("session_id")) {
-  //     sessionId = session.get("session_id");
-  //   } else {
-  //     sessionId = request.qs().sid;
-  //   }
-  //   return sessionId;
-  // }
 
   public async getUser({ request, response }: HttpContextContract) {
     try {
