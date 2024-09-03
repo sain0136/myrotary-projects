@@ -84,13 +84,16 @@ const handleSubmit = async () => {
       )
     );
     router.push({ name: "AdminWelcome" });
-
+    const districtId =
+      userStore.loggedInUser.user_type === "SUPER"
+        ? undefined
+        : userStore.loggedInUser.district_id!;
     // use ProspectUserStore so we can update our notification icon
     const allProspectUsers = await usersApi.getAllUsers(
       true,
       undefined,
       undefined,
-      userStore.loggedInUser.district_id!
+      districtId
     );
     prospectUserStore.setHasProspectUsers(Object(allProspectUsers).length > 0);
   } catch (error) {

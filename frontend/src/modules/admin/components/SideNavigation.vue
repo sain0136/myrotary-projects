@@ -21,7 +21,7 @@ defineProps<{
 }>();
 defineEmits(["update:modelValue"]);
 const userStore = useLoggedInUserStore();
-const prospectUserStore = useProspectUserStore()
+const prospectUserStore = useProspectUserStore();
 
 const { hasAccess } = useAccessControl();
 const { langTranslations } = useLanguage();
@@ -46,7 +46,7 @@ const sideBarItems: Record<
   {
     label: string;
     icon: string;
-    extras?:string;
+    extras?: string;
     link: string;
     hasAccess: boolean;
     params?: Record<string, string>;
@@ -175,7 +175,10 @@ const sideBarItems: Record<
     icon: ResourceList.sidebarIcons.prospectUsersIcon,
     extras: ResourceList.sidebarIcons.notificationIcon,
     link: "ProspectUsers",
-    hasAccess: hasAccess(loggedinRole.value as AllUserRoles, "prospect-users-view"),
+    hasAccess: hasAccess(
+      loggedinRole.value as AllUserRoles,
+      "prospect-users-view"
+    ),
   },
   superAdmins: {
     label: "Super Admin",
@@ -189,7 +192,6 @@ const sideBarItems: Record<
 onMounted(async () => {});
 
 /* Methods */
-
 </script>
 
 <template>
@@ -243,7 +245,13 @@ onMounted(async () => {});
                 <span class="flex-1 ml-3 text-center mt-1 whitespace-wrap">{{
                   item.label
                 }}</span>
-                <span v-if="item.link === 'ProspectUsers' && prospectUserStore.hasProspectUsers" v-html="item.extras"></span>
+                <span
+                  v-if="
+                    item.link === 'ProspectUsers' &&
+                    prospectUserStore.hasProspectUsers
+                  "
+                  v-html="item.extras"
+                ></span>
               </button>
             </router-link>
           </div>

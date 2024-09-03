@@ -54,11 +54,15 @@ onMounted(async () => {
 const getProspectUsers = async () => {
   loaded.value = false;
   try {
+    const districtId =
+      userStore.loggedInUser.user_type === "SUPER"
+        ? undefined
+        : userStore.loggedInUser.district_id!;
     const response = await userApi.getAllUsers(
       true,
       pagination.limit,
       pagination.currentPage,
-      userStore.loggedInUser.district_id!
+      districtId
     );
     let selectedUsers = response.data;
 
@@ -115,7 +119,7 @@ const denyUser = async (user: IUser) => {
   if (!confirmed) return;
   await userApi.deleteProspectUser(user);
   await refreshPage();
-  handleInfo(langTranslations.value.toastDenyProspect,true);
+  handleInfo(langTranslations.value.toastDenyProspect, true);
 };
 
 const refreshPage = async () => {
