@@ -41,18 +41,18 @@ const { langTranslations, languagePref } = useLanguage();
 const { handleError, handleSuccess, handleValidationForm } = errorHandler();
 
 // Route data -- When using form from url
-const userId = ref(route.params.userId ?? null);
+const userId = ref(route.params.userId ?? undefined);
 const userType = ref(
-  route.query.userType ? (route.query.userType as UserTypeForm) : null
+  route.query.userType ? (route.query.userType as UserTypeForm) : undefined
 );
-const clubId = ref(route.query.clubId ?? null);
+const clubId = ref<string | undefined>(
+  (route.query.clubId as string) ?? undefined
+);
 const districtId = ref(
-  route.query.districtId ? Number(route.query.districtId) : null
+  route.query.districtId ? Number(route.query.districtId) : undefined
 );
 const isEdit = ref(route.query.isEdit ? true : false);
-const formType = ref(
-  route.query.formType ? (route.query.formType as formType) : null
-);
+const formType = ref<formType>(route.query.formType as formType); //TODO: You must send this maybe type any route type i.e a type for all router calls
 
 // Component data -- When using form from component
 const { userIdProp, userTypeProp, clubIdProp, formTypeProp, isEditProp } =
@@ -60,15 +60,15 @@ const { userIdProp, userTypeProp, clubIdProp, formTypeProp, isEditProp } =
     userIdProp?: string;
     userTypeProp?: UserTypeForm;
     clubIdProp?: string;
-    formTypeProp?: formType;
+    formTypeProp: formType;
     isEditProp?: boolean;
   }>();
 
-userId.value = userIdProp ?? userId.value;
-userType.value = userTypeProp ?? userType.value;
-clubId.value = clubIdProp ?? clubId.value;
-formType.value = formTypeProp ?? formType.value;
-isEdit.value = isEditProp ?? isEdit.value;
+userId.value = userId.value ?? userIdProp;
+userType.value = userType.value ?? userTypeProp;
+clubId.value = clubId.value ?? clubIdProp;
+formType.value = formType.value ?? formTypeProp;
+isEdit.value = isEdit.value ?? isEditProp;
 
 const user = reactive(new User());
 const userApi = new UsersApi(new ApiClient());
@@ -325,7 +325,11 @@ const choosenDistrictError = computed((): string => {
         :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined"
       />
       <BaseSelect
-        v-if="formType === 'clubAdmin' || formType === 'siteAdminClub' || formType === 'districtAdmin'"
+        v-if="
+          formType === 'clubAdmin' ||
+          formType === 'siteAdminClub' ||
+          formType === 'districtAdmin'
+        "
         class="w-1/2"
         v-model="user.role_type"
         :label="langTranslations.roleLabel"

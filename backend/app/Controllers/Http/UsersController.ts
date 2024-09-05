@@ -7,10 +7,15 @@ import { IUser } from "App/Shared/Interfaces/IUser";
 import { LogTools } from "App/Utils/AppLogger";
 import MailController from "App/Controllers/Http/MailController";
 import { LogManager } from "App/Utils/AppLogger";
-import { logger } from "Config/app";
 import Session from "App/Models/Session";
 
 export default class UsersController {
+  private logManager: LogManager;
+
+  constructor() {
+    this.logManager = new LogManager();
+  }
+
   private initializeServices() {
     const userRepositories = new UserRepositories();
     const userService = new UserService(userRepositories);
@@ -53,8 +58,7 @@ export default class UsersController {
           lastActivity: new Date().toISOString(),
         });
       }
-      const logger = new LogManager();
-      logger.log(LogTools.LogTypes.ACCESS_LOG, {
+      this.logManager.log(LogTools.LogTypes.ACCESS_LOG, {
         sourceUser: userData.user,
         event: LogTools.UserAccessEvent.LOGIN,
         outcome: "success",
@@ -62,19 +66,27 @@ export default class UsersController {
       });
       return response.json({ ...userData });
     } catch (error) {
-      logger.log(LogTools.LogTypes.ACCESS_LOG, {
+      this.logManager.log(LogTools.LogTypes.ACCESS_LOG, {
         sourceUser: null,
         event: LogTools.UserAccessEvent.LOGIN,
         outcome: "fail",
         errorMessage: error,
         customMessage: `Email used: ${email}`,
       });
+      if (error.status === 404) {
+        response.status(error.status).send({
+          statusCode: error.status,
+          rawMessage: error.sqlMessage ? error.sqlMessage : error.message,
+          translatedMessage:
+            error.translatedMessage ??
+            "Something went wrong. Please try again later.",
+        });
+      }
       throw new CustomException(error as CustomErrorType);
     }
   }
 
   public async logout({ request, response }: HttpContextContract) {
-    const logger = new LogManager();
     try {
       const user = request.body() as IUser;
 
@@ -98,7 +110,7 @@ export default class UsersController {
         });
       }
 
-      logger.log(LogTools.LogTypes.ACCESS_LOG, {
+      this.logManager.log(LogTools.LogTypes.ACCESS_LOG, {
         sourceUser: user,
         event: LogTools.UserAccessEvent.LOGOUT,
         outcome: "success",
@@ -107,7 +119,7 @@ export default class UsersController {
       });
       return response.json({ message: "User logged out sucessfully!" });
     } catch (error) {
-      logger.log(LogTools.LogTypes.ACCESS_LOG, {
+      this.logManager.log(LogTools.LogTypes.ACCESS_LOG, {
         sourceUser: null,
         event: LogTools.UserAccessEvent.LOGOUT,
         outcome: "fail",
@@ -129,7 +141,6 @@ export default class UsersController {
   }
 
   public async createUser({ request, response }: HttpContextContract) {
-    const logger = new LogManager();
     //De-structuring the request body to handle the source and target user
     const { user, sourceUser } = request.only(["user", "sourceUser"]) as {
       user: IUser;
@@ -161,7 +172,7 @@ export default class UsersController {
           mailBodyMessage
         );
       }
-      logger.log(LogTools.LogTypes.USER_LOG, {
+      this.logManager.log(LogTools.LogTypes.USER_LOG, {
         sourceUser: sourceUser,
         targetUser: createdUser,
         event: LogTools.UserEditEvent.CREATE,
@@ -173,7 +184,7 @@ export default class UsersController {
       });
       return response.json(true);
     } catch (error) {
-      logger.log(LogTools.LogTypes.USER_LOG, {
+      this.logManager.log(LogTools.LogTypes.USER_LOG, {
         sourceUser: sourceUser,
         targetUser: user,
         event: LogTools.UserEditEvent.CREATE,
@@ -188,7 +199,6 @@ export default class UsersController {
   }
 
   public async updateUser({ request, response }: HttpContextContract) {
-    const logger = new LogManager();
     try {
       //De-structuring the request body to handle the source and target user
       const { user, sourceUser } = request.only(["user", "sourceUser"]) as {
@@ -203,7 +213,7 @@ export default class UsersController {
         const customMessage = prospectApproved
           ? `Prospective ${updatedUser.fullName} approved and updated into a full user`
           : `User ${updatedUser.fullName} updated`;
-        logger.log(LogTools.LogTypes.USER_LOG, {
+        this.logManager.log(LogTools.LogTypes.USER_LOG, {
           sourceUser: sourceUser,
           targetUser: user,
           event: LogTools.UserEditEvent.UPDATE,
@@ -227,7 +237,7 @@ export default class UsersController {
       );
       return response.json(true);
     } catch (error) {
-      logger.log(LogTools.LogTypes.USER_LOG, {
+      this.logManager.log(LogTools.LogTypes.USER_LOG, {
         sourceUser: null,
         targetUser: null,
         event: LogTools.UserEditEvent.UPDATE,
@@ -241,7 +251,6 @@ export default class UsersController {
   public async deleteUser({ request, response }: HttpContextContract) {
     let source: IUser | null = null;
     let id: number | null = null;
-    const logger = new LogManager();
     try {
       const { userId, sourceUser } = request.only(["userId", "sourceUser"]) as {
         userId: number;
@@ -251,7 +260,7 @@ export default class UsersController {
       id = userId;
       const { userService } = this.initializeServices();
       const deletedUser = await userService.deleteUser(userId);
-      logger.log(LogTools.LogTypes.USER_LOG, {
+      this.logManager.log(LogTools.LogTypes.USER_LOG, {
         sourceUser: sourceUser,
         targetUser: deletedUser,
         event: LogTools.UserEditEvent.DELETE,
@@ -261,7 +270,7 @@ export default class UsersController {
       });
       return response.json(true);
     } catch (error) {
-      logger.log(LogTools.LogTypes.USER_LOG, {
+      this.logManager.log(LogTools.LogTypes.USER_LOG, {
         sourceUser: source,
         targetUser: null,
         event: LogTools.UserEditEvent.DELETE,
