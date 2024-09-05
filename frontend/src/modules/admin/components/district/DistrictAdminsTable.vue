@@ -12,7 +12,6 @@ import type { CustomError } from "@/utils/classes/CustomError";
 import BaseSelect from "@/components/form/BaseSelect.vue";
 import H3 from "@/components/headings/H3.vue";
 import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
-
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import type { IDistrict } from "@/utils/interfaces/IDistrict";
 import { onMounted, reactive, ref, watch } from "vue";
@@ -20,7 +19,6 @@ import { useLanguage } from "@/utils/languages/UseLanguage";
 import router from "@/router";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import type { PaginationResult } from "@/utils/types/commonTypes";
-
 import { modalHandler } from "@/utils/composables/ModalHandler";
 import type { IUser } from "@/utils/interfaces/IUser";
 import { UsersApi } from "@/api/services/UserApi";
