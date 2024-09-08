@@ -1,7 +1,6 @@
 import { CustomErrors } from "@/utils/classes/CustomErrors";
 import type { ICustomError } from "@/utils/interfaces/ICustomError";
 import axios from "axios";
-const { logoutUser } = await import("@/utils/utils");
 
 export class ApiClient {
   private baseURL = import.meta.env.VITE_BASE_API_URL;
@@ -72,14 +71,12 @@ export class ApiClient {
 
   private async handleSessionTimeout() {
     try {
-      // TODO: delete this and that modal when it's ready
+      // TODO: delete this modal component  and that modal when it's ready
       // const { langTranslations } = useLanguage();
       // const { changeShowModal, setModal } = modalHandler();
-      // setModal(
-      //   langTranslations.value.sessionTimeoutHeader,
-      //   langTranslations.value.sessionTimeoutBody
-      // );
-      // changeShowModal();
+
+      const { logoutUser } = await import("@/utils/utils"); // Lazy load logout to ensure userStore is initialized
+
       await logoutUser();
       return;
     } catch (error) {
