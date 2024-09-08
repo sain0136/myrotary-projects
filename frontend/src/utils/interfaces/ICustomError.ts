@@ -1,6 +1,5 @@
 export interface ICustomError {
   statusCode: number | string;
-  rawMessage: string;
   translatedMessage: translations;
   message?: string;
 }

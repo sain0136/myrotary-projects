@@ -30,14 +30,13 @@ export class ApiClient {
       const partialError = jsonData as unknown as ICustomError;
 
       if (partialError.message?.includes("JSON")) {
-        throw new CustomErrors(501, partialError.message as string, {
+        throw new CustomErrors(501, {
           en: "Internal Server Error. Please try again later.",
           fr: "Erreur interne du serveur. Veuillez reessayer plus tard.",
         });
       }
       throw new CustomErrors(
         partialError.statusCode,
-        partialError.rawMessage,
         partialError.translatedMessage
       );
     }
@@ -57,11 +56,13 @@ export class ApiClient {
       },
       withCredentials: true,
     });
+    if (response.status === 601) {
+      this.handleSessionTimeout();
+    }
     if (response.status !== 200) {
       const partialError = response.data as unknown as ICustomError;
       throw new CustomErrors(
         partialError.statusCode,
-        partialError.rawMessage,
         partialError.translatedMessage
       );
     }
@@ -70,15 +71,11 @@ export class ApiClient {
 
   private async handleSessionTimeout() {
     try {
-      // TODO: delete this and that modal when it's ready
+      // TODO: delete this modal component  and that modal when it's ready
       // const { langTranslations } = useLanguage();
       // const { changeShowModal, setModal } = modalHandler();
-      // setModal(
-      //   langTranslations.value.sessionTimeoutHeader,
-      //   langTranslations.value.sessionTimeoutBody
-      // );
-      // changeShowModal();
-      const { logoutUser } = await import("@/utils/utils");
+
+      const { logoutUser } = await import("@/utils/utils"); // Lazy load logout to ensure userStore is initialized
 
       await logoutUser();
       return;

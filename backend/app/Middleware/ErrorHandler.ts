@@ -1,10 +1,106 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import CustomException from "App/Exceptions/CustomException";
-import { Translation, DatabaseError } from "App/Utils/CommonTypes";
+import { Translation } from "App/Utils/CommonTypes";
 import { LogTools } from "App/Utils/AppLogger";
 import { LogManager } from "App/Utils/AppLogger";
 
-const databaseErrors: { [key: string]: DatabaseError } = {
+/**
+ * Middleware for handling exceptions. All Errors are handled here.
+ *
+ * @param {HttpContextContract} request
+ * @param {() => Promise<void>} next
+ * @return {Promise<void>}
+ */
+export default class ErrorHandler {
+  private logger = new LogManager();
+
+  /**
+   * Handles the incoming HTTP request and response for exceptions.
+   */
+  public async handle(
+    { request, response }: HttpContextContract,
+    next: () => Promise<void>
+  ): Promise<void> {
+    try {
+      await next();
+    } catch (error) {
+      if (error instanceof CustomException) {
+        // first Log the error
+        const errorType = error.sqlMessage
+          ? LogTools.LogTypes.DATABASE_ERROR
+          : LogTools.LogTypes.EXCEPTION_ERROR;
+
+        this.logger.log(errorType, {
+          error,
+          customMessage: error.stack ?? "No stack trace available",
+        });
+        // Try not send translated messages instead use generic ones in this middleware
+        const translatedMessage =
+          error.translatedMessage ??
+          this.getTranslatedMessage(error, request.url());
+
+        // Handle the response
+        response.status(error.status).send({
+          statusCode: error.status,
+          translatedMessage,
+        });
+      }
+    }
+  }
+
+  /**
+   * Retrieves the translated message based on the provided custom exception.
+   */
+  private getTranslatedMessage(
+    { status, errno }: CustomException,
+    url: string
+  ): Translation {
+    if (errno && dbErrorMsgs[errno]) {
+      // Handle specific db errors
+      return getTranslatedDatabaseError(errno, url);
+    } else if (errno) {
+      // Handle all other db errors
+      return {
+        en: "Something went wrong. A report was sent to the administrator",
+        fr: "Quelque chose s'est mal passé. Un rapport a été envoyée à l'administrateur",
+      };
+    } else {
+      // Handle all other errors
+      return getTranslatedErrorMessage(status);
+    }
+  }
+}
+
+type DatabaseErrorType =
+  | "1062"
+  | "1062-projects"
+  | "1062-users"
+  | "1062-districts"
+  | "1451"
+  | "1452";
+
+/**
+ * Maps a database error number to a generic translated error message, handle known and specific database errors
+ */
+const getTranslatedDatabaseError = (
+  errno: number,
+  url: string
+): Translation => {
+  if (errno === 1062 && url.includes("user")) {
+    return dbErrorMsgs["1062-users"];
+  } else if (errno === 1062 && url.includes("project")) {
+    return dbErrorMsgs["1062-projects"];
+  } else if (errno === 1062 && url.includes("district")) {
+    return dbErrorMsgs["1062-districts"];
+  } else {
+    return dbErrorMsgs[errno];
+  }
+};
+
+/**
+ *  Database error messages - We dont send a verbose/SQL raw message rather use these generic ones
+ */
+const dbErrorMsgs: Record<DatabaseErrorType, Translation> = {
   "1062": {
     en: "Duplicate record entry",
     fr: "Entrée d'enregistrement en double",
@@ -31,115 +127,45 @@ const databaseErrors: { [key: string]: DatabaseError } = {
   },
 };
 
-const logger = new LogManager();
-
-const handleDatabaseError = (errno: number, url: string): Translation => {
-  if (errno === 1062 && url.includes("user")) {
-    return databaseErrors["1062-users"];
-  } else if (errno === 1062 && url.includes("project")) {
-    return databaseErrors["1062-projects"];
-  } else if (errno === 1062 && url.includes("district")) {
-    return databaseErrors["1062-districts"];
-  } else {
-    return databaseErrors[errno];
-  }
-};
-
 /**
- * Handles the HTTP request and response.
- *
- * @param {HttpContextContract} request - The HTTP context contract.
- * @param {() => Promise<void>} next - The next function to be called.
- * @return {Promise<void>} A promise that resolves when the function completes.
+ * Retrieves the translated message based on the provided HTTP status code for all non database exceptions
  */
-export default class ErrorHandler {
-  /**
-   * Handles the incoming HTTP request and response for exceptions.
-   *
-   * @param {HttpContextContract} request - The HTTP context contract containing the request and response objects.
-   * @param {() => Promise<void>} next - The next function in the middleware chain.
-   */
-  public async handle(
-    { request, response }: HttpContextContract,
-    next: () => Promise<void>
-  ) {
-    try {
-      await next();
-    } catch (error) {
-      if (error instanceof CustomException) {
-        const errorType = error.sqlMessage
-          ? LogTools.LogTypes.DATABASE_ERROR
-          : LogTools.LogTypes.EXCEPTION_ERROR;
-        logger.log(errorType, {
-          error,
-          customMessage: error.stack ?? "No stack trace available",
-        });
-        // Handle the response
-        response.status(error.status).send({
-          statusCode: error.status,
-          rawMessage: error.sqlMessage ? error.sqlMessage : error.message,
-          translatedMessage:
-            error.translatedMessage ??
-            this.getTranslatedMessage(error, request.url()),
-        });
-      }
-    }
-  }
-
-  /**
-   * Retrieves the translated message based on the provided custom exception.
-   *
-   * @param {CustomException} exception - The custom exception object containing status, errno, sqlMessage, stack, and message properties.
-   * @return {Translation} The translated message based on the exception.
-   */
-  private getTranslatedMessage(
-    { status, errno }: CustomException,
-    url: string
-  ): Translation {
-    if (errno && databaseErrors[errno]) {
-      return handleDatabaseError(errno, url);
-    } else if (errno) {
+function getTranslatedErrorMessage(status: number): Translation {
+  switch (status) {
+    case 400:
       return {
-        en: "Something went wrong. A report was sent to the administrator",
-        fr: "Quelque chose s'est mal passé. Un rapport a été envoyée à l'administrateur",
+        en: "Bad Request",
+        fr: "Mauvaise requête",
       };
-    }
-    switch (status) {
-      case 400:
-        return {
-          en: "Bad Request",
-          fr: "Mauvaise requête",
-        };
-      case 401:
-        return {
-          en: "Unauthorized. Please login to continue ",
-          fr: "Non autorisé. Veuillez vous connecter pour continuer",
-        };
-      case 422:
-        return {
-          en: "Unprocessable Entity",
-          fr: "Entité non traitable",
-        };
-      case 403:
-        return {
-          en: "Forbidden",
-          fr: "Interdit",
-        };
-      case 601:
-        return {
-          en: "You were logged out due to inactivity. Please login again.",
-          fr: "Vous avez été déconnecté suite à l'inactivité. Veuillez vous reconnecter",
-        };
-      case 500:
-        return {
-          en: "Internal Server Error. Please try again later",
-          fr: "Erreur interne du serveur",
-        };
-      default:
-        return {
-          en: "Something went wrong. Contact us at your earliest convenience",
-          fr: "Quelque chose s'est mal passé. Contactez-nous au plus vite",
-        };
-    }
+    case 401:
+      return {
+        en: "Unauthorized. Please login to continue ",
+        fr: "Non autorisé. Veuillez vous connecter pour continuer",
+      };
+    case 422:
+      return {
+        en: "Unprocessable Entity",
+        fr: "Entité non traitable",
+      };
+    case 403:
+      return {
+        en: "Forbidden",
+        fr: "Interdit",
+      };
+    case 601:
+      return {
+        en: "You were logged out due to inactivity. Please login again.",
+        fr: "Vous avez été déconnecté suite à l'inactivité. Veuillez vous reconnecter",
+      };
+    case 500:
+      return {
+        en: "Internal Server Error. Please try again later",
+        fr: "Erreur interne du serveur",
+      };
+    default:
+      return {
+        en: "Something went wrong. Contact us at your earliest convenience",
+        fr: "Quelque chose s'est mal passé. Contactez-nous au plus vite",
+      };
   }
 }
