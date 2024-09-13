@@ -88,6 +88,16 @@ const handleSubmit = async () => {
     handleError(error as CustomError);
   }
 };
+
+const errorMessageForEmail = () => {
+  const error = v$.value.email?.$errors[0];
+  return error ? error.$message.toString() : undefined;
+};
+
+const errorMessageForPassword = () => {
+  const error = v$.value.password?.$errors[0];
+  return error ? error.$message.toString() : undefined;
+};
 </script>
 
 <template>
@@ -115,18 +125,18 @@ const handleSubmit = async () => {
             :label="langTranslations.email"
             :type="'email'"
             :required="true"
-            :errorMessage="v$.email?.$errors[0]?.$message as string | undefined"
+            :errorMessage="errorMessageForEmail()"
           />
           <BaseInput
             v-model="state.password"
             :label="langTranslations.password"
             :type="'password'"
             :required="true"
-            :errorMessage="v$.password?.$errors[0]?.$message as string | undefined"
+            :errorMessage="errorMessageForPassword()"
           />
           <RotaryButton
             @click="handleSubmit"
-            :label="langTranslations.adminLoginForm.signIn"
+            :label="langTranslations.adminLoginForm.login"
             theme="primary"
             class="w-full"
           />

@@ -1,4 +1,20 @@
 {
-  "extends": "@tsconfig/node18/tsconfig.json",
-  "include": ["./**/*"]
+  "extends": "../tsconfig.app.json",
+  "include": [
+    "../env.d.ts",
+    "../vite-env.d.ts",
+    "src/**/*",
+    "src/**/*.vue",
+    "../**/e2e/**/*"
+  ],
+  "exclude": [],
+  "compilerOptions": {
+    "composite": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
+  }
 }

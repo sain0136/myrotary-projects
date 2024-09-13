@@ -21,7 +21,6 @@ import Banners from "@/components/banners/Banners.vue";
 import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
 import { useLoggedInClub } from "@/stores/LoggedInClub";
 import { useProspectUserStore } from "@/stores/ProspecUserStore";
-import { DistrictApi } from "@/api/services/DistrictsApi";
 
 /* Data */
 const { langTranslations, customPrintf } = useLanguage();
@@ -35,7 +34,6 @@ const prospectUserStore = useProspectUserStore();
 const districtStore = useLoggedInDistrict();
 const clubStore = useLoggedInClub();
 const usersApi = new UsersApi(new ApiClient());
-const districtApi = new DistrictApi(new ApiClient());
 
 /* Validations */
 const rules = {
@@ -100,6 +98,15 @@ const handleSubmit = async () => {
     handleError(error as CustomError);
   }
 };
+const errorMessageForEmail = () => {
+  const error = v$.value.email?.$errors[0];
+  return error ? error.$message.toString() : undefined;
+};
+
+const errorMessageForPassword = () => {
+  const error = v$.value.password?.$errors[0];
+  return error ? error.$message.toString() : undefined;
+};
 </script>
 
 <template>
@@ -114,18 +121,16 @@ const handleSubmit = async () => {
           v-model="state.email"
           :label="langTranslations.email"
           :type="'email'"
-          :required="true"
-          :errorMessage="v$.email?.$errors[0]?.$message as string | undefined"
+          :errorMessage="errorMessageForEmail()"
         />
         <BaseInput
           v-model="state.password"
           :label="langTranslations.password"
           :type="'password'"
-          :required="true"
-          :errorMessage="v$.password?.$errors[0]?.$message as string | undefined"
+          :errorMessage="errorMessageForPassword()"
         />
         <RotaryButton
-          :label="langTranslations.adminLoginForm.signIn"
+          :label="langTranslations.adminLoginForm.login"
           theme="primary"
           class="w-full"
           type="submit"

@@ -310,7 +310,7 @@ export interface Translation {
   loginLabel: string;
   adminLoginForm: {
     welcome: string;
-    signIn: string;
+    login: string;
     subHeading: string;
     successfulLogin: string;
   };
@@ -724,7 +724,7 @@ export const translations: Record<string, Translation> = {
     },
     adminLoginForm: {
       welcome: "Welcome Back",
-      signIn: "Sign In",
+      login: "Login",
       subHeading: "Rotary Administration awaits you",
       successfulLogin: "Access Granted. Welcome Back {name}!",
     },
@@ -1144,7 +1144,7 @@ export const translations: Record<string, Translation> = {
     },
     adminLoginForm: {
       welcome: "Bienvenue de nouveau",
-      signIn: "Se connecter",
+      login: "Connexion",
       subHeading: "Administration du Rotary vous attend",
       successfulLogin: "Accès autorisé. Bienvenue de nouveau {name}!",
     },
