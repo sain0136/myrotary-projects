@@ -22,20 +22,20 @@ jobs:
         run: |
           ssh -i id_rsa ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }} <<'ENDSSH'
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S sh -c '
-            cd /home/servicehost/myrotary-projects
+            cd /opt/apps/myrotary-projects
             git stash
             git pull https://sain0136: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@github.com/sain0136/myrotary-projects.git main
             cd backend
-            BUILD_DIR="/home/servicehost/myrotary-projects/backend/build"
+            BUILD_DIR="/opt/apps/myrotary-projects/backend/build"
             if [ -d "$BUILD_DIR" ]; then
               rm -rf "$BUILD_DIR"
             fi
-            sudo npm install
+            npm install
             node ace build --production --ignore-ts-errors
-            sudo chown -R servicehost:servicehost /home/servicehost/myrotary-projects/backend/build
-            sudo chmod -R u+rwX /home/servicehost/myrotary-projects/backend/build
+            sudo chown -R servicehost:servicehost /opt/apps/myrotary-projects/backend/build
+            sudo chmod -R u+rwX /opt/apps/myrotary-projects/backend/build
             # Copy environment file to build directory
-            cp /home/servicehost/productionfiles/.env /home/servicehost/myrotary-projects/backend/build
+            cp /opt/apps/productionfiles/myrotary/.env /opt/apps/myrotary-projects/backend/build
             
             # Navigate to build directory and install production dependencies
             cd build
@@ -46,12 +46,12 @@ jobs:
             pm2 delete ProductionApi
             pm2 list
             pm2 save 
-            pm2 start /home/servicehost/myrotary-projects/backend/build/server.js  >> production_log.log -i -f --name ProductionApi
+            pm2 start /opt/apps/myrotary-projects/backend/build/server.js  >> production_rotary_log.log -i -f --name ProductionApi
             pm2 save --force
             pm2 list
             
             # Frontend Deployment
-            cd /home/servicehost/myrotary-projects/frontend
+            cd /opt/apps/myrotary-projects/frontend
             npm install
             chmod -R a+x node_modules
             npm run build-only
@@ -64,5 +64,5 @@ jobs:
             fi
             
             # Move new frontend build to web directory
-            sudo mv /home/servicehost/myrotary-projects/frontend/dist /var/www/pro
+            sudo mv /opt/apps/myrotary-projects/frontend/dist /var/www/pro
             '
