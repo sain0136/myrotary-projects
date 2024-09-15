@@ -66,3 +66,29 @@ jobs:
             # Move new frontend build to web directory
             sudo mv /opt/apps/myrotary-projects/frontend/dist /var/www/pro
             # '
+  test:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install Playwright
+        run: npm install playwright
+
+      - name: Install Playwright dependencies
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright tests
+        env:
+          BASE_URL: "https://myrotaryprojects.org/"
+          PLAYWRIGHT_USERNAME: ${{ secrets.PLAYWRIGHT_USERNAME }}
+          PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
+        run: |
+          cd frontend
+          npx playwright test
