@@ -21,7 +21,7 @@ jobs:
       - name: Deploy Rotary
         run: |
           ssh -i id_rsa ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }} <<'ENDSSH'
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S sh -c '
+            # echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S sh -c '
             cd /opt/apps/myrotary-projects
             git stash
             git pull https://sain0136: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@github.com/sain0136/myrotary-projects.git main
@@ -65,4 +65,4 @@ jobs:
             
             # Move new frontend build to web directory
             sudo mv /opt/apps/myrotary-projects/frontend/dist /var/www/pro
-            '
+            # '
