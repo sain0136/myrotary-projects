@@ -5,7 +5,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { ref, reactive, defineProps, onMounted } from "vue";
+import { ref, reactive, defineProps } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { helpers } from "@vuelidate/validators";
 import type { uploadFileData } from "@/utils/types/commonTypes";
@@ -126,6 +126,7 @@ if (dropzoneAcceptedFileTypes === "docsOnly") {
 
 /* Methods */
 const handleFileChange = (event: Event, multiple: boolean) => {
+  event.preventDefault();
   if (disabled) return;
   const target = event.target as HTMLInputElement;
   const files = target.files;
@@ -156,14 +157,10 @@ const uploadLimitexceeded = () => {
     if (validationData.file && Array.isArray(validationData.file)) {
       if (validationData.file.length > uploadLimits.maxFilesUploadPer) {
         handleError(
-          new CustomErrors(
-            400,
-            `You can upload a maximum of ${uploadLimits.maxFilesUploadPer} files`,
-            {
-              en: `You can upload a maximum of ${uploadLimits.maxFilesUploadPer} files per request`,
-              fr: `Vous pouvez télécharger un maximum de ${uploadLimits.maxFilesUploadPer} fichiers par requête`,
-            }
-          )
+          new CustomErrors(400, {
+            en: `You can upload a maximum of ${uploadLimits.maxFilesUploadPer} files per request`,
+            fr: `Vous pouvez télécharger un maximum de ${uploadLimits.maxFilesUploadPer} fichiers par requête`,
+          })
         );
         return true;
       }
@@ -183,7 +180,7 @@ const uploadLimitexceeded = () => {
       uploadLimits.uploadMaxLimit
   ) {
     handleError(
-      new CustomErrors(400, "Total upload limit reached", {
+      new CustomErrors(400, {
         en: `Total upload limit reached. Cannot upload more than ${
           uploadLimits.uploadMaxLimit ?? 10
         } files`,
@@ -220,14 +217,10 @@ const submit = async () => {
           : 0;
       if (totalSize > MAXBYTES) {
         handleError(
-          new CustomErrors(
-            400,
-            "Upload file/files size exceeds limit of 10MB",
-            {
-              en: "Upload file/files size exceeds limit of 10MB",
-              fr: "La taille du fichier est supérieure à la limite de 10MB",
-            }
-          )
+          new CustomErrors(400, {
+            en: "Upload file/files size exceeds limit of 10MB",
+            fr: "La taille du fichier est supérieure à la limite de 10MB",
+          })
         );
         return;
       }
@@ -261,7 +254,7 @@ const submit = async () => {
         postUploadCallback();
       }
     } catch (error) {
-      const failUpload = new CustomErrors(500, "Failed to upload file", {
+      const failUpload = new CustomErrors(500, {
         en: "Failed to upload file",
         fr: "Echec du telechargement du fichier",
       });
@@ -309,7 +302,6 @@ const triggerFileInput = () => {
     >
       <Icon icon="material-symbols:upload-sharp" />
       <input
-        @event.preventDefault()
         class="hidden w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none"
         aria-describedby="file_input_help"
         id="file_input"

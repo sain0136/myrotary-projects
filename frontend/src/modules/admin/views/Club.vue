@@ -1,5 +1,6 @@
 <script lang="ts">
 export default {
+  // eslint-disable-next-line vue/multi-word-component-names
   name: "Club",
 };
 </script>
@@ -9,6 +10,7 @@ import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted, ref } from "vue";
 import ClubsTable from "@/modules/admin/components/club/ClubsTable.vue";
 import ClubMembersTable from "@/modules/admin/components/club/ClubMembersTable.vue";
+
 /* Data */
 const { langTranslations } = useLanguage();
 const activeTab = ref(sessionStorage.getItem("clubViewLastTab") || "clubs");

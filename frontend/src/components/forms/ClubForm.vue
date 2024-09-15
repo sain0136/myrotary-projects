@@ -109,7 +109,7 @@ const validateAndSubmit = async () => {
       !formData.clubId &&
       chosenDistrict.value === ""
     ) {
-      throw new CustomErrors(900, "Must chose a district", {
+      throw new CustomErrors(900, {
         en: "Must assign club to a district",
         fr: "Doit assigner le club a un district",
       });
@@ -138,6 +138,13 @@ const redirect = () => {
     router.push({ name: "ClubsAdmin" });
   }
 };
+
+const getErrorMessage = (validationObject: string) => {
+  const error = v$.value[validationObject]
+    ? v$.value[validationObject].$errors[0]
+    : undefined;
+  return error ? error.$message.toString() : undefined;
+};
 </script>
 
 <template>
@@ -165,44 +172,44 @@ const redirect = () => {
         v-model="club.club_name"
         :label="langTranslations.nameLabel"
         :type="'text'"
-        :errorMessage="v$.club_name?.$errors[0]?.$message as string | undefined "
+        :errorMessage="getErrorMessage('club_name')"
       />
       <BaseInput
         v-model="club.club_address"
         :label="langTranslations.addressLabel"
         :type="'text'"
-        :errorMessage="v$.club_address?.$errors[0]?.$message as string | undefined "
+        :errorMessage="getErrorMessage('club_address')"
       />
       <BaseInput
         v-model="club.club_city"
         :label="langTranslations.cityLabel"
         :type="'text'"
-        :errorMessage="v$.club_city?.$errors[0]?.$message as string | undefined "
+        :errorMessage="getErrorMessage('club_city')"
       />
       <BaseSelect
         v-model="club.club_country"
         :label="langTranslations.countryLabel"
         :options="ResourceList.countryList"
-        :errorMessage="v$.club_country?.$errors[0]?.$message as string | undefined "
+        :errorMessage="getErrorMessage('club_country')"
       />
       <BaseInput
         v-model="club.club_email"
         :label="langTranslations.email"
         :type="'email'"
-        :errorMessage="v$.club_email?.$errors[0]?.$message as string | undefined "
+        :errorMessage="getErrorMessage('club_email')"
       />
     </div>
     <div class="form-block">
       <BaseCheckBox
-        v-model="club.settings.disableDsg as boolean"
+        v-model="club.settings.disableDsg"
         :label="langTranslations.clubForm.disableDsgLabel"
       />
       <BaseCheckBox
-        v-model="club.settings.disableDM as boolean"
+        v-model="club.settings.disableDM"
         :label="langTranslations.clubForm.disableDsgLabel"
       />
       <BaseCheckBox
-        v-model="club.settings.disableGlobal as boolean"
+        v-model="club.settings.disableGlobal"
         :label="langTranslations.clubForm.disableGlobalLabel"
       />
     </div>

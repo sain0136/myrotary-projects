@@ -140,7 +140,7 @@ onMounted(async () => {
           useLoggedInDistrict().loggedInDistrict.district_id ||
           useLoggedInClub().loggedInClub.district_id;
       } catch (error) {
-        throw new CustomErrors(900, "Project Erorr", {
+        throw new CustomErrors(900, {
           en: langTranslations.value.projectFormLabels
             .projectGenericErrorMessage,
           fr: langTranslations.value.projectFormLabels
@@ -330,7 +330,7 @@ const validateAndSubmit = async () => {
     const isFormCorrect = await v$.value.$validate();
     if (!isFormCorrect) {
       window.scrollTo(0, 0);
-      throw new CustomErrors(900, "Form Error", {
+      throw new CustomErrors(900, {
         en: "Form errors. Please correct.",
         fr: "Erreurs de formulaire. Veuillez les corriger.",
       });

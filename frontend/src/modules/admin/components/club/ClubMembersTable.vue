@@ -27,17 +27,18 @@ import { useRoute } from "vue-router";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
 import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
+import Qmark from "@/components/icons/Qmark.vue";
 
 /* Data */
 const route = useRoute();
-type tableView = "clubAdmins" | "districtAdmins" | undefined;
+type displayMode = "clubAdmins" | "districtAdmins" | undefined;
 // required form data
 let tableView = route.query.tableView
-  ? (route.query.tableView as tableView)
+  ? (route.query.tableView as displayMode)
   : undefined;
 
 const { tableViewProp } = defineProps<{
-  tableViewProp?: tableView;
+  tableViewProp?: displayMode;
 }>();
 if (tableViewProp) {
   tableView = tableViewProp;
@@ -193,7 +194,7 @@ const createNewClubMember = () => {
     router.push({
       name: "UserAddEdit",
       query: {
-        formType: 'districtAdmin',
+        formType: "districtAdmin",
         userType: "clubUser",
         clubId: chosenId.value,
       },
@@ -257,6 +258,20 @@ const updateLimit = (limit: number) => {
       v-else-if="chosenDistrict && allClubsInDistrict.size === 0"
       :content="langTranslations.clubsView.noClubsInDistrict"
     />
+    <span
+      v-if="allUsersInClub.length > 0 && loaded"
+      class="flex justify-center items-center text-xl"
+    >
+      {{ langTranslations.clubMembersTable.clubMembersTableHelpText
+      }}<Qmark
+        v-if="
+          useLoggedInUserStore().loggedInUser?.user_type === 'DISTRICT' ||
+          useLoggedInUserStore().loggedInUser?.user_type === 'SUPER'
+        "
+        :help-text="langTranslations.clubMembersTable.modifyDeleteTooltip"
+      />
+    </span>
+
     <BaseDisplayTable
       :show-checkboxes="false"
       v-if="allUsersInClub.length > 0 && loaded"

@@ -17,7 +17,6 @@ import type {
 } from "@/utils/interfaces/IProjects";
 import { grantType, projectStatus } from "@/utils/types/commonTypes";
 import Qmark from "@/components/icons/Qmark.vue";
-import type Button from "primevue/button";
 
 /* Types */
 type ColumnOptions = {
@@ -46,8 +45,7 @@ type ButtonOptions = {
 };
 
 /* Data */
-const { currencyFormatterFunding, convertCentsToFloat, convertFloatToCents } =
-  useCurrencyFormatter();
+const { currencyFormatterFunding } = useCurrencyFormatter();
 let checkedItems = reactive<unknown[]>([]);
 const isAllSelected = ref(false);
 
@@ -205,15 +203,18 @@ const getTooltipContent = (
             v-for="column in columns"
             :key="column.name"
             scope="col"
-            class="px-6 py-3  "
+            class="px-6 py-3"
             :class="{
               'hidden md:table-cell': column.collapsable,
               'hidden lg:table-cell': column.lgScreenCollapsable,
-              'flex gap-2 items-center flex-nowrap' : column.toolTip?.show
+              'flex gap-2 items-center flex-nowrap': column.toolTip?.show,
             }"
           >
             {{ column.name }}
-            <Qmark :help-text="column.headerTooltip ?? ''" v-if="column.headerTooltip" />
+            <Qmark
+              :help-text="column.headerTooltip ?? ''"
+              v-if="column.headerTooltip"
+            />
           </th>
           <th
             v-if="!hideActionsColumn"
@@ -328,7 +329,7 @@ const getTooltipContent = (
                 :title="langTranslations.approveLabel"
                 href="#"
                 class="font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
-                ><Icon icon="tabler:check" 
+                ><Icon icon="tabler:check"
               /></a>
               <a
                 @click.prevent="denyButton?.callBack({ ...row })"
@@ -336,15 +337,17 @@ const getTooltipContent = (
                 :title="langTranslations.denyLabel"
                 href="#"
                 class="font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
-                ><Icon icon="tabler:x" 
+                ><Icon icon="tabler:x"
               /></a>
               <a
                 @click.prevent="viewDetailsButton?.callBack({ ...row })"
-                v-if="viewDetailsButton?.show && !viewDetailsButton?.hide?.(row)"
+                v-if="
+                  viewDetailsButton?.show && !viewDetailsButton?.hide?.(row)
+                "
                 :title="langTranslations.viewLabel"
                 href="#"
                 class="font-bold text-lg lg:text-xl text-primary hover:text-primaryHover hover:underline"
-                ><Icon icon="tabler:eye" 
+                ><Icon icon="tabler:eye"
               /></a>
             </div>
           </td>
@@ -405,7 +408,10 @@ const getTooltipContent = (
       </a>
       <a
         @click="handlePageChange('next')"
-        v-if="currentPage !== lastPage && totalResults > limit /*Limit is our dropdown option*/" 
+        v-if="
+          currentPage !== lastPage &&
+          totalResults > limit /*Limit is our dropdown option*/
+        "
         href="#"
         class="flex items-center justify-center px-3 h-8 text-sm font-medium text-nearWhite bg-primary hover:bg-primaryHover focus:ring-primaryFocus rounded-lg"
       >

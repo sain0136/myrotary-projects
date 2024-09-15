@@ -1,4 +1,8 @@
 export interface Translation {
+  clubMembersTable: {
+    clubMembersTableHelpText: string;
+    modifyDeleteTooltip: string;
+  };
   myClubProjectsLabel: string;
   myProjectsLabel: string;
   createdByLabel: string;
@@ -365,6 +369,12 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    clubMembersTable: {
+      clubMembersTableHelpText:
+        "You cannot edit or delete district-level users from this club members table. District admin status is required.",
+      modifyDeleteTooltip:
+        "To edit or delete a district-level user, navigate to 'Districts' in the left menu, select the 'Admins' tab, find the user's district, and choose the user.",
+    },
     myClubProjectsLabel: "All Club Projects",
     myProjectsLabel: "My Projects",
     createdByLabel: "Created by: ",
@@ -776,6 +786,12 @@ export const translations: Record<string, Translation> = {
     noProspectUserAvailable: "There are no prospective users at this moment",
   },
   fr: {
+    clubMembersTable: {
+      clubMembersTableHelpText:
+        "Vous ne pouvez pas modifier ou supprimer des utilisateurs au niveau du district depuis ce tableau des membres du club. Le statut d'administrateur de district est requis.",
+      modifyDeleteTooltip:
+        "Pour modifier ou supprimer un utilisateur au niveau du district, accédez à 'Districts' dans le menu de gauche, sélectionnez l'onglet 'Admins', trouvez le district de l'utilisateur et choisissez l'utilisateur.",
+    },
     myClubProjectsLabel: "Tous les projets du club",
     myProjectsLabel: "Mes projets",
     createdByLabel: "Crée par",

@@ -196,13 +196,13 @@ const editProject = (project: IDsgProject | IDmProject | IClubProject) => {
           });
           return;
         default:
-          throw new CustomErrors(900, "Project not found", {
+          throw new CustomErrors(900, {
             en: "Project not found",
             fr: "Projet introuvable",
           });
       }
     } else {
-      throw new CustomErrors(900, "Project not found", {
+      throw new CustomErrors(900, {
         en: "Project not found",
         fr: "Projet introuvable",
       });
