@@ -9,8 +9,12 @@
   ],
   "exclude": [],
   "compilerOptions": {
+    "target": "ES6",
+    "module": "ESNext",
+    "esModuleInterop": true,
     "composite": false,
     "baseUrl": ".",
+    "types": ["node"],
     "paths": {
       "@/*": [
         "./src/*"

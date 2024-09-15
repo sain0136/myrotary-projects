@@ -6,7 +6,7 @@ test.describe("landing", () => {
 
   test.beforeEach(async ({ page }) => {
     loginPage = new LoginPage(page);
-    await page.goto("http://localhost:5173");
+    await page.goto("/");
   });
 
   test("landing has a login button", async ({ page }) => {
@@ -18,7 +18,9 @@ test.describe("landing", () => {
   test("log successfully into Super User Account", async ({ page }) => {
     const loginButton = page.locator("text=Login");
     await loginButton.click();
-    await loginPage.login("admin@myrotaryrotaryprojects.com", "WeThr3K1ngsFrom@Far");
+    const username = process.env.PLAYWRIGHT_USERNAME;
+    const password = process.env.PLAYWRIGHT_PASSWORD;
+    await loginPage.login(username as string, password as string);
     await expect(page).toHaveURL("/admin-portal");
   });
 });
