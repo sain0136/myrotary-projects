@@ -4,33 +4,95 @@ on:
       - main
 
 jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
- test:
-  runs-on: ubuntu-latest
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          touch ~/.ssh/known_hosts
+          echo "${{ secrets.SSH_KEY }}" > id_rsa
+          chmod 600 id_rsa
+          ssh-keyscan -t rsa ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '16'
+      - name: Deploy Rotary
+        run: |
+          ssh -i id_rsa ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }} <<'ENDSSH'
+            # echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S sh -c '
+            cd /opt/apps/myrotary-projects
+            git stash
+            git pull https://sain0136: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@github.com/sain0136/myrotary-projects.git main
+            cd backend
+            BUILD_DIR="/opt/apps/myrotary-projects/backend/build"
+            if [ -d "$BUILD_DIR" ]; then
+              rm -rf "$BUILD_DIR"
+            fi
+            npm install
+            node ace build --production --ignore-ts-errors
+            sudo chown -R servicehost:servicehost /opt/apps/myrotary-projects/backend/build
+            sudo chmod -R u+rwX /opt/apps/myrotary-projects/backend/build
+            # Copy environment file to build directory
+            cp /opt/apps/productionfiles/myrotary/.env /opt/apps/myrotary-projects/backend/build
+            
+            # Navigate to build directory and install production dependencies
+            cd build
+            ls -al
+            npm ci --production
+            
+            # Manage PM2 processes
+            pm2 delete ProductionApi
+            pm2 list
+            pm2 save 
+            pm2 start /opt/apps/myrotary-projects/backend/build/server.js  >> production_rotary_log.log -i -f --name ProductionApi
+            pm2 save --force
+            pm2 list
+            
+            # Frontend Deployment
+            cd /opt/apps/myrotary-projects/frontend
+            npm install
+            chmod -R a+x node_modules
+            npm run build-only
+            
+            # Remove existing frontend build directory if it exists
+            cd /var/www/pro
+            BUILD_DIR="/var/www/pro/dist"
+            if [ -d "$BUILD_DIR" ]; then
+              sudo rm -r "$BUILD_DIR"
+            fi
+            
+            # Move new frontend build to web directory
+            sudo mv /opt/apps/myrotary-projects/frontend/dist /var/www/pro
+            # '
+  test:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Install dependencies for frontend
-      run: |
-        cd frontend   # Make sure we are in the frontend directory
-        npm install   # This will install both dependencies and devDependencies, including Playwright
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
 
-    - name: Install Playwright dependencies
-      run: |
-        cd frontend   # Stay in the frontend directory
-        npx playwright install --with-deps   # Install necessary browser dependencies for Playwright
-
-    - name: Run Playwright tests
-      env:
-        BASE_URL: "https://myrotaryprojects.org/"
-        PLAYWRIGHT_USERNAME: ${{ secrets.PLAYWRIGHT_USERNAME }}
-        PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
-      run: |
-        cd frontend   # Make sure we are in the frontend directory
-        npx playwright test  # Run Playwright tests
+      - name: Install dependencies for frontend
+        run: |
+          cd frontend   # Make sure we are in the frontend directory
+          npm install   # This will install both dependencies and devDependencies, including Playwright
+  
+      - name: Install Playwright dependencies
+        run: |
+          cd frontend   # Stay in the frontend directory
+          npx playwright install --with-deps   # Install necessary browser dependencies for Playwright
+  
+      - name: Run Playwright tests
+        env:
+          BASE_URL: "https://myrotaryprojects.org/"
+          PLAYWRIGHT_USERNAME: ${{ secrets.PLAYWRIGHT_USERNAME }}
+          PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
+        run: |
+          cd frontend   # Make sure we are in the frontend directory
+          npx playwright test  # Run Playwright tests

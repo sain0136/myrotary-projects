@@ -92,7 +92,7 @@ const routes = [
   },
   // Admin Routes
   {
-    path: "/admin-portal",
+    path: "/admin-portalss",
     name: "SiteAdmin",
     component: () => import("@/modules/admin/views/SiteAdmin.vue"),
     beforeEnter: () => {
