@@ -5,29 +5,32 @@ on:
 
 jobs:
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+ test:
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
 
-      - name: Install Playwright
-        run: npm install playwright
+    - name: Install dependencies for frontend
+      run: |
+        cd frontend   # Make sure we are in the frontend directory
+        npm install   # This will install both dependencies and devDependencies, including Playwright
 
-      - name: Install Playwright dependencies
-        run: npx playwright install --with-deps
+    - name: Install Playwright dependencies
+      run: |
+        cd frontend   # Stay in the frontend directory
+        npx playwright install --with-deps   # Install necessary browser dependencies for Playwright
 
-      - name: Run Playwright tests
-        env:
-          BASE_URL: "https://myrotaryprojects.org/"
-          PLAYWRIGHT_USERNAME: ${{ secrets.PLAYWRIGHT_USERNAME }}
-          PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
-        run: |
-          cd frontend
-          npx playwright test  # Playwright will automatically use the testDir set in the config
-
+    - name: Run Playwright tests
+      env:
+        BASE_URL: "https://myrotaryprojects.org/"
+        PLAYWRIGHT_USERNAME: ${{ secrets.PLAYWRIGHT_USERNAME }}
+        PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
+      run: |
+        cd frontend   # Make sure we are in the frontend directory
+        npx playwright test  # Run Playwright tests
