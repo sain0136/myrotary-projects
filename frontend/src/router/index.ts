@@ -15,7 +15,7 @@ const routes = [
   // Landing Routes
   {
     path: "/",
-    name: "Landing",
+    name: "Landing-Page",
     component: () => import("@/modules/home/views/Landing.vue"),
     children: [
       {

@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, ref } from "vue";
+import { onMounted } from "vue";
 import { useSiteAssets } from "@/stores/SiteAssets";
 import { Icon } from "@iconify/vue";
 
@@ -51,7 +51,7 @@ onMounted(async () => {});
         >
           <div>
             <h2 class="mb-6 text-sm font-semibold text-nearWhite uppercase">
-              {{ langTranslations.landingFooter.followUsLabel }}
+              {{ langTranslations.contactUs }}
             </h2>
             <ul class="text-gray-500 dark:text-gray-400 font-medium">
               <li class="mb-4 flex gap-2 justify-start flex-wrap">
@@ -70,6 +70,10 @@ onMounted(async () => {});
                   :href="`mailto:${assetsStore.siteAssets.assets.contentManagement.myRotaryEmail[languagePref]}`"
                   icon="ph:phone-fill"
                   class="text-2xl text-primary cursor-pointer hover:text-nearWhite"
+                  v-if="
+                    assetsStore?.siteAssets?.assets?.contentManagement
+                      ?.myRotaryPhone[languagePref]
+                  "
                 />
                 <span class="flex justify-start">{{
                   assetsStore?.siteAssets?.assets?.contentManagement
