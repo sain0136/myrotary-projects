@@ -248,7 +248,7 @@ const updateLimit = (limit: number) => {
       <H3 :content="langTranslations.clubsView.clubsLabel" />
       <BaseSelect
         class="w-1/2"
-        :options="[...allClubsInDistrict.keys()]"
+        :options="[...allClubsInDistrict.keys()].sort((a, b) => a.localeCompare(b))"
         v-model="chosenClub"
         :label="''"
       />

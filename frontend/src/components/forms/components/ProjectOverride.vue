@@ -94,7 +94,7 @@ watch(choosenClub, () => {
     />
     <BaseSelect
       v-model="choosenClub"
-      :options="[...clubMap.keys()]"
+      :options="[...clubMap.keys()].sort((a, b) => a.localeCompare(b))"
       :label="''"
       placeholder="Select an example property"
       class="lg:w-1/2 w-full"
