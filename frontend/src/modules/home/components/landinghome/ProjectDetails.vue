@@ -52,7 +52,6 @@ const areasOfFocus = ref<
 const { setActiveProject, resetActiveProject } = useActiveProjectStore();
 const loaded = ref(false);
 const galleryImages = ref<Array<uploadFileData | uploadedFile>>([]);
-
 const responsiveOptions = [
   {
     breakpoint: "1400px",
@@ -76,6 +75,7 @@ const responsiveOptions = [
   },
 ];
 const conversion = ref(ResourceList.reverseTermConversionMap());
+const imageLink = ref<string | undefined>("");
 
 /* Hooks */
 watch(
@@ -98,9 +98,13 @@ onMounted(async () => {
         ? (useActiveProjectStore().activeProject.file_uploads
             .project_gallery as Array<uploadFileData | uploadedFile>)
         : [];
+      imageLink.value =
+        (project?.file_uploads?.project_image as uploadedFile)?.s3UrlLink ||
+        (project?.file_uploads?.project_image as uploadedFile)?.s3BaseUrlLink ||
+        undefined;
       loaded.value = true;
     } else {
-      throw new CustomErrors(900, "Project not found", {
+      throw new CustomErrors(900, {
         en: "Project not found",
         fr: "Projet non trouvé",
       });
@@ -159,13 +163,13 @@ const viewFullDescription = (
           });
           return;
         default:
-          throw new CustomErrors(900, "Project not found", {
+          throw new CustomErrors(900, {
             en: "Project not found",
             fr: "Projet introuvable",
           });
       }
     } else {
-      throw new CustomErrors(900, "Project not found", {
+      throw new CustomErrors(900, {
         en: "Project not found",
         fr: "Projet introuvable",
       });
@@ -174,12 +178,25 @@ const viewFullDescription = (
     handleError(error as CustomErrors);
   }
 };
+
+const onImageError = (e: Event) => {
+  imageLink.value =
+    "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=1000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Y2hhcml0eXxlbnwwfHwwfHx8MA%3D%3D";
+};
 </script>
 
 <template>
   <Banners :banner-text="langTranslations.landingpageBannerText" />
   <div class="fluid-container pt-8 p-2" v-if="project && loaded">
     <H3 :content="project.project_name" class="text-center" />
+    <div class="card flex justify-center mt-4">
+      <Image
+        :src="imageLink"
+        alt="project main image"
+        width="500"
+        @error="onImageError"
+      />
+    </div>
     <!-- Basic Info -->
     <Hr />
     <div
@@ -288,18 +305,19 @@ const viewFullDescription = (
                   {{ langTranslations.landingPage.areaOfFocusLabel }}:
                 </span>
                 <ul class="mt-4 flex flex-col gap-4 p-4">
+                  <!-- Area of Focus -->
                   <li
                     v-for="area in areasOfFocus"
                     :key="area + 'area_focus'"
-                    class="ml-4 flex gap-2 text-xl items-center italic"
+                    class="ml-4 flex gap-2 text-xl items-center italic w-max"
                   >
+                  <Image
+                      class="area-focus-icon"
+                      :src="'/area-focus/' + area.imgLink"
+                      alt=""
+                    />
                     <div class="flex">
                       <div class="flex gap-4">
-                        <img
-                          class="w-12"
-                          :src="'/area-focus/' + area.imgLink"
-                          alt=""
-                        />
                         <p class="flex items-center">{{ area.name }}</p>
                       </div>
                     </div>
@@ -370,4 +388,16 @@ const viewFullDescription = (
 
 <style lang="scss" scoped>
 @import "@/assets/_variables.scss";
+@media only screen and (max-width: 600px) {
+  .area-focus-icon {
+    width: 50px !important;
+    height: auto;
+    aspect-ratio: 1/1;
+  }
+}
+.area-focus-icon {
+  width: 50px;
+  height: auto;
+  aspect-ratio: 1/1;
+}
 </style>

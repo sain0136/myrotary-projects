@@ -9,6 +9,8 @@ import PrimeVue from "primevue/config";
 import "primevue/resources/themes/lara-light-blue/theme.css";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import "@/assets/styles.scss";
+import Image from 'primevue/image';
+
 
 import App from "@/App.vue";
 
@@ -21,5 +23,6 @@ app.use(VueSocialSharing);
 app.use(router);
 app.use(PrimeVue);
 app.use(ToastService);
+app.component('Image', Image);
 app.component("Toast", Toast);
 app.mount("#app");

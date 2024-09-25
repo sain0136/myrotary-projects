@@ -15,7 +15,7 @@ export class UploadsApi {
     districtId?: number,
     customIdentifier?: string
   ): Promise<object | undefined | IUser> {
-    let fd = new FormData();
+    const fd = new FormData();
     if (uploadFileData.fileTypes) {
       if (uploadFileData.files.length > 1) {
         for (let i = 0; i < uploadFileData.files.length; i++) {

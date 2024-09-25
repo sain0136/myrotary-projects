@@ -47,13 +47,13 @@ onMounted(async () => {});
           </div>
         </div>
         <div
-          class="child2 text-center :md:text-left grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-2"
+          class="child2 text-center :md:text-left sm:grid  gap-8 sm:gap-6 sm:grid-cols-2"
         >
-          <div>
+          <div class="contact-us-section">
             <h2 class="mb-6 text-sm font-semibold text-nearWhite uppercase">
               {{ langTranslations.contactUs }}
             </h2>
-            <ul class="text-gray-500 dark:text-gray-400 font-medium">
+            <ul class="text-gray-500 md:flex-none flex justify-center font-medium">
               <li class="mb-4 flex gap-2 justify-start flex-wrap">
                 <Icon
                   :href="`mailto:${assetsStore.siteAssets.assets.contentManagement.myRotaryEmail[languagePref]}`"
@@ -82,7 +82,7 @@ onMounted(async () => {});
               </li>
             </ul>
           </div>
-          <div>
+          <div class="legal-section">
             <h2 class="mb-6 text-sm font-semibold text-nearWhite uppercase">
               {{ langTranslations.landingFooter.legalHeaderLabel }}
             </h2>
