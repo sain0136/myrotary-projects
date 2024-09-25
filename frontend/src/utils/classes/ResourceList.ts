@@ -166,8 +166,8 @@ export default class ResourceList {
     },
   };
 
-  static reverseTermConversionMap() {
-    const reverseTermConversionMap: Map<
+  static focusAreaDetailsMap() {
+    const focusAreaDetailsMap: Map<
       string,
       {
         en: string;
@@ -175,42 +175,42 @@ export default class ResourceList {
         imgLink?: string;
       }
     > = new Map();
-    reverseTermConversionMap.set("Peace_Conflict_Prevention", {
+    focusAreaDetailsMap.set("Peace_Conflict_Prevention", {
       en: "Peace Conflict Prevention",
       fr: "Prevention de conflit de paix",
       imgLink: "/1-Peace-and-Conflict.png",
     });
-    reverseTermConversionMap.set("Disease_Prevention_And_Treatment", {
+    focusAreaDetailsMap.set("Disease_Prevention_And_Treatment", {
       en: "Disease Prevention And Treatment",
       fr: "Prevention et Traitement des Maladies",
       imgLink: "/2-Disease_Prevention.png",
     });
-    reverseTermConversionMap.set("Water_And_Sanitation", {
+    focusAreaDetailsMap.set("Water_And_Sanitation", {
       en: "Water And Sanitation",
       fr: "Eau et Sanitation",
       imgLink: "/3-Water_and_Sanitation.png",
     });
-    reverseTermConversionMap.set("Maternal_And_Child_Health", {
+    focusAreaDetailsMap.set("Maternal_And_Child_Health", {
       en: "Maternal And Child Health",
       fr: "Sante Maternelle et Enfant",
       imgLink: "/4-Maternal_and_Child_Health.png",
     });
-    reverseTermConversionMap.set("Basic_Education_And_Literacy", {
+    focusAreaDetailsMap.set("Basic_Education_And_Literacy", {
       en: "Basic Education And Literacy",
       fr: "Education de Base et Literatisme",
       imgLink: "/5-Basic_Education_and_Literacy.png",
     });
-    reverseTermConversionMap.set("Economic_And_Community_Development", {
+    focusAreaDetailsMap.set("Economic_And_Community_Development", {
       en: "Economic And Community Development",
       fr: "Economie et Developpement Communal",
       imgLink: "/6-Economic_and_Community.png",
     });
-    reverseTermConversionMap.set("Environment", {
+    focusAreaDetailsMap.set("Environment", {
       en: "Environment",
       fr: "Environnement",
       imgLink: "/7-Environment.png",
     });
-    return reverseTermConversionMap;
+    return focusAreaDetailsMap;
   }
 
   static areaFocusImages: Array<string> = [

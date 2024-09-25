@@ -268,7 +268,7 @@ const updateLimit = (limit: number) => {
             columnWidth: 'w-2/12',
             elipsis: {
               show: true,
-              length: 15,
+              length: 25,
             },
             title: false,
             toolTip: {
