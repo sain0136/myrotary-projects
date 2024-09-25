@@ -37,8 +37,5 @@
       "@adonisjs/session",
       "@adonisjs/mail"
     ],
-    "module": "ESNext", // Ensures you're using ES6 modules
-    "moduleResolution": "node", // Required for working with Node.js module system
-    "target": "ES2020" // Set this to the same version as your ESLint (latest features)
   }
 }
