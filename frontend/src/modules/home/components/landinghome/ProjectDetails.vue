@@ -191,6 +191,7 @@ const onImageError = (e: Event) => {
     <H3 :content="project.project_name" class="text-center" />
     <div class="card flex justify-center mt-4">
       <Image
+        v-if="imageLink"
         :src="imageLink"
         alt="project main image"
         width="500"
@@ -311,7 +312,7 @@ const onImageError = (e: Event) => {
                     :key="area + 'area_focus'"
                     class="ml-4 flex gap-2 text-xl items-center italic w-max"
                   >
-                  <Image
+                    <Image
                       class="area-focus-icon"
                       :src="'/area-focus/' + area.imgLink"
                       alt=""
