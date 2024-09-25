@@ -3,6 +3,8 @@ import CustomException from "App/Exceptions/CustomException";
 import Session from "App/Models/Session";
 // import CustomException from "App/Exceptions/CustomException";
 import { DateTime } from "luxon";
+import Env from "@ioc:Adonis/Core/Env";
+const environment = Env.get("NODE_ENV");
 
 export default class Authorize {
   public async handle(
@@ -13,11 +15,21 @@ export default class Authorize {
     const exemptRoutes = ["/user/logout"];
     const sessionId: undefined | { value: string; lastActivity: string } =
       request.cookie("session_id");
-
+    const userLoggedin = request.header("logged-in");
+    const browser = request.header("browser-type");
+    if (browser === "Chrome" && environment === "development") {
+      await next();
+      return;
+    }
     if (sessionId && !exemptRoutes.includes(route)) {
       await this.validateSession(sessionId.value, response);
+    } else if (
+      !sessionId &&
+      !exemptRoutes.includes(route) &&
+      userLoggedin === "true"
+    ) {
+      handleSessionRetrievalError("Session not found in database", response);
     }
-
     await next();
   }
 

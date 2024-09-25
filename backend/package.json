@@ -24,7 +24,6 @@
     "@types/proxy-addr": "^2.0.0",
     "@types/source-map-support": "^0.5.7",
     "adonis-preset-ts": "^2.1.0",
-    "eslint": "^8.49.0",
     "eslint-plugin-adonis": "^2.1.1",
     "pino-pretty": "^10.2.0",
     "typescript": "~4.6",

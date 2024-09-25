@@ -1,5 +1,4 @@
 import type { IUser } from "@/utils/interfaces/IUser";
-import type { IRoles } from "@/utils/interfaces/IUser";
 import type { UserType } from "@/utils/types/commonTypes";
 
 export default class User implements IUser {

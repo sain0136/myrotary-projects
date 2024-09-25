@@ -12,19 +12,29 @@ export class ApiClient {
     endpoint: string,
     data?: object | string | FormData | null
   ): Promise<any | ICustomError> {
+    const browserType = this.getBrowserType();
+
     const url = `${this.baseURL}${endpoint}`;
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      "browser-type": browserType,
+    };
+    const { useLoggedInUserStore } = await import("@/stores/LoggedInUser");
+
+    if (useLoggedInUserStore().isUserLoggedIn) {
+      headers["logged-in"] = "true";
+    }
+
     const options: RequestInit = {
       method,
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       body: data ? JSON.stringify(data) : null,
       credentials: "include",
     };
     const response = await fetch(url, options);
     const jsonData = await response.json();
     if (response.status === 601) {
-      this.handleSessionTimeout();
+      await this.handleSessionTimeout();
     }
     if (response.status !== 200) {
       const partialError = jsonData as unknown as ICustomError;
@@ -81,6 +91,22 @@ export class ApiClient {
       return;
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  private getBrowserType() {
+    const userAgent = navigator.userAgent;
+
+    if (
+      userAgent.includes("Chrome") &&
+      !userAgent.includes("Edge") &&
+      !userAgent.includes("OPR")
+    ) {
+      return "Chrome";
+    } else if (userAgent.includes("Firefox")) {
+      return "Firefox";
+    } else {
+      return "Other";
     }
   }
 }
