@@ -24,17 +24,28 @@ import type {
 import ResourceList from "@/utils/classes/ResourceList";
 
 import type { ProjectFilters } from "@/utils/types/commonTypes";
+import { updateLandingCurrentPage } from "@/utils/utils";
 
 /* Data */
+const landingCurrentPage = sessionStorage.getItem("landingCurrentPage")
+  ? Number(sessionStorage.getItem("landingCurrentPage"))
+  : 1;
 const { handleError } = errorHandler();
 const { langTranslations } = useLanguage();
 const filterSearchMode = ref(false);
 const projectsApi = new ProjectsApi(new ApiClient());
+type viewmodes = "list" | "grid";
+const viewmode = ref<viewmodes>("grid");
+const loaded = ref(false);
+const savedview = sessionStorage.getItem("landingViewMode");
+if (savedview) {
+  viewmode.value = savedview === "list" ? "list" : "grid";
+}
 const pagination = reactive({
-  current_page: 1,
+  current_page: landingCurrentPage,
   last_page: 1,
   total: 0,
-  limit: 6,
+  limit: viewmode.value === "list" ? 15 : 6,
 });
 const projects: Array<IDsgProject | IDmProject | IClubProject> = reactive([]);
 const filters: ProjectFilters = reactive({
@@ -49,16 +60,9 @@ const filters: ProjectFilters = reactive({
   district_id: 0,
   grant_type: "",
 });
-type viewmodes = "list" | "grid";
-const viewmode = ref<viewmodes>("grid");
-const loaded = ref(false);
 
 /* Hooks */
 onMounted(async () => {
-  const savedview = sessionStorage.getItem("landingViewMode");
-  if (savedview) {
-    viewmode.value = savedview === "list" ? "list" : "grid";
-  }
   try {
     await getAllProjects();
     loaded.value = true;
@@ -73,12 +77,14 @@ watch(viewmode, () => {
     pagination.limit = 15;
     filters.limit = 15;
     sessionStorage.setItem("landingViewMode", "list");
+    updateLandingCurrentPage("reset");
   }
   if (viewmode.value === "grid") {
     pagination.current_page = 1;
     pagination.limit = 6;
     filters.limit = 6;
     sessionStorage.setItem("landingViewMode", "grid");
+    updateLandingCurrentPage("reset");
   }
   if (filterSearchMode.value) {
     filterProjects();
@@ -144,6 +150,7 @@ const handlePageChange = (direction: string) => {
           pagination.current_page = pagination.current_page + 1;
           getAllProjects();
         }
+        updateLandingCurrentPage("increment");
       } catch (error) {
         handleError(error as CustomError);
       }
@@ -158,6 +165,7 @@ const handlePageChange = (direction: string) => {
           pagination.current_page = pagination.current_page - 1;
           getAllProjects();
         }
+        updateLandingCurrentPage("decrement");
       } catch (error) {
         handleError(error as CustomError);
       }

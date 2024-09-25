@@ -71,7 +71,7 @@ export const loggedInRoleForAccessControl = (): string => {
 
 export const processAreaOfFocus = (areaFocus: IAreaOfFocus) => {
   const procesessedAreaFocus = [];
-  const processerMap = ResourceList.reverseTermConversionMap();
+  const processerMap = ResourceList.focusAreaDetailsMap();
   for (const [key, value] of Object.entries(areaFocus)) {
     let i;
     if (languagePref.value === "en") {
@@ -88,3 +88,18 @@ export const processAreaOfFocus = (areaFocus: IAreaOfFocus) => {
   }
   return procesessedAreaFocus;
 };
+
+export function updateLandingCurrentPage(action: "increment" | "decrement" | "reset") {
+  let landingCurrentPage = sessionStorage.getItem("landingCurrentPage")
+    ? Number(sessionStorage.getItem("landingCurrentPage"))
+    : 1;
+
+  if (action === "increment") {
+    landingCurrentPage += 1;
+  } else if (action === "decrement") {
+    landingCurrentPage -= 1;
+  } else if (action === "reset") {
+    landingCurrentPage = 1;
+  }
+  sessionStorage.setItem("landingCurrentPage", String(landingCurrentPage));
+}

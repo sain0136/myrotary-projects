@@ -55,7 +55,7 @@ const filterData: ProjectFilters = reactive({
   reset: false,
 });
 const rotary_year_long_format = ref("");
-const emit = defineEmits();
+const emit = defineEmits(["sendFilters"]);
 const chosenDistrict = ref("");
 const chosenClub = ref("");
 const rotaryYearsList = ref([langTranslations.value.allYearsLabel] as string[]);
@@ -126,9 +126,7 @@ const filterProjects = async () => {
   const copy = cloneDeep(filterData);
   copy.grant_type = convertProjectLang(filterData.grant_type);
   copy.project_region = convertRegionLang(filterData.project_region);
-  copy.project_status = convertProjectStatusLang(
-    copy.project_status
-  );
+  copy.project_status = convertProjectStatusLang(copy.project_status);
   copy.area_focus = convertAreaOfFocusLang(filterData.area_focus);
   const year = longYearToYear.get(rotary_year_long_format.value) ?? "";
   copy.rotary_year = year;
@@ -203,6 +201,7 @@ const resetSearch = () => {
           :label="langTranslations.landingPage.searchTermsLabel"
           type="text"
           v-model="filterData.search_text"
+           @keydown.enter="filterProjects"
         />
         <BaseSelect
           :label="langTranslations.districtLabel"

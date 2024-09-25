@@ -32,6 +32,7 @@ import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
 import Carousel from "primevue/carousel";
 import type { uploadFileData, uploadedFile } from "@/utils/types/commonTypes";
 import SocialShareButton from "@/components/forms/tabs/SocialShareButton.vue";
+import { processAreaOfFocus } from "@/utils/utils";
 
 /* Data */
 const router = useRouter();
@@ -74,8 +75,8 @@ const responsiveOptions = [
     numScroll: 1,
   },
 ];
-const conversion = ref(ResourceList.reverseTermConversionMap());
-const imageLink = ref<string | undefined>("");
+const termConversionMapReversed = ref(ResourceList.focusAreaDetailsMap());
+const projectImageLink = ref<string | undefined>("");
 
 /* Hooks */
 watch(
@@ -93,15 +94,17 @@ onMounted(async () => {
       resetActiveProject();
       setActiveProject(project);
       setAreaOfFocusLanguage();
+
       galleryImages.value = useActiveProjectStore().activeProject.file_uploads
         .project_gallery
         ? (useActiveProjectStore().activeProject.file_uploads
             .project_gallery as Array<uploadFileData | uploadedFile>)
         : [];
-      imageLink.value =
+
+      projectImageLink.value =
         (project?.file_uploads?.project_image as uploadedFile)?.s3UrlLink ||
         (project?.file_uploads?.project_image as uploadedFile)?.s3BaseUrlLink ||
-        undefined;
+        getDefaultProjectImage();
       loaded.value = true;
     } else {
       throw new CustomErrors(900, {
@@ -115,11 +118,42 @@ onMounted(async () => {
 });
 
 /* Methods */
+
+/**
+ * Retrieves the default project image based on the project's area of focus.
+ * Iterates through the project's area of focus to find the first area marked as true.
+ * If an area of focus is found, it returns the corresponding image link from the focus area details map.
+ * If no area of focus is found, it defaults to the "Peace_Conflict_Prevention" image link.
+ *
+ */
+const getDefaultProjectImage = () => {
+  try {
+    const areaFocusmap = ResourceList.focusAreaDetailsMap();
+    let firstAreaOfFocusFound = "";
+    for (const areaFocusKey of Object.keys(project.area_focus)) {
+      if (
+        project.area_focus[areaFocusKey as keyof typeof project.area_focus] ===
+        true
+      ) {
+        firstAreaOfFocusFound = areaFocusKey;
+        break;
+      }
+    }
+    const defaultImageLink = `/area-focus-defualt/${
+      areaFocusmap.get(firstAreaOfFocusFound)?.imgLink
+    }`;
+    return defaultImageLink;
+  } catch (error) {
+    console.log(error);
+    return "/area-focus-defualt/Peace_Conflict_Prevention";
+  }
+};
+
 const setAreaOfFocusLanguage = () => {
   areasOfFocus.value = [];
   for (const [key, value] of Object.entries(project.area_focus)) {
     if (value === true) {
-      const keyOf = conversion.value.get(key) ?? {
+      const keyOf = termConversionMapReversed.value.get(key) ?? {
         en: "",
         fr: "",
       };
@@ -178,11 +212,6 @@ const viewFullDescription = (
     handleError(error as CustomErrors);
   }
 };
-
-const onImageError = (e: Event) => {
-  imageLink.value =
-    "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=1000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Y2hhcml0eXxlbnwwfHwwfHx8MA%3D%3D";
-};
 </script>
 
 <template>
@@ -191,11 +220,10 @@ const onImageError = (e: Event) => {
     <H3 :content="project.project_name" class="text-center" />
     <div class="card flex justify-center mt-4">
       <Image
-        v-if="imageLink"
-        :src="imageLink"
+        v-if="projectImageLink"
+        :src="projectImageLink"
         alt="project main image"
         width="500"
-        @error="onImageError"
       />
     </div>
     <!-- Basic Info -->

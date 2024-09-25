@@ -191,7 +191,7 @@ const validateAndSubmit = async () => {
             user.district_id = districtMap.get(chosenDistrict.value) as number;
           }
         } else {
-          throw new CustomErrors(900, "District not found", {
+          throw new CustomErrors(900, {
             en: "District not found",
             fr: "District non trouvé",
           });
@@ -199,7 +199,7 @@ const validateAndSubmit = async () => {
         if (typeof clubMap.get(chosenClub.value) !== "undefined") {
           user.club_id = clubMap.get(chosenClub.value) as number;
         } else {
-          throw new CustomErrors(900, "Club not found", {
+          throw new CustomErrors(900, {
             en: "Club not found",
             fr: "Club non trouvé",
           });

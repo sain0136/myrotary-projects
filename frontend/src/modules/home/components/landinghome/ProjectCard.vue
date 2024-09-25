@@ -6,16 +6,15 @@ export default {
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted, onUnmounted, ref } from "vue";
-import { errorHandler } from "@/utils/composables/ErrorHandler";
 import type {
   IDsgProject,
   IDmProject,
   IClubProject,
 } from "@/utils/interfaces/IProjects";
-import type { CustomError } from "@/utils/classes/CustomError";
 import { useCurrencyFormatter } from "@/utils/composables/CurrencyFormatter";
 import router from "@/router";
 import type { ProjectStatus, uploadedFile } from "@/utils/types/commonTypes";
+import ResourceList from "@/utils/classes/ResourceList";
 
 /* Data */
 const show = ref(false);
@@ -28,7 +27,6 @@ const { project } = defineProps<{
 const imageLink = ref<string | undefined>("");
 const truncatedTitle = ref("");
 const truncatedDesc = ref("");
-const { handleError } = errorHandler();
 const { currencyFormatterFunding } = useCurrencyFormatter();
 const imageLoaded = ref(false);
 
@@ -38,14 +36,15 @@ onMounted(async () => {
   imageLink.value =
     (project.file_uploads?.project_image as uploadedFile)?.s3UrlLink ||
     (project.file_uploads?.project_image as uploadedFile)?.s3BaseUrlLink ||
-    (await generateRandomImage());
+    (await loadDefaultImage());
   let truncated = escapeHTML(project.project_description.slice(0, 150));
   if (!truncated.endsWith(".")) {
     truncated = truncated + "...";
   }
-  percentage.value = project.funding_goal !== 0 ? Math.trunc(
-    (project.anticipated_funding / project.funding_goal) * 100
-  ) : 0;
+  percentage.value =
+    project.funding_goal !== 0
+      ? Math.trunc((project.anticipated_funding / project.funding_goal) * 100)
+      : 0;
 
   truncatedDesc.value = truncated;
   truncatedTitle.value =
@@ -71,31 +70,30 @@ const handleCardClick = () => {
   });
 };
 
-const onImageError = (e: Event) => {
-  imageLink.value =
-    "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=1000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Y2hhcml0eXxlbnwwfHwwfHx8MA%3D%3D";
-};
-
 const onImageLoad = () => {
   imageLoaded.value = true;
 };
 
-const generateRandomImage = async () => {
+const loadDefaultImage = async () => {
   try {
-    let link: string | undefined = undefined;
-    if (typeof project.image_link === "string") {
-      const parsed: { url: string } = JSON.parse(project.image_link);
-      link = parsed.url ?? undefined;
+    const areaFocusmap = ResourceList.focusAreaDetailsMap();
+    let firstAreaOfFocusFound = "";
+    for (const areaFocusKey of Object.keys(project.area_focus)) {
+      if (
+        project.area_focus[areaFocusKey as keyof typeof project.area_focus] ===
+        true
+      ) {
+        firstAreaOfFocusFound = areaFocusKey;
+        break;
+      }
     }
-    if (typeof project.image_link === "string" && link === undefined) {
-      const response = await fetch("https://picsum.photos/800");
-      const data = response.url;
-      return data;
-    } else {
-      return link;
-    }
+    const defaultImageLink = `/area-focus-defualt/${
+      areaFocusmap.get(firstAreaOfFocusFound)?.imgLink
+    }`;
+    return defaultImageLink;
   } catch (error) {
-    handleError(error as CustomError);
+    console.log(error);
+    return "/area-focus-defualt/Peace_Conflict_Prevention";
   }
 };
 
@@ -120,46 +118,76 @@ const escapeHTML = (unsafe: string) => {
 
 <template>
   <Transition>
-    <div @click="handleCardClick" v-if="show" class="max-w-md bg-white border border-gray-200 rounded-lg shadow flex flex-col cursor-pointer">
-      <a class="upper-card border-b-gray-900" :class="{
-        hidden: !imageLoaded,
-      }" @click.prevent href="#">
-        <router-link :to="{
-          name: 'ProjectDetails',
-          params: {
-            name: project.project_name.replace(/\s/g, '-'),
-          },
-          query: {
-            id: project.project_id,
-          },
-        }">
-          <img @load="onImageLoad" @error="onImageError" :class="{
-            hidden: !imageLoaded,
-            'aspect-ratio w-full cursor-pointer object-cover': imageLoaded,
-          }" class="rounded-t-lg" :src="imageLink || undefined" alt="project image" /></router-link>
+    <div
+      @click="handleCardClick"
+      v-if="show"
+      class="max-w-md bg-white border border-gray-200 rounded-lg shadow flex flex-col cursor-pointer"
+    >
+      <a
+        class="upper-card border-b-gray-900"
+        :class="{
+          hidden: !imageLoaded,
+        }"
+        @click.prevent
+        href="#"
+      >
+        <router-link
+          :to="{
+            name: 'ProjectDetails',
+            params: {
+              name: project.project_name.replace(/\s/g, '-'),
+            },
+            query: {
+              id: project.project_id,
+            },
+          }"
+        >
+          <img
+            @load="onImageLoad"
+            :class="{
+              hidden: !imageLoaded,
+              'aspect-ratio w-full cursor-pointer object-cover': imageLoaded,
+            }"
+            class="rounded-t-lg"
+            :src="imageLink || undefined"
+            alt="project image"
+        /></router-link>
       </a>
-      <div v-if="!imageLoaded" role="status"
-        class="space-y-8 animate-pulse md:space-y-0 md:space-x-8 md:flex md:items-center">
-        <div class="flex items-center justify-center w-full bg-gray-300 rounded"
-          :class="'aspect-ratio w-screencursor-pointer object-cover'">
-          <svg class="w-10 h-10 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-            viewBox="0 0 20 18">
+      <div
+        v-if="!imageLoaded"
+        role="status"
+        class="space-y-8 animate-pulse md:space-y-0 md:space-x-8 md:flex md:items-center"
+      >
+        <div
+          class="flex items-center justify-center w-full bg-gray-300 rounded"
+          :class="'aspect-ratio w-screencursor-pointer object-cover'"
+        >
+          <svg
+            class="w-10 h-10 text-gray-200"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="0 0 20 18"
+          >
             <path
-              d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z" />
+              d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"
+            />
           </svg>
           <span class="sr-only">Loading...</span>
         </div>
       </div>
       <div class="lower-card p-5 flex flex-col">
-        <router-link :to="{
-          name: 'ProjectDetails',
-          params: {
-            name: project.project_name.replace(/\s/g, '-'),
-          },
-          query: {
-            id: project.project_id,
-          },
-        }">
+        <router-link
+          :to="{
+            name: 'ProjectDetails',
+            params: {
+              name: project.project_name.replace(/\s/g, '-'),
+            },
+            query: {
+              id: project.project_id,
+            },
+          }"
+        >
           <a href="#">
             <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">
               {{ truncatedTitle }}
@@ -177,28 +205,42 @@ const escapeHTML = (unsafe: string) => {
                 }}
               </h3>
             </div>
-          </a></router-link>
+          </a></router-link
+        >
         <div class="status_bar pt-4">
-          <div class="donate_bar wow fadeIn animated" data-wow-delay="0ms" data-wow-duration="0ms">
+          <div
+            class="donate_bar wow fadeIn animated"
+            data-wow-delay="0ms"
+            data-wow-duration="0ms"
+          >
             <div class="bar_inner">
-              <div class="bar" :style="{
-                    width: percentage + '%',
-                  }">
+              <div
+                class="bar"
+                :style="{
+                  width: percentage + '%',
+                }"
+              >
                 <div class="count_box counted">
                   <span class="count-text" data-speed="2000" data-stop="82">{{
                     percentage
-                  }}</span>%
+                  }}</span
+                  >%
                 </div>
               </div>
             </div>
           </div>
           <div class="causes-info flex flex-col">
             <span class="flex justify-between gap-4">
-              <strong class=" ">{{ langTranslations.projectLabels.raisedLabel }}:</strong>
-              {{ currencyFormatterFunding(project.anticipated_funding) }}</span>
-            <span class="flex justify-between gap-4 text-primary-color"><strong class="">{{
-              langTranslations.projectLabels.goalLabel }}:</strong>{{ currencyFormatterFunding(project.funding_goal)
-  }}</span>
+              <strong class=" "
+                >{{ langTranslations.projectLabels.raisedLabel }}:</strong
+              >
+              {{ currencyFormatterFunding(project.anticipated_funding) }}</span
+            >
+            <span class="flex justify-between gap-4 text-primary-color"
+              ><strong class=""
+                >{{ langTranslations.projectLabels.goalLabel }}:</strong
+              >{{ currencyFormatterFunding(project.funding_goal) }}</span
+            >
           </div>
         </div>
       </div>
