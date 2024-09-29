@@ -43,7 +43,6 @@ import SocialShareButton from "@/components/forms/tabs/SocialShareButton.vue";
 import ProjectAdminsForm from "@/components/forms/tabs/ProjectAdminsForm.vue";
 import ProjectApproval from "@/components/forms/tabs/ProjectApproval.vue";
 import H1 from "@/components/headings/H1.vue";
-import H2 from "@/components/headings/H2.vue";
 import H3 from "@/components/headings/H3.vue";
 import H4 from "@/components/headings/H4.vue";
 import DistrictMatchingProject from "@/utils/classes/DistrictMatchingProject";
@@ -131,6 +130,8 @@ const project = reactive(new DistrictMatchingProject());
 const activeTab = ref(
   projectId && formType !== "readOnlyView"
     ? sessionStorage.getItem("projectsLastActiveTab")
+      ? sessionStorage.getItem("projectsLastActiveTab")
+      : "form"
     : "form"
 );
 const allCurrencies = ref(
@@ -194,7 +195,7 @@ onMounted(async () => {
           amount: project.anticipated_funding + project.total_pledges,
         });
       } catch (error) {
-        throw new CustomErrors(900, "Project Erorr", {
+        throw new CustomErrors(900, {
           en: langTranslations.value.projectFormLabels
             .projectGenericErrorMessage,
           fr: langTranslations.value.projectFormLabels
@@ -561,6 +562,7 @@ const matchingGrantRequestLimit = computed(() => {
   const limit = total.greaterThan(cap)
     ? currencyFormatterFunding(total.multiply(fraction).getAmount())
     : currencyFormatterFunding(cap.getAmount());
+  // eslint-disable-next-line vue/no-side-effects-in-computed-properties
   matchingGrantRequestLimitAsDinero.value = total.greaterThan(cap)
     ? total.multiply(fraction)
     : cap;
@@ -658,19 +660,19 @@ const deleteFromFundsArray = (index: number) => {
 
 const fundingTableErrors = () => {
   if (fundingSources.value.amount < 0.01) {
-    throw new CustomErrors("Amount must be greater than 0", "dm form error", {
+    throw new CustomErrors("Amount must be greater than 0", {
       en: "Amount must be greater than 0",
       fr: "Le montant doit être supérieur à 0",
     });
   }
   if (fundingSources.value.sourceName === "") {
-    throw new CustomErrors("Please select a funding source", "dm form error", {
+    throw new CustomErrors("Please select a funding source", {
       en: "Please select a funding source",
       fr: "Veuillez sélectionner une source de financement",
     });
   }
   if (!fundingSources.value.amount) {
-    throw new CustomErrors("Please enter an amount", "dm form error", {
+    throw new CustomErrors("Please enter an amount", {
       en: "Please enter an amount",
       fr: "Veuillez entrer un montant",
     });
@@ -716,7 +718,7 @@ const addToFundsArray = () => {
             typeOfFunding: "",
             amount: 0,
           } as IFundingSource;
-          throw new CustomErrors(900, "Grant Request Exceeded", {
+          throw new CustomErrors(900, {
             en: "The maximum amount for a Grant Request exceeded. Please adjust the amount.",
             fr: "Le montant maximum pour une demande de financement est dépassé. Veuillez le modifier.",
           });
@@ -767,7 +769,7 @@ const addToBudget = (itemName: string, itemCost: string) => {
       formattedCostInCents > FUNDING_GOAL_LIMIT ||
       project.funding_goal + formattedCostInCents > FUNDING_GOAL_LIMIT
     ) {
-      throw new CustomErrors(900, "Budget Exceeded", {
+      throw new CustomErrors(900, {
         en: "The maximum amount for a budget exceeded. Please adjust the amount.",
         fr: "Le montant maximum pour un budget est dépassé. Veuillez le modifier.",
       });
@@ -824,7 +826,7 @@ const validateAndSubmit = async () => {
       fundingGoalErrors.value.error
     ) {
       window.scrollTo(0, 0);
-      throw new CustomErrors(900, "Form Error", {
+      throw new CustomErrors(900, {
         en: "Form errors. Please correct.",
         fr: "Erreurs de formulaire. Veuillez les corriger.",
       });

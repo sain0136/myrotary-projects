@@ -4,6 +4,7 @@ import Projects from "App/Models/Projects";
 import Dinero from "dinero.js";
 import { ProjectStatus } from "App/Shared/Types/commonTypes";
 import { IPledge } from "App/Shared/Interfaces/IPledge";
+import CustomException from "App/Exceptions/CustomException";
 
 export default class PledgesRepositories {
   public async storePledge(pledge: IPledge) {
@@ -69,5 +70,50 @@ export default class PledgesRepositories {
         })
         .save();
     });
+  }
+
+  public async deletePledge(pledgeId: number) {
+    const pledge = await Pledges.findOrFail(pledgeId);
+    if (pledge.projectId) {
+      const project = await Projects.findOrFail(pledge.projectId);
+      if (project.projectId) {
+        // Calculating the new total pledges and anticipated funding values
+        const anticipatedFunding = Dinero({
+          amount: project.anticipatedFunding,
+        });
+        const pledgeAmount = Dinero({ amount: pledge.pledgeAmount }); // already in cents
+        const newTotalPledges = Dinero({ amount: project.totalPledges }) // already in cents
+          .subtract(pledgeAmount)
+          .getAmount();
+        const newAnticipatedFunding = anticipatedFunding
+          .subtract(pledgeAmount)
+          .getAmount();
+
+        // Updating the project details in the database
+        await project
+          .merge({
+            totalPledges: newTotalPledges,
+            anticipatedFunding: newAnticipatedFunding,
+            projectStatus: ProjectStatus.LOOKINGFORFUNDING,
+          })
+          .save();
+        await pledge.delete();
+      } else {
+        throw new CustomException({
+          message: "Project not found",
+          errno: 901000,
+        });
+      }
+    } else {
+      throw new CustomException({
+        message: "Pledge not found",
+        errno: 901000,
+      });
+    }
+  }
+
+  public async getPledgesByProject(projectId: number) {
+    const pledges = await Pledges.query().where("project_id", projectId);
+    return pledges;
   }
 }

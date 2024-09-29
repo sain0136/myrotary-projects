@@ -9,4 +9,5 @@ export interface IPledge {
   club_name: string;
   user_id: number;
   project_id: number;
+  pledge_id?: number;
 }

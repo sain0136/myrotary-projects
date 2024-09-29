@@ -184,6 +184,7 @@ export interface Translation {
     amountLabel: string;
     maxLimitLabel: string;
     minLimitLabel: string;
+    confirmDeletePledgeLabel: string;
   };
   projectLabel: string;
   projectLabels: {
@@ -596,6 +597,8 @@ export const translations: Record<string, Translation> = {
       maxPledgeLabel: "Maximum pledge amount",
       amountLabel: "Amount",
       minLimitLabel: "Your pledge cannot be less than 1 dollar",
+      confirmDeletePledgeLabel:
+        "Are you sure you want to delete this pledge? This action cannot be undone.",
     },
     projectLabel: "Project",
     projectLabels: {
@@ -1019,6 +1022,8 @@ export const translations: Record<string, Translation> = {
         "Soyez assuré que chaque promesse de don faite par le biais de ce formulaire est directement affectée à la réalisation du projet sélectionné. Votre soutien est essentiel. Grâce à une procédure d'engagement transparente, nous nous assurons que votre contribution atteint le projet qui vous passionne, en lui apportant le soutien nécessaire à sa réalisation. La transparence de ce processus vous permet de voir comment votre contribution est allouée, ce qui renforce l'effort collectif en faveur d'un changement significatif. Grâce à votre promesse de don, vous devenez partie intégrante d'une communauté qui se consacre à l'obtention d'un impact tangible, démontrant ainsi que les contributions individuelles conduisent collectivement à des avancées significatives. Lorsque le moment est venu de collecter les fonds promis, le propriétaire du projet vous contactera personnellement, garantissant ainsi un processus direct et informé.",
       maxPledgeLabel: "Montant maximum de l'engagement",
       minLimitLabel: "Votre engagement ne peut pas être inférieur à 1 dollar",
+      confirmDeletePledgeLabel:
+        "Êtes-vous sûr de vouloir supprimer cet engagement ? Cette action est irréversible.",
     },
     projectLabel: "Projet",
     projectLabels: {

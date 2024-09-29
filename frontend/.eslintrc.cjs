@@ -14,6 +14,7 @@ module.exports = {
   rules: {
     'vue/multi-word-component-names': 'off',
     'vue/no-reserved-component-names': 'off',
-    "no-debugger": "off"
+    "no-debugger": "off",
+    "no-redeclare": "off"
   }
 }

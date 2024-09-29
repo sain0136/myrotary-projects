@@ -7,17 +7,25 @@ export default {
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
 import { onMounted, reactive, ref } from "vue";
-import { errorHandler } from "@/utils/composables/ErrorHandler";
 import BaseDisplayTable from "@/components/tables/BaseDisplayTable.vue";
 import { useActiveProjectStore } from "@/stores/ActiveProjectStore";
 import H3 from "@/components/headings/H3.vue";
+import type { IPledge } from "@/utils/interfaces/IPledge";
+import { modalHandler } from "@/utils/composables/ModalHandler";
+import { ApiClient } from "@/api/ApiClient";
+import { PledgesApi } from "@/api/services/PledgesApi";
+import { errorHandler } from "@/utils/composables/ErrorHandler";
+import type { CustomError } from "@/utils/classes/CustomError";
 
 /* Data */
+const pledgeApi = new PledgesApi(new ApiClient());
+const { changeShowModal, setModal } = modalHandler();
+const { handleError, handleSuccess } = errorHandler();
+
 const { langTranslations } = useLanguage();
-const { handleError } = errorHandler();
-const projectPledges = reactive(
-  useActiveProjectStore().activeProject?.pledgesAssociated ?? []
-);
+const projectPledges = ref<IPledge[]>([]);
+const projectId = useActiveProjectStore().activeProject?.project_id ?? null;
+
 const pagination = reactive({
   currentPage: 1,
   lastPage: 1,
@@ -25,9 +33,36 @@ const pagination = reactive({
   limit: 1000000000,
 });
 /* Hooks */
-onMounted(async () => {});
+onMounted(async () => {
+  try {
+    const response = await pledgeApi.getPledgesByProject(projectId);
+    projectPledges.value = response;
+  } catch (error) {
+    handleError(error as CustomError);
+  }
+});
 
 /* Methods */
+const deletePledge = async (pledge: unknown) => {
+  const toDelete = pledge as IPledge;
+  try {
+    setModal(
+      langTranslations.value.deleteLabel,
+      langTranslations.value.pledgeProcess.confirmDeletePledgeLabel
+    );
+    const confirmed = await changeShowModal(true);
+    if (toDelete.pledge_id && confirmed) {
+      await pledgeApi.deletePledge(toDelete.pledge_id);
+      handleSuccess(langTranslations.value.succssDeleteToast);
+      const response = await pledgeApi.getPledgesByProject(projectId);
+      projectPledges.value = response;
+    } else if (!projectId || !toDelete.pledge_id) {
+      throw new Error("Error deleting pledge");
+    }
+  } catch (error) {
+    handleError(error as CustomError);
+  }
+};
 </script>
 
 <template>
@@ -41,12 +76,14 @@ onMounted(async () => {});
         :total-results="pagination.total"
         :limit="pagination.limit"
         :table-data="projectPledges"
-        :hideActionsColumn="true"
         :disable-pagination="true"
+        :delete-button="{
+          show: true,
+          callBack: deletePledge,
+        }"
         :columns="[
           {
             name: langTranslations.nameLabel,
-            lgScreenCollapsable: true,
             colName: 'fullname',
           },
           {
@@ -56,14 +93,23 @@ onMounted(async () => {});
             isCurrency: true,
           },
           {
-            name: langTranslations.landingPage.grantTypeLabel,
-            lgScreenCollapsable: true,
+            name: langTranslations.email,
             colName: 'email',
           },
           {
-            name: langTranslations.statusLabel,
-            lgScreenCollapsable: true,
+            name: langTranslations.phone,
+            collapsable: true,
             colName: 'phone',
+          },
+          {
+            name: langTranslations.districtLabel,
+            lgScreenCollapsable: true,
+            colName: 'district_number',
+          },
+          {
+            name: langTranslations.clubLabel,
+            lgScreenCollapsable: true,
+            colName: 'club_name',
           },
         ]"
       />

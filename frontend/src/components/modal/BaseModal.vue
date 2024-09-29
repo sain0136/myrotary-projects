@@ -88,7 +88,7 @@ const cancel = () => {
         </div>
         <!-- Modal body -->
         <div class="p-4 space-y-6">
-          <Paragraph :p1="bodyText + 'sdfddsf '" />
+          <Paragraph :p1="bodyText" />
         </div>
         <!-- Modal footer -->
         <div

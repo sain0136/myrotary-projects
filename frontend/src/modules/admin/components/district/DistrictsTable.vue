@@ -17,7 +17,6 @@ import router from "@/router";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import { modalHandler } from "@/utils/composables/ModalHandler";
 import type { PaginationResult } from "@/utils/types/commonTypes";
-import type { ICustomError } from "@/utils/interfaces/ICustomError";
 import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
 
 /* Data */

@@ -12,4 +12,24 @@ export class PledgesApi {
       pledge
     );
   }
+
+  public async deletePledge(pledgeId: number): Promise<boolean> {
+    return await this.apiClient.fetchWrapper(
+      "POST",
+      `${BASE_ROUTE}/deletePledge`,
+      {
+        pledgeId,
+      }
+    );
+  }
+
+  public async getPledgesByProject(projectId: number) {
+    return await this.apiClient.fetchWrapper(
+      "POST",
+      `${BASE_ROUTE}/getPledgesByProject`,
+      {
+        projectId,
+      }
+    );
+  }
 }

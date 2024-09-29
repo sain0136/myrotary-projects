@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, reactive, ref, watch } from "vue";
+import { onMounted, reactive, watch } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import H4 from "@/components/headings/H4.vue";
 import Banners from "@/components/banners/Banners.vue";
@@ -230,7 +230,7 @@ const validateAndSubmit = async () => {
     // Now send the updated pledgeObjectCopy to the backend
     const response = await pledgeApi.storePledge(pledgeObjectCopy);
     if (!response) {
-      throw new CustomErrors(900, "Error", {
+      throw new CustomErrors(900, {
         en: "Please try again later",
         fr: "Veuillez reessayer plus tard",
       });
@@ -277,6 +277,13 @@ const handleInput = (event: InputEvent) => {
 
 const redirect = () => {
   router.go(-1);
+};
+
+const getErrorMessage = (validationObject: string) => {
+  let error = v$.value[validationObject]
+    ? v$.value[validationObject].$errors[0]
+    : undefined;
+  return error ? error.$message.toString() : "";
 };
 </script>
 
@@ -333,47 +340,44 @@ const redirect = () => {
       id="error"
       class="mt-2 text-sm text-red-600 text-center"
     >
-      <span class="font-medium">{{
-        v$.pledge_amount?.$errors[0]?.$message as string | undefined
-      }}</span>
+      <span class="font-medium">{{ getErrorMessage("pledge_amount") }}</span>
     </p>
     <div class="form-block">
       <BaseInput
         v-model="pledgeObject.firstname"
         :label="langTranslations.userForm.firstNameLabel"
         :type="'text'"
-        :errorMessage="v$.firstname?.$errors[0]?.$message as string | undefined "
+        :errorMessage="getErrorMessage('firstname')"
       />
       <BaseInput
         v-model="pledgeObject.lastname"
         :label="langTranslations.userForm.lastNameLabel"
         :type="'text'"
-        :errorMessage="v$.lastname?.$errors[0]?.$message as string | undefined "
+        :errorMessage="getErrorMessage('lastname')"
       />
       <BaseInput
         v-model="pledgeObject.email"
         :label="langTranslations.email"
         :type="'email'"
-        :errorMessage="v$.email?.$errors[0]?.$message as string | undefined "
+        :errorMessage="getErrorMessage('email')"
       />
       <BaseInput
         v-model="pledgeObject.phone"
         :label="langTranslations.phone"
         :type="'text'"
-        :errorMessage="v$.phone?.$errors[0]?.$message as string | undefined "
+        :errorMessage="getErrorMessage('phone')"
       />
       <BaseInput
         v-model="pledgeObject.district_number"
         :label="langTranslations.districtView.distictTabLabel"
         :type="'text'"
-        :errorMessage="
-          v$.district_number?.$errors[0]?.$message as string | undefined "
+        :errorMessage="getErrorMessage('district_number')"
       />
       <BaseInput
         v-model="pledgeObject.club_name"
         :label="langTranslations.clubLabel + ' ' + langTranslations.nameLabel"
         :type="'text'"
-        :errorMessage="v$.club_name?.$errors[0]?.$message as string | undefined "
+        :errorMessage="getErrorMessage('club_name')"
       />
     </div>
     <div class="button_row mt-4 flex justify-center gap-4">

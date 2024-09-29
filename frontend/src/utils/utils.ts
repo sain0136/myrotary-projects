@@ -89,7 +89,9 @@ export const processAreaOfFocus = (areaFocus: IAreaOfFocus) => {
   return procesessedAreaFocus;
 };
 
-export function updateLandingCurrentPage(action: "increment" | "decrement" | "reset") {
+export function updateLandingCurrentPage(
+  action: "increment" | "decrement" | "reset"
+) {
   let landingCurrentPage = sessionStorage.getItem("landingCurrentPage")
     ? Number(sessionStorage.getItem("landingCurrentPage"))
     : 1;

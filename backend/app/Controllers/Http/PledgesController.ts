@@ -7,17 +7,39 @@ import { IPledge } from "App/Shared/Interfaces/IPledge";
 
 export default class PledgesController {
   private initializeServices() {
-    const projectsRepositories = new PledgesRepositories();
-    const projectsService = new PledgesService(projectsRepositories);
-    return { projectsRepositories, projectsService };
+    const pledgesRepository = new PledgesRepositories();
+    const pledgesService = new PledgesService(pledgesRepository);
+    return { pledgesService, pledgesRepository };
   }
 
   public async storePledge({ request, response }: HttpContextContract) {
     try {
       const pledge = request.body() as IPledge;
-      const { projectsService } = this.initializeServices();
-      await projectsService.storePledge(pledge);
+      const { pledgesService } = this.initializeServices();
+      await pledgesService.storePledge(pledge);
       return response.status(200).json(true);
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
+  }
+
+  public async deletePledge({ request, response }: HttpContextContract) {
+    try {
+      const pledgeId = request.input("pledgeId");
+      const { pledgesService } = this.initializeServices();
+      await pledgesService.deletePledge(pledgeId);
+      return response.status(200).json(true);
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
+  }
+
+  public async getPledgesByProject({ request, response }: HttpContextContract) {
+    try {
+      const projectId = request.input("projectId");
+      const { pledgesService } = this.initializeServices();
+      const pledges = await pledgesService.getPledgesByProject(projectId);
+      return response.status(200).json(pledges);
     } catch (error) {
       throw new CustomException(error as CustomErrorType);
     }

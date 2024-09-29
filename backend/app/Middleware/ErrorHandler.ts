@@ -77,7 +77,8 @@ type DatabaseErrorType =
   | "1062-users"
   | "1062-districts"
   | "1451"
-  | "1452";
+  | "1452"
+  | "901000";
 
 /**
  * Maps a database error number to a generic translated error message, handle known and specific database errors
@@ -99,6 +100,7 @@ const getTranslatedDatabaseError = (
 
 /**
  *  Database error messages - We dont send a verbose/SQL raw message rather use these generic ones
+ *  Custom Db errors should start in the 900000 range
  */
 const dbErrorMsgs: Record<DatabaseErrorType, Translation> = {
   "1062": {
@@ -124,6 +126,10 @@ const dbErrorMsgs: Record<DatabaseErrorType, Translation> = {
   "1452": {
     en: "Cannot delete or update this record contact the administrator",
     fr: "Impossible de supprimer ou de mettre à jour cet enregistrement, contactez l'administrateur",
+  },
+  "901000": {
+    en: "Error deleting Pledge. Please contact the administrator",
+    fr: "Erreur de suppression de Pledge. Contactez l'administrateur",
   },
 };
 

@@ -59,6 +59,7 @@ const formType = route.query.formType
 /* Data */
 const viewerMode = ref(false);
 const disabledMode = ref(false);
+// eslint-disable-next-line no-redeclare
 type formType = "normalView" | "readOnlyView";
 const { convertCentsToFloat, convertFloatToCents } = useCurrencyFormatter();
 const { langTranslations, languagePref, customPrintf } = useLanguage();
@@ -117,6 +118,8 @@ const project = reactive(new ClubProject());
 const activeTab = ref(
   projectId && formType !== "readOnlyView"
     ? sessionStorage.getItem("projectsLastActiveTab")
+      ? sessionStorage.getItem("projectsLastActiveTab")
+      : "form"
     : "form"
 );
 
@@ -381,6 +384,13 @@ const setDistrictId = (districtId: number) => {
 const setClubId = (clubId: number) => {
   project.club_id = clubId;
 };
+
+const getErrorMessage = (validationObject: string) => {
+  const error = v$.value[validationObject]
+    ? v$.value[validationObject].$errors[0]
+    : undefined;
+  return error ? error.$message.toString() : undefined;
+};
 </script>
 
 <template>
@@ -437,7 +447,7 @@ const setClubId = (clubId: number) => {
           v-model="project.project_name"
           :label="langTranslations.projectFormLabels.projectNameLabel"
           :type="'text'"
-          :errorMessage="v$.project_name.$errors[0]?.$message as string | undefined"
+          :errorMessage="getErrorMessage('project_name')"
           :disabled="disabledMode"
         />
       </div>
@@ -446,7 +456,7 @@ const setClubId = (clubId: number) => {
           v-model="project.project_description"
           :rows="7"
           :label="langTranslations.desciptionLabel"
-          :errorMessage="v$.project_description?.$errors[0]?.$message as string | undefined "
+          :errorMessage="getErrorMessage('project_description')"
           :disabled="disabledMode"
         />
       </div>
@@ -456,14 +466,14 @@ const setClubId = (clubId: number) => {
           v-model="project.country"
           :label="langTranslations.countryLabel"
           :options="ResourceList.countryList"
-          :errorMessage="v$.country?.$errors[0]?.$message as string | undefined "
+          :errorMessage="getErrorMessage('country')"
         />
         <BaseSelect
           :disabled="disabledMode"
           v-model="project.region"
           :label="langTranslations.landingPage.regionLabel"
           :options="ResourceList.regionList"
-          :errorMessage="v$.region?.$errors[0]?.$message as string | undefined "
+          :errorMessage="getErrorMessage('region')"
         />
         <BaseInput
           :disabled="disabledMode"
@@ -472,7 +482,7 @@ const setClubId = (clubId: number) => {
           :type="'number'"
           :inputmode="'numeric'"
           :min="0"
-          :errorMessage="v$.funding_goal?.$errors[0]?.$message as string | undefined"
+          :errorMessage="getErrorMessage('funding_goal')"
         />
         <BaseInput
           :disabled="disabledMode"
@@ -481,21 +491,21 @@ const setClubId = (clubId: number) => {
           :type="'number'"
           :inputmode="'numeric'"
           :min="0"
-          :errorMessage="v$.anticipated_funding?.$errors[0]?.$message as string | undefined"
+          :errorMessage="getErrorMessage('anticipated_funding')"
         />
         <BaseInput
           :disabled="disabledMode"
           v-model="project.start_date"
           :label="langTranslations.projectFormLabels.startDateLabel"
           :type="'date'"
-          :errorMessage="v$.start_date?.$errors[0]?.$message as string | undefined "
+          :errorMessage="getErrorMessage('start_date')"
         />
         <BaseInput
           :disabled="disabledMode"
           v-model="project.completion_date"
           :label="langTranslations.projectFormLabels.completionDateLabel"
           :type="'date'"
-          :errorMessage="v$.completion_date?.$errors[0]?.$message as string | undefined "
+          :errorMessage="getErrorMessage('completion_date')"
         />
       </div>
       <div class="area-of-focus-section form-block">
@@ -518,9 +528,7 @@ const setClubId = (clubId: number) => {
         id="error"
         class="my-4 text-sm text-red-600 text-center"
       >
-        <span class="font-medium">{{
-          v$.area_focus?.$errors[0]?.$message as string | undefined
-        }}</span>
+        <span class="font-medium">{{ getErrorMessage("area_focus") }}</span>
       </p>
       <div class="button_row mt-8 flex justify-center gap-4">
         <RotaryButton

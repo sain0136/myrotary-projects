@@ -21,7 +21,7 @@ import { ProjectStatus } from "App/Shared/Types/commonTypes";
 import CustomException from "App/Exceptions/CustomException";
 import { errorTranslations } from "App/Translations/Translations";
 
-function processProjectData(updatedProject) {
+function processProjectData(updatedProject: IClubProject | IDsgProject) {
   const convertedStartDate = DateTime.fromFormat(
     updatedProject.start_date,
     "yyyy-MM-dd"
