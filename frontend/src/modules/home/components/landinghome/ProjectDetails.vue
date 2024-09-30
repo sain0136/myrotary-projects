@@ -32,7 +32,6 @@ import LoadingSpinner from "@/components/loading/LoadingSpinner.vue";
 import Carousel from "primevue/carousel";
 import type { uploadFileData, uploadedFile } from "@/utils/types/commonTypes";
 import SocialShareButton from "@/components/forms/tabs/SocialShareButton.vue";
-import { processAreaOfFocus } from "@/utils/utils";
 
 /* Data */
 const router = useRouter();
@@ -79,6 +78,8 @@ const termConversionMapReversed = ref(ResourceList.focusAreaDetailsMap());
 const projectImageLink = ref<string | undefined>("");
 
 /* Hooks */
+
+// When the language preference changes, update the area of focus language
 watch(
   () => languagePref.value,
   async () => {
@@ -144,7 +145,6 @@ const getDefaultProjectImage = () => {
     }`;
     return defaultImageLink;
   } catch (error) {
-    console.log(error);
     return "/area-focus-defualt/Peace_Conflict_Prevention";
   }
 };
@@ -224,6 +224,7 @@ const viewFullDescription = (
         :src="projectImageLink"
         alt="project main image"
         width="500"
+        preview
       />
     </div>
     <!-- Basic Info -->
@@ -387,10 +388,11 @@ const viewFullDescription = (
             class="border-1 surface-border border-round m-2 text-center py-5 px-3"
           >
             <div class="mb-3">
-              <img
+              <Image 
                 :src="slotProps.data.s3UrlLink"
                 :alt="slotProps.data.s3BaseUrlLink"
                 class="aspect-ratio cursor-pointer object-cover shadow-2"
+                preview
               />
             </div>
           </div>
