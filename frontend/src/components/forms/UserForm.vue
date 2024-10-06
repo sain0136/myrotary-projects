@@ -29,7 +29,7 @@ import {
   districtRole,
   districtRoles,
   type UserTypeForm,
-  type formType,
+  type FormTypes,
 } from "@/utils/types/commonTypes";
 import { clubRoles } from "@/utils/types/commonTypes";
 import Banners from "@/components/banners/Banners.vue";
@@ -52,15 +52,15 @@ const districtId = ref(
   route.query.districtId ? Number(route.query.districtId) : undefined
 );
 const isEdit = ref(route.query.isEdit ? true : false);
-const formType = ref<formType>(route.query.formType as formType); //TODO: You must send this maybe type any route type i.e a type for all router calls
+const formType = ref<FormTypes>(route.query.formType as FormTypes); //TODO: You must send this maybe type any route type i.e a type for all router calls
 
-// Component data -- When using form from component
+// Component data -- When using form as a child component
 const { userIdProp, userTypeProp, clubIdProp, formTypeProp, isEditProp } =
   defineProps<{
     userIdProp?: string;
     userTypeProp?: UserTypeForm;
     clubIdProp?: string;
-    formTypeProp: formType;
+    formTypeProp: FormTypes;
     isEditProp?: boolean;
   }>();
 
@@ -257,7 +257,7 @@ const redirect = () => {
 };
 
 const choosenDistrictError = computed((): string => {
-  const exempt: Array<formType> = [
+  const exempt: Array<FormTypes> = [
     "siteAdminClub",
     "districtAdmin",
     "siteAdminDistrict",
@@ -275,15 +275,27 @@ const choosenDistrictError = computed((): string => {
   }
   return "";
 });
+
+const getErrorMessage = (validationObject: string) => {
+  const error = v$.value[validationObject]
+    ? v$.value[validationObject].$errors[0]
+    : undefined;
+  return error ? error.$message.toString() : undefined;
+};
 </script>
 
 <template>
-  <form @submit.prevent class="">
-    <!-- User form banner -->
-    <Banners
-      v-if="formType === 'newAccount'"
-      :banner-text="langTranslations.createNewAccountBanner"
-    />
+  <!-- User form banner -->
+  <Banners
+    v-if="formType === 'newAccount'"
+    :banner-text="langTranslations.createNewAccountBanner"
+  />
+  <form
+    @submit.prevent
+    :class="{
+      'w-10/12 m-auto': formType === 'newAccount',
+    }"
+  >
     <H2
       v-if="formType !== 'myProfile' && formType !== 'newAccount'"
       class="text-center"
@@ -322,7 +334,7 @@ const choosenDistrictError = computed((): string => {
         v-model="user.role_type"
         :label="langTranslations.roleLabel"
         :options="districtRole.filter((role) => role !== 'Webmaster')"
-        :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined"
+        :errorMessage="getErrorMessage('role_type')"
       />
       <BaseSelect
         v-if="
@@ -334,7 +346,7 @@ const choosenDistrictError = computed((): string => {
         v-model="user.role_type"
         :label="langTranslations.roleLabel"
         :options="clubRoles.filter((role) => role !== 'Guest')"
-        :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined"
+        :errorMessage="getErrorMessage('role_type')"
       />
       <BaseSelect
         v-if="formType === 'newAccount'"
@@ -346,7 +358,7 @@ const choosenDistrictError = computed((): string => {
             .filter((role) => role !== 'Webmaster')
             .concat(clubRoles.filter((role) => role !== 'Guest'))
         "
-        :errorMessage="v$.role_type?.$errors[0]?.$message as string | undefined"
+        :errorMessage="getErrorMessage('role_type')"
       />
       <!-- Club member role only -->
 
@@ -367,37 +379,37 @@ const choosenDistrictError = computed((): string => {
         v-model="user.firstname"
         :label="langTranslations.userForm.firstNameLabel"
         :type="'text'"
-        :errorMessage="v$.firstname?.$errors[0]?.$message as string | undefined"
+        :errorMessage="getErrorMessage('firstname')"
       />
       <BaseInput
         v-model="user.lastname"
         :label="langTranslations.userForm.lastNameLabel"
         :type="'text'"
-        :errorMessage="v$.lastname?.$errors[0]?.$message as string | undefined"
+        :errorMessage="getErrorMessage('lastname')"
       />
       <BaseInput
         v-model="user.address"
         :label="langTranslations.addressLabel"
         :type="'text'"
-        :errorMessage="v$.address?.$errors[0]?.$message as string | undefined"
+        :errorMessage="getErrorMessage('address')"
       />
       <BaseInput
         v-model="user.user_city"
         :label="langTranslations.cityLabel"
         :type="'text'"
-        :errorMessage="v$.user_city?.$errors[0]?.$message as string | undefined"
+        :errorMessage="getErrorMessage('user_city')"
       />
       <BaseInput
         v-model="user.user_postal"
         :label="langTranslations.postalCodeLabel"
         :type="'text'"
-        :errorMessage="v$.user_postal?.$errors[0]?.$message as string | undefined"
+        :errorMessage="getErrorMessage('user_postal')"
       />
       <BaseSelect
         v-model="user.user_country"
         :label="langTranslations.countryLabel"
         :options="ResourceList.countryList"
-        :errorMessage="v$.user_country?.$errors[0]?.$message as string | undefined"
+        :errorMessage="getErrorMessage('user_country')"
       />
       <BaseSelect
         v-if="
@@ -411,33 +423,33 @@ const choosenDistrictError = computed((): string => {
             ? ResourceList.usaStatesList
             : ResourceList.canadaProvinceList
         "
-        :errorMessage="v$.user_province?.$errors[0]?.$message as string | undefined"
+        :errorMessage="getErrorMessage('user_province')"
       />
       <BaseInput
         v-else-if="user.user_country !== ''"
         v-model="user.user_province"
         :label="langTranslations.stateOrProvinceLabel"
         :type="'text'"
-        :errorMessage="v$.user_province?.$errors[0]?.$message as string | undefined"
+        :errorMessage="getErrorMessage('user_province')"
       />
       <BaseInput
         v-model="user.phone"
         :label="langTranslations.phone"
         :type="'text'"
-        :errorMessage="v$.phone?.$errors[0]?.$message as string | undefined"
+        :errorMessage="getErrorMessage('phone')"
       />
       <BaseInput
         v-model="user.email"
         :label="langTranslations.email"
         :type="'email'"
-        :errorMessage="v$.email?.$errors[0]?.$message as string | undefined"
+        :errorMessage="getErrorMessage('email')"
       />
       <BaseInput
         v-if="!isEdit || passwordReset.resetSet"
         v-model="user.password"
         :label="langTranslations.password"
         :type="'password'"
-        :errorMessage="v$.password?.$errors[0]?.$message as string | undefined"
+        :errorMessage="getErrorMessage('password')"
       />
       <div
         class="flex justify-center items-center"

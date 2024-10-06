@@ -155,7 +155,7 @@ export type IAreaOfFocus = {
 // newUser type = when user is creating account for first time this is user submitted and they will become a prospective user
 export type UserTypeForm = "districtAdmin" | "clubUser" | "newUser" | null;
 
-export type formType =
+export type FormTypes =
   | "siteAdminClub"
   | "siteAdminDistrict"
   | "myProfile"
