@@ -396,12 +396,6 @@ const getErrorMessage = (validationObject: string) => {
         @click="redirect()"
       />
     </div>
-    <!-- <span
-      >-
-      {{
-        project.project_name ? project.project_name : project.project_name
-      }}</span
-    > -->
   </form>
 </template>
 
