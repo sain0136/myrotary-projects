@@ -47,12 +47,17 @@ export default class UsersController {
     const webAdmin: boolean = request.input("webAdmin");
     try {
       const { userService } = this.initializeServices();
-      const { userData, newSession } = await userService.authenticateUser({
-        password,
-        email,
-        webAdmin,
-      });
-      if (userData) {
+      const { chromeDev } = request.qs(); // For dev enviroment and chrome browser we don't use a session. Test session in firefox 
+      const { userData, newSession } = await userService.authenticateUser(
+        {
+          password,
+          email,
+          webAdmin,
+        },
+        chromeDev ? true : false
+      );
+      // Assign session
+      if (userData && newSession && !chromeDev) {
         response.cookie("session_id", {
           value: newSession.sessionId,
           lastActivity: new Date().toISOString(),

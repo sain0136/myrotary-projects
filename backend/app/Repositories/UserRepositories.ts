@@ -43,7 +43,10 @@ export default class UserRepositories {
     }
   }
 
-  public async authenticateUser(userCredentials: AuthenticationRequestData) {
+  public async authenticateUser(
+    userCredentials: AuthenticationRequestData,
+    skipSession: boolean = false
+  ) {
     const authenticatedUserEmail = await Users.query()
       .select()
       .where({ email: userCredentials.email });
@@ -75,15 +78,20 @@ export default class UserRepositories {
       }
       const userData = await this.addUserRoles(user);
       const club = await Clubs.findOrFail(userData.user.clubId);
-      const newSession = await Session.create({
-        loginTimestamp: BigInt(DateTime.now().toMillis()),
-        lastActivityTimestamp: BigInt(DateTime.now().toMillis()),
-        fullName: userData.user.fullName,
-        email: userData.user.email,
-        userId: userData.user.userId,
-        districtId: userData.user.districtId || club.districtId,
-        clubId: userData.user.clubId,
-      });
+      let newSession: Session | undefined = undefined;
+      if (!skipSession) {
+        newSession = await Session.create({
+          loginTimestamp: BigInt(DateTime.now().toMillis()),
+          lastActivityTimestamp: BigInt(DateTime.now().toMillis()),
+          fullName: userData.user.fullName,
+          email: userData.user.email,
+          userId: userData.user.userId,
+          districtId: userData.user.districtId || club.districtId,
+          clubId: userData.user.clubId,
+        });
+      } else {
+        newSession = undefined;
+      }
       return { userData, newSession };
     } else {
       const message = "Invalid password";

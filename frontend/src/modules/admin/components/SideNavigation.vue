@@ -20,9 +20,9 @@ defineProps<{
   drawer: boolean;
 }>();
 defineEmits(["update:modelValue"]);
+
 const userStore = useLoggedInUserStore();
 const prospectUserStore = useProspectUserStore();
-
 const { hasAccess } = useAccessControl();
 const { langTranslations } = useLanguage();
 const loggedinRole = ref("");
@@ -33,8 +33,6 @@ if (
   loggedinRole.value = "SuperAdmin";
 } else if (userStore.loggedInUser.user_type === "SUPER") {
   loggedinRole.value = "SuperAdmin";
-} else if (userStore.loggedInUser.role) {
-  loggedinRole.value = userStore.loggedInUser.role;
 } else if (userStore.loggedInUser.role) {
   loggedinRole.value = userStore.loggedInUser.role;
 } else {

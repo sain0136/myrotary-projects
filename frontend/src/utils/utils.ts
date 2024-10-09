@@ -36,8 +36,8 @@ export const logoutUser = async (route = "UserLogin") => {
   try {
     await districtStore.resetDistrict();
     await clubStore.resetClub();
-    router.push({ name: route });
     await userStore.logOut();
+    router.push({ name: route });
   } catch (error) {
     handleError(error as CustomErrors);
   }
