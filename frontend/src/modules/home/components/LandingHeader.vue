@@ -58,7 +58,7 @@ const changeLanguage = () => {
 };
 
 const logout = async () => {
-   logoutUser("Home");
+  logoutUser("Home");
 };
 </script>
 
@@ -199,7 +199,7 @@ const logout = async () => {
           <li v-if="useLoggedInUserStore().isUserLoggedIn">
             <a
               class="block py-2 pl-3 pr-4 font-bold text-gray-900 rounded hover:text-primary"
-              href=""
+              href="#"
               @click="logout()"
             >
               {{ langTranslations.logoutLabel }}

@@ -1,7 +1,6 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import CustomException from "App/Exceptions/CustomException";
 import Session from "App/Models/Session";
-// import CustomException from "App/Exceptions/CustomException";
 import { DateTime } from "luxon";
 import Env from "@ioc:Adonis/Core/Env";
 const environment = Env.get("NODE_ENV");
@@ -17,7 +16,9 @@ export default class Authorize {
       request.cookie("session_id");
     const userLoggedin = request.header("logged-in");
     const browser = request.header("browser-type");
+    // skip all session validation for chrome dev environment
     if (browser === "Chrome" && environment === "development") {
+      request.updateQs({ chromeDev: "true", ...request.qs() });
       await next();
       return;
     }

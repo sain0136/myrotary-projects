@@ -28,10 +28,12 @@ export default class UserService {
   }
 
   public async authenticateUser(
-    AuthenticationRequestData: AuthenticationRequestData
+    AuthenticationRequestData: AuthenticationRequestData,
+    skipSession: boolean
   ) {
     const userLoginData = await this.userRepositories.authenticateUser(
-      AuthenticationRequestData
+      AuthenticationRequestData,
+      skipSession
     );
     return userLoginData;
   }

@@ -316,9 +316,10 @@ async function handleError(error: any, logData: acceptedLogFormTypes | null) {
 
 async function confirmErrorLogFile() {
   try {
-    console.log(`Checking access for file: ${errorFile}`);
-    await fs.access(errorFile);
-    console.log("File exists.");
+    console.log(`Attempting to open file: ${errorFile}`);
+    const fileHandle = await fs.open(errorFile, 'r');
+    console.log("File exists and is accessible.");
+    await fileHandle.close();
   } catch (error) {
     console.error("File does not exist or cannot be accessed:", error);
     await handleLoggerErrors();

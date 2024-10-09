@@ -14,7 +14,6 @@ export const useLoggedInUserStore = defineStore(
     const isUserLoggedIn = ref(false);
 
     function setLoggedInUser(user: IUser) {
-      // loggedInUser = user;
       Object.assign(loggedInUser, user);
       isUserLoggedIn.value = true;
     }
