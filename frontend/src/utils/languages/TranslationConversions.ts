@@ -1,7 +1,6 @@
 import type { ProjectStatus } from "@/utils/types/commonTypes";
 
 import type { lang } from "@/utils/languages/UseLanguage";
-import { useLanguage } from "@/utils/languages/UseLanguage";
 
 export const translatedStatus: Record<ProjectStatus, Record<lang, string>> = {
   "Looking For Funding": {
@@ -29,5 +28,3 @@ export const translatedStatus: Record<ProjectStatus, Record<lang, string>> = {
     fr: "Rapports à rendre",
   },
 };
-
-

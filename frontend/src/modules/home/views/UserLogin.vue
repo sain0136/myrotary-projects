@@ -18,9 +18,8 @@ import { required, email, helpers, minLength } from "@vuelidate/validators";
 import router from "@/router";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import Banners from "@/components/banners/Banners.vue";
-import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
-import { useLoggedInClub } from "@/stores/LoggedInClub";
 import { useProspectUserStore } from "@/stores/ProspecUserStore";
+import { loginUser } from "@/utils/utils";
 
 /* Data */
 const { langTranslations, customPrintf } = useLanguage();
@@ -31,8 +30,6 @@ const state = reactive({
 });
 const userStore = useLoggedInUserStore();
 const prospectUserStore = useProspectUserStore();
-const districtStore = useLoggedInDistrict();
-const clubStore = useLoggedInClub();
 const usersApi = new UsersApi(new ApiClient());
 
 /* Validations */
@@ -72,28 +69,30 @@ const handleSubmit = async () => {
       state.email,
       state.password
     );
-    userStore.setLoggedInUser(response.user);
-    districtStore.setLoggedInDistrict(response.district);
-    clubStore.setLoggedInClub(response.club);
-    handleSuccess(
-      customPrintf(
-        langTranslations.value.adminLoginForm.successfulLogin,
-        userStore.loggedInUser.fullName
-      )
-    );
-    router.push({ name: "AdminWelcome" });
-    const districtId =
-      userStore.loggedInUser.user_type === "SUPER"
-        ? undefined
-        : userStore.loggedInUser.district_id!;
-    // use ProspectUserStore so we can update our notification icon
-    const allProspectUsers = await usersApi.getAllUsers(
-      true,
-      undefined,
-      undefined,
-      districtId
-    );
-    prospectUserStore.setHasProspectUsers(Object(allProspectUsers).length > 0);
+    if (response) {
+      loginUser(response);
+      handleSuccess(
+        customPrintf(
+          langTranslations.value.adminLoginForm.successfulLogin,
+          userStore.loggedInUser.fullName
+        )
+      );
+      router.push({ name: "AdminWelcome" });
+      const districtId =
+        userStore.loggedInUser.user_type === "SUPER"
+          ? undefined
+          : userStore.loggedInUser.district_id!;
+      // use ProspectUserStore so we can update our notification icon
+      const allProspectUsers = await usersApi.getAllUsers(
+        true,
+        undefined,
+        undefined,
+        districtId
+      );
+      prospectUserStore.setHasProspectUsers(
+        Object(allProspectUsers).length > 0
+      );
+    }
   } catch (error) {
     handleError(error as CustomError);
   }

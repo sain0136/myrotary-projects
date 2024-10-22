@@ -264,9 +264,7 @@ const getTooltipContent = (
               class: 'flex gap-2 items-center flex-nowrap',
             }"
           >
-            <span>
-              {{ displayRow(row, column) }}
-            </span>
+            <span v-html="displayRow(row, column)"></span>
           </td>
           <td v-if="hideActionsColumn != true" class="actions-col px-6 py-4">
             <div class="flex justify-center items-center gap-1">

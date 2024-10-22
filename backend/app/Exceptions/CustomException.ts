@@ -16,22 +16,22 @@ export default class CustomException
   extends Exception
   implements CustomErrorType
 {
-  errno: number | undefined;
+  errorCode: number | string | undefined;
   sqlMessage: string | undefined;
-  sqlCode: string | undefined | number;
   translatedMessage: Translation | undefined;
+  errorData: { [key: string]: string | number } | undefined;
   constructor({
     message,
     status,
-    errno,
-    code,
+    errorCode,
     sqlMessage,
     translatedMessage,
+    errorData,
   }: CustomErrorType) {
     super(message, status);
-    this.errno = errno ?? undefined;
+    this.errorCode = errorCode?.toString() ?? undefined;
     this.sqlMessage = sqlMessage ?? undefined;
-    this.sqlCode = code ?? undefined;
     this.translatedMessage = translatedMessage ?? undefined;
+    this.errorData = errorData ?? undefined;
   }
 }

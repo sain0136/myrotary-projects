@@ -9,7 +9,8 @@ export class ClubApi {
   public async clubsInDistrict(
     districtId: number,
     currentPage: number,
-    limit: number
+    limit: number,
+    excludeNotSubscribed?: boolean
   ): Promise<PaginationResult> {
     return await this.apiClient.fetchWrapper(
       "POST",
@@ -18,6 +19,7 @@ export class ClubApi {
         districtId,
         currentPage,
         limit,
+        excludeNotSubscribed,
       }
     );
   }

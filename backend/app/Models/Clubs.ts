@@ -52,6 +52,12 @@ export default class Clubs extends BaseModel {
   @column()
   public districtId: number;
 
+  @column()
+  public clubLogoUrl?: string;
+
+  @column()
+  public subscriptionId: string;
+
   @hasMany(() => User, { foreignKey: "clubId" })
   public users: HasMany<typeof User>;
 

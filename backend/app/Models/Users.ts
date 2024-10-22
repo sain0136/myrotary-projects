@@ -89,6 +89,9 @@ export default class Users extends BaseModel {
   @column()
   public districtId?: number;
 
+  @column()
+  public subscriptionId?: string;
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime;
 

@@ -1,4 +1,15 @@
 export interface Translation {
+  stripeSubscription: {
+    cardTitle: string;
+    cardTitleSuccess: string;
+    cardSubtitle: string;
+    cardSubtitleSuccess: string;
+    contactSupportButton: string;
+    returnHomeButton: string;
+    checkoutButton: string;
+    clubSubscribed: string;
+    notSubscribed: string;
+  };
   clubMembersTable: {
     clubMembersTableHelpText: string;
     modifyDeleteTooltip: string;
@@ -370,9 +381,22 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    stripeSubscription: {
+      cardTitle: "Club Subscription Expired",
+      cardTitleSuccess: "Club Subscription Activated",
+      cardSubtitle:
+        "Your club's subscription is inactive. You can go back to the homepage, contact support, or speak with your club or district admins to fix this. Alternatively, you can subscribe your club yourself through Stripe checkout.",
+      cardSubtitleSuccess:
+        "Your club's subscription has been activated. Thank you! Return to the homepage and log in.",
+      contactSupportButton: "Contact Support",
+      checkoutButton: "Checkout with Stripe",
+      returnHomeButton: "Return Home",
+      clubSubscribed: "Club Subscribed",
+      notSubscribed: "Unsubscribed",
+    },
     clubMembersTable: {
       clubMembersTableHelpText:
-        "You cannot edit or delete district-level users from this club members table. District admin status is required.",
+        "You cannot edit or delete district-level users from this club members table.",
       modifyDeleteTooltip:
         "To edit or delete a district-level user, navigate to 'Districts' in the left menu, select the 'Admins' tab, find the user's district, and choose the user.",
     },
@@ -789,9 +813,22 @@ export const translations: Record<string, Translation> = {
     noProspectUserAvailable: "There are no prospective users at this moment",
   },
   fr: {
+    stripeSubscription: {
+      cardTitle: "Abonnement du Club Expiré",
+      cardTitleSuccess: "Abonnement au club activé",
+      cardSubtitle:
+        "L'abonnement de votre club est inactif. Vous pouvez retourner à la page d'accueil, contacter le support ou parler avec les administrateurs de votre club ou de votre district pour résoudre ce problème. Alternativement, vous pouvez abonner votre club vous-même via le paiement Stripe.",
+      cardSubtitleSuccess:
+        "L'abonnement de votre club a été activé. Nous vous remercions de votre attention. Retournez à la page d'accueil et connectez-vous.",
+      contactSupportButton: "Contacter le Support",
+      checkoutButton: "Payer avec Stripe",
+      returnHomeButton: "Retour à l'Accueil",
+      clubSubscribed: "Club abonné",
+      notSubscribed: "Non abonné",
+    },
     clubMembersTable: {
       clubMembersTableHelpText:
-        "Vous ne pouvez pas modifier ou supprimer des utilisateurs au niveau du district depuis ce tableau des membres du club. Le statut d'administrateur de district est requis.",
+        "Vous ne pouvez pas modifier ou supprimer des utilisateurs au niveau du district depuis ce tableau des membres du club.",
       modifyDeleteTooltip:
         "Pour modifier ou supprimer un utilisateur au niveau du district, accédez à 'Districts' dans le menu de gauche, sélectionnez l'onglet 'Admins', trouvez le district de l'utilisateur et choisissez l'utilisateur.",
     },

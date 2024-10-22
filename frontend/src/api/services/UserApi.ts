@@ -107,4 +107,16 @@ export class UsersApi {
       user
     );
   }
+
+  public async stripeRegistration(
+    userId: string,
+    clubId: string,
+    langCode?: string
+  ): Promise<{ url: string }> {
+    return await this.apiClient.fetchWrapper("POST", `/stripeRegistration`, {
+      userId,
+      clubId,
+      langCode,
+    });
+  }
 }

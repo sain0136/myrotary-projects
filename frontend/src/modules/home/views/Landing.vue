@@ -12,7 +12,7 @@ import LandingFooter from "@/modules/home/components/LandingFooter.vue";
 <template>
   <LandingHeader />
 
-  <div class="w-full h-full flex-1">
+  <div class="landing-container w-full h-full flex-1">
     <router-view></router-view>
   </div>
   <LandingFooter />

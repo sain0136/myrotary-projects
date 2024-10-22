@@ -18,6 +18,9 @@ const districtStore = useLoggedInDistrict();
 const clubStore = useLoggedInClub();
 const { languagePref } = useLanguage();
 const { handleError } = errorHandler();
+import type { IClub } from "@/utils/interfaces/IClub";
+import type { IDistrict } from "@/utils/interfaces/IDistrict";
+import type { IUser } from "@/utils/interfaces/IUser";
 
 export const hideAprovalTab = (projectId: number | null) => {
   if (!projectId) {
@@ -41,6 +44,20 @@ export const logoutUser = async (route = "UserLogin") => {
   } catch (error) {
     handleError(error as CustomErrors);
   }
+};
+
+export const loginUser = async ({
+  user,
+  district,
+  club,
+}: {
+  user: IUser;
+  district: IDistrict;
+  club: IClub;
+}) => {
+  userStore.setLoggedInUser(user);
+  districtStore.setLoggedInDistrict(district);
+  clubStore.setLoggedInClub(club);
 };
 
 export const projectDisabledStatus = (status: ProjectStatus): boolean => {

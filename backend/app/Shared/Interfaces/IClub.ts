@@ -9,6 +9,7 @@ export interface IClub {
   club_email: string;
   site_url: string;
   district_id: number;
+  subscription_id?: string;
   // Creation
   club_id?: number;
   [key: string]: any;

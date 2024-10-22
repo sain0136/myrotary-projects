@@ -1,12 +1,11 @@
 export type CustomErrorType = {
   message: string;
   status?: number;
-  errno?: number;
+  errorCode?: number | string;
   sqlMessage?: string;
-  sqlCode?: string | number;
   code?: number | string;
   translatedMessage?: Translation;
-  timestamp?: string | Date;
+  errorData?: { [key: string]: string | number } | undefined;
 };
 
 export type Translation = {

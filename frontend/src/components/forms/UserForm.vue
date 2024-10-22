@@ -51,7 +51,7 @@ const clubId = ref<string | undefined>(
 const districtId = ref(
   route.query.districtId ? Number(route.query.districtId) : undefined
 );
-const isEdit = ref(route.query.isEdit ? true : false);
+const isEdit = ref(route.query.isEdit ? true : undefined);
 const formType = ref<FormTypes>(route.query.formType as FormTypes); //TODO: You must send this maybe type any route type i.e a type for all router calls
 
 // Component data -- When using form as a child component
@@ -111,7 +111,12 @@ const v$ = useVuelidate(userFormRules, user);
 watch(chosenDistrict, async () => {
   try {
     const id = districtMap.get(chosenDistrict.value) as number;
-    const allClubsInDistrict = await clubApi.clubsInDistrict(id, 1, 10000000);
+    const allClubsInDistrict = await clubApi.clubsInDistrict(
+      id,
+      1,
+      10000000,
+      false
+    );
     clubMap.clear();
     (allClubsInDistrict.data as IClub[]).forEach((club) => {
       clubMap.set(club.club_name, club.club_id as number);
