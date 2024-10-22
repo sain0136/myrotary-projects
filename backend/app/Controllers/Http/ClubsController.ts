@@ -17,11 +17,16 @@ export default class ClubsController {
       const currentPage: number = request.input("currentPage", 1);
       const limit: number = request.input("limit", 10);
       const districtID: number = request.input("districtId");
+      const excludeNotSubscribed: boolean = request.input(
+        "excludeNotSubscribed",
+        true
+      );
       const { clubService } = this.initializeServices();
       const allClubsInDistrict = await clubService.clubsInDistrict(
         districtID,
         currentPage,
-        limit
+        limit,
+        excludeNotSubscribed
       );
       return response.json(allClubsInDistrict);
     } catch (error) {

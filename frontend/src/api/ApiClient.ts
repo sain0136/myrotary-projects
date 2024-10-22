@@ -1,6 +1,7 @@
 import { CustomErrors } from "@/utils/classes/CustomErrors";
 import type { ICustomError } from "@/utils/interfaces/ICustomError";
 import axios from "axios";
+import router from "@/router";
 
 export class ApiClient {
   private baseURL = import.meta.env.VITE_BASE_API_URL;
@@ -33,24 +34,7 @@ export class ApiClient {
     };
     const response = await fetch(url, options);
     const jsonData = await response.json();
-    if (response.status === 601) {
-      await this.handleSessionTimeout();
-    }
-    if (response.status !== 200) {
-      const partialError = jsonData as unknown as ICustomError;
-
-      if (partialError.message?.includes("JSON")) {
-        throw new CustomErrors(501, {
-          en: "Internal Server Error. Please try again later.",
-          fr: "Erreur interne du serveur. Veuillez reessayer plus tard.",
-        });
-      }
-      throw new CustomErrors(
-        partialError.statusCode,
-        partialError.translatedMessage
-      );
-    }
-    return jsonData;
+    return await this.processResponse(response, jsonData);
   }
 
   public async axiosWrapper(
@@ -66,16 +50,7 @@ export class ApiClient {
       },
       withCredentials: true,
     });
-    if (response.status === 601) {
-      this.handleSessionTimeout();
-    }
-    if (response.status !== 200) {
-      const partialError = response.data as unknown as ICustomError;
-      throw new CustomErrors(
-        partialError.statusCode,
-        partialError.translatedMessage
-      );
-    }
+    await this.processResponse(response, response.data);
     return response.data;
   }
 
@@ -107,6 +82,51 @@ export class ApiClient {
       return "Firefox";
     } else {
       return "Other";
+    }
+  }
+
+  private async processResponse(response: any, jsonData: any) {
+    const errorObject = jsonData as unknown as ICustomError;
+    if (response.status === 601) {
+      await this.handleSessionTimeout();
+    }
+    if (response.status === 402) {
+      this.handleClubNotSubscribed(errorObject);
+      return undefined;
+    }
+    if (response.status !== 200) {
+      if (errorObject.message?.includes("JSON")) {
+        throw new CustomErrors(501, {
+          en: "Internal Server Error. Please try again later.",
+          fr: "Erreur interne du serveur. Veuillez reessayer plus tard.",
+        });
+      }
+      throw new CustomErrors(
+        errorObject.statusCode,
+        errorObject.translatedMessage
+      );
+    }
+    return jsonData;
+  }
+
+  private handleClubNotSubscribed(errorObject: ICustomError) {
+    if (
+      errorObject.errorData &&
+      errorObject.errorData.clubId &&
+      errorObject.errorData.userId
+    ) {
+      router.push({
+        name: "ClubNotSubscribed",
+        query: {
+          userId: errorObject.errorData.userId,
+          clubId: errorObject.errorData.clubId,
+        },
+      });
+    } else {
+      throw new CustomErrors(402, {
+        en: "Club not subscribed. Contact your administrator.",
+        fr: "Club non souscrit. Contactez votre administrateur.",
+      });
     }
   }
 }

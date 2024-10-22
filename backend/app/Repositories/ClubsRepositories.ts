@@ -9,12 +9,16 @@ export default class ClubRepositories {
   public async clubsInDistrict(
     districtID: number,
     currentPage: number,
-    limit: number
+    limit: number,
+    excludeNotSubscribed: boolean
   ) {
-    const allClubsInDistrict = await Clubs.query()
-      .select("*")
-      .where({ district_id: districtID })
-      .paginate(currentPage, limit);
+    const query = Clubs.query().select("*").where({ district_id: districtID });
+
+    if (excludeNotSubscribed) {
+      query.whereNotNull("subscription_id").where("subscription_id", "!=", "");
+    }
+
+    const allClubsInDistrict = await query.paginate(currentPage, limit);
     return allClubsInDistrict;
   }
 
@@ -30,6 +34,7 @@ export default class ClubRepositories {
       clubEmail: club.club_email,
       districtId: club.district_id,
       siteUrl: club.siteUrl,
+      subscriptionId: "",
       settings: JSON.stringify(club.settings),
     });
   }

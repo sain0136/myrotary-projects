@@ -51,7 +51,7 @@ const tableFormType =
   useLoggedInUserStore().$state.loggedInUser?.user_type === "DISTRICT"
     ? "districtAdmin"
     : "siteAdmin";
-    
+
 /* Hooks */
 watch(chosenDistrict, () => {
   if (chosenDistrict.value !== undefined && !tableView) {
@@ -104,10 +104,23 @@ const getClubsByDistrict = async () => {
     const response = (await clubApi.clubsInDistrict(
       chosenDistrictId.value,
       pagination.currentPage,
-      pagination.limit
+      pagination.limit,
+      false
     )) as PaginationResult;
     allClubsInDistrict.splice(0, allClubsInDistrict.length);
-    Object.assign(allClubsInDistrict, response.data);
+    Object.assign(
+      allClubsInDistrict,
+      (response.data as IClub[]).map((club) => {
+        club.isSubscribed = club.subscription_id
+          ? `<svg class="text-primary" xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" viewBox="0 0 24 24">
+		<path fill="currentColor" d="m9.55 18l-5.7-5.7l1.425-1.425L9.55 15.15l9.175-9.175L20.15 7.4z" />
+	</svg>`
+          : `	<svg class="text-primary" xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" viewBox="0 0 24 24">
+		<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
+	</svg>`;
+        return club;
+      })
+    );
     pagination.currentPage = response.meta.current_page;
     pagination.lastPage = response.meta.last_page;
     pagination.total = response.meta.total;
@@ -207,6 +220,11 @@ const updateLimit = (limit: number) => {
           name: langTranslations.clubLabel,
           colName: 'club_name',
           columnWidth: 'w-1/6',
+        },
+        {
+          name: langTranslations.stripeSubscription.clubSubscribed,
+          columnWidth: 'w-1/6',
+          colName: 'isSubscribed',
         },
       ]"
     />

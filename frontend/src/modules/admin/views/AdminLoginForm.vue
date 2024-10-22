@@ -17,10 +17,7 @@ import { ApiClient } from "@/api/ApiClient";
 import type { CustomError } from "@/utils/classes/CustomError";
 import { useVuelidate } from "@vuelidate/core";
 import { required, email, helpers, minLength } from "@vuelidate/validators";
-import router from "@/router";
-import { useLoggedInUserStore } from "@/stores/LoggedInUser";
-import { useLoggedInDistrict } from "@/stores/LoggedInDistrict";
-import { useLoggedInClub } from "@/stores/LoggedInClub";
+import { loginUser } from "@/utils/utils";
 
 /* Data */
 const show = ref(false);
@@ -30,9 +27,6 @@ const state = reactive({
   email: "",
   password: "",
 });
-const userStore = useLoggedInUserStore();
-const districtStore = useLoggedInDistrict();
-const clubStore = useLoggedInClub();
 // const logo = ref("");
 const usersApi = new UsersApi(new ApiClient());
 
@@ -79,11 +73,10 @@ const handleSubmit = async () => {
       state.password,
       true
     );
-    userStore.setLoggedInUser(response.user);
-    districtStore.setLoggedInDistrict(response.district);
-    clubStore.setLoggedInClub(response.club);
-    handleSuccess(langTranslations.value.adminLoginForm.successfulLogin);
-    router.push({ name: "AdminWelcome" });
+    if (response) {
+      loginUser(response);
+      handleSuccess(langTranslations.value.adminLoginForm.successfulLogin);
+    }
   } catch (error) {
     handleError(error as CustomError);
   }

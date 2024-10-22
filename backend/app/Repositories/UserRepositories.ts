@@ -64,6 +64,7 @@ export default class UserRepositories {
         translatedMessage: errorTranslations.loginNotAllowed,
       });
     }
+
     if (await Hash.verify(user.password, userCredentials.password)) {
       // TODO: See if the check for his email is security risk should be env variable
       if (
@@ -73,11 +74,9 @@ export default class UserRepositories {
         throw new CustomException({
           message: "Invalid credentials",
           status: 401,
-          translatedMessage: errorTranslations.badCredentials,
         });
       }
-      const userData = await this.addUserRoles(user);
-      const club = await Clubs.findOrFail(userData.user.clubId);
+      const { userData, club } = await this.addUserDetails(user);
       let newSession: Session | undefined = undefined;
       if (!skipSession) {
         newSession = await Session.create({
@@ -100,6 +99,22 @@ export default class UserRepositories {
       throw new CustomException({ message, status, translatedMessage });
     }
   }
+  private async addUserDetails(user: Users) {
+    const userData = await this.addUserRoles(user);
+    const club = await Clubs.findOrFail(userData.user.clubId);
+    if (!club.subscriptionId) {
+      throw new CustomException({
+        message: "Club not subscribed",
+        status: 402,
+        errorData: {
+          userId: userData.user.userId,
+          clubId: club.clubId,
+        },
+      });
+    }
+    return { userData, club };
+  }
+
   /**
    * Adds user roles to the user object.
    *

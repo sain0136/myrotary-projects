@@ -8,6 +8,11 @@ const routes = [
     component: () => import("@/components/notfound/NotFound.vue"),
   },
   {
+    path: "/subscribe",
+    name: "ClubNotSubscribed",
+    component: () => import("@/modules/home/views/ClubNotSubscribed.vue"),
+  },
+  {
     path: "/admin-login",
     name: "AdminLoginForm",
     component: () => import("@/modules/admin/views/AdminLoginForm.vue"),

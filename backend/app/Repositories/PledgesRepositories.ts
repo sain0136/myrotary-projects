@@ -101,13 +101,13 @@ export default class PledgesRepositories {
       } else {
         throw new CustomException({
           message: "Project not found",
-          errno: 901000,
+          errorCode: 901000,
         });
       }
     } else {
       throw new CustomException({
         message: "Pledge not found",
-        errno: 901000,
+        errorCode: 901000,
       });
     }
   }

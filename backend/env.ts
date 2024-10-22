@@ -38,4 +38,8 @@ export default Env.rules({
   S3_BASE_URL: Env.schema.string(),
   S3_ENDPOINT: Env.schema.string(),
   LOGS_PATH: Env.schema.string(),
+  STRIPE_SECRET: Env.schema.string(),
+  FRONTEND_DOMAIN: Env.schema.string(),
+  PRODUCT_PRICE_ID: Env.schema.string(),
+  STRIPE_WEBHOOK_SECRET: Env.schema.string(),
 });

@@ -70,16 +70,24 @@ watch(chosenDistrict, async () => {
     allUsersInClub.splice(0, allUsersInClub.length);
     chosenClub.value = "";
     chosenId.value = 0;
-    const id = allDistricts.get(chosenDistrict.value) as number;
+    const chosenDistrictId = allDistricts.get(chosenDistrict.value) as number;
     try {
       allClubsInDistrict.clear();
       const response = await clubApi.clubsInDistrict(
-        id,
+        chosenDistrictId,
         pagination.currentPage,
-        1000000
+        1000000,
+        false
       );
       (response?.data as IClub[]).map((club) => {
-        allClubsInDistrict.set(club.club_name, club.club_id as number);
+        allClubsInDistrict.set(
+          `${club.club_name} ${
+            !club.subscription_id
+              ? `(${langTranslations.value.stripeSubscription.notSubscribed})`
+              : ""
+          }`,
+          club.club_id as number
+        );
       });
     } catch (error) {
       handleError(error as CustomError);
@@ -248,7 +256,9 @@ const updateLimit = (limit: number) => {
       <H3 :content="langTranslations.clubsView.clubsLabel" />
       <BaseSelect
         class="w-1/2"
-        :options="[...allClubsInDistrict.keys()].sort((a, b) => a.localeCompare(b))"
+        :options="
+          [...allClubsInDistrict.keys()].sort((a, b) => a.localeCompare(b))
+        "
         v-model="chosenClub"
         :label="''"
       />
@@ -264,10 +274,7 @@ const updateLimit = (limit: number) => {
     >
       {{ langTranslations.clubMembersTable.clubMembersTableHelpText
       }}<Qmark
-        v-if="
-          useLoggedInUserStore().loggedInUser?.user_type === 'DISTRICT' ||
-          useLoggedInUserStore().loggedInUser?.user_type === 'SUPER'
-        "
+        v-if="useLoggedInUserStore().loggedInUser?.user_type === 'SUPER'"
         :help-text="langTranslations.clubMembersTable.modifyDeleteTooltip"
       />
     </span>

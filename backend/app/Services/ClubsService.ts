@@ -5,12 +5,14 @@ export default class ClubsService {
   public async clubsInDistrict(
     districtID: number,
     currentPage: number,
-    limit: number
+    limit: number,
+    excludeNotSubscribed: boolean
   ) {
     return await this.clubRepository.clubsInDistrict(
       districtID,
       currentPage,
-      limit
+      limit,
+      excludeNotSubscribed
     );
   }
 

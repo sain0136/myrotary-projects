@@ -18,8 +18,7 @@ export default class UploadsController {
       const { uploadsService } = this.initializeServices();
       const path = await uploadsService.test(coverImage);
       return response.json(path);
-    } catch (error) {
-    }
+    } catch (error) {}
   }
 
   public async uploadFiles({ request, response }: HttpContextContract) {
@@ -56,14 +55,8 @@ export default class UploadsController {
         request.input("toDeleteUploads");
       const districtId = request.input("districtId", null);
       const projectId = request.input("projectId", null);
-      // const userId = request.input("projectId", null);
       const { uploadsService } = this.initializeServices();
-      await uploadsService.delete(
-        toDeleteUploads,
-        districtId,
-        projectId,
-        // userId
-      );
+      await uploadsService.delete(toDeleteUploads, districtId, projectId);
       return response.json({});
     } catch (error) {
       throw new CustomException(error as CustomErrorType);

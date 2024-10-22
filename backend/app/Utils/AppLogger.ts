@@ -276,7 +276,7 @@ export class LogManager {
 
   private CustomLogHandler(params: CustomLogParams) {
     const log: logDataForm = this.createBaseLog();
-    log.type = "user_log";
+    log.type = params.type ?? "user_log" ;
     log.event = params.event ?? "";
     log.status = params.status ?? "";
     log.source = params.source ?? "";

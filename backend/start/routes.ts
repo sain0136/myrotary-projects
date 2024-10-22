@@ -28,6 +28,7 @@ import "App/Modules/Districts/routes";
 import "App/Modules/Clubs/routes";
 import "App/Modules/Pledges/routes";
 import "App/Modules/Mail/routes";
+import "App/Modules/Stripe/routes";
 
 Route.get("/", async () => {
   return {

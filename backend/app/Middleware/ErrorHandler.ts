@@ -43,6 +43,7 @@ export default class ErrorHandler {
         response.status(error.status).send({
           statusCode: error.status,
           translatedMessage,
+          errorData: error.errorData ?? undefined,
         });
       }
     }
@@ -52,49 +53,40 @@ export default class ErrorHandler {
    * Retrieves the translated message based on the provided custom exception.
    */
   private getTranslatedMessage(
-    { status, errno }: CustomException,
+    { status, errorCode }: CustomException,
     url: string
   ): Translation {
-    if (errno && dbErrorMsgs[errno]) {
-      // Handle specific db errors
-      return getTranslatedDatabaseError(errno, url);
-    } else if (errno) {
-      // Handle all other db errors
+    if (errorCode && errorTranslations[errorCode]) {
+      // Handle specific errors i.e db errors or custom errors
+      return getErrorTranslation(errorCode, url);
+    } else if (errorCode) {
+      // Handle all non specific database errors
       return {
         en: "Something went wrong. A report was sent to the administrator",
         fr: "Quelque chose s'est mal passé. Un rapport a été envoyée à l'administrateur",
       };
     } else {
       // Handle all other errors
-      return getTranslatedErrorMessage(status);
+      return getErrorTranslationByStatus(status);
     }
   }
 }
 
-type DatabaseErrorType =
-  | "1062"
-  | "1062-projects"
-  | "1062-users"
-  | "1062-districts"
-  | "1451"
-  | "1452"
-  | "901000";
-
 /**
  * Maps a database error number to a generic translated error message, handle known and specific database errors
  */
-const getTranslatedDatabaseError = (
-  errno: number,
+const getErrorTranslation = (
+  errorCode: number | string,
   url: string
 ): Translation => {
-  if (errno === 1062 && url.includes("user")) {
-    return dbErrorMsgs["1062-users"];
-  } else if (errno === 1062 && url.includes("project")) {
-    return dbErrorMsgs["1062-projects"];
-  } else if (errno === 1062 && url.includes("district")) {
-    return dbErrorMsgs["1062-districts"];
+  if (errorCode === "1062" && url.includes("user")) {
+    return errorTranslations["1062-users"];
+  } else if (errorCode === "1062" && url.includes("project")) {
+    return errorTranslations["1062-projects"];
+  } else if (errorCode === "1062" && url.includes("district")) {
+    return errorTranslations["1062-districts"];
   } else {
-    return dbErrorMsgs[errno];
+    return errorTranslations[errorCode];
   }
 };
 
@@ -102,7 +94,7 @@ const getTranslatedDatabaseError = (
  *  Database error messages - We dont send a verbose/SQL raw message rather use these generic ones
  *  Custom Db errors should start in the 900000 range
  */
-const dbErrorMsgs: Record<DatabaseErrorType, Translation> = {
+const errorTranslations: Record<string, Translation> = {
   "1062": {
     en: "Duplicate record entry",
     fr: "Entrée d'enregistrement en double",
@@ -136,7 +128,7 @@ const dbErrorMsgs: Record<DatabaseErrorType, Translation> = {
 /**
  * Retrieves the translated message based on the provided HTTP status code for all non database exceptions
  */
-function getTranslatedErrorMessage(status: number): Translation {
+function getErrorTranslationByStatus(status: number): Translation {
   switch (status) {
     case 400:
       return {
