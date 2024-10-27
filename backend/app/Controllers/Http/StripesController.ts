@@ -171,7 +171,6 @@ export default class StripesController {
   }
 
   async verifyWebhook(signature: any, rawBody: any) {
-    let event: Stripe.Event;
     const stripeWebhookSecret = Env.get("STRIPE_WEBHOOK_SECRET");
 
     if (!signature) {
@@ -180,12 +179,12 @@ export default class StripesController {
 
     try {
       // Verify the event with the signing secret
-      event = Stripe.webhooks.constructEvent(
+      let event = Stripe.webhooks.constructEvent(
         rawBody,
         signature,
         stripeWebhookSecret
       );
-      return true;
+      return event;
     } catch (err) {
       throw new Error("Webhook signature verification failed");
     }

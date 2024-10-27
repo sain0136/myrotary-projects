@@ -53,20 +53,21 @@ export default class ErrorHandler {
    * Retrieves the translated message based on the provided custom exception.
    */
   private getTranslatedMessage(
-    { status, errorCode }: CustomException,
+    { status, errorCode, errno }: CustomException,
     url: string
   ): Translation {
     if (errorCode && errorTranslations[errorCode]) {
-      // Handle specific errors i.e db errors or custom errors
+      // Handle specific errors i.e known handled db errors or custom errors
       return getErrorTranslation(errorCode, url);
-    } else if (errorCode) {
-      // Handle all non specific database errors
+    } else if (errorCode || errno) {
+      // Handle all non handled database/custom errors
+      // TODO: Actually send a report to the admin
       return {
         en: "Something went wrong. A report was sent to the administrator",
         fr: "Quelque chose s'est mal passé. Un rapport a été envoyée à l'administrateur",
       };
     } else {
-      // Handle all other errors
+      // Handle all other errors based on the HTTP status
       return getErrorTranslationByStatus(status);
     }
   }

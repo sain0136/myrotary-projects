@@ -6,6 +6,7 @@ export type CustomErrorType = {
   code?: number | string;
   translatedMessage?: Translation;
   errorData?: { [key: string]: string | number } | undefined;
+  errno?: number | string; // errno is prop that will exist on db errors from lucid orm
 };
 
 export type Translation = {

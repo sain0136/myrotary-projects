@@ -20,6 +20,8 @@ export default class CustomException
   sqlMessage: string | undefined;
   translatedMessage: Translation | undefined;
   errorData: { [key: string]: string | number } | undefined;
+  errno?: string | number | undefined;
+
   constructor({
     message,
     status,
