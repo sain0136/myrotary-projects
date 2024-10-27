@@ -45,9 +45,9 @@ const districtFilesReqData = {
   fileTypes: "district-report-files",
 } as uploadFileData;
 const { langTranslations, customPrintf, languagePref } = useLanguage();
-
 type formType = "districtAdmin";
 const districtApi = new DistrictApi(new ApiClient());
+
 // required form data
 const route = useRoute();
 const isEdit = ref(router.currentRoute.value.params.districtId ? true : false);
@@ -60,18 +60,6 @@ const districtId = isEdit.value
 const { handleError, handleSuccess, handleValidationForm } = errorHandler();
 const district = reactive(new District());
 type uploadValues = "dsg_en" | "dsg_fr" | "dm_en" | "dm_fr";
-const getLink = (fileType: uploadValues): null | uploadedFile => {
-  let found = null;
-  district.district_details.reportLinks.forEach((link) => {
-    if (link.s3Name?.includes(fileType)) {
-      found = link;
-    }
-  });
-  return found;
-};
-function createUniqueId() {
-  return "id-" + Date.now().toString(36) + Math.random().toString(36).substr(2);
-}
 
 const uploadTypes = ref<Array<{
   uniqueId: string;
@@ -79,12 +67,14 @@ const uploadTypes = ref<Array<{
   label: string;
   linkObject: null | uploadedFile;
 }> | null>(null);
+
 const sourceList = [
   "District Club Contribution",
   "Non-District Club Contribution",
   "Co-operating Organization Contribution",
   "Other sources",
 ];
+
 const duplicateErrorMsg = ref({
   show: false,
   en: "",
@@ -99,9 +89,6 @@ const submitLabel = isEdit.value
       en: "Submit",
       fr: "Soumettre",
     };
-const alwaysTrueValidator = () => {
-  return true;
-};
 
 /* Validations */
 const rules = {
@@ -111,16 +98,20 @@ const rules = {
       required
     ),
     maxLength: helpers.withMessage(
-      customPrintf(langTranslations.value.maxLengthMessage, "4"),
-      () => (!isEdit.value ? maxLength(4) : (alwaysTrueValidator() as any))
+      customPrintf(langTranslations.value.maxLengthMessage, "6"),
+      (value: string) => {
+        return isEdit.value ? true : value.length <= 6;
+      }
     ),
     minLenght: helpers.withMessage(
       customPrintf(langTranslations.value.minLengthMessage, "4"),
-      () => (!isEdit.value ? minLength(4) : (alwaysTrueValidator() as any))
+      (value: string) => {
+        return isEdit.value ? true : value.length >= 4;
+      }
     ),
     numeric: helpers.withMessage(
       langTranslations.value.formErorrText.numeric,
-      () => (!isEdit.value ? numeric : (alwaysTrueValidator() as any))
+      numeric
     ),
   },
   district_president: {
@@ -223,7 +214,26 @@ onMounted(async () => {
 });
 
 /* Methods */
+const getLink = (fileType: uploadValues): null | uploadedFile => {
+  let found = null;
+  district.district_details.reportLinks.forEach((link) => {
+    if (link.s3Name?.includes(fileType)) {
+      found = link;
+    }
+  });
+  return found;
+};
 
+const createUniqueId = () => {
+  return "id-" + Date.now().toString(36) + Math.random().toString(36).substr(2);
+};
+
+/**
+ * Sets the initial state of the uploadTypes reactive ref.
+ * This is used to manage the file upload component state
+ * and to determine which file types are required based on
+ * the form type.
+ */
 const setuploadTypes = () => {
   uploadTypes.value = [
     {
@@ -252,6 +262,7 @@ const setuploadTypes = () => {
     },
   ];
 };
+
 const addOrDeleteSourceToDdfCalculation = (add: boolean, source?: string) => {
   if (add && source) {
     let duplicate = district.district_details.ddfCalculation.includes(source);
@@ -275,6 +286,7 @@ const addOrDeleteSourceToDdfCalculation = (add: boolean, source?: string) => {
     district.district_details.ddfCalculation.pop();
   }
 };
+
 const validateAndSubmit = async () => {
   const isFormCorrect = await v$.value.$validate();
   if (!isFormCorrect) {
@@ -283,8 +295,8 @@ const validateAndSubmit = async () => {
   }
   try {
     if (isEdit.value) {
-     const response =  await districtApi.updateDistrict(district);
-     useLoggedInDistrict().setLoggedInDistrict(response);
+      const response = await districtApi.updateDistrict(district);
+      useLoggedInDistrict().setLoggedInDistrict(response);
     } else {
       await districtApi.createDistrict(district);
     }
@@ -311,6 +323,7 @@ const stripUrlPart = (url: string) => {
   const filename = split[split.length - 1];
   return filename;
 };
+
 const fetchUpdatedData = async () => {
   try {
     const response = await districtApi.getById(districtId as number);
@@ -329,6 +342,22 @@ const deleteFile = async (linkToDelete: uploadedFile) => {
     handleError(error as CustomErrors);
   }
 };
+
+const getErrorMessage = (pathKeys: string[]) => {
+  // Start with the root object, `v$.value`
+  let errorObject = v$.value;
+
+  // Traverse down each key in the path
+  for (const key of pathKeys) {
+    // If the current level doesn't contain the key, return undefined
+    if (!errorObject[key]) return undefined;
+    errorObject = errorObject[key];
+  }
+
+  // Access `$errors[0].$message` if it exists
+  const error = errorObject.$errors ? errorObject.$errors[0] : undefined;
+  return error ? error.$message.toString() : undefined;
+};
 </script>
 
 <template>
@@ -341,19 +370,19 @@ const deleteFile = async (linkToDelete: uploadedFile) => {
         v-model="district.district_name"
         :label="langTranslations.districtForm.districtNameLabel"
         :type="'text'"
-        :errorMessage="v$.district_name?.$errors[0]?.$message as string | undefined "
+        :errorMessage="getErrorMessage(['district_name'])"
       />
       <BaseInput
         v-model="district.district_president"
         :label="langTranslations.districtForm.govLabel"
         :type="'text'"
-        :errorMessage="v$.district_president?.$errors[0]?.$message as string | undefined "
+        :errorMessage="getErrorMessage(['district_president'])"
       />
       <BaseInput
         v-model="district.district_email"
         :label="langTranslations.email"
         :type="'email'"
-        :errorMessage="v$.district_email?.$errors[0]?.$message as string | undefined "
+        :errorMessage="getErrorMessage(['district_email'])"
       />
     </div>
     <div class="textarea-block">
@@ -361,7 +390,7 @@ const deleteFile = async (linkToDelete: uploadedFile) => {
         v-model="district.district_description"
         :rows="7"
         :label="langTranslations.desciptionLabel"
-        :errorMessage="v$.district_description?.$errors[0]?.$message as string | undefined "
+        :errorMessage="getErrorMessage(['district_description'])"
       />
     </div>
     <H3
@@ -443,39 +472,59 @@ const deleteFile = async (linkToDelete: uploadedFile) => {
           v-model="district.district_details.dates.grant_submission_startdate"
           :label="langTranslations.districtForm.submissionStartDateLabel"
           :type="'date'"
-          :errorMessage="v$.district_details.dates.grant_submission_startdate?.$errors[0]?.$message as string | undefined "
+          :errorMessage="
+            getErrorMessage([
+              'district_details',
+              'dates',
+              'grant_submission_startdate',
+            ])
+          "
         />
         <BaseInput
           v-model="district.district_details.dates.grant_submission_closedate"
           :label="langTranslations.districtForm.submissionEndDateLabel"
           :type="'date'"
-          :errorMessage="v$.district_details.dates.grant_submission_closedate?.$errors[0]?.$message as string | undefined "
+          :errorMessage="
+            getErrorMessage([
+              'district_details',
+              'dates',
+              'grant_submission_closedate',
+            ])
+          "
         />
         <BaseInput
           v-model="district.district_details.ddfCapes.dsgCap"
           :label="langTranslations.districtForm.dsgCapLabel"
           :type="'number'"
-          :errorMessage="v$.district_details.ddfCapes.dsgCap?.$errors[0]?.$message as string | undefined "
+          :errorMessage="
+            getErrorMessage(['district_details', 'ddfCapes', 'dsgCap'])
+          "
         />
         <BaseInput
           v-model="district.district_details.ddfCapes.dsgFraction"
           :label="langTranslations.districtForm.fractionRateLabel"
           :type="'number'"
           :step="0.01"
-          :errorMessage="v$.district_details.ddfCapes.dsgFraction?.$errors[0]?.$message as string | undefined "
+          :errorMessage="
+            getErrorMessage(['district_details', 'ddfCapes', 'dsgFraction'])
+          "
         />
         <BaseInput
           v-model="district.district_details.ddfCapes.dmCap"
           :label="langTranslations.districtForm.dmCapLabel"
           :type="'number'"
-          :errorMessage="v$.district_details.ddfCapes.dmCap?.$errors[0]?.$message as string | undefined "
+          :errorMessage="
+            getErrorMessage(['district_details', 'ddfCapes', 'dmCap'])
+          "
         />
         <BaseInput
           v-model="district.district_details.ddfCapes.dmFraction"
           :label="langTranslations.districtForm.fractionRateLabel"
           :type="'number'"
           :step="0.01"
-          :errorMessage="v$.district_details.ddfCapes.dmFraction?.$errors[0]?.$message as string | undefined "
+          :errorMessage="
+            getErrorMessage(['district_details', 'ddfCapes', 'dmFraction'])
+          "
         />
       </div>
     </div>
