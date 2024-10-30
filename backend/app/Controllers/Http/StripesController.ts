@@ -4,6 +4,11 @@ import Stripe from "stripe";
 import Database from "@ioc:Adonis/Lucid/Database";
 import { LogManager } from "App/Utils/AppLogger";
 import { LogTools } from "App/Utils/AppLogger";
+import CustomException from "App/Exceptions/CustomException";
+import { CustomErrorType } from "App/Utils/CommonTypes";
+import Users from "App/Models/Users";
+import { DateTime } from "luxon";
+import { IExtraDetails } from "App/Shared/Interfaces/IUser";
 
 export default class StripesController {
   private logManager: LogManager;
@@ -33,7 +38,7 @@ export default class StripesController {
         payload.data.object.metadata
       ) {
         const subscriptionId = payload.data.object.id;
-        // Proceed with updating user and club subscription status in database
+        // Proceed with updating user and club subscription status in database - this is when the subscription actually ends and is not just cancelled
         if (subscriptionId) {
           await this.processDeletedSubscription(subscriptionId);
         } else {
@@ -45,7 +50,7 @@ export default class StripesController {
         type: "stripe_error",
         event: "stripe events",
         source: "StripeController",
-        status: "failed",
+        status: LogTools.Status.FAIL,
         target: "database",
         message: error,
         customMessage: "Stripe webhook error",
@@ -55,6 +60,8 @@ export default class StripesController {
 
   private async processDeletedSubscription(subscriptionId: string) {
     try {
+      let user: Users;
+      user = await Users.findByOrFail("subscription_id", subscriptionId);
       await Database.transaction(async (trx) => {
         // Set the subscription status to inactive for the user
         await trx
@@ -74,11 +81,15 @@ export default class StripesController {
             subscription_id: "",
           });
       });
+      if (user) {
+        await this.updateSubscriptionEndDate(user.userId, null, true);
+      }
+
       this.logManager.log(LogTools.LogTypes.CUSTOM_LOG, {
         type: "stripe_success",
         event: "customer.subscription.deleted",
         source: `subscription: ${subscriptionId}`,
-        status: "success",
+        status: LogTools.Status.SUCCESS,
         message: "Stripe subscription deleted",
       });
     } catch (error) {
@@ -86,10 +97,10 @@ export default class StripesController {
         type: "stripe_error",
         event: "customer.subscription.deleted",
         source: `subscription: ${subscriptionId}`,
-        status: "failed",
+        status: LogTools.Status.FAIL,
         target: "database",
         message: error,
-        customMessage: "Stripe subscription write to DB failed",
+        customMessage: "Stripe subscription cancelation write to DB failed",
       });
     }
   }
@@ -118,16 +129,15 @@ export default class StripesController {
           type: "stripe_success",
           event: "checkout.session.completed",
           source: `user: ${userId}, club: ${clubId}`,
-          status: "success",
+          status: LogTools.Status.SUCCESS,
           message: "Stripe subscription created",
-          customMessage: "Stripe subscription created",
         });
       } catch (error) {
         this.logManager.log(LogTools.LogTypes.CUSTOM_LOG, {
           type: "stripe_error",
           event: "checkout.session.completed",
           source: `user: ${userId}`,
-          status: "failed",
+          status: LogTools.Status.FAIL,
           target: `club: ${clubId}, user: ${userId}`,
           message: error,
           customMessage: "Stripe subscription write to DB failed",
@@ -137,37 +147,91 @@ export default class StripesController {
   }
 
   public async stripeRegistration({ request, response }: HttpContextContract) {
-    const payload = request.body() as {
-      userId: string;
-      clubId: string;
-      langCode?: Stripe.Checkout.SessionCreateParams.Locale | undefined;
-    };
-    const apiKey = Env.get("STRIPE_SECRET");
-    const frontendDomain = Env.get("FRONTEND_DOMAIN");
-    const priceId = Env.get("PRODUCT_PRICE_ID");
-    const stripe = new Stripe(apiKey, { typescript: true });
-    const locale = payload.langCode ? payload.langCode : "en";
+    try {
+      const payload = request.body() as {
+        userId: string;
+        clubId: string;
+        langCode?: Stripe.Checkout.SessionCreateParams.Locale | undefined;
+      };
+      const apiKey = Env.get("STRIPE_SECRET");
+      const frontendDomain = Env.get("FRONTEND_DOMAIN");
+      const priceId = Env.get("PRODUCT_PRICE_ID");
+      const stripe = new Stripe(apiKey, { typescript: true });
+      const locale = payload.langCode ? payload.langCode : "en";
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price: priceId, // Use the price ID of the product (not the product ID itself)
-          quantity: 1,
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: [
+          {
+            price: priceId, // Use the price ID of the product (not the product ID itself)
+            quantity: 1,
+          },
+        ],
+        mode: "subscription", // Set the mode to subscription
+        success_url: `${frontendDomain}/subscribe?status=success`,
+        cancel_url: frontendDomain,
+        metadata: {
+          userId: payload.userId,
+          clubId: payload.clubId,
         },
-      ],
-      mode: "subscription", // Set the mode to subscription
-      success_url: `${frontendDomain}/subscribe?status=success`,
-      cancel_url: frontendDomain,
-      metadata: {
-        userId: payload.userId,
-        clubId: payload.clubId,
-      },
-      client_reference_id: payload.userId,
-      locale: locale,
-    });
+        client_reference_id: payload.userId,
+        locale: locale,
+      });
 
-    return response.status(200).json({ url: session.url });
+      return response.status(200).json({ url: session.url });
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
+  }
+
+  async cancelSubscription({ request, response }: HttpContextContract) {
+    try {
+      const { subscriptionId, userId } = request.body();
+      const apiKey = Env.get("STRIPE_SECRET");
+      const stripe = new Stripe(apiKey, { typescript: true });
+
+      const updatedSubscription = await stripe.subscriptions.update(
+        subscriptionId,
+        {
+          cancel_at_period_end: true,
+        }
+      );
+
+      const timestamp = updatedSubscription.cancel_at;
+      if (!timestamp) {
+        throw new Error("Subscription cancellation failed");
+      }
+      const date = DateTime.fromSeconds(timestamp);
+      await this.updateSubscriptionEndDate(userId, date);
+      const updatedUser = await Users.findOrFail(userId);
+      this.logManager.log(LogTools.LogTypes.CUSTOM_LOG, {
+        type: "stripe_success",
+        event: "subscription.cancelled",
+        source: `subscription: ${subscriptionId}, user: ${userId}`,
+        status: "success",
+        message: "Stripe subscription cancelled",
+      });
+      return response.status(200).json(updatedUser);
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
+  }
+
+  private async updateSubscriptionEndDate(
+    userId: any,
+    date?: DateTime | null,
+    cancel?: boolean
+  ) {
+    const user = await Users.findOrFail(userId);
+    const updatedExtraDetails = user.extraDetails as IExtraDetails;
+    if (date) {
+      updatedExtraDetails.subscription_end_date = date.toISO() as string;
+    } else if (cancel) {
+      delete updatedExtraDetails.subscription_end_date;
+    }
+    await user
+      .merge({ extraDetails: JSON.stringify(updatedExtraDetails) })
+      .save();
   }
 
   async verifyWebhook(signature: any, rawBody: any) {

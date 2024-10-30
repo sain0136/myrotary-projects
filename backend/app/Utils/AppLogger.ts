@@ -62,6 +62,11 @@ export namespace LogTools {
     USER_LOG = "user_log",
     CUSTOM_LOG = "custom_log",
   }
+
+  export enum Status {
+    SUCCESS = "success",
+    FAIL = "fail",
+  }
 }
 const senderEmail = Env.get("SMTP_SENDER_ADDRESS");
 const receiverEmail = Env.get("SMTP_RECEIVER_ADDRESS");
@@ -276,7 +281,7 @@ export class LogManager {
 
   private CustomLogHandler(params: CustomLogParams) {
     const log: logDataForm = this.createBaseLog();
-    log.type = params.type ?? "user_log" ;
+    log.type = params.type ?? "user_log";
     log.event = params.event ?? "";
     log.status = params.status ?? "";
     log.source = params.source ?? "";
@@ -317,7 +322,7 @@ async function handleError(error: any, logData: acceptedLogFormTypes | null) {
 async function confirmErrorLogFile() {
   try {
     console.log(`Attempting to open file: ${errorFile}`);
-    const fileHandle = await fs.open(errorFile, 'r');
+    const fileHandle = await fs.open(errorFile, "r");
     console.log("File exists and is accessible.");
     await fileHandle.close();
   } catch (error) {

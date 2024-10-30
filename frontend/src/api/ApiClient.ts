@@ -33,7 +33,12 @@ export class ApiClient {
       credentials: "include",
     };
     const response = await fetch(url, options);
-    const jsonData = await response.json();
+    let jsonData;
+    try {
+      jsonData = await response.json();
+    } catch (error) {
+      jsonData = {};
+    }
     return await this.processResponse(response, jsonData);
   }
 

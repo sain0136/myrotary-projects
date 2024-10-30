@@ -10,6 +10,7 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 import router from "@/router";
 import { logoutUser } from "@/utils/utils";
+import { Icon } from "@iconify/vue";
 
 /* Data */
 const showSub = ref(false);
@@ -54,6 +55,11 @@ const hideDropdown = (event: Event): void => {
     show.value = false;
     document.removeEventListener("click", hideDropdown);
   }
+};
+
+const redirectToSubscription = () => {
+  localStorage.setItem("profileLastTab", "settings");
+  router.push({ name: "MyProfile" });
 };
 </script>
 
@@ -107,6 +113,26 @@ const hideDropdown = (event: Event): void => {
         </div>
       </div>
       <div class="flex items-center lg:order-2">
+        <div
+          v-tooltip.bottom="{
+            value:
+              langTranslations.stripeSubscription.manageSubscriptionTooltip,
+            pt: {
+              text: 'font-medium',
+              root: 'text-center',
+            },
+          }"
+          class="cursor-pointer"
+          @click="redirectToSubscription()"
+        >
+          <Icon
+            v-if="userStore.loggedInUser.subscription_id"
+            icon="streamline:subscription-cashflow"
+            width="2rem"
+            height="2rem"
+            class="text-primary"
+          />
+        </div>
         <div ref="rootElement" class="flex flex-col">
           <!-- NOTE: By using @click.stop, you're stopping the click event from bubbling up to the document, so the dropdown stays open  -->
           <button
@@ -236,6 +262,12 @@ const hideDropdown = (event: Event): void => {
 <style lang="scss" scoped>
 @import "@/assets/_variables.scss";
 
+iconify-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  color: white;
+}
 nav {
   #dropdown {
     right: 0;

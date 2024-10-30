@@ -28,6 +28,7 @@ export type uploadedFile = {
 export interface IExtraDetails {
   profilePicture?: uploadedFile;
   district_name?: string;
+  subscription_end_date?: string;
 }
 
 export interface IUser {
@@ -46,7 +47,8 @@ export interface IUser {
   district_id: number | null;
   user_type: UserType;
   user_id: number;
-  is_prospect?: boolean
+  is_prospect?: boolean;
+  subscription_id?: string;
   // computed properties
   fullName: string;
   role: Array<IRoles>;
