@@ -1,5 +1,10 @@
 export interface Translation {
   stripeSubscription: {
+    subscriptionEndDate: string;
+    cancelSubscriptionSuccess: string;
+    manageSubscriptionTooltip: string;
+    cancelSubscriptionButton: string;
+    activeSubscriptionText: string;
     cardTitle: string;
     cardTitleSuccess: string;
     cardSubtitle: string;
@@ -349,6 +354,8 @@ export interface Translation {
     passwordMinLength: string;
   };
   adminDash: {
+    subscription: string;
+    personal: string;
     homeLabel: string;
     footerCopyright: string;
     welcomeH1: string;
@@ -382,6 +389,12 @@ export interface Translation {
 export const translations: Record<string, Translation> = {
   en: {
     stripeSubscription: {
+      subscriptionEndDate: "Your clubs subscription will end on: {Date}",
+      cancelSubscriptionSuccess: "Subscription Cancelled",
+      manageSubscriptionTooltip: "Manage Club Membership Subscription",
+      cancelSubscriptionButton: "Cancel Subscription",
+      activeSubscriptionText:
+        "Dear Member, you are the individual who registered your club for its subscription. As the primary account holder, you have the authority to manage this subscription. Should you wish to cancel, please click the button below. Your club will retain full access to all features until the conclusion of the current billing cycle.",
       cardTitle: "Club Subscription Expired",
       cardTitleSuccess: "Club Subscription Activated",
       cardSubtitle:
@@ -783,6 +796,8 @@ export const translations: Record<string, Translation> = {
         "Your password must be at least {length} characters long.",
     },
     adminDash: {
+      subscription: "Subscription",
+      personal: "Personal",
       homeLabel: "Main Site",
       footerCopyright: "Copyright ©",
       welcomeH1: "Welcome to the Admin Dashboard",
@@ -814,6 +829,12 @@ export const translations: Record<string, Translation> = {
   },
   fr: {
     stripeSubscription: {
+      subscriptionEndDate: "La souscription de votre club se terminera le: {Date}",
+      cancelSubscriptionSuccess: "Abonnement annulé",
+      manageSubscriptionTooltip: "Gérer l'abonnement de l'adhésion au club",
+      cancelSubscriptionButton: "Annuler l'abonnement",
+      activeSubscriptionText:
+        "Cher membre, vous êtes la personne qui a inscrit votre club à l'abonnement. En tant que titulaire principal du compte, vous êtes habilité à gérer cet abonnement. Si vous souhaitez annuler votre abonnement, veuillez cliquer sur le bouton ci-dessous. Votre club conservera un accès complet à toutes les fonctionnalités jusqu'à la fin du cycle de facturation en cours.",
       cardTitle: "Abonnement du Club Expiré",
       cardTitleSuccess: "Abonnement au club activé",
       cardSubtitle:
@@ -1225,6 +1246,8 @@ export const translations: Record<string, Translation> = {
         "Le mot de passe doit contenir au moins {minLength} caractères",
     },
     adminDash: {
+      subscription: "Abonnement",
+      personal: "Personnel",
       homeLabel: "Site Principal",
       footerCopyright: "Copyright ©",
       welcomeH1: "Bienvenue sur le tableau de bord",

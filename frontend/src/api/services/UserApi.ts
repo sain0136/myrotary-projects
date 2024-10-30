@@ -119,4 +119,14 @@ export class UsersApi {
       langCode,
     });
   }
+
+  public async cancelSubscription(
+    subscriptionId: string,
+    userId: number
+  ): Promise<IUser> {
+    return await this.apiClient.fetchWrapper("POST", `/cancelSubscription`, {
+      subscriptionId,
+      userId,
+    });
+  }
 }
