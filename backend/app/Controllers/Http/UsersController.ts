@@ -2,7 +2,7 @@ import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import UserRepositories from "App/Repositories/UserRepositories";
 import UserService from "App/Services/UserService";
 import CustomException from "App/Exceptions/CustomException";
-import { CustomErrorType } from "App/Utils/CommonTypes";
+import { CustomErrorType, SessionDetails } from "App/Utils/CommonTypes";
 import { IUser } from "App/Shared/Interfaces/IUser";
 import { LogTools } from "App/Utils/AppLogger";
 import MailController from "App/Controllers/Http/MailController";
@@ -45,16 +45,20 @@ export default class UsersController {
     const password: string = request.input("password");
     const email: string = request.input("email");
     const webAdmin: boolean = request.input("webAdmin");
+    const userAgent = request.header("user-agent") ?? "Unknown User Agent";
+    const referrer = request.header("referer") ?? "Unknown Referrer";
+    const details: SessionDetails = { userAgent, referrer };
     try {
       const { userService } = this.initializeServices();
-      const { chromeDev } = request.qs(); // For dev enviroment and chrome browser we don't use a session. Test session in firefox 
+      const { chromeDev } = request.qs(); // For dev enviroment and chrome browser we don't use a session. Test session in firefox
       const { userData, newSession } = await userService.authenticateUser(
         {
           password,
           email,
           webAdmin,
         },
-        chromeDev ? true : false
+        chromeDev ? true : false,
+        details
       );
       // Assign session
       if (userData && newSession && !chromeDev) {

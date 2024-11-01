@@ -7,7 +7,10 @@ import Session from "App/Models/Session";
 import Users from "App/Models/Users";
 import { IRoles, IUser } from "App/Shared/Interfaces/IUser";
 import { errorTranslations } from "App/Translations/Translations";
-import { AuthenticationRequestData } from "App/Utils/CommonTypes";
+import {
+  AuthenticationRequestData,
+  SessionDetails,
+} from "App/Utils/CommonTypes";
 import { DateTime } from "luxon";
 
 export default class UserRepositories {
@@ -45,7 +48,8 @@ export default class UserRepositories {
 
   public async authenticateUser(
     userCredentials: AuthenticationRequestData,
-    skipSession: boolean = false
+    skipSession: boolean = false,
+    details: SessionDetails
   ) {
     const authenticatedUserEmail = await Users.query()
       .select()
@@ -87,6 +91,7 @@ export default class UserRepositories {
           userId: userData.user.userId,
           districtId: userData.user.districtId || club.districtId,
           clubId: userData.user.clubId,
+          details: JSON.stringify(details),
         });
       } else {
         newSession = undefined;

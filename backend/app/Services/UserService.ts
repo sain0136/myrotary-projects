@@ -1,6 +1,9 @@
 import UserRepositories from "App/Repositories/UserRepositories";
 import { IUser } from "App/Shared/Interfaces/IUser";
-import { AuthenticationRequestData } from "App/Utils/CommonTypes";
+import {
+  AuthenticationRequestData,
+  SessionDetails,
+} from "App/Utils/CommonTypes";
 import { schema, rules } from "@ioc:Adonis/Core/Validator";
 import { validator } from "@ioc:Adonis/Core/Validator";
 
@@ -29,11 +32,13 @@ export default class UserService {
 
   public async authenticateUser(
     AuthenticationRequestData: AuthenticationRequestData,
-    skipSession: boolean
+    skipSession: boolean,
+    details: SessionDetails
   ) {
     const userLoginData = await this.userRepositories.authenticateUser(
       AuthenticationRequestData,
-      skipSession
+      skipSession,
+      details
     );
     return userLoginData;
   }
