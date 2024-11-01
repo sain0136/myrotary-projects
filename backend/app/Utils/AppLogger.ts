@@ -61,6 +61,13 @@ export namespace LogTools {
     ACCESS_LOG = "access_log",
     USER_LOG = "user_log",
     CUSTOM_LOG = "custom_log",
+    SESSION_CLEANUP = "session_cleanup",
+  }
+  
+  export enum Sources {
+    SYSTEM = "system",
+    USER = "user",
+    ADMIN = "admin",
   }
 
   export enum Status {
@@ -68,6 +75,7 @@ export namespace LogTools {
     FAIL = "fail",
   }
 }
+
 const senderEmail = Env.get("SMTP_SENDER_ADDRESS");
 const receiverEmail = Env.get("SMTP_RECEIVER_ADDRESS");
 const environment = Env.get("NODE_ENV");

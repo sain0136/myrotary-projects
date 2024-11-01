@@ -51,3 +51,8 @@ export type Currency = {
 export type Currencies = {
   [key: string]: Currency;
 };
+
+export type SessionDetails = {
+  userAgent: string;
+  referrer: string;
+}
