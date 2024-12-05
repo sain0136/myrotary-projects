@@ -388,7 +388,7 @@ const viewFullDescription = (
             class="border-1 surface-border border-round m-2 text-center py-5 px-3"
           >
             <div class="mb-3">
-              <Image 
+              <Image
                 :src="slotProps.data.s3UrlLink"
                 :alt="slotProps.data.s3BaseUrlLink"
                 class="aspect-ratio cursor-pointer object-cover shadow-2"
@@ -430,5 +430,9 @@ const viewFullDescription = (
   width: 50px;
   height: auto;
   aspect-ratio: 1/1;
+}
+
+blockquote {
+  word-break: break-word;
 }
 </style>
