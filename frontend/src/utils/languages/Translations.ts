@@ -26,6 +26,7 @@ export interface Translation {
   myClubProjectsLabel: string;
   myProjectsLabel: string;
   createdByLabel: string;
+  createdLabel: string;
   createProjectOnBehalfLabel: string;
   contactPage: {
     calloutMessage: string;
@@ -424,6 +425,7 @@ export const translations: Record<string, Translation> = {
     myClubProjectsLabel: "All Club Projects",
     myProjectsLabel: "My Projects",
     createdByLabel: "Created by: ",
+    createdLabel: "Created",
     createProjectOnBehalfLabel:
       "If you are creating a project on behalf of another club, select the district and club.",
     sessionTimeoutBody:
@@ -869,6 +871,7 @@ export const translations: Record<string, Translation> = {
     myClubProjectsLabel: "Tous les projets du club",
     myProjectsLabel: "Mes projets",
     createdByLabel: "Crée par",
+    createdLabel: "Créé",
     createProjectOnBehalfLabel:
       "Si vous créez un projet au nom d'un autre club, sélectionnez le district et le club.",
     sessionTimeoutBody:
