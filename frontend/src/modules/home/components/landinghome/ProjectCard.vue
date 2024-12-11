@@ -205,6 +205,14 @@ const escapeHTML = (unsafe: string) => {
                 }}
               </h3>
             </div>
+            <div class="create-date mt-4 flex gap-1">
+              <h3 class="text-base font-bold text-secondary">
+                {{ langTranslations.createdLabel }}:
+              </h3>
+              <h3 class="text-base font-bold text-primary-black">
+                {{ project.start_date }}
+              </h3>
+            </div>
           </a></router-link
         >
         <div class="status_bar pt-4">
