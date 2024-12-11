@@ -17,6 +17,16 @@ const routes = [
     name: "AdminLoginForm",
     component: () => import("@/modules/admin/views/AdminLoginForm.vue"),
   },
+  {
+    path: "/subscriptions/privacy-policy",
+    name: "SubscriptionsPrivacyPolicy",
+    component: () => import("@/components/modal/Generic-Html.vue"),
+  },
+  {
+    path: "/subscriptions/terms-of-service",
+    name: "TermsOfService",
+    component: () => import("@/components/modal/Generic-Html.vue"),
+  },
   // Landing Routes
   {
     path: "/",

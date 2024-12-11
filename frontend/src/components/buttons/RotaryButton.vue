@@ -5,6 +5,7 @@ export default {
 </script>
 
 <script setup lang="ts">
+// eslint-disable-next-line vue/no-dupe-keys
 import type { theme } from "@/utils/types/commonTypes";
 
 defineProps<{
