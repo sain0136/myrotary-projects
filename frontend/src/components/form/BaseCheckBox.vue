@@ -5,16 +5,14 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, ref } from "vue";
-import { errorHandler } from "@/utils/composables/ErrorHandler";
+import { onMounted } from "vue";
 
 /* Data */
-const { langTranslations } = useLanguage();
 const { label, modelValue, disabled } = defineProps<{
   label: string;
   modelValue: boolean;
   disabled?: boolean;
+  htmlLabel?: boolean;
 }>();
 defineEmits(["update:modelValue"]);
 
@@ -39,10 +37,16 @@ onMounted(async () => {});
       class="w-4 h-4 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
     />
     <label
+      v-if="!htmlLabel"
       for="default-checkbox"
       class="ml-2 text-sm font-medium text-gray-900"
       >{{ label }}</label
     >
+    <span
+      v-if="htmlLabel"
+      class="ml-2 text-sm font-medium text-gray-900"
+      v-html="label"
+    ></span>
   </div>
 </template>
 

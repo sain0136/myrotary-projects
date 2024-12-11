@@ -12,6 +12,7 @@ import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import router from "@/router";
 import { ApiClient } from "@/api/ApiClient";
 import { UsersApi } from "@/api/services/UserApi";
+import BaseCheckBox from "@/components/form/BaseCheckBox.vue";
 
 /* Data */
 const { langTranslations, languagePref } = useLanguage();
@@ -20,6 +21,7 @@ const userId = ref<string>("");
 const clubId = ref<string>("");
 const usersApi = new UsersApi(new ApiClient());
 const stripeCheckoutLink = ref<string>("");
+const hasReadPrivacyPolicy = ref(false);
 
 /* Hooks */
 onMounted(async () => {
@@ -103,12 +105,20 @@ const redirectToStripeCheckout = () => {
               "
             />
           </div>
+          <BaseCheckBox
+            :label="langTranslations.stripeSubscription.agreeToTerms"
+            v-model="hasReadPrivacyPolicy"
+            :html-label="true"
+            class=" flex-col text-center gap-2"
+            v-if="checkoutStatus !== 'success'"
+          />
           <div v-if="checkoutStatus !== 'success'" class="flex gap-2 px-48">
             <RotaryButton
               :label="langTranslations.stripeSubscription.checkoutButton"
               theme="black"
               class="w-full"
               type="submit"
+              :disable="!hasReadPrivacyPolicy"
               @click="redirectToStripeCheckout"
             />
           </div>
@@ -120,4 +130,5 @@ const redirectToStripeCheckout = () => {
 
 <style lang="scss" scoped>
 @import "@/assets/_variables.scss";
+
 </style>
