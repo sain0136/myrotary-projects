@@ -31,7 +31,7 @@ const landingCurrentPage = sessionStorage.getItem("landingCurrentPage")
   ? Number(sessionStorage.getItem("landingCurrentPage"))
   : 1;
 const { handleError } = errorHandler();
-const { langTranslations } = useLanguage();
+const { langTranslations, customPrintf } = useLanguage();
 const filterSearchMode = ref(false);
 const projectsApi = new ProjectsApi(new ApiClient());
 type viewmodes = "list" | "grid";
@@ -46,6 +46,7 @@ const pagination = reactive({
   last_page: 1,
   total: 0,
   limit: viewmode.value === "list" ? 15 : 6,
+  per_page: 6,
 });
 const projects: Array<IDsgProject | IDmProject | IClubProject> = reactive([]);
 const filters: ProjectFilters = reactive({
@@ -92,6 +93,7 @@ watch(viewmode, () => {
     getAllProjects();
   }
 });
+
 /* Methods */
 const recieveFilters = (f: ProjectFilters) => {
   filterSearchMode.value = f.reset ? false : true; // if reset is true, the filterSearchMode is set to false
@@ -111,6 +113,7 @@ const getAllProjects = async () => {
   pagination.current_page = response.meta.current_page;
   pagination.last_page = response.meta.last_page;
   pagination.total = response.meta.total;
+  pagination.per_page = response.meta.per_page;
 };
 
 const filterProjects = async () => {
@@ -176,6 +179,19 @@ const handlePageChange = (direction: string) => {
 const chooseViewMode = () => {
   viewmode.value = viewmode.value === "list" ? "grid" : "list";
 };
+
+const page = () => {
+  let p = pagination.current_page * pagination.per_page;
+  if (pagination.current_page === pagination.last_page) {
+    p = pagination.total;
+  }
+  return customPrintf(
+    langTranslations.value.landingPagePagination,
+    `<strong>${p - (pagination.per_page - 1)}</strong>`,
+    `<strong>${p}</strong>`,
+    `<strong>${pagination.total}</strong>`
+  );
+};
 </script>
 
 <template>
@@ -226,8 +242,11 @@ const chooseViewMode = () => {
       </div>
     </main>
     <section id="paginationrow" class="landing-grid">
+      <!-- empty div for alignment -->
       <div></div>
-      <div class="flex justify-center items-center">
+      <div class="flex flex-col gap-2 justify-center items-center">
+        <span v-html="page()" class="text-sm text-gray-700 dark:text-gray-400">
+        </span>
         <div class="flex justify-center">
           <!-- Previous Button -->
           <a
@@ -283,15 +302,21 @@ const chooseViewMode = () => {
 </template>
 
 <style lang="scss" scoped>
-#paginationrow {
-  height: 5rem;
-}
 @import "@/assets/_variables.scss";
+
+#paginationrow {
+  height: 10rem;
+  @media screen and (min-width: $tablet) {
+    height: 8rem;
+  }
+}
+
 .container {
   width: 100%;
   max-width: $wideDesktop;
   margin: 0 auto;
 }
+
 .landing-grid {
   @media screen and (min-width: $smallMobile) {
     display: grid;

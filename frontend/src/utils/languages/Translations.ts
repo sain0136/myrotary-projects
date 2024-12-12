@@ -1,4 +1,5 @@
 export interface Translation {
+  landingPagePagination: string;
   stripeSubscription: {
     termsOfServiceTitle: string;
     termsOfServiceText: string;
@@ -393,6 +394,7 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    landingPagePagination: "Showing {from} to {to} of {total} projects",
     stripeSubscription: {
       termsOfServiceTitle: "Terms of Service",
       termsOfServiceText: `<div style="font-family: Arial, sans-serif; color: #333; padding: 2rem;"> <h1 style="font-weight: bold; color: #0056b3; fon ">Terms of Service</h1> <p>Effective Date: <strong>December 1, 2024</strong></p> <p>Welcome to Rotary Projects Manager! By subscribing to our services, you agree to the following terms:</p> <h2 style="color: #0056b3;">1. Subscription and Billing</h2> <p>By subscribing to Rotary Projects Manager, you agree to pay $50 per month for access to our project management tools for a club. Subscriptions renew automatically unless canceled prior to the renewal date.</p> <h2 style="color: #0056b3;">2. Cancellation and Refund Policy</h2> <p>Subscriptions can be canceled at any time through your account settings. No refunds are provided for partial months.</p> <h2 style="color: #0056b3;">3. User Responsibilities</h2> <p>You are responsible for maintaining accurate payment information and ensuring timely payments to avoid service interruptions.</p> <h2 style="color: #0056b3;">4. Changes to Terms</h2> <p>We reserve the right to update these Terms of Service at any time. We will notify users of any significant changes via email or through the app.</p> <h2 style="color: #0056b3;">5. Limitation of Liability</h2> <p>Rotary Projects Manager is not responsible for any direct or indirect damages arising from your use of the service.</p> <p>If you have any questions, please contact us at <a href="mailto:jssr26@gmail.com" style="color: #0056b3;">Support</a>.</p> </div>`,
@@ -838,6 +840,7 @@ export const translations: Record<string, Translation> = {
     noProspectUserAvailable: "There are no prospective users at this moment",
   },
   fr: {
+    landingPagePagination: "Affichage de {from} à {to} de {total} entrées",
     stripeSubscription: {
       termsOfServiceTitle: "Conditions d'utilisation",
       termsOfServiceText: `<div style="font-family: Arial, sans-serif; color: #333; padding: 2rem;"> <h1 style="font-weight: bold; color: #0056b3; fon ">Conditions d'utilisation</h1> <p>Date d'effet : <strong>1 décembre 2024</strong></p> <p>Bienvenue sur Rotary Projects Manager ! En vous abonnant à nos services, vous acceptez les conditions suivantes :</p> <h2 style="color: #0056b3;">1. Abonnement et Facturation</h2> <p>En vous abonnant à Rotary Projects Manager, vous acceptez de payer 50 $ par mois pour accéder à nos outils de gestion de projet pour un club. Les abonnements se renouvellent automatiquement sauf annulation avant la date de renouvellement.</p> <h2 style="color: #0056b3;">2. Politique d'annulation et de remboursement</h2> <p>Les abonnements peuvent être annulés à tout moment via les paramètres de votre compte. Aucun remboursement n'est prévu pour les mois partiels.</p> <h2 style="color: #0056b3;">3. Responsabilités de l'utilisateur</h2> <p>Vous êtes responsable de maintenir des informations de paiement précises et de garantir des paiements en temps opportun pour éviter les interruptions de service.</p> <h2 style="color: #0056b3;">4. Modifications des conditions</h2> <p>Nous nous réservons le droit de mettre à jour ces conditions d'utilisation à tout moment. Nous informerons les utilisateurs de tout changement significatif par e-mail ou via l'application.</p> <h2 style="color: #0056b3;">5. Limitation de responsabilité</h2> <p>Rotary Projects Manager n'est pas responsable des dommages directs ou indirects résultant de votre utilisation du service.</p> <p>Si vous avez des questions, veuillez nous contacter à <a href="mailto:jssr26@gmail.com" style="color: #0056b3;">Support</a>.</p> </div>`,
