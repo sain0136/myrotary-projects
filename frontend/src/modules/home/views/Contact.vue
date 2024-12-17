@@ -96,6 +96,13 @@ const submitEmail = async () => {
     handleError(error as CustomErrors);
   }
 };
+
+const getErrorMessage = (validationObject: string) => {
+  const error = v$.value[validationObject]
+    ? v$.value[validationObject].$errors[0]
+    : undefined;
+  return error ? error.$message.toString() : undefined;
+};
 </script>
 
 <template>
@@ -106,34 +113,33 @@ const submitEmail = async () => {
         class="my-8 flex flex-col md:flex-row items-center justify-center gap-8"
       >
         <div class="flex flex-1 flex-col">
-          <H3 class="text-center" :content="langTranslations.contactPage.calloutMessage" />
+          <H3
+            class="text-center"
+            :content="langTranslations.contactPage.calloutMessage"
+          />
           <p class="text-gray-400 text-center mt-4">
-            {{
-              langTranslations.contactPage.calloutDescription
-            }}
+            {{ langTranslations.contactPage.calloutDescription }}
           </p>
           <div class="form-block">
             <BaseInput
-              v-model="(mail.senderName as string)"
+              v-model="mail.senderName"
               :label="langTranslations.nameLabel"
               :type="'text'"
-              :errorMessage="v$.senderName?.$errors[0]?.$message as string | undefined"
+              :errorMessage="getErrorMessage('senderName')"
             />
             <BaseInput
               v-model="mail.senderEmail"
               :label="langTranslations.email"
               type="email"
-              :errorMessage="v$.senderEmail?.$errors[0]?.$message as string | undefined"
+              :errorMessage="getErrorMessage('senderEmail')"
             />
           </div>
           <div class="textarea-block">
             <BaseTextarea
               :rows="10"
-              v-model="
-                  (mail.messageBody.message as string)
-                "
+              v-model="mail.messageBody.message"
               :label="langTranslations.messageLabel"
-              :errorMessage="v$.messageBody?.$errors[0]?.$message as string | undefined"
+              :errorMessage="getErrorMessage('messageBody')"
             />
           </div>
           <div class="pl-3 flex justify-center md:justify-normal">
@@ -145,7 +151,10 @@ const submitEmail = async () => {
           </div>
         </div>
         <div class="flex flex-1 flex-col gap-4 items-center justify-center">
-          <H3 class="text-center" :content="langTranslations.contactPage.contactDetailsTitle" />
+          <H3
+            class="text-center"
+            :content="langTranslations.contactPage.contactDetailsTitle"
+          />
           <ul class="info flex flex-col justify-center items-center gap-4">
             <li class="flex w-full">
               <div class="flex mt-2 gap-1">
