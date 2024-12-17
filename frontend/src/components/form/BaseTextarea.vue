@@ -8,7 +8,7 @@ export default {
 defineEmits(["update:modelValue"]);
 
 const { modelValue, label, placeholder, errorMessage, disabled } = defineProps<{
-  modelValue: string | number | Date;
+  modelValue: string | number;
   label: string;
   placeholder?: string;
   errorMessage?: string;
@@ -29,6 +29,7 @@ const { modelValue, label, placeholder, errorMessage, disabled } = defineProps<{
     <textarea
       :v-model="modelValue"
       :disabled="disabled ?? false"
+      :value="modelValue"
       @input="
         $emit('update:modelValue', ($event.target as HTMLInputElement).value)
       "
@@ -38,8 +39,7 @@ const { modelValue, label, placeholder, errorMessage, disabled } = defineProps<{
       :class="[disabled ? 'disabled-input' : 'text-nearBlack']"
       class="block p-2.5 w-full text-sm text-nearBlack rounded-lg"
       :placeholder="placeholder ?? ''"
-      >{{ modelValue }}</textarea
-    >
+    ></textarea>
     <p v-if="errorMessage" id="error" class="mt-2 text-sm text-red-600">
       <span class="font-medium">{{ errorMessage }}</span>
     </p>
