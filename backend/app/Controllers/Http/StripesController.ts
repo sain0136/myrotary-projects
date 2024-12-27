@@ -248,6 +248,13 @@ export default class StripesController {
         signature,
         stripeWebhookSecret
       );
+      this.logManager.log(LogTools.LogTypes.CUSTOM_LOG, {
+        type: "stripe_success",
+        event: "webhook.verified",
+        source: "StripeController",
+        status: "success",
+        message: "Stripe webhook signature verified",
+      });
       return event;
     } catch (err) {
       throw new Error("Webhook signature verification failed");
