@@ -28,7 +28,7 @@ async function isGuestUserPresent() {
     const guestUser = await db.default
       .from("users")
       .where("user_id", 1)
-      .orWhere("user_id", 4); // Check if guest user is present in the database
+      .orWhere("user_id", 4); // Check if guest user is present in the database or not. Horrible way to check but it works.  
     const queriedGuestUser = await db.default
       .from("users")
       .where("email", "quest424234ffgfdgfdgfdg@imutech.ca");
