@@ -107,7 +107,8 @@ export const processAreaOfFocus = (areaFocus: IAreaOfFocus) => {
 };
 
 export function updateLandingCurrentPage(
-  action: "increment" | "decrement" | "reset"
+  action: "increment" | "decrement" | "reset" | "first" | "last",
+  page?: number
 ) {
   let landingCurrentPage = sessionStorage.getItem("landingCurrentPage")
     ? Number(sessionStorage.getItem("landingCurrentPage"))
@@ -119,6 +120,10 @@ export function updateLandingCurrentPage(
     landingCurrentPage -= 1;
   } else if (action === "reset") {
     landingCurrentPage = 1;
+  } else if (action === "first") {
+    landingCurrentPage = 1;
+  } else if (action === "last") {
+    landingCurrentPage = page ? page : 1;
   }
   sessionStorage.setItem("landingCurrentPage", String(landingCurrentPage));
 }

@@ -201,7 +201,7 @@ const resetSearch = () => {
           :label="langTranslations.landingPage.searchTermsLabel"
           type="text"
           v-model="filterData.search_text"
-           @keydown.enter="filterProjects"
+          @keydown.enter="filterProjects"
         />
         <BaseSelect
           :label="langTranslations.districtLabel"
