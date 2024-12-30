@@ -1,4 +1,6 @@
 export interface Translation {
+  firstButtonLabel: string;
+  lastButtonLabel: string;
   landingPagePagination: string;
   stripeSubscription: {
     termsOfServiceTitle: string;
@@ -394,6 +396,8 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    firstButtonLabel: "First",
+    lastButtonLabel: "Last",
     landingPagePagination: "Showing {from} to {to} of {total} projects",
     stripeSubscription: {
       termsOfServiceTitle: "Terms of Service",
@@ -840,6 +844,8 @@ export const translations: Record<string, Translation> = {
     noProspectUserAvailable: "There are no prospective users at this moment",
   },
   fr: {
+    firstButtonLabel: "Premier",
+    lastButtonLabel: "Dernier",
     landingPagePagination: "Affichage de {from} à {to} de {total} entrées",
     stripeSubscription: {
       termsOfServiceTitle: "Conditions d'utilisation",
