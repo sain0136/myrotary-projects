@@ -284,6 +284,7 @@ const viewFullDescription = (
         <div v-if="project.anticipated_funding != project.funding_goal">
           <RotaryButton
             :theme="'secondary'"
+            size="lg"
             :label="langTranslations.projectLabels.pledgeLabel"
             @click="router.push({ name: 'PledgeForm' })"
           />
