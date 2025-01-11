@@ -10,6 +10,7 @@ import { useLanguage } from "@/utils/languages/UseLanguage";
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import H3 from "@/components/headings/H3.vue";
+import H2 from "@/components/headings/H2.vue";
 import Banners from "@/components/banners/Banners.vue";
 import BaseSelect from "@/components/form/BaseSelect.vue";
 import { ProjectsApi } from "@/api/services/ProjectsApi";
@@ -190,7 +191,9 @@ const totalBuget = computed(() => {
         break;
     }
   });
+  // eslint-disable-next-line vue/no-side-effects-in-computed-properties
   pieChartData.value.datasets[0].data = currentChartData1;
+  // eslint-disable-next-line vue/no-side-effects-in-computed-properties
   districtBarChart.value.datasets[0].data = grantypeArrayNumberTotalByDistrict;
   return {
     totalCurrentFunds: currencyFormatterFunding(
