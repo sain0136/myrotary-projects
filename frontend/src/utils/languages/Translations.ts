@@ -228,6 +228,7 @@ export interface Translation {
   projectCodeLabel: string;
   statusLabel: string;
   landingPage: {
+    backLabel: string;
     searchTermsLabel: string;
     grantTypeLabel: string;
     yearLabel: string;
@@ -670,6 +671,7 @@ export const translations: Record<string, Translation> = {
     statusLabel: "Status",
     filterProjectsLabel: "Filter Projects",
     landingPage: {
+      backLabel: "Return to Landing Page",
       searchTermsLabel: "Search Term",
       grantTypeLabel: "Grant Type",
       yearLabel: "Year",
@@ -814,7 +816,7 @@ export const translations: Record<string, Translation> = {
     adminDash: {
       subscription: "Subscription",
       personal: "Personal",
-      homeLabel: "Main Site",
+      homeLabel: "Landing Page",
       footerCopyright: "Copyright ©",
       welcomeH1: "Welcome to the Admin Dashboard",
       welcomeH2:
@@ -1125,6 +1127,7 @@ export const translations: Record<string, Translation> = {
     statusLabel: "Statut",
     filterProjectsLabel: "Filtrer",
     landingPage: {
+      backLabel: "Retour au site",
       searchTermsLabel: "Rechercher",
       grantTypeLabel: "Type de financement",
       yearLabel: "Année",
@@ -1273,7 +1276,7 @@ export const translations: Record<string, Translation> = {
     adminDash: {
       subscription: "Abonnement",
       personal: "Personnel",
-      homeLabel: "Site Principal",
+      homeLabel: "Page d'accueil",
       footerCopyright: "Copyright ©",
       welcomeH1: "Bienvenue sur le tableau de bord",
       welcomeH2:

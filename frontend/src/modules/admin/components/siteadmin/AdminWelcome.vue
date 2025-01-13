@@ -20,7 +20,7 @@ const { langTranslations } = useLanguage();
     <img src="/rotary-logo.svg" alt="" class="w-32 h-32" />
     <router-link :to="{ name: 'Home' }">
       <a href="#" class="hover:underline">{{
-        langTranslations.home
+        langTranslations.landingPage.backLabel
       }}</a>
     </router-link>
   </section>
