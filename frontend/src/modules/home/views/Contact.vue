@@ -169,7 +169,7 @@ const getErrorMessage = (validationObject: string) => {
                 }}</span>
               </div>
             </li>
-            <li class="flex w-full">
+            <li v-if="assetsStore.$state.siteAssets.assets.contentManagement.myRotaryPhone[languagePref]" class="flex w-full">
               <div class="flex mt-2 gap-1 justify-center items-center">
                 <Icon class="text-3xl text-gray-500" icon="ph:phone-fill" />
                 <h6>{{ langTranslations.phone + ":" }}</h6>
