@@ -162,14 +162,20 @@ const getErrorMessage = (validationObject: string) => {
                   class="text-3xl text-gray-500"
                   icon="clarity:email-solid"
                 />
-                <h6>{{ langTranslations.email + ":" }}</h6>
-                <span class="text-primary-color">{{
+                <h6 class="m-auto">{{ langTranslations.email + ":" }}</h6>
+                <span class="text-primary-color m-auto">{{
                   assetsStore.$state.siteAssets.assets.contentManagement
                     .myRotaryEmail[languagePref] || "N/A"
                 }}</span>
               </div>
             </li>
-            <li v-if="assetsStore.$state.siteAssets.assets.contentManagement.myRotaryPhone[languagePref]" class="flex w-full">
+            <li
+              v-if="
+                assetsStore.$state.siteAssets.assets.contentManagement
+                  .myRotaryPhone[languagePref]
+              "
+              class="flex w-full"
+            >
               <div class="flex mt-2 gap-1 justify-center items-center">
                 <Icon class="text-3xl text-gray-500" icon="ph:phone-fill" />
                 <h6>{{ langTranslations.phone + ":" }}</h6>
