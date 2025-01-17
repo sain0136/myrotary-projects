@@ -17,7 +17,7 @@ const { langTranslations } = useLanguage();
     class="h-full justify-center text-center gap-4 flex items-center flex-col"
   >
     <H1 :content="langTranslations.adminDash.welcomeH1" />
-    <img src="/rotary-logo.svg" alt="" class="w-32 h-32" />
+    <img src="/rotary-logo.svg" alt="" class="w-64 h-64" />
     <router-link :to="{ name: 'Home' }">
       <a href="#" class="hover:underline">{{
         langTranslations.landingPage.backLabel
