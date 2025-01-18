@@ -101,7 +101,7 @@ const handleSubmit = async () => {
         <div
           class="profile-img flex flex-col gap-4 items-center justify-center"
         >
-          <div class="circular-image-container h-52 w-52">
+          <div class="circular-image-container h-80 w-80">
             <img
               :src="
                 userStore.loggedInUser?.extra_details?.profilePicture

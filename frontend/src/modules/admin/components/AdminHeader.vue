@@ -143,9 +143,9 @@ const redirectToSubscription = () => {
             aria-expanded="false"
             data-dropdown-toggle="dropdown"
           >
-            <span class="sr-only">Open user menu</span>
+            <span class="sr-only ">Open user menu</span>
             <img
-              class="w-10 h-10 rounded-full"
+              class="w-11 h-11 object-cover rounded-full"
               :src="
                 userStore.loggedInUser?.extra_details?.profilePicture
                   ?.s3UrlLink ||
