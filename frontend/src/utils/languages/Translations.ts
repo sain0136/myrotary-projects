@@ -1,4 +1,5 @@
 export interface Translation {
+  rotaryAnalyticsDescription: string;
   firstButtonLabel: string;
   lastButtonLabel: string;
   landingPagePagination: string;
@@ -380,7 +381,7 @@ export interface Translation {
     myProfileLabel: string;
     personalInformationLabel: string;
     districtClubsLabel: string;
-    rotaryAnalticsLink: string;
+    rotaryAnalyticsLink: string;
   };
   uploadFileLabel: string;
   submit: string;
@@ -397,6 +398,8 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    rotaryAnalyticsDescription:
+      "Navigate to the Rotary Analytics page. An internal tool for Rotary Super Admins to view and analyze logs and internal data.",
     firstButtonLabel: "First",
     lastButtonLabel: "Last",
     landingPagePagination: "Showing {from} to {to} of {total} projects",
@@ -832,7 +835,7 @@ export const translations: Record<string, Translation> = {
       myProfileLabel: "Profile",
       personalInformationLabel: "Personal Information",
       districtClubsLabel: "District Clubs",
-      rotaryAnalticsLink: "Rotary Analytics Dashboard",
+      rotaryAnalyticsLink: "Rotary Analytics Dashboard",
     },
     uploadFileLabel: "Upload Files",
     submit: "Submit",
@@ -846,6 +849,8 @@ export const translations: Record<string, Translation> = {
     noProspectUserAvailable: "There are no prospective users at this moment",
   },
   fr: {
+    rotaryAnalyticsDescription:
+      "Accédez à la page Rotary Analytics. Un outil interne pour les super administrateurs de Rotary pour visualiser et analyser les journaux et les données internes.",
     firstButtonLabel: "Premier",
     lastButtonLabel: "Dernier",
     landingPagePagination: "Affichage de {from} à {to} de {total} entrées",
@@ -1292,7 +1297,7 @@ export const translations: Record<string, Translation> = {
       myProfileLabel: "Profil",
       personalInformationLabel: "Informations personnelles",
       districtClubsLabel: "Clubs de district",
-      rotaryAnalticsLink: "Tableau de bord de Rotary Analytics",
+      rotaryAnalyticsLink: "Tableau de bord de Rotary Analytics",
     },
     uploadFileLabel: "Télécharger des fichiers",
     submit: "Soumettre",
