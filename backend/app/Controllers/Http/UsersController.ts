@@ -8,6 +8,7 @@ import { LogTools } from "App/Utils/AppLogger";
 import MailController from "App/Controllers/Http/MailController";
 import { LogManager } from "App/Utils/AppLogger";
 import Session from "App/Models/Session";
+import Event from "@ioc:Adonis/Core/Event";
 
 export default class UsersController {
   private logManager: LogManager;
@@ -73,6 +74,7 @@ export default class UsersController {
         outcome: "success",
         errorMessage: null,
       });
+      Event.emit("login", userData.user);
       return response.json({ ...userData });
     } catch (error) {
       this.logManager.log(LogTools.LogTypes.ACCESS_LOG, {
