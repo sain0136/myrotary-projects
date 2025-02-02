@@ -9,3 +9,4 @@ Route.post("user/update/", "UsersController.updateUser");
 Route.post("user/getuser/", "UsersController.getUser");
 Route.post("user/delete/", "UsersController.deleteUser");
 Route.post("user/deleteProspectUser/", "UsersController.deleteProspectUser");
+Route.post("user/events/", "UsersController.serverSentEventsInit");

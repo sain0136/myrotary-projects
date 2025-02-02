@@ -12,9 +12,14 @@ export const useLoggedInUserStore = defineStore(
   () => {
     const loggedInUser: IUser = reactive(new User());
     const isUserLoggedIn = ref(false);
+    const serverSent = ref({
+      connected: false,
+      errorDisconnect: false,
+    });
 
     function setLoggedInUser(user: IUser) {
       Object.assign(loggedInUser, user);
+      // setServerSentEvents();
       isUserLoggedIn.value = true;
     }
 
@@ -47,6 +52,7 @@ export const useLoggedInUserStore = defineStore(
       isUserLoggedIn,
       logOut,
       getLoggedInUserRole,
+      serverSent,
     };
   },
   {
@@ -55,3 +61,18 @@ export const useLoggedInUserStore = defineStore(
     },
   }
 );
+
+const setServerSentEvents = () => {
+  const eventSource = new EventSource(
+    `${import.meta.env.VITE_API_URL}/user/events`
+  );
+
+  eventSource.onmessage = (event) => {
+    useLoggedInUserStore().serverSent.connected = true;
+  };
+
+  eventSource.onerror = (err) => {
+    useLoggedInUserStore().serverSent.errorDisconnect = true;
+    eventSource.close();
+  };
+};

@@ -318,4 +318,12 @@ export default class UsersController {
       throw new CustomException(error as CustomErrorType);
     }
   }
+
+  public async serverSentEventsInit({ response }: HttpContextContract) {
+    try {
+
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
+  }
 }
