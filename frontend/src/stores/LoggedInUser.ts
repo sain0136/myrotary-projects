@@ -19,7 +19,7 @@ export const useLoggedInUserStore = defineStore(
 
     function setLoggedInUser(user: IUser) {
       Object.assign(loggedInUser, user);
-      // setServerSentEvents();
+      setServerSentEvents();
       isUserLoggedIn.value = true;
     }
 
@@ -64,7 +64,7 @@ export const useLoggedInUserStore = defineStore(
 
 const setServerSentEvents = () => {
   const eventSource = new EventSource(
-    `${import.meta.env.VITE_API_URL}/user/events`
+    `${import.meta.env.VITE_BASE_API_URL}/user/events`
   );
 
   eventSource.onmessage = (event) => {

@@ -321,7 +321,7 @@ export default class UsersController {
 
   public async serverSentEventsInit({ response }: HttpContextContract) {
     try {
-
+      console.log("Server Sent Events Initiated");
     } catch (error) {
       throw new CustomException(error as CustomErrorType);
     }
