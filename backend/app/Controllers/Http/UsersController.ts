@@ -1,4 +1,5 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
+import { ResponseContract } from "@ioc:Adonis/Core/Response";
 import UserRepositories from "App/Repositories/UserRepositories";
 import UserService from "App/Services/UserService";
 import CustomException from "App/Exceptions/CustomException";
@@ -319,9 +320,21 @@ export default class UsersController {
     }
   }
 
+  sseRegisteredUsers = new Map<string, ResponseContract>();
+  
   public async serverSentEventsInit({ response }: HttpContextContract) {
     try {
       console.log("Server Sent Events Initiated");
+      response.header("Content-Type", "text/event-stream");
+      response.header("Cache-Control", "no-cache");
+      response.header("Connection", "keep-alive");
+
+      function sseRandom(res: ResponseContract) {
+        res.send(`data: ${Math.random()}\n\n`);
+        setTimeout(() => sseRandom(res), Math.random() * 3000);
+      }
+
+      sseRandom(response);
     } catch (error) {
       throw new CustomException(error as CustomErrorType);
     }
