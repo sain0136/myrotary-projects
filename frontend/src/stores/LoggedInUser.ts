@@ -19,7 +19,7 @@ export const useLoggedInUserStore = defineStore(
 
     function setLoggedInUser(user: IUser) {
       Object.assign(loggedInUser, user);
-      setServerSentEvents();
+      setServerSentEvents(user);
       isUserLoggedIn.value = true;
     }
 
@@ -62,9 +62,16 @@ export const useLoggedInUserStore = defineStore(
   }
 );
 
-const setServerSentEvents = () => {
+/**
+ * Establishes a server-sent event connection with the server, listening for events
+ * specific to the given user. The connection is persisted in the store as
+ * `serverSent.connected`, and any errors are stored as `serverSent.errorDisconnect`.
+ */
+const setServerSentEvents = (user: IUser) => {
+  const userId = user.user_id ?? undefined; 
+  const districtId = user.district_id ?? undefined;
   const eventSource = new EventSource(
-    `${import.meta.env.VITE_BASE_API_URL}/user/events`
+    `${import.meta.env.VITE_BASE_API_URL}/user/events/${userId}/${districtId}`
   );
 
   eventSource.onmessage = (event) => {

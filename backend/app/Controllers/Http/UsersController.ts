@@ -321,8 +321,11 @@ export default class UsersController {
   }
 
   sseRegisteredUsers = new Map<string, ResponseContract>();
-  
-  public async serverSentEventsInit({ response }: HttpContextContract) {
+
+  public async serverSentEventsInit({
+    request,
+    response,
+  }: HttpContextContract) {
     try {
       console.log("Server Sent Events Initiated");
       response.header("Content-Type", "text/event-stream");
@@ -330,10 +333,10 @@ export default class UsersController {
       response.header("Connection", "keep-alive");
 
       function sseRandom(res: ResponseContract) {
-        res.send(`data: ${Math.random()}\n\n`);
+        res.send(`data: "whatever"\n\n`);
         setTimeout(() => sseRandom(res), Math.random() * 3000);
       }
-
+      const queryParams = request.qs();
       sseRandom(response);
     } catch (error) {
       throw new CustomException(error as CustomErrorType);
