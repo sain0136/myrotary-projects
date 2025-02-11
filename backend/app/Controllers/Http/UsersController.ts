@@ -1,5 +1,4 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
-import { ResponseContract } from "@ioc:Adonis/Core/Response";
 import UserRepositories from "App/Repositories/UserRepositories";
 import UserService from "App/Services/UserService";
 import CustomException from "App/Exceptions/CustomException";
@@ -10,6 +9,8 @@ import MailController from "App/Controllers/Http/MailController";
 import { LogManager } from "App/Utils/AppLogger";
 import Session from "App/Models/Session";
 import Event from "@ioc:Adonis/Core/Event";
+import { ResponseContract } from "@ioc:Adonis/Core/Response";
+import { sseRegisteredUsers } from "App/Utils/sseRegistar";
 
 export default class UsersController {
   private logManager: LogManager;
@@ -320,8 +321,6 @@ export default class UsersController {
     }
   }
 
-  sseRegisteredUsers = new Map<string, ResponseContract>();
-
   public async serverSentEventsInit({
     request,
     response,
@@ -336,7 +335,21 @@ export default class UsersController {
         res.send(`data: "whatever"\n\n`);
         setTimeout(() => sseRandom(res), Math.random() * 3000);
       }
-      const queryParams = request.qs();
+      const queryParams = request.params();
+      if (!queryParams.id || !queryParams.districtId) {
+        throw new CustomException({
+          message: "Missing required parameters for server sent events",
+          status: 400,
+        });
+      }
+      if (
+        !sseRegisteredUsers.has(`${queryParams.id}-${queryParams.districtId}`)
+      ) {
+        sseRegisteredUsers.set(
+          `${queryParams.id}-${queryParams.districtId}`,
+          response
+        );
+      }
       sseRandom(response);
     } catch (error) {
       throw new CustomException(error as CustomErrorType);
