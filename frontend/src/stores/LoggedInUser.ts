@@ -68,17 +68,20 @@ export const useLoggedInUserStore = defineStore(
  * `serverSent.connected`, and any errors are stored as `serverSent.errorDisconnect`.
  */
 const setServerSentEvents = (user: IUser) => {
-  const userId = user.user_id ?? undefined; 
+  const userId = user.user_id ?? undefined;
   const districtId = user.district_id ?? undefined;
   const eventSource = new EventSource(
     `${import.meta.env.VITE_BASE_API_URL}/user/events/${userId}/${districtId}`
   );
 
   eventSource.onmessage = (event) => {
+    const eventData = JSON.parse(event.data);
+    console.log(eventData);
     useLoggedInUserStore().serverSent.connected = true;
   };
 
   eventSource.onerror = (err) => {
+    console.error(err);
     useLoggedInUserStore().serverSent.errorDisconnect = true;
     eventSource.close();
   };

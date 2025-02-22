@@ -11,6 +11,7 @@ import Session from "App/Models/Session";
 import Event from "@ioc:Adonis/Core/Event";
 import { ResponseContract } from "@ioc:Adonis/Core/Response";
 import { sseRegisteredUsers } from "App/Utils/sseRegistar";
+import Clubs from "App/Models/Clubs";
 
 export default class UsersController {
   private logManager: LogManager;
@@ -102,6 +103,7 @@ export default class UsersController {
   public async logout({ request, response }: HttpContextContract) {
     try {
       const user = request.body() as IUser;
+      await this.unsubscribeFromServerSentEvents(user);
 
       const sessionId: undefined | { value: string; lastActivity: string } =
         request.cookie("session_id");
@@ -330,10 +332,15 @@ export default class UsersController {
       response.header("Content-Type", "text/event-stream");
       response.header("Cache-Control", "no-cache");
       response.header("Connection", "keep-alive");
-
-      function sseRandom(res: ResponseContract) {
-        res.send(`data: "whatever"\n\n`);
-        setTimeout(() => sseRandom(res), Math.random() * 3000);
+      function sendSseData(userCompositeKey: string, data?: any) {
+        let obj = { data: "No data" };
+        if (data) {
+          obj = data;
+        }
+        const response = sseRegisteredUsers.get(userCompositeKey);
+        if (response) {
+          response.send(`data: ${JSON.stringify(obj)}\n\n`);
+        }
       }
       const queryParams = request.params();
       if (!queryParams.id || !queryParams.districtId) {
@@ -345,14 +352,34 @@ export default class UsersController {
       if (
         !sseRegisteredUsers.has(`${queryParams.id}-${queryParams.districtId}`)
       ) {
-        sseRegisteredUsers.set(
-          `${queryParams.id}-${queryParams.districtId}`,
-          response
-        );
+        const userCompositeKey = `${queryParams.id}_${queryParams.districtId}`;
+        sseRegisteredUsers.set(userCompositeKey, response);
+        console.log("current state of sseRegisteredUsers", sseRegisteredUsers);
+        sendSseData(userCompositeKey);
+        setInterval(() => {
+          sendSseData(userCompositeKey);
+        }, 5000);
       }
-      sseRandom(response);
     } catch (error) {
       throw new CustomException(error as CustomErrorType);
+    }
+  }
+
+  public async unsubscribeFromServerSentEvents(user: IUser): Promise<void> {
+    let userKey: string | null = null;
+
+    if (user.district_id) {
+      userKey = `${user.user_id}_${user.district_id}`;
+    } else if (user.club_id) {
+      const club = await Clubs.findBy("club_id", user.club_id);
+      userKey = `${user.user_id}_${club?.districtId}`;
+    }
+
+    if (userKey && sseRegisteredUsers.has(userKey)) {
+      const response = sseRegisteredUsers.get(userKey) as ResponseContract;
+      // response.finish();
+      sseRegisteredUsers.delete(userKey);
+      console.log("Current state of sseRegisteredUsers", sseRegisteredUsers);
     }
   }
 }
