@@ -4,6 +4,7 @@ import DistrictsRepositories from "App/Repositories/DistrictsRepositories";
 import DistrictsService from "App/Services/DistrictsService";
 import { IDistrict } from "App/Shared/Interfaces/IDistrict";
 import { CustomErrorType } from "App/Utils/CommonTypes";
+import { broadcastToDistrict } from "App/Utils/sseRegistar";
 
 export default class DistrictsController {
   private initializeServices() {
@@ -45,6 +46,8 @@ export default class DistrictsController {
       const district = request.body() as IDistrict;
       const { districtsService } = this.initializeServices();
       const updatedDistrict = await districtsService.updateDistrict(district);
+      const serialized = updatedDistrict.toJSON();
+      broadcastToDistrict(updatedDistrict.districtId.toString(), serialized);
       return response.json(updatedDistrict);
     } catch (error) {
       throw new CustomException(error as CustomErrorType);

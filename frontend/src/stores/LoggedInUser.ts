@@ -6,6 +6,8 @@ import User from "@/utils/classes/User";
 import { UsersApi } from "@/api/services/UserApi";
 import { ApiClient } from "@/api/ApiClient";
 import type { ClubRole, DistrictRole } from "@/utils/types/commonTypes";
+import * as luxon from "luxon";
+import { useLoggedInDistrict } from "./LoggedInDistrict";
 
 export const useLoggedInUserStore = defineStore(
   "loggedInUser",
@@ -15,6 +17,7 @@ export const useLoggedInUserStore = defineStore(
     const serverSent = ref({
       connected: false,
       errorDisconnect: false,
+      lastPing: luxon.DateTime.now(), // TODO: Set Up a reconnect mechanism
     });
 
     function setLoggedInUser(user: IUser) {
@@ -76,7 +79,15 @@ const setServerSentEvents = (user: IUser) => {
 
   eventSource.onmessage = (event) => {
     const eventData = JSON.parse(event.data);
-    console.log(eventData);
+    if (eventData.data === "PING") {
+      useLoggedInUserStore().serverSent.lastPing = luxon.DateTime.now();
+      return;
+    }
+    if (eventData.dataType === "DISTRICT_UPDATE") {
+      console.log("District Update Received");
+      useLoggedInDistrict().setLoggedInDistrict(eventData);
+      return;
+    }
     useLoggedInUserStore().serverSent.connected = true;
   };
 

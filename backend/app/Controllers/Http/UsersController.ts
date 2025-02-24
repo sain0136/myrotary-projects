@@ -10,7 +10,7 @@ import { LogManager } from "App/Utils/AppLogger";
 import Session from "App/Models/Session";
 import Event from "@ioc:Adonis/Core/Event";
 import { ResponseContract } from "@ioc:Adonis/Core/Response";
-import { sseRegisteredUsers } from "App/Utils/sseRegistar";
+import { sseRegisteredUsers, sendSseData } from "App/Utils/sseRegistar";
 import Clubs from "App/Models/Clubs";
 
 export default class UsersController {
@@ -328,37 +328,35 @@ export default class UsersController {
     response,
   }: HttpContextContract) {
     try {
-      console.log("Server Sent Events Initiated");
-      response.header("Content-Type", "text/event-stream");
-      response.header("Cache-Control", "no-cache");
-      response.header("Connection", "keep-alive");
-      function sendSseData(userCompositeKey: string, data?: any) {
-        let obj = { data: "No data" };
-        if (data) {
-          obj = data;
-        }
-        const response = sseRegisteredUsers.get(userCompositeKey);
-        if (response) {
-          response.send(`data: ${JSON.stringify(obj)}\n\n`);
-        }
-      }
+      response.response.writeHead(200, {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        Connection: "keep-alive",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": "true",
+      });
+
       const queryParams = request.params();
-      if (!queryParams.id || !queryParams.districtId) {
+      if (!queryParams.userId || !queryParams.districtId) {
         throw new CustomException({
           message: "Missing required parameters for server sent events",
           status: 400,
         });
       }
+
       if (
-        !sseRegisteredUsers.has(`${queryParams.id}-${queryParams.districtId}`)
+        !sseRegisteredUsers.has(
+          `${queryParams.userId}_${queryParams.districtId}`
+        )
       ) {
-        const userCompositeKey = `${queryParams.id}_${queryParams.districtId}`;
+        const userCompositeKey = `${queryParams.userId}_${queryParams.districtId}`;
         sseRegisteredUsers.set(userCompositeKey, response);
-        console.log("current state of sseRegisteredUsers", sseRegisteredUsers);
-        sendSseData(userCompositeKey);
         setInterval(() => {
-          sendSseData(userCompositeKey);
+          sendSseData(userCompositeKey, { data: "PING" });
         }, 5000);
+        return response.response.write(
+          `data: ${JSON.stringify({ data: "Initialized" })}\n\n`
+        );
       }
     } catch (error) {
       throw new CustomException(error as CustomErrorType);
@@ -377,9 +375,8 @@ export default class UsersController {
 
     if (userKey && sseRegisteredUsers.has(userKey)) {
       const response = sseRegisteredUsers.get(userKey) as ResponseContract;
-      // response.finish();
+      response.finish();
       sseRegisteredUsers.delete(userKey);
-      console.log("Current state of sseRegisteredUsers", sseRegisteredUsers);
     }
   }
 }

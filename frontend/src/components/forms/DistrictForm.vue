@@ -109,10 +109,7 @@ const rules = {
         return isEdit.value ? true : value.length >= 4;
       }
     ),
-    numeric: helpers.withMessage(
-      langTranslations.value.formErorrText.numeric,
-      numeric
-    ),
+  
   },
   district_president: {
     required: helpers.withMessage(
@@ -197,6 +194,7 @@ const rules = {
     },
   },
 };
+
 const v$ = useVuelidate(rules, district);
 
 /* Hooks */
