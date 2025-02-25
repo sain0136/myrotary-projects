@@ -13,6 +13,7 @@ import { AssetsApi } from "@/api/services/AssestsApi";
 import { ApiClient } from "@/api/ApiClient";
 import { useSiteAssets } from "@/stores/SiteAssets";
 import { useLanguage } from "@/utils/languages/UseLanguage";
+import { useLoggedInUserStore } from "@/stores/LoggedInUser";
 
 const assetsStore = useSiteAssets();
 const { setLocalLanguage } = useLanguage();
@@ -27,6 +28,7 @@ watch(refCounter, () => {
 onMounted(async () => {
   try {
     setLocalLanguage();
+    useLoggedInUserStore().initializeSSEForLoggedInUser();
     if (!sessionStorage.getItem("siteAssets")) {
       const response = await assetsApi.getMainAssets();
       assetsStore.setSiteAssets(response);

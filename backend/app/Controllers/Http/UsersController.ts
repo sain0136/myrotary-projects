@@ -343,21 +343,15 @@ export default class UsersController {
           status: 400,
         });
       }
-
-      if (
-        !sseRegisteredUsers.has(
-          `${queryParams.userId}_${queryParams.districtId}`
-        )
-      ) {
-        const userCompositeKey = `${queryParams.userId}_${queryParams.districtId}`;
-        sseRegisteredUsers.set(userCompositeKey, response);
-        setInterval(() => {
-          sendSseData(userCompositeKey, { data: "PING" });
-        }, 5000);
-        return response.response.write(
-          `data: ${JSON.stringify({ data: "Initialized" })}\n\n`
-        );
-      }
+      
+      const userCompositeKey = `${queryParams.userId}_${queryParams.districtId}`;
+      sseRegisteredUsers.set(userCompositeKey, response);
+      setInterval(() => {
+        sendSseData(userCompositeKey, { data: "PING" });
+      }, 5000);
+      return response.response.write(
+        `data: ${JSON.stringify({ data: "Initialized" })}\n\n`
+      );
     } catch (error) {
       throw new CustomException(error as CustomErrorType);
     }

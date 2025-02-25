@@ -17,7 +17,7 @@ export const useLoggedInUserStore = defineStore(
     const serverSent = ref({
       connected: false,
       errorDisconnect: false,
-      lastPing: luxon.DateTime.now(), // TODO: Set Up a reconnect mechanism
+      lastPing: luxon.DateTime.now(), // TODO: Set Up a reconnect mechanism? This will be for case of connection lost from backend side not due to user logout or refresh
     });
 
     function setLoggedInUser(user: IUser) {
@@ -49,12 +49,25 @@ export const useLoggedInUserStore = defineStore(
       }
     }
 
+    /**
+     * When user refreshes the page, this function is called to check if user is
+     * logged in, if yes, it will establish the server sent events connection again.
+     * The credentials sent will overwrite the entry in the backend and the connection
+     * will be re-established.
+     */
+    function initializeSSEForLoggedInUser() {
+      if (isUserLoggedIn.value) {
+        setServerSentEvents(loggedInUser);
+      }
+    }
+
     return {
       loggedInUser,
       setLoggedInUser,
       isUserLoggedIn,
       logOut,
       getLoggedInUserRole,
+      initializeSSEForLoggedInUser,
       serverSent,
     };
   },
