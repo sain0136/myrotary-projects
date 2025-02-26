@@ -155,6 +155,17 @@ export class ProjectsApi {
     );
   }
 
+  public async removeProjectAdmins(userId: number, projectId: number) {
+    return await this.apiClient.fetchWrapper(
+      "POST",
+      `${BASE_ROUTE}/removeProjectAdmins`,
+      {
+        userId,
+        projectId,
+      }
+    );
+  }
+
   public async updateProjectStatus(projectStatus: string, projectId: number) {
     return await this.apiClient.fetchWrapper(
       "POST",

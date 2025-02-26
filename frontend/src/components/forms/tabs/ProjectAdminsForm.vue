@@ -6,14 +6,12 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import { useActiveProjectStore } from "@/stores/ActiveProjectStore";
 import BaseSelect from "@/components/form/BaseSelect.vue";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
-import BaseInput from "@/components/form/BaseInput.vue";
 import H3 from "@/components/headings/H3.vue";
-import ResourceList from "@/utils/classes/ResourceList";
 import { CustomErrors } from "@/utils/classes/CustomErrors";
 import { ApiClient } from "@/api/ApiClient";
 import { ClubApi } from "@/api/services/ClubApi";
@@ -36,9 +34,6 @@ const projectsApi = new ProjectsApi(new ApiClient());
 const { langTranslations } = useLanguage();
 const { handleError, handleSuccess } = errorHandler();
 const projectId = useActiveProjectStore().activeProject?.project_id ?? null;
-const projectAdmins = reactive(
-  useActiveProjectStore().activeProject?.projectDetails.projectAdmins ?? []
-);
 const loggedInClubid = useLoggedInUserStore().loggedInUser?.club_id
   ? useLoggedInUserStore().loggedInUser?.club_id
   : useLoggedInClub().loggedInClub?.club_id;
@@ -46,36 +41,45 @@ const loggedInClubid = useLoggedInUserStore().loggedInUser?.club_id
 const chosenUser = ref("");
 const allClubMembersNameList: string[] = reactive([]);
 const allClubMembers: IUser[] = reactive([]);
-let adminUsers: Array<
-  | string
-  | IUser
-  | {
-      fullName: string;
-    }
-> = reactive([]);
-if (projectAdmins) {
-  adminUsers = projectAdmins.map((user: IUser) => {
+const adminUsers = computed(() => {
+  const projectAdmins =
+    useActiveProjectStore().activeProject?.projectDetails.projectAdmins ?? [];
+  return projectAdmins.map((user: IUser) => {
     return user;
   }) as Array<string | IUser>;
-}
-/* Hooks */
-onMounted(async () => {
+});
+
+const fetchClubMembers = async () => {
   try {
     const response = await clubApi.getClubUsers(
       loggedInClubid ?? 0,
       pagination.currentPage,
       pagination.limit
     );
-    const clubMembersList = (response.data as IUser[]).map((member: IUser) => {
-      return member.fullName;
+    const clubMembersList = (response.data as IUser[])
+      .map((member: IUser) => {
+        return member.fullName;
+      })
+      .filter((member: string) => {
+        return member !== useLoggedInUserStore().loggedInUser?.fullName;
+      });
+    let clubMembers = response.data as IUser[];
+    clubMembers = clubMembers.filter((member: IUser) => {
+      return member.user_id !== useLoggedInUserStore().loggedInUser?.user_id;
     });
-    const clubMembers = response.data as IUser[];
     Object.assign(allClubMembersNameList, clubMembersList);
     Object.assign(allClubMembers, clubMembers);
     pagination.currentPage = response.meta.current_page;
     pagination.lastPage = response.meta.last_page;
-    pagination.total = response.meta.total;
     loaded.value = true;
+  } catch (error) {
+    handleError(error as CustomErrors);
+  }
+};
+/* Hooks */
+onMounted(async () => {
+  try {
+    await fetchClubMembers();
   } catch (error) {
     handleError(error as CustomErrors);
   }
@@ -83,9 +87,9 @@ onMounted(async () => {
 
 /* Methods */
 const isUserAlreadyAdmin = () => {
-  if (adminUsers.includes(chosenUser.value)) {
+  if (adminUsers.value.includes(chosenUser.value)) {
     handleError(
-      new CustomErrors(500, "User already admin", {
+      new CustomErrors(500, {
         en: "User already admin",
         fr: "Utilisateur déjà administrateur",
       })
@@ -93,6 +97,13 @@ const isUserAlreadyAdmin = () => {
   } else {
     return false;
   }
+};
+
+const updateProjectAndFetchMembers = async (projectId: number) => {
+  await useActiveProjectStore().setActiveProjectById(projectId);
+  await fetchClubMembers();
+  handleSuccess(langTranslations.value.toastSuccess);
+  chosenUser.value = "";
 };
 
 const addUserToProject = async () => {
@@ -106,11 +117,30 @@ const addUserToProject = async () => {
       })?.user_id ?? null;
     if (memberID) {
       await projectsApi.addProjectAdmins(memberID, projectId);
-      handleSuccess(langTranslations.value.toastSuccess);
-      adminUsers.push({ fullName: chosenUser.value });
-      chosenUser.value = "";
+      await updateProjectAndFetchMembers(projectId);
     } else {
-      throw new CustomErrors(500, "User not found", {
+      throw new CustomErrors(500, {
+        en: "User not found",
+        fr: "Utilisateur introuvable",
+      });
+    }
+  } catch (error) {
+    handleError(error as CustomErrors);
+  }
+};
+
+const removeUserFromProject = async (user: unknown) => {
+  const userToRemove = user as IUser;
+  try {
+    const memberID =
+      allClubMembers.find((member: IUser) => {
+        return member.user_id === userToRemove.user_id;
+      })?.user_id ?? null;
+    if (memberID) {
+      await projectsApi.removeProjectAdmins(memberID, projectId);
+      await useActiveProjectStore().setActiveProjectById(projectId);
+    } else {
+      throw new CustomErrors(500, {
         en: "User not found",
         fr: "Utilisateur introuvable",
       });
@@ -151,8 +181,12 @@ const addUserToProject = async () => {
         :total-results="pagination.total"
         :limit="pagination.limit"
         :table-data="adminUsers"
-        :hideActionsColumn="true"
+        :hideActionsColumn="false"
         :disable-pagination="true"
+        :delete-button="{
+          show: true,
+          callBack: removeUserFromProject,
+        }"
         :columns="[
           {
             name: langTranslations.nameLabel,

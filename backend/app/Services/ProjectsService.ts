@@ -112,6 +112,13 @@ export default class UserService {
     return await this.projectsRepositories.addProjectAdmins(userId, projectId);
   }
 
+  public async removeProjectAdmins(userId: number, projectId: number) {
+    return await this.projectsRepositories.removeProjectAdmins(
+      userId,
+      projectId
+    );
+  }
+
   public async updateProjectStatus(projectStatus: string, projectId: number) {
     return await this.projectsRepositories.updateProjectStatus(
       projectStatus,

@@ -204,6 +204,18 @@ export default class ProjectsController {
     }
   }
 
+  public async removeProjectAdmins({ request, response }: HttpContextContract) {
+    try {
+      const userId: number = request.input("userId");
+      const projectId: number = request.input("projectId");
+      const { projectsService } = this.initializeServices();
+      await projectsService.removeProjectAdmins(userId, projectId);
+      return response.json(true);
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
+  }
+
   public async updateProjectStatus({ request, response }: HttpContextContract) {
     try {
       const projectId: number = request.input("projectId");

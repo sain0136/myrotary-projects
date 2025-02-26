@@ -124,6 +124,10 @@ const errorTranslations: Record<string, Translation> = {
     en: "Error deleting Pledge. Please contact the administrator",
     fr: "Erreur de suppression de Pledge. Contactez l'administrateur",
   },
+  PROJECT_HAS_ADMINS: {
+    en: "You cannot delete this project because it has other admins assigned. Please remove the admins before deleting the project.",
+    fr: "Vous ne pouvez pas supprimer ce projet car il a d'autres administrateurs assignés. Veuillez supprimer les administrateurs avant de supprimer le projet.",
+  },
 };
 
 /**

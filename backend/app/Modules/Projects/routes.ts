@@ -20,6 +20,10 @@ Route.post(
 Route.post("projects/deleteProject", "ProjectsController.deleteProject");
 Route.post("projects/addProjectAdmins", "ProjectsController.addProjectAdmins");
 Route.post(
+  "projects/removeProjectAdmins",
+  "ProjectsController.removeProjectAdmins"
+);
+Route.post(
   "projects/updateProjectStatus",
   "ProjectsController.updateProjectStatus"
 );

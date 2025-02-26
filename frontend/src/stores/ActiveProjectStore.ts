@@ -1,3 +1,5 @@
+import { ApiClient } from "@/api/ApiClient";
+import { ProjectsApi } from "@/api/services/ProjectsApi";
 import type {
   IClubProject,
   IDmProject,
@@ -32,10 +34,17 @@ export const useActiveProjectStore = defineStore(
       }
     }
 
+    async function setActiveProjectById(id: number) {
+      const projectsApi = new ProjectsApi(new ApiClient());
+      const response = await projectsApi.getProject(id);
+      setActiveProject(response);
+    }
+
     return {
       activeProject,
       setActiveProject,
       resetActiveProject,
+      setActiveProjectById,
     };
   },
   {

@@ -29,9 +29,14 @@ export default class CustomException
     sqlMessage,
     translatedMessage,
     errorData,
+    errno,
   }: CustomErrorType) {
     super(message, status);
     this.errorCode = errorCode?.toString() ?? undefined;
+    if (errno && sqlMessage) {
+      // If errno and sqlMessage are provided, set errno since it is a database error
+      this.errorCode = errno;
+    }
     this.sqlMessage = sqlMessage ?? undefined;
     this.translatedMessage = translatedMessage ?? undefined;
     this.errorData = errorData ?? undefined;
