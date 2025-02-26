@@ -509,7 +509,17 @@ export default class ProjectsRepositories {
       return true;
     }
     if (pledgesAssociated.length < 1) {
-      await projectToBeDeleted.delete();
+      try {
+        await projectToBeDeleted.delete();
+      } catch (error) {
+        if (
+          error.code === "ER_ROW_IS_REFERENCED_2" &&
+          error.sqlMessage.includes("project_roles")
+        ) {
+          error.errno = "PROJECT_HAS_ADMINS";
+        }
+        throw error;
+      }
       return true;
     } else {
       throw new CustomException({
@@ -523,6 +533,11 @@ export default class ProjectsRepositories {
   public async addProjectAdmins(userId: number, projectId: number) {
     const projectToBeUpdated = await Projects.findOrFail(projectId);
     await projectToBeUpdated.related("projectRole").attach([userId]);
+  }
+
+  public async removeProjectAdmins(userId: number, projectId: number) {
+    const projectToBeUpdated = await Projects.findOrFail(projectId);
+    await projectToBeUpdated.related("projectRole").detach([userId]);
   }
 
   public async updateProjectStatus(projectStatus: string, projectId: number) {
