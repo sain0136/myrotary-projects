@@ -237,19 +237,7 @@ export default class UsersController {
           customMessage: customMessage,
         });
       }
-      const mailController = new MailController();
-      let mailBodyMessage = `<strong>Hello ${user.fullName}, your account has been approved. You can now log in to your account. / Bonjour ${user.fullName}, votre compte a été approuvé. Vous pouvez maintenant vous connecter à votre compte.</strong>`;
-      mailController.sendMail(
-        {
-          subject:
-            "Welcome to MyRotaryProjects. Your account has been approved. / Bienvenue sur MyRotaryProjects. Votre compte a été approuvé.",
-          receiverEmail: user.email,
-          messageBody: {
-            message: mailBodyMessage,
-          },
-        },
-        mailBodyMessage
-      );
+      notifyUserAccountApproval(user);
       return response.json(true);
     } catch (error) {
       this.logManager.log(LogTools.LogTypes.USER_LOG, {
@@ -343,7 +331,7 @@ export default class UsersController {
           status: 400,
         });
       }
-      
+
       const userCompositeKey = `${queryParams.userId}_${queryParams.districtId}`;
       sseRegisteredUsers.set(userCompositeKey, response);
       setInterval(() => {
@@ -373,4 +361,19 @@ export default class UsersController {
       sseRegisteredUsers.delete(userKey);
     }
   }
+}
+function notifyUserAccountApproval(user: IUser) {
+  const mailController = new MailController();
+  let mailBodyMessage = `<strong>Hello ${user.fullName}, your account has been approved. You can now log in to your account. / Bonjour ${user.fullName}, votre compte a été approuvé. Vous pouvez maintenant vous connecter à votre compte.</strong>`;
+  mailController.sendMail(
+    {
+      subject:
+        "Welcome to MyRotaryProjects. Your account has been approved. / Bienvenue sur MyRotaryProjects. Votre compte a été approuvé.",
+      receiverEmail: user.email,
+      messageBody: {
+        message: mailBodyMessage,
+      },
+    },
+    mailBodyMessage
+  );
 }
