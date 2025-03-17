@@ -1,4 +1,7 @@
 export interface Translation {
+  setPassword: string;
+  newPassword: string;
+  confirmPassword: string;
   rotaryAnalyticsDescription: string;
   firstButtonLabel: string;
   lastButtonLabel: string;
@@ -398,6 +401,9 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    setPassword: "Set Password",
+    newPassword: "New Password",
+    confirmPassword: "Confirm password",
     rotaryAnalyticsDescription:
       "Navigate to the Rotary Analytics page. An internal tool for Rotary Super Admins to view and analyze logs and internal data.",
     firstButtonLabel: "First",
@@ -849,6 +855,9 @@ export const translations: Record<string, Translation> = {
     noProspectUserAvailable: "There are no prospective users at this moment",
   },
   fr: {
+    setPassword: "Définir le mot de passe",
+    newPassword: "Nouveau mot de passe",
+    confirmPassword: "Confirmer le mot de passe",
     rotaryAnalyticsDescription:
       "Accédez à la page Rotary Analytics. Un outil interne pour les super administrateurs de Rotary pour visualiser et analyser les journaux et les données internes.",
     firstButtonLabel: "Premier",
