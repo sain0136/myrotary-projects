@@ -6,21 +6,58 @@ export default {
 
 <script setup lang="ts">
 import { useLanguage } from "@/utils/languages/UseLanguage";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { errorHandler } from "@/utils/composables/ErrorHandler";
 import RotaryButton from "@/components/buttons/RotaryButton.vue";
 import img from "@/assets/pass-reset.jpg";
+import { object, string } from "yup";
+import { ValidationError } from "yup";
+import { CustomErrors } from "@/utils/classes/CustomErrors";
+
 /* Data */
 const { langTranslations } = useLanguage();
 const { handleError } = errorHandler();
 const password = ref<string>("");
 const confirmPassword = ref<string>("");
+const errorMessage = ref<string>("");
+
+/* Validation Schema */
+const schema = object({
+  password: string()
+    .required(langTranslations.value.passwordRequired)
+    .matches(/^.{8,}$/, langTranslations.value.passwordMinLimit),
+  confirmPassword: string()
+    .required(langTranslations.value.confirmPasswordRequired)
+    .test(
+      "passwords-match",
+      langTranslations.value.passwordMismatch,
+      function (value) {
+        return this.parent.password === value;
+      }
+    ),
+});
+
 /* Hooks */
 onMounted(async () => {});
 
+watch([password, confirmPassword], () => {
+  errorMessage.value = "";
+});
+
 /* Methods */
-const submit = () => {
-  console.log("submit");
+const submit = async () => {
+  try {
+    await schema.validate({
+      password: password.value,
+      confirmPassword: confirmPassword.value,
+    });
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      errorMessage.value = error.errors[0];
+    } else {
+      handleError(error as CustomErrors);
+    }
+  }
 };
 </script>
 <template>
@@ -74,6 +111,9 @@ const submit = () => {
               required="true"
             />
           </div>
+          <p v-if="errorMessage" class="text-red-600 text-sm">
+            {{ errorMessage }}
+          </p>
           <RotaryButton
             :label="langTranslations.submit"
             theme="primary"

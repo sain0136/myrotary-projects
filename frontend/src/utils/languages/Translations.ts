@@ -397,6 +397,11 @@ export interface Translation {
   createNewAccountBanner: string;
   prospectUserLabel: string;
   noProspectUserAvailable: string;
+  passwordRequired: string;
+  passwordMinLimit: string;
+  confirmPasswordRequired: string;
+  passwordMismatch: string;
+  validationSuccess: string;
 }
 
 export const translations: Record<string, Translation> = {
@@ -853,6 +858,11 @@ export const translations: Record<string, Translation> = {
     createNewAccountBanner: "Register",
     prospectUserLabel: "Prospect Users",
     noProspectUserAvailable: "There are no prospective users at this moment",
+    passwordRequired: "Password is required",
+    passwordMinLimit: "Password must be at least 8 characters",
+    confirmPasswordRequired: "Confirm password is required",
+    passwordMismatch: "Passwords do not match",
+    validationSuccess: "Validation successful",
   },
   fr: {
     setPassword: "Définir le mot de passe",
@@ -1319,5 +1329,10 @@ export const translations: Record<string, Translation> = {
     prospectUserLabel: "Inscriptions en attente",
     noProspectUserAvailable:
       "Il n'y a pas d'utilisateurs potentiels pour le moment",
+    passwordRequired: "Mot de passe requis",
+    passwordMinLimit: "Le mot de passe doit comporter au moins 8 caractères",
+    confirmPasswordRequired: "Confirmation du mot de passe requise",
+    passwordMismatch: "Les mots de passe ne correspondent pas",
+    validationSuccess: "Validation réussie",
   },
 };
