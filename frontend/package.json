@@ -30,7 +30,8 @@
     "vue": "^3.3.4",
     "vue-chart-3": "^3.1.8",
     "vue-router": "^4.2.4",
-    "vue-social-sharing": "^4.0.0-alpha4"
+    "vue-social-sharing": "^4.0.0-alpha4",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@iconify/vue": "^4.1.1",
