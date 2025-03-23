@@ -31,7 +31,10 @@ const schema = object({
     .test(
       "passwords-match",
       langTranslations.value.passwordMismatch,
-      function (value) {
+      function (
+        this: { parent: { password: string } },
+        value: string
+      ): boolean {
         return this.parent.password === value;
       }
     ),
@@ -51,6 +54,7 @@ const submit = async () => {
       password: password.value,
       confirmPassword: confirmPassword.value,
     });
+    console.log("Password set successfully");
   } catch (error) {
     if (error instanceof ValidationError) {
       errorMessage.value = error.errors[0];
