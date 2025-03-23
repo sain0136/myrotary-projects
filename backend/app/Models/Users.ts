@@ -58,7 +58,11 @@ export default class Users extends BaseModel {
   @column()
   public userCountry?: string;
 
-  @column()
+  @column({
+    consume: (value) => {
+      return Boolean(value);
+    },
+  })
   public isProspect?: boolean;
 
   @column()

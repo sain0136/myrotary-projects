@@ -9,7 +9,10 @@ export default class Otp extends BaseModel {
   public otpUuid: string;
 
   @column()
-  public expiryDate: DateTime;
+  public expiryDate: string;
+
+  @column()
+  public userId: number;
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime;

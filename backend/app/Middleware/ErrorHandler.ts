@@ -58,7 +58,7 @@ export default class ErrorHandler {
   ): Translation {
     if (errorCode && errorTranslations[errorCode]) {
       // Handle specific errors i.e known handled db errors or custom errors
-      return getErrorTranslation(errorCode, url);
+      return getErrorTranslation(errorCode.toString(), url);
     } else if (errorCode || errno) {
       // Handle all non handled database/custom errors
       // TODO: Actually send a report to the admin
@@ -76,10 +76,7 @@ export default class ErrorHandler {
 /**
  * Maps a database error number to a generic translated error message, handle known and specific database errors
  */
-const getErrorTranslation = (
-  errorCode: number | string,
-  url: string
-): Translation => {
+const getErrorTranslation = (errorCode: string, url: string): Translation => {
   if (errorCode === "1062" && url.includes("user")) {
     return errorTranslations["1062-users"];
   } else if (errorCode === "1062" && url.includes("project")) {

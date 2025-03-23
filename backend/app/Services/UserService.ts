@@ -80,4 +80,12 @@ export default class UserService {
       data: user,
     });
   }
+
+  public async setInitialPassword(
+    userId: number,
+    otpUuid: string,
+    password: string
+  ): Promise<void> {
+    await this.userRepositories.setInitialPassword(userId, otpUuid, password);
+  }
 }

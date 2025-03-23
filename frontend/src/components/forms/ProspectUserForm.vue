@@ -31,7 +31,11 @@ import ResourceList from "@/utils/classes/ResourceList";
 import { ClubApi } from "@/api/services//ClubApi";
 import type { IClub } from "@/utils/interfaces/IClub";
 import type { IUser } from "@/utils/interfaces/IUser";
-/* Types */
+/* 
+  This whole component is a copy of the UserForm.vue component. That a dev created to just display the
+  prospect user information from the prospects table. The only difference is that this one has the approve and deny buttons. Could and should
+  be refactored to use the same component.
+*/
 
 /* Data */
 const route = useRoute();

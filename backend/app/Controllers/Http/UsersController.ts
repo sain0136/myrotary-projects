@@ -12,6 +12,9 @@ import Event from "@ioc:Adonis/Core/Event";
 import { ResponseContract } from "@ioc:Adonis/Core/Response";
 import { sseRegisteredUsers, sendSseData } from "App/Utils/sseRegistar";
 import Clubs from "App/Models/Clubs";
+import { v4 as uuidv4 } from "uuid";
+import Otp from "App/Models/Otp";
+import { DateTime } from "luxon";
 
 export default class UsersController {
   private logManager: LogManager;
@@ -166,14 +169,20 @@ export default class UsersController {
       const { userService } = this.initializeServices();
       const { districtAdminsToEmail, createdUser } =
         await userService.createUser(user, prospectUser);
+      const fullName =
+        user.firstname && user.lastname
+          ? user.firstname + " " + user.lastname
+          : user.email;
       if (prospectUser) {
         const mailController = new MailController();
-        let mailBodyMessage = `<strong>Hello ${user.fullName}, your account is pending approval. You will be notified when your account is approved. / Bonjour ${user.fullName}, votre compte est en attente d'approbation. Vous serez informé lorsque votre compte sera approuvé.</strong>`;
+        let mailBodyMessage = `<strong>Hello ${fullName}, your account is pending approval. You will be notified when your account is approved. / Bonjour ${fullName}, votre compte est en attente d'approbation. Vous serez informé lorsque votre compte sera approuvé.</strong>`;
         if (districtAdminsToEmail && districtAdminsToEmail.length > 0) {
-          mailBodyMessage += `<p>District Admins to contact for questions: / Administrateurs de district à contacter pour des questions:</p>`;
-          mailBodyMessage += districtAdminsToEmail.map((text) => {
-            return text;
-          });
+          mailBodyMessage += `<p>District Admins to contact for questions / Administrateurs de district à contacter pour des questions :</p>`;
+          mailBodyMessage += districtAdminsToEmail
+            .map((text) => {
+              return text;
+            })
+            .join("");
         }
         mailController.sendMail(
           {
@@ -237,7 +246,14 @@ export default class UsersController {
           customMessage: customMessage,
         });
       }
-      notifyUserAccountApproval(user);
+      if (prospectApproved) {
+        let requestOrigin =
+          request.header("origin") ||
+          request.header("referer") ||
+          "https://myrotaryprojects.org";
+        requestOrigin = requestOrigin.replace(/\/$/, ""); // Remove trailing slash
+        await notifyUserAccountApproval(user, requestOrigin);
+      }
       return response.json(true);
     } catch (error) {
       this.logManager.log(LogTools.LogTypes.USER_LOG, {
@@ -361,10 +377,42 @@ export default class UsersController {
       sseRegisteredUsers.delete(userKey);
     }
   }
+
+  public async setInitialPassword({ request, response }: HttpContextContract) {
+    try {
+      const { otpUuid, userId, password } = request.only([
+        "otpUuid",
+        "userId",
+        "password",
+      ]);
+      const { userService } = this.initializeServices();
+      await userService.setInitialPassword(userId, otpUuid, password);
+      return response.json(true);
+    } catch (error) {
+      throw new CustomException(error as CustomErrorType);
+    }
+  }
 }
-function notifyUserAccountApproval(user: IUser) {
+
+async function notifyUserAccountApproval(user: IUser, origin: string) {
   const mailController = new MailController();
-  let mailBodyMessage = `<strong>Hello ${user.fullName}, your account has been approved. You can now log in to your account. / Bonjour ${user.fullName}, votre compte a été approuvé. Vous pouvez maintenant vous connecter à votre compte.</strong>`;
+  const uuidForUser = uuidv4();
+  const date = DateTime.now().plus({ days: 1 }).toISO() ?? undefined;
+  await Otp.create({
+    otpUuid: uuidForUser,
+    expiryDate: date, // Convert to ISO string
+    userId: user.user_id,
+  });
+  const setPasswordUrl = `${origin}/password-set?token=${uuidForUser}&userId=${user.user_id}`;
+  let mailBodyMessage = `
+  <strong>Hello ${user.fullName}, your account has been approved. You can now log in to your account.</strong>
+  <p>Please set your password by clicking the link below. This link will expire in 24 hours. If the link expires, please contact an admin for assistance:</p>
+  <a href="${setPasswordUrl}">Set your password</a>
+  <br><br>
+  <strong>Bonjour ${user.fullName}, votre compte a été approuvé. Vous pouvez maintenant vous connecter à votre compte.</strong>
+  <p>Veuillez définir votre mot de passe en cliquant sur le lien ci-dessous. Ce lien expirera dans 24 heures. Si le lien expire, veuillez contacter un administrateur pour obtenir de l'aide :</p>
+  <a href="${setPasswordUrl}">Définir votre mot de passe</a>
+`;
   mailController.sendMail(
     {
       subject:

@@ -13,6 +13,9 @@ import img from "@/assets/pass-reset.jpg";
 import { object, string } from "yup";
 import { ValidationError } from "yup";
 import { CustomErrors } from "@/utils/classes/CustomErrors";
+import { UsersApi } from "@/api/services/UserApi";
+import { ApiClient } from "@/api/ApiClient";
+import { useRoute } from "vue-router";
 
 /* Data */
 const { langTranslations } = useLanguage();
@@ -20,7 +23,19 @@ const { handleError } = errorHandler();
 const password = ref<string>("");
 const confirmPassword = ref<string>("");
 const errorMessage = ref<string>("");
+const userApi = new UsersApi(new ApiClient());
+const route = useRoute();
 
+const userId = route.query.userId as string;
+const token = route.query.token as string;
+if (!userId || !token) {
+  handleError(
+    new CustomErrors("Invalid token or user ID", {
+      en: "Invalid token or user ID",
+      fr: "Jeton ou identifiant utilisateur invalide",
+    })
+  );
+}
 /* Validation Schema */
 const schema = object({
   password: string()
@@ -54,7 +69,7 @@ const submit = async () => {
       password: password.value,
       confirmPassword: confirmPassword.value,
     });
-    console.log("Password set successfully");
+    await userApi.setInitialPassword(token, userId, password.value);
   } catch (error) {
     if (error instanceof ValidationError) {
       errorMessage.value = error.errors[0];

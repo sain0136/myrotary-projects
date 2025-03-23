@@ -2,6 +2,7 @@ import Hash from "@ioc:Adonis/Core/Hash";
 import CustomException from "App/Exceptions/CustomException";
 import Clubs from "App/Models/Clubs";
 import Districts from "App/Models/Districts";
+import Otp from "App/Models/Otp";
 import Projects from "App/Models/Projects";
 import Session from "App/Models/Session";
 import Users from "App/Models/Users";
@@ -256,8 +257,9 @@ export default class UserRepositories {
   public async updateUser(
     user: IUser
   ): Promise<{ updatedUser: Users; prospectApproved: boolean }> {
-    const existingUser = await Users.findOrFail(user.user_id);
-    const updatedUser = await existingUser
+    const retrievedUser = await Users.findOrFail(user.user_id);
+    const userRetrievedIsProspect = retrievedUser.isProspect;
+    const updatedUser = await retrievedUser
       .merge({
         firstname: user.firstname,
         lastname: user.lastname,
@@ -299,7 +301,7 @@ export default class UserRepositories {
       updatedUser,
       // This user was a prospect and now is not
       prospectApproved:
-        existingUser.isProspect === true && updatedUser.isProspect === false
+        userRetrievedIsProspect === true && updatedUser.isProspect === false
           ? true
           : false,
     };
@@ -334,4 +336,36 @@ export default class UserRepositories {
       });
     }
   }
+
+  public async setInitialPassword(
+    userId: number,
+    otpUuid: string,
+    password: string
+  ): Promise<void> {
+    const user = await Users.findOrFail(userId);
+    let otp: Otp;
+    try {
+      otp = await Otp.findByOrFail("otp_uuid", otpUuid);
+    } catch (error) {
+      throw new CustomException(otpError);
+    }
+    const otpExpirationDate = DateTime.fromISO(otp.expiryDate);
+    const currentDate = DateTime.now();
+    if (currentDate > otpExpirationDate) {
+      // OTP is expired and cannot be used
+      await otp.delete();
+      throw new CustomException(otpError);
+    }
+    await user.merge({ password: password }).save();
+    await otp.delete();
+  }
 }
+
+const otpError = {
+  message: "OTP_NOT_FOUND",
+  status: 400,
+  translatedMessage: {
+    en: "This link is invalid or has expired",
+    fr: "Ce lien est invalide ou a expiré",
+  },
+};

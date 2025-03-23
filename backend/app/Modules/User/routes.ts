@@ -10,3 +10,4 @@ Route.post("user/getuser/", "UsersController.getUser");
 Route.post("user/delete/", "UsersController.deleteUser");
 Route.post("user/deleteProspectUser/", "UsersController.deleteProspectUser");
 Route.get("user/events/:userId/:districtId", "UsersController.serverSentEventsInit");
+Route.post("user/setInitialPassword/", "UsersController.setInitialPassword");
