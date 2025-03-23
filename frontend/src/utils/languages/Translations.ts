@@ -1,4 +1,7 @@
 export interface Translation {
+  setPassword: string;
+  newPassword: string;
+  confirmPassword: string;
   rotaryAnalyticsDescription: string;
   firstButtonLabel: string;
   lastButtonLabel: string;
@@ -394,10 +397,18 @@ export interface Translation {
   createNewAccountBanner: string;
   prospectUserLabel: string;
   noProspectUserAvailable: string;
+  passwordRequired: string;
+  passwordMinLimit: string;
+  confirmPasswordRequired: string;
+  passwordMismatch: string;
+  validationSuccess: string;
 }
 
 export const translations: Record<string, Translation> = {
   en: {
+    setPassword: "Set Password",
+    newPassword: "New Password",
+    confirmPassword: "Confirm password",
     rotaryAnalyticsDescription:
       "Navigate to the Rotary Analytics page. An internal tool for Rotary Super Admins to view and analyze logs and internal data.",
     firstButtonLabel: "First",
@@ -847,8 +858,16 @@ export const translations: Record<string, Translation> = {
     createNewAccountBanner: "Register",
     prospectUserLabel: "Prospect Users",
     noProspectUserAvailable: "There are no prospective users at this moment",
+    passwordRequired: "Password is required",
+    passwordMinLimit: "Password must be at least 8 characters",
+    confirmPasswordRequired: "Confirm password is required",
+    passwordMismatch: "Passwords do not match",
+    validationSuccess: "Validation successful",
   },
   fr: {
+    setPassword: "Définir le mot de passe",
+    newPassword: "Nouveau mot de passe",
+    confirmPassword: "Confirmer le mot de passe",
     rotaryAnalyticsDescription:
       "Accédez à la page Rotary Analytics. Un outil interne pour les super administrateurs de Rotary pour visualiser et analyser les journaux et les données internes.",
     firstButtonLabel: "Premier",
@@ -1310,5 +1329,10 @@ export const translations: Record<string, Translation> = {
     prospectUserLabel: "Inscriptions en attente",
     noProspectUserAvailable:
       "Il n'y a pas d'utilisateurs potentiels pour le moment",
+    passwordRequired: "Mot de passe requis",
+    passwordMinLimit: "Le mot de passe doit comporter au moins 8 caractères",
+    confirmPasswordRequired: "Confirmation du mot de passe requise",
+    passwordMismatch: "Les mots de passe ne correspondent pas",
+    validationSuccess: "Validation réussie",
   },
 };

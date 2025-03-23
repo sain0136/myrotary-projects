@@ -27,6 +27,11 @@ const routes = [
     name: "TermsOfService",
     component: () => import("@/components/modal/Generic-Html.vue"),
   },
+  {
+    path: "/password-set",
+    name: "PasswordSet",
+    component: () => import("@/modules/home/views/PasswordSet.vue"),
+  },
   // Landing Routes
   {
     path: "/",
