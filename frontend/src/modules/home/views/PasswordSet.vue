@@ -16,10 +16,11 @@ import { CustomErrors } from "@/utils/classes/CustomErrors";
 import { UsersApi } from "@/api/services/UserApi";
 import { ApiClient } from "@/api/ApiClient";
 import { useRoute } from "vue-router";
+import router from "@/router";
 
 /* Data */
 const { langTranslations } = useLanguage();
-const { handleError } = errorHandler();
+const { handleError, handleSuccess } = errorHandler();
 const password = ref<string>("");
 const confirmPassword = ref<string>("");
 const errorMessage = ref<string>("");
@@ -70,6 +71,10 @@ const submit = async () => {
       confirmPassword: confirmPassword.value,
     });
     await userApi.setInitialPassword(token, userId, password.value);
+    handleSuccess(langTranslations.value.toastSucessCreateProspect, true);
+    setTimeout(() => {
+      router.push({ name: "Home" });
+    }, 2000);
   } catch (error) {
     if (error instanceof ValidationError) {
       errorMessage.value = error.errors[0];
