@@ -42,6 +42,7 @@
     "@types/dinero.js": "^1.9.2",
     "@types/uuid": "^9.0.7",
     "aws-sdk": "^2.1524.0",
+    "cron": "^4.1.3",
     "dinero.js": "^1.9.1",
     "luxon": "^3.4.3",
     "mysql2": "^3.6.1",
