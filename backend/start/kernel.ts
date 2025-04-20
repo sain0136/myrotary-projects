@@ -5,6 +5,7 @@ import cron from "node-cron";
 import { LogManager, LogTools } from "App/Utils/AppLogger";
 import Session from "App/Models/Session";
 import { DateTime } from "luxon";
+import Users from "App/Models/Users";
 const appLogger = new LogManager();
 /*
 |--------------------------------------------------------------------------
@@ -15,12 +16,12 @@ const appLogger = new LogManager();
 | minutes.
 |
 */
-const cronString =
+const seessionCronString =
   Env.get("NODE_ENV") === "development"
     ? { pattern: "*/2 * * * *", desc: "every 2 minutes" }
     : { pattern: "0 */6 * * *", desc: "every 6 hours" };
 
-cron.schedule(cronString.pattern, async () => {
+cron.schedule(seessionCronString.pattern, async () => {
   try {
     const allSessions = await Session.all();
     for (const session of allSessions) {
@@ -48,6 +49,41 @@ cron.schedule(cronString.pattern, async () => {
   }
 });
 
+/*
+|--------------------------------------------------------------------------
+| Cron job for prospective user account management
+|--------------------------------------------------------------------------
+| This cron job performs the following tasks:
+| 1. Checks the age of prospective user accounts.
+| 2. Sends email notifications to five random district managers if a user
+|    has been inactive for 15, 20, or 90 days.
+| 3. Automatically deletes user accounts inactive for 120 days, sending a
+|    pre-deletion notification to the user before removal.
+|
+| This helps ensure timely follow-up on new accounts and keeps the user
+| database clean.
+*/
+
+// const prospectiveUserCronString =
+//   Env.get("NODE_ENV") === "development"
+//     ? { pattern: "*/2 * * * *", desc: "every 2 minutes" }
+//     : { pattern: "0 6 * * *", desc: "every day at 6am" };
+
+// const thresholds = [15, 20, 90];
+// cron.schedule(prospectiveUserCronString.pattern, async () => {
+//   try {
+//     const prospectiveUsers = await Users.query().where("is_prospect", true);
+//     console.log("Prospective users", prospectiveUsers.length);
+//     for (const user of prospectiveUsers) {
+//       const createdDate = user.createdAt;
+//       const currentDate = DateTime.now();
+//       const diffInDays = currentDate.diff(createdDate, "days").days.toFixed(0);
+//       console.log("Diff in days", diffInDays);
+//     }
+//   } catch (error) {
+//     console.log("Error in cleanup", error);
+//   }
+// });
 /*
 |--------------------------------------------------------------------------
 | Application middleware
