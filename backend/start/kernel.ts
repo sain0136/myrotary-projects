@@ -79,9 +79,12 @@ cron.schedule(prospectiveUserCronString.pattern, async () => {
         let mailBodyMessage = `Your account was created on ${createdDate.toFormat(
           "yyyy-MM-dd HH:mm:ss"
         )} and has not been approved yet. As a result, your account was deleted. If you are still interested in using our service, please register again.`;
-
+        mailBodyMessage += `\n\nVotre compte a été créé le ${createdDate.toFormat(
+          "yyyy-MM-dd HH:mm:ss"
+        )} et n'a pas encore été approuvé. En conséquence, votre compte a été supprimé. Si vous êtes toujours intéressé par notre service, veuillez vous inscrire à nouveau.`;
         await mailController.sendMail({
-          subject: "Prospective account deletion notice",
+          subject:
+            "Prospective account deletion notice / Avis de suppression de compte potentiel",
           receiverEmail: user.email,
           messageBody: {
             message: mailBodyMessage,
