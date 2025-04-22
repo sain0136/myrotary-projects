@@ -1,5 +1,5 @@
 import Server from "@ioc:Adonis/Core/Server";
-
+import MailController from "App/Controllers/Http/MailController";
 import Env from "@ioc:Adonis/Core/Env";
 import cron from "node-cron";
 import { LogManager, LogTools } from "App/Utils/AppLogger";
@@ -55,35 +55,45 @@ cron.schedule(seessionCronString.pattern, async () => {
 |--------------------------------------------------------------------------
 | This cron job performs the following tasks:
 | 1. Checks the age of prospective user accounts.
-| 2. Sends email notifications to five random district managers if a user
-|    has been inactive for 15, 20, or 90 days.
-| 3. Automatically deletes user accounts inactive for 120 days, sending a
+| 2. Automatically deletes user accounts inactive for 120 days, sending a
 |    pre-deletion notification to the user before removal.
 |
 | This helps ensure timely follow-up on new accounts and keeps the user
 | database clean.
 */
 
-// const prospectiveUserCronString =
-//   Env.get("NODE_ENV") === "development"
-//     ? { pattern: "*/2 * * * *", desc: "every 2 minutes" }
-//     : { pattern: "0 6 * * *", desc: "every day at 6am" };
+const prospectiveUserCronString =
+  Env.get("NODE_ENV") === "development"
+    ? { pattern: "*/2 * * * *", desc: "every 2 minutes" }
+    : { pattern: "0 6 * * *", desc: "every day at 6am" };
 
-// const thresholds = [15, 20, 90];
-// cron.schedule(prospectiveUserCronString.pattern, async () => {
-//   try {
-//     const prospectiveUsers = await Users.query().where("is_prospect", true);
-//     console.log("Prospective users", prospectiveUsers.length);
-//     for (const user of prospectiveUsers) {
-//       const createdDate = user.createdAt;
-//       const currentDate = DateTime.now();
-//       const diffInDays = currentDate.diff(createdDate, "days").days.toFixed(0);
-//       console.log("Diff in days", diffInDays);
-//     }
-//   } catch (error) {
-//     console.log("Error in cleanup", error);
-//   }
-// });
+cron.schedule(prospectiveUserCronString.pattern, async () => {
+  try {
+    const prospectiveUsers = await Users.query().where("is_prospect", true);
+    for (const user of prospectiveUsers) {
+      const createdDate = user.createdAt;
+      const currentDate = DateTime.now();
+      const diffInDays = currentDate.diff(createdDate, "days").days.toFixed(0);
+      if (Number(diffInDays) > 120) {
+        const mailController = new MailController();
+        let mailBodyMessage = `Your account was created on ${createdDate.toFormat(
+          "yyyy-MM-dd HH:mm:ss"
+        )} and has not been approved yet. As a result, your account was deleted. If you are still interested in using our service, please register again.`;
+
+        await mailController.sendMail({
+          subject: "Prospective account deletion notice",
+          receiverEmail: user.email,
+          messageBody: {
+            message: mailBodyMessage,
+          },
+        });
+        await user.delete();
+      }
+    }
+  } catch (error) {
+    console.log("Error in cleanup", error);
+  }
+});
 /*
 |--------------------------------------------------------------------------
 | Application middleware
