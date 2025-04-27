@@ -47,7 +47,7 @@ export default class Authorize {
           Number(userSession.lastActivityTimestamp)
         );
         const lastActivityTimestampThreshold = lastActivityTimestamp.plus({
-          minutes: 30,
+          hours: 4,
         });
         if (lastActivityTimestampThreshold < DateTime.now()) {
           await userSession.delete();
