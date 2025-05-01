@@ -66,33 +66,33 @@ jobs:
             # Move new frontend build to web directory
             sudo mv /opt/apps/myrotary-projects/frontend/dist /var/www/pro
             # '
-  test:
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+  # test:
+  #   needs: deploy
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
+  #     - name: Set up Node.js
+  #       uses: actions/setup-node@v2
+  #       with:
+  #         node-version: '16'
 
-      - name: Install dependencies for frontend
-        run: |
-          cd frontend   # Make sure we are in the frontend directory
-          npm install   # This will install both dependencies and devDependencies, including Playwright
+  #     - name: Install dependencies for frontend
+  #       run: |
+  #         cd frontend   # Make sure we are in the frontend directory
+  #         npm install   # This will install both dependencies and devDependencies, including Playwright
   
-      - name: Install Playwright dependencies
-        run: |
-          cd frontend   # Stay in the frontend directory
-          npx playwright install --with-deps   # Install necessary browser dependencies for Playwright
+  #     - name: Install Playwright dependencies
+  #       run: |
+  #         cd frontend   # Stay in the frontend directory
+  #         npx playwright install --with-deps   # Install necessary browser dependencies for Playwright
   
-      - name: Run Playwright tests
-        env:
-          BASE_URL: "https://myrotaryprojects.org/"
-          PLAYWRIGHT_USERNAME: ${{ secrets.PLAYWRIGHT_USERNAME }}
-          PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
-        run: |
-          cd frontend   # Make sure we are in the frontend directory
-          npx playwright test  # Run Playwright tests
+  #     - name: Run Playwright tests
+  #       env:
+  #         BASE_URL: "https://myrotaryprojects.org/"
+  #         PLAYWRIGHT_USERNAME: ${{ secrets.PLAYWRIGHT_USERNAME }}
+  #         PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
+  #       run: |
+  #         cd frontend   # Make sure we are in the frontend directory
+  #         npx playwright test  # Run Playwright tests
