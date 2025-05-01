@@ -63,7 +63,7 @@ export namespace LogTools {
     CUSTOM_LOG = "custom_log",
     SESSION_CLEANUP = "session_cleanup",
   }
-  
+
   export enum Sources {
     SYSTEM = "system",
     USER = "user",
@@ -196,7 +196,7 @@ export class LogManager {
           this.CustomLogHandler(params);
       }
     } catch (error) {
-      handleError(error, null); //TODO - Handle this null, replace for the form data?
+      console.error("Critical log failure:", error.message);
     }
   }
 
@@ -316,25 +316,31 @@ function makeTransport() {
   return transport;
 }
 
-async function handleError(error: any, logData: acceptedLogFormTypes | null) {
-  console.log(error);
-  const extraData = JSON.stringify({
-    message: error.message,
-    destination: destination,
-    pathToTransport: pathToTransport,
-    ...logData,
-  });
-  await handleLoggerErrors(extraData);
-}
+// async function handleError(error: any, logData: acceptedLogFormTypes | null) {
+//   console.log(error);
+//   const extraData = JSON.stringify({
+//     message: error.message,
+//     destination: destination,
+//     pathToTransport: pathToTransport,
+//     ...logData,
+//   });
+//   await handleLoggerErrors(extraData);
+// }
 
-async function confirmErrorLogFile() {
+let hasCheckedLogFile = false;
+let errorFileExists = false;
+
+async function confirmErrorLogFile(): Promise<boolean> {
+  if (hasCheckedLogFile) return errorFileExists;
   try {
-    console.log(`Attempting to open file: ${errorFile}`);
-    const fileHandle = await fs.open(errorFile, "r");
-    console.log("File exists and is accessible.");
-    await fileHandle.close();
+    await fs.access(errorFile, fs.constants.F_OK);
+    errorFileExists = true;
   } catch (error) {
-    console.error("File does not exist or cannot be accessed:", error);
-    await handleLoggerErrors();
+    console.error("Error log file missing:", error);
+    errorFileExists = false;
+    await handleLoggerErrors("Error file missing - first detection.");
+  } finally {
+    hasCheckedLogFile = true;
   }
+  return errorFileExists;
 }

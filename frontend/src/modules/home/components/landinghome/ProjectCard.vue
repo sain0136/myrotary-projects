@@ -207,7 +207,7 @@ const escapeHTML = (unsafe: string) => {
             </div>
             <div class="create-date mt-4 flex gap-1">
               <h3 class="text-base font-bold text-secondary">
-                {{ langTranslations.createdLabel }}:
+                {{ langTranslations.startdateLabel }}:
               </h3>
               <h3 class="text-base font-bold text-primary-black">
                 {{ project.start_date }}

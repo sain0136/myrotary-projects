@@ -34,6 +34,7 @@ export interface Translation {
   myProjectsLabel: string;
   createdByLabel: string;
   createdLabel: string;
+  startdateLabel: string;
   createProjectOnBehalfLabel: string;
   contactPage: {
     calloutMessage: string;
@@ -406,6 +407,7 @@ export interface Translation {
 
 export const translations: Record<string, Translation> = {
   en: {
+    startdateLabel: "Start Date",
     setPassword: "Set Password",
     newPassword: "New Password",
     confirmPassword: "Confirm password",
@@ -865,6 +867,7 @@ export const translations: Record<string, Translation> = {
     validationSuccess: "Validation successful",
   },
   fr: {
+    startdateLabel: "Date de début",
     setPassword: "Définir le mot de passe",
     newPassword: "Nouveau mot de passe",
     confirmPassword: "Confirmer le mot de passe",
