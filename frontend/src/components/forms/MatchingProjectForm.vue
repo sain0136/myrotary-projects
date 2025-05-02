@@ -429,8 +429,8 @@ const rules = {
         required
       ),
       maxLength: helpers.withMessage(
-        customPrintf(langTranslations.value.maxLengthMessage, "4"),
-        maxLength(4)
+        customPrintf(langTranslations.value.maxLengthMessage, "5"),
+        maxLength(5)
       ),
       minLenght: helpers.withMessage(
         customPrintf(langTranslations.value.minLengthMessage, "4"),
