@@ -13,6 +13,7 @@ import Clubs from "App/Models/Clubs";
 import { v4 as uuidv4 } from "uuid";
 import Otp from "App/Models/Otp";
 import { DateTime } from "luxon";
+import rotaryLogger from "App/Utils/rotatryLogger";
 
 export default class UsersController {
   private initializeServices() {
@@ -67,6 +68,14 @@ export default class UsersController {
         });
       }
       Event.emit("login", userData.user);
+      rotaryLogger(
+        "INFO",
+        {
+          message: `User ${userData.user.fullName} with email ${userData.user.email} logged in`,
+          details: userData.user,
+        },
+        request
+      );
       return response.json({ ...userData });
     } catch (error) {
       if (error.status === 404) {
@@ -91,6 +100,14 @@ export default class UsersController {
         request.cookie("session_id");
 
       if (!sessionId?.value) {
+        rotaryLogger(
+          "INFO",
+          {
+            message: `User ${user.fullName} with email ${user.email} logged out`,
+            details: user,
+          },
+          request
+        );
         return response.json({ message: "User logged out sucessfully!" });
       }
       const userSession = await Session.findByOrFail(
@@ -106,6 +123,14 @@ export default class UsersController {
           status: 601,
         });
       }
+      rotaryLogger(
+        "INFO",
+        {
+          message: `User ${user.fullName} with email ${user.email} logged out`,
+          details: user,
+        },
+        request
+      );
       return response.json({ message: "User logged out sucessfully!" });
     } catch (error) {
       throw new CustomException(error as CustomErrorType);

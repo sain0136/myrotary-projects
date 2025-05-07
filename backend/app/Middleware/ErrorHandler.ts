@@ -1,6 +1,7 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import CustomException from "App/Exceptions/CustomException";
 import { Translation } from "App/Utils/CommonTypes";
+import rotaryLogger from "App/Utils/rotatryLogger";
 
 /**
  * Middleware for handling exceptions. All Errors are handled here.
@@ -21,6 +22,14 @@ export default class ErrorHandler {
       await next();
     } catch (error) {
       if (error instanceof CustomException) {
+        rotaryLogger(
+          "ERROR",
+          {
+            details: error,
+          },
+          request,
+          { stack: error.stack ?? undefined }
+        );
         const translatedMessage =
           error.translatedMessage ??
           this.getTranslatedMessage(error, request.url());
