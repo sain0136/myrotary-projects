@@ -22,7 +22,6 @@ export default class AppProvider {
 }
 
 async function isGuestUserPresent() {
-  const { LogManager, LogTools } = await import("App/Utils/AppLogger");
   try {
     const db = await import("@ioc:Adonis/Lucid/Database");
     const guestUser = await db.default
@@ -63,11 +62,6 @@ async function isGuestUserPresent() {
       });
     }
   } catch (error) {
-    const appLogger = new LogManager();
-    appLogger.log(LogTools.LogTypes.EXCEPTION_ERROR, {
-      error,
-      customMessage:
-        "Error while checking for guest user, meaning guest user might not be present",
-    });
+    // Removed appLogger and LogTools logging
   }
 }
