@@ -2,11 +2,10 @@ import Server from "@ioc:Adonis/Core/Server";
 import MailController from "App/Controllers/Http/MailController";
 import Env from "@ioc:Adonis/Core/Env";
 import cron from "node-cron";
-import { LogManager, LogTools } from "App/Utils/AppLogger";
 import Session from "App/Models/Session";
 import { DateTime } from "luxon";
 import Users from "App/Models/Users";
-const appLogger = new LogManager();
+// Removed LogManager, LogTools, and appLogger
 /*
 |--------------------------------------------------------------------------
 | Cron job for session cleanup
@@ -32,15 +31,7 @@ cron.schedule(seessionCronString.pattern, async () => {
         minutes: 30,
       });
       if (lastActivityTimestampThreshold < DateTime.now()) {
-        appLogger.log(LogTools.LogTypes.CUSTOM_LOG, {
-          type: LogTools.LogTypes.SESSION_CLEANUP,
-          event: LogTools.UserEditEvent.CREATE,
-          source: LogTools.Sources.SYSTEM,
-          status: LogTools.Status.SUCCESS,
-          message: "Session JSON\n" + JSON.stringify(session),
-          customMessage:
-            "Session deleted from backend due to inactivity. (We record these becasue this should be an edge case)",
-        });
+        // Removed appLogger.log
         await session.delete();
       }
     }
@@ -97,6 +88,7 @@ cron.schedule(prospectiveUserCronString.pattern, async () => {
     console.log("Error in cleanup", error);
   }
 });
+
 /*
 |--------------------------------------------------------------------------
 | Application middleware

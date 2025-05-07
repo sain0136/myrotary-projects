@@ -1,8 +1,7 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import CustomException from "App/Exceptions/CustomException";
 import { Translation } from "App/Utils/CommonTypes";
-import { LogTools } from "App/Utils/AppLogger";
-import { LogManager } from "App/Utils/AppLogger";
+import rotaryLogger from "App/Utils/rotatryLogger";
 
 /**
  * Middleware for handling exceptions. All Errors are handled here.
@@ -12,8 +11,6 @@ import { LogManager } from "App/Utils/AppLogger";
  * @return {Promise<void>}
  */
 export default class ErrorHandler {
-  private logger = new LogManager();
-
   /**
    * Handles the incoming HTTP request and response for exceptions.
    */
@@ -25,16 +22,14 @@ export default class ErrorHandler {
       await next();
     } catch (error) {
       if (error instanceof CustomException) {
-        // first Log the error
-        const errorType = error.sqlMessage
-          ? LogTools.LogTypes.DATABASE_ERROR
-          : LogTools.LogTypes.EXCEPTION_ERROR;
-
-        this.logger.log(errorType, {
-          error,
-          customMessage: error.stack ?? "No stack trace available",
-        });
-        // Try not send translated messages instead use generic ones in this middleware
+        rotaryLogger(
+          "ERROR",
+          {
+            details: error,
+          },
+          request,
+          { stack: error.stack ?? undefined }
+        );
         const translatedMessage =
           error.translatedMessage ??
           this.getTranslatedMessage(error, request.url());

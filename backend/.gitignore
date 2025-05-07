@@ -7,3 +7,4 @@ coverage
 tmp
 appLoggerErrorsDev.txt
 dev_log.log
+rotary.log

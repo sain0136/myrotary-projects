@@ -2,8 +2,6 @@ import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import Env from "@ioc:Adonis/Core/Env";
 import Stripe from "stripe";
 import Database from "@ioc:Adonis/Lucid/Database";
-import { LogManager } from "App/Utils/AppLogger";
-import { LogTools } from "App/Utils/AppLogger";
 import CustomException from "App/Exceptions/CustomException";
 import { CustomErrorType } from "App/Utils/CommonTypes";
 import Users from "App/Models/Users";
@@ -11,12 +9,6 @@ import { DateTime } from "luxon";
 import { IExtraDetails } from "App/Shared/Interfaces/IUser";
 
 export default class StripesController {
-  private logManager: LogManager;
-
-  constructor() {
-    this.logManager = new LogManager();
-  }
-
   public async store({ request }: HttpContextContract) {
     try {
       const payload = request.body() as Stripe.Event;
@@ -46,15 +38,7 @@ export default class StripesController {
         }
       }
     } catch (error) {
-      this.logManager.log(LogTools.LogTypes.CUSTOM_LOG, {
-        type: "stripe_error",
-        event: "stripe events",
-        source: "StripeController",
-        status: LogTools.Status.FAIL,
-        target: "database",
-        message: error,
-        customMessage: "Stripe webhook error",
-      });
+      // Error handling
     }
   }
 
@@ -84,24 +68,8 @@ export default class StripesController {
       if (user) {
         await this.updateSubscriptionEndDate(user.userId, null, true);
       }
-
-      this.logManager.log(LogTools.LogTypes.CUSTOM_LOG, {
-        type: "stripe_success",
-        event: "customer.subscription.deleted",
-        source: `subscription: ${subscriptionId}`,
-        status: LogTools.Status.SUCCESS,
-        message: "Stripe subscription deleted",
-      });
     } catch (error) {
-      this.logManager.log(LogTools.LogTypes.CUSTOM_LOG, {
-        type: "stripe_error",
-        event: "customer.subscription.deleted",
-        source: `subscription: ${subscriptionId}`,
-        status: LogTools.Status.FAIL,
-        target: "database",
-        message: error,
-        customMessage: "Stripe subscription cancelation write to DB failed",
-      });
+      // Error handling
     }
   }
 
@@ -124,24 +92,8 @@ export default class StripesController {
             subscription_id: subscriptionId.toString(),
           });
         });
-
-        this.logManager.log(LogTools.LogTypes.CUSTOM_LOG, {
-          type: "stripe_success",
-          event: "checkout.session.completed",
-          source: `user: ${userId}, club: ${clubId}`,
-          status: LogTools.Status.SUCCESS,
-          message: "Stripe subscription created",
-        });
       } catch (error) {
-        this.logManager.log(LogTools.LogTypes.CUSTOM_LOG, {
-          type: "stripe_error",
-          event: "checkout.session.completed",
-          source: `user: ${userId}`,
-          status: LogTools.Status.FAIL,
-          target: `club: ${clubId}, user: ${userId}`,
-          message: error,
-          customMessage: "Stripe subscription write to DB failed",
-        });
+        // Error handling
       }
     }
   }
@@ -204,13 +156,6 @@ export default class StripesController {
       const date = DateTime.fromSeconds(timestamp);
       await this.updateSubscriptionEndDate(userId, date);
       const updatedUser = await Users.findOrFail(userId);
-      this.logManager.log(LogTools.LogTypes.CUSTOM_LOG, {
-        type: "stripe_success",
-        event: "subscription.cancelled",
-        source: `subscription: ${subscriptionId}, user: ${userId}`,
-        status: "success",
-        message: "Stripe subscription cancelled",
-      });
       return response.status(200).json(updatedUser);
     } catch (error) {
       throw new CustomException(error as CustomErrorType);
@@ -248,13 +193,6 @@ export default class StripesController {
         signature,
         stripeWebhookSecret
       );
-      this.logManager.log(LogTools.LogTypes.CUSTOM_LOG, {
-        type: "stripe_success",
-        event: "webhook.verified",
-        source: "StripeController",
-        status: "success",
-        message: "Stripe webhook signature verified",
-      });
       return event;
     } catch (err) {
       throw new Error("Webhook signature verification failed");

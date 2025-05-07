@@ -4,9 +4,7 @@ import UserService from "App/Services/UserService";
 import CustomException from "App/Exceptions/CustomException";
 import { CustomErrorType, SessionDetails } from "App/Utils/CommonTypes";
 import { IUser } from "App/Shared/Interfaces/IUser";
-import { LogTools } from "App/Utils/AppLogger";
 import MailController from "App/Controllers/Http/MailController";
-import { LogManager } from "App/Utils/AppLogger";
 import Session from "App/Models/Session";
 import Event from "@ioc:Adonis/Core/Event";
 import { ResponseContract } from "@ioc:Adonis/Core/Response";
@@ -15,14 +13,9 @@ import Clubs from "App/Models/Clubs";
 import { v4 as uuidv4 } from "uuid";
 import Otp from "App/Models/Otp";
 import { DateTime } from "luxon";
+import rotaryLogger from "App/Utils/rotatryLogger";
 
 export default class UsersController {
-  private logManager: LogManager;
-
-  constructor() {
-    this.logManager = new LogManager();
-  }
-
   private initializeServices() {
     const userRepositories = new UserRepositories();
     const userService = new UserService(userRepositories);
@@ -74,22 +67,17 @@ export default class UsersController {
           lastActivity: new Date().toISOString(),
         });
       }
-      this.logManager.log(LogTools.LogTypes.ACCESS_LOG, {
-        sourceUser: userData.user,
-        event: LogTools.UserAccessEvent.LOGIN,
-        outcome: "success",
-        errorMessage: null,
-      });
       Event.emit("login", userData.user);
+      rotaryLogger(
+        "INFO",
+        {
+          message: `User ${userData.user.fullName} with email ${userData.user.email} logged in`,
+          details: userData.user,
+        },
+        request
+      );
       return response.json({ ...userData });
     } catch (error) {
-      this.logManager.log(LogTools.LogTypes.ACCESS_LOG, {
-        sourceUser: null,
-        event: LogTools.UserAccessEvent.LOGIN,
-        outcome: "fail",
-        errorMessage: error,
-        customMessage: `Email used: ${email}`,
-      });
       if (error.status === 404) {
         response.status(error.status).send({
           statusCode: error.status,
@@ -112,6 +100,14 @@ export default class UsersController {
         request.cookie("session_id");
 
       if (!sessionId?.value) {
+        rotaryLogger(
+          "INFO",
+          {
+            message: `User ${user.fullName} with email ${user.email} logged out`,
+            details: user,
+          },
+          request
+        );
         return response.json({ message: "User logged out sucessfully!" });
       }
       const userSession = await Session.findByOrFail(
@@ -127,22 +123,16 @@ export default class UsersController {
           status: 601,
         });
       }
-
-      this.logManager.log(LogTools.LogTypes.ACCESS_LOG, {
-        sourceUser: user,
-        event: LogTools.UserAccessEvent.LOGOUT,
-        outcome: "success",
-        errorMessage: null,
-        customMessage: "User logged out sucessfully!",
-      });
+      rotaryLogger(
+        "INFO",
+        {
+          message: `User ${user.fullName} with email ${user.email} logged out`,
+          details: user,
+        },
+        request
+      );
       return response.json({ message: "User logged out sucessfully!" });
     } catch (error) {
-      this.logManager.log(LogTools.LogTypes.ACCESS_LOG, {
-        sourceUser: null,
-        event: LogTools.UserAccessEvent.LOGOUT,
-        outcome: "fail",
-        errorMessage: error,
-      });
       throw new CustomException(error as CustomErrorType);
     }
   }
@@ -196,28 +186,8 @@ export default class UsersController {
           mailBodyMessage
         );
       }
-      this.logManager.log(LogTools.LogTypes.USER_LOG, {
-        sourceUser: sourceUser,
-        targetUser: createdUser,
-        event: LogTools.UserEditEvent.CREATE,
-        outcome: "success",
-        errorMessage: null,
-        customMessage: createdUser.isProspect
-          ? `Prospective ${createdUser.fullName} created`
-          : `User ${createdUser.fullName} created`,
-      });
       return response.json(true);
     } catch (error) {
-      this.logManager.log(LogTools.LogTypes.USER_LOG, {
-        sourceUser: sourceUser,
-        targetUser: user,
-        event: LogTools.UserEditEvent.CREATE,
-        outcome: "fail",
-        errorMessage: error,
-        customMessage: `User ${
-          user.firstname + " " + user.lastname
-        } creation failed`,
-      });
       throw new CustomException(error as CustomErrorType);
     }
   }
@@ -237,14 +207,6 @@ export default class UsersController {
         const customMessage = prospectApproved
           ? `Prospective ${updatedUser.fullName} approved and updated into a full user`
           : `User ${updatedUser.fullName} updated`;
-        this.logManager.log(LogTools.LogTypes.USER_LOG, {
-          sourceUser: sourceUser,
-          targetUser: user,
-          event: LogTools.UserEditEvent.UPDATE,
-          outcome: "success",
-          errorMessage: null,
-          customMessage: customMessage,
-        });
       }
       if (prospectApproved) {
         let requestOrigin =
@@ -256,13 +218,6 @@ export default class UsersController {
       }
       return response.json(true);
     } catch (error) {
-      this.logManager.log(LogTools.LogTypes.USER_LOG, {
-        sourceUser: null,
-        targetUser: null,
-        event: LogTools.UserEditEvent.UPDATE,
-        outcome: "fail",
-        errorMessage: error,
-      });
       throw new CustomException(error as CustomErrorType);
     }
   }
@@ -279,24 +234,8 @@ export default class UsersController {
       id = userId;
       const { userService } = this.initializeServices();
       const deletedUser = await userService.deleteUser(userId);
-      this.logManager.log(LogTools.LogTypes.USER_LOG, {
-        sourceUser: sourceUser,
-        targetUser: deletedUser,
-        event: LogTools.UserEditEvent.DELETE,
-        outcome: "success",
-        errorMessage: null,
-        customMessage: `User ${deletedUser.fullName} deleted`,
-      });
       return response.json(true);
     } catch (error) {
-      this.logManager.log(LogTools.LogTypes.USER_LOG, {
-        sourceUser: source,
-        targetUser: null,
-        event: LogTools.UserEditEvent.DELETE,
-        outcome: "fail",
-        errorMessage: error,
-        customMessage: `User deletion failed for user id: ${id}`,
-      });
       throw new CustomException(error as CustomErrorType);
     }
   }
