@@ -86,7 +86,7 @@ const submitEmail = async () => {
     if (!isFormValid) {
       return;
     }
-    await mailApi.sendMail(mail as IEmail);
+    mailApi.sendMail(mail as IEmail);
     handleSuccess(langTranslations.value.toastSuccess);
     mail.senderEmail = "";
     mail.senderName = "";
