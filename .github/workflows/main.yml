@@ -31,7 +31,6 @@ jobs:
               rm -rf "$BUILD_DIR"
             fi
             npm install
-            # node ace build --ignore-ts-errors
             node ace build --production --ignore-ts-errors
             sudo chown -R servicehost:servicehost /opt/apps/myrotary-projects/backend/build
             sudo chmod -R u+rwX /opt/apps/myrotary-projects/backend/build
