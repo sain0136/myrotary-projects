@@ -31,6 +31,7 @@ jobs:
               rm -rf "$BUILD_DIR"
             fi
             npm install
+            # node ace build --ignore-ts-errors
             node ace build --production --ignore-ts-errors
             sudo chown -R servicehost:servicehost /opt/apps/myrotary-projects/backend/build
             sudo chmod -R u+rwX /opt/apps/myrotary-projects/backend/build
@@ -46,7 +47,6 @@ jobs:
             pm2 delete ProductionApi
             pm2 list
             pm2 save
-            # pm2 start server.js \  --name ProductionApiDebug \--node-args="--inspect=0.0.0.0:9229"
 
             pm2 start /opt/apps/myrotary-projects/backend/build/server.js  >> production_rotary_log.log -i -f --name ProductionApi
             pm2 save --force
