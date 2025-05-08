@@ -45,6 +45,7 @@ jobs:
             
             # Manage PM2 processes
             pm2 delete ProductionApi
+            # pm2 delete ProductionApiDebug
             pm2 list
             pm2 save
             # pm2 start /opt/apps/myrotary-projects/backend/build/server.js \  --name ProductionApiDebug \--node-args="--inspect=0.0.0.0:9229" 
