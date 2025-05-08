@@ -99,6 +99,12 @@ export class ApiClient {
       this.handleClubNotSubscribed(errorObject);
       return undefined;
     }
+    if (response.status === 504) {
+      throw new CustomErrors(504, {
+        en: "Internal Server Error. Please try again later.",
+        fr: "Erreur interne du serveur. Veuillez reessayer plus tard.",
+      });
+    }
     if (response.status !== 200) {
       if (errorObject.message?.includes("JSON")) {
         throw new CustomErrors(501, {

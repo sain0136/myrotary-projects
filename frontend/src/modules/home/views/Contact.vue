@@ -86,7 +86,7 @@ const submitEmail = async () => {
     if (!isFormValid) {
       return;
     }
-    mailApi.sendMail(mail as IEmail);
+    await mailApi.sendMail(mail as IEmail);
     handleSuccess(langTranslations.value.toastSuccess);
     mail.senderEmail = "";
     mail.senderName = "";
@@ -205,15 +205,4 @@ const getErrorMessage = (validationObject: string) => {
 <style lang="scss" scoped>
 @import "@/assets/_variables.scss";
 
-.icon {
-  // padding: 1rem;
-  // width: 2rem;
-  // height: 2rem;
-  // font-size: 1rem;
-  // color: #cdcdcd;
-  // border-radius: 50%;
-  // text-align: center;
-  // border: 0.1rem solid #a7a7a7;
-  // margin-right: 2rem;
-}
 </style>

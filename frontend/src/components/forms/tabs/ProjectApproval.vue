@@ -77,7 +77,7 @@ const approveProject = async (reject?: boolean) => {
         projectStatus.FULLYFUNDED,
         useActiveProjectStore().activeProject.project_id
       );
-      mailApi.sendMail(mailTemplates.projectRejectTemplate);
+      await mailApi.sendMail(mailTemplates.projectRejectTemplate);
       handleSuccess(langTranslations.value.toastSuccess);
       redirect();
       return
