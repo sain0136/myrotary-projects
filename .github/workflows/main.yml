@@ -47,7 +47,7 @@ jobs:
             pm2 list
             pm2 save
 
-            pm2 start /opt/apps/myrotary-projects/backend/build/server.js  >> production_rotary_log.log -i -f --name ProductionApi
+            pm2 start /opt/apps/myrotary-projects/backend/build/server.js --name ProductionApi
             pm2 save --force
             pm2 list
             
