@@ -4,11 +4,19 @@ import CustomException from "App/Exceptions/CustomException";
 import { CustomErrorType } from "App/Utils/CommonTypes";
 import { IEmail } from "App/Shared/Interfaces/IMail";
 import Env from "@ioc:Adonis/Core/Env";
+import rotaryLogger from "App/Utils/rotatryLogger";
 
 export default class MailController {
   public async send({ request, response }: HttpContextContract) {
     try {
       const newEmail = request.body() as IEmail;
+      rotaryLogger(
+        "INFO",
+        {
+          message: "Attempting to send email to " + newEmail.senderEmail,
+        },
+        request
+      );
       await Mail.send((message) => {
         message
           .from(Env.get("SMTP_SENDER_ADDRESS"))
