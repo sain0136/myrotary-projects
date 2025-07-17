@@ -76,7 +76,6 @@ const clubApi = new ClubApi(new ApiClient());
 const districtApi = new DistrictApi(new ApiClient());
 const allDistricts = [];
 
-// TODO: Verify later district names are unique in db
 const districtMap = reactive<Map<string, number>>(new Map());
 const chosenDistrict = ref("");
 const chosenDistrictError = ref({
@@ -332,7 +331,6 @@ const getErrorMessage = (validationObject: string) => {
         v-model="chosenClub"
         :disabled="isEdit"
       />
-      <!-- TODO: implications of changes to users role -->
       <BaseSelect
         v-if="formType === 'siteAdminDistrict'"
         class="w-1/2"

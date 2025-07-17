@@ -29,7 +29,7 @@ const projectApproval = ref("");
 const mailTemplates: Record<string, IEmail> = {
   projectRejectTemplate: {
     receiverEmail:
-      useActiveProjectStore().activeProject.projectDetails.creatorData.email, // TODO: all project admins get email ?
+      useActiveProjectStore().activeProject.projectDetails.creatorData.email, 
     subject: langTranslations.value.mailTemplates.projectRejectTemplate.subject,
     messageBody: {
       message: customPrintf(
@@ -48,7 +48,7 @@ const mailTemplates: Record<string, IEmail> = {
   },
   reportRejectTemplate: {
     receiverEmail:
-      useActiveProjectStore().activeProject.projectDetails.creatorData.email, // TODO: all project admins get email ?
+      useActiveProjectStore().activeProject.projectDetails.creatorData.email, 
     subject: langTranslations.value.mailTemplates.reportRejectTemplate.subject,
     messageBody: {
       message: customPrintf(

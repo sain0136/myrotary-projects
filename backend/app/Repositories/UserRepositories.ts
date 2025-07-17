@@ -227,7 +227,6 @@ export default class UserRepositories {
     }
     let districtAdminsToEmail: string[] = [];
     if (prospectUser && createdUser.districtId) {
-      // TODO : Refactor this query for speed in future use query to get only 5 admins
       const admins = await Users.query().where(
         "district_id",
         createdUser.districtId

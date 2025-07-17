@@ -138,7 +138,6 @@ const activeTab = ref(
       : "form"
     : "form"
 );
-// TODO
 
 const fundingSources = ref<IFundingSource>({
   sourceName: "",
@@ -801,6 +800,19 @@ const setDistrictId = (districtId: number) => {
 const setClubId = (clubId: number) => {
   project.club_id = clubId;
 };
+
+const getErrorMessage = (validationObject: string) => {
+  const keys = validationObject.split('.');
+  let current = v$.value;
+  
+  for (const key of keys) {
+    current = current[key];
+    if (!current) return undefined;
+  }
+  
+  const error = current.$errors && current.$errors[0];
+  return error ? error.$message.toString() : undefined;
+};
 </script>
 
 <template>
@@ -924,7 +936,7 @@ const setClubId = (clubId: number) => {
           v-model="project.project_name"
           :label="langTranslations.projectFormLabels.projectNameLabel"
           :type="'text'"
-          :errorMessage="v$.project_name.$errors[0]?.$message as string | undefined"
+          :errorMessage="getErrorMessage('project_name')"
         />
       </div>
       <div class="textarea-block">
@@ -933,7 +945,7 @@ const setClubId = (clubId: number) => {
           v-model="project.project_description"
           :rows="7"
           :label="langTranslations.desciptionLabel"
-          :errorMessage="v$.project_description?.$errors[0]?.$message as string | undefined "
+          :errorMessage="getErrorMessage('project_description')"
         />
       </div>
       <div class="form-block">
@@ -942,28 +954,28 @@ const setClubId = (clubId: number) => {
           v-model="project.country"
           :label="langTranslations.countryLabel"
           :options="ResourceList.countryList"
-          :errorMessage="v$.country?.$errors[0]?.$message as string | undefined "
+          :errorMessage="getErrorMessage('country')"
         />
         <BaseSelect
           :disabled="disabledMode"
           v-model="project.region"
           :label="langTranslations.landingPage.regionLabel"
           :options="ResourceList.regionList"
-          :errorMessage="v$.region?.$errors[0]?.$message as string | undefined "
+          :errorMessage="getErrorMessage('region')"
         />
         <BaseInput
           :disabled="disabledMode"
           v-model="project.start_date"
           :label="langTranslations.projectFormLabels.startDateLabel"
           :type="'date'"
-          :errorMessage="v$.start_date?.$errors[0]?.$message as string | undefined "
+          :errorMessage="getErrorMessage('start_date')"
         />
         <BaseInput
           :disabled="disabledMode"
           v-model="project.completion_date"
           :label="langTranslations.projectFormLabels.completionDateLabel"
           :type="'date'"
-          :errorMessage="v$.completion_date?.$errors[0]?.$message as string | undefined "
+          :errorMessage="getErrorMessage('completion_date')"
         />
       </div>
       <div class="area-of-focus-section form-block">
@@ -982,12 +994,12 @@ const setClubId = (clubId: number) => {
         </div>
       </div>
       <p
-        v-if="v$.area_focus?.$errors[0]?.$message as string | undefined"
+        v-if="getErrorMessage('area_focus')"
         id="error"
         class="my-4 text-sm text-red-600 text-center"
       >
         <span class="font-medium">{{
-          v$.area_focus?.$errors[0]?.$message as string | undefined
+          getErrorMessage('area_focus')
         }}</span>
       </p>
       <Hr />
@@ -1001,8 +1013,7 @@ const setClubId = (clubId: number) => {
             '1.' +
             langTranslations.projectFormLabels.benefit_community_description
           "
-          :errorMessage="v$.extra_descriptions
-                .benefit_community_description?.$errors[0]?.$message as string | undefined "
+          :errorMessage="getErrorMessage('extra_descriptions.benefit_community_description')"
         />
         <BaseTextarea
           :disabled="disabledMode"
@@ -1012,7 +1023,7 @@ const setClubId = (clubId: number) => {
             '2.' +
             langTranslations.projectFormLabels.non_financial_participation
           "
-          :errorMessage="v$.extra_descriptions.non_financial_participation?.$errors[0]?.$message as string | undefined "
+          :errorMessage="getErrorMessage('extra_descriptions.non_financial_participation')"
         />
         <BaseTextarea
           :disabled="disabledMode"
@@ -1037,28 +1048,28 @@ const setClubId = (clubId: number) => {
             v-model="project.extra_descriptions.primary_contact.name"
             :label="langTranslations.nameLabel"
             :type="'text'"
-            :errorMessage="v$.extra_descriptions.primary_contact.name.$errors[0]?.$message as string | undefined"
+            :errorMessage="getErrorMessage('extra_descriptions.primary_contact.name')"
           />
           <BaseInput
             :disabled="disabledMode"
             v-model="project.extra_descriptions.primary_contact.address"
             :label="langTranslations.addressLabel"
             :type="'text'"
-            :errorMessage="v$.extra_descriptions.primary_contact.address.$errors[0]?.$message as string | undefined"
+            :errorMessage="getErrorMessage('extra_descriptions.primary_contact.address')"
           />
           <BaseInput
             :disabled="disabledMode"
             v-model="project.extra_descriptions.primary_contact.email"
             :label="langTranslations.email"
             :type="'email'"
-            :errorMessage="v$.extra_descriptions.primary_contact.email.$errors[0]?.$message as string | undefined"
+            :errorMessage="getErrorMessage('extra_descriptions.primary_contact.email')"
           />
           <BaseInput
             :disabled="disabledMode"
             v-model="project.extra_descriptions.primary_contact.phone"
             :label="langTranslations.phone"
             :type="'text'"
-            :errorMessage="v$.extra_descriptions.primary_contact.phone.$errors[0]?.$message as string | undefined"
+            :errorMessage="getErrorMessage('extra_descriptions.primary_contact.phone')"
           />
         </div>
         <Hr />
@@ -1405,12 +1416,12 @@ const setClubId = (clubId: number) => {
           <ErrorValidation
             class="text-center"
             v-if="anticipatedFundingErrors.error"
-            :errorMsg="anticipatedFundingErrors.messages as string | undefined"
+            :errorMsg="anticipatedFundingErrors.messages"
           />
           <ErrorValidation
             class="text-center"
             v-if="v$.anticipated_funding.$error"
-            :errorMsg="v$.anticipated_funding?.$errors[0]?.$message  as string | undefined"
+            :errorMsg="getErrorMessage('anticipated_funding')"
           />
         </div>
       </div>

@@ -81,7 +81,7 @@ export default class Projects extends BaseModel {
 
   @column()
   public currency: string;
-  // Todo: Are these strings or objects will they be returned unseralized ?
+  
   @column()
   public extraDescriptions: string;
 

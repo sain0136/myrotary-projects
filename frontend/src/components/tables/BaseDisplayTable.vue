@@ -72,7 +72,6 @@ const {
   rowEvents,
 } = defineProps<{
   currentPage: number;
-  // TODO transform any into types maybe
   tableData: any[];
   columns: ColumnOptions[];
   handlePageChange: (nextOrPrevious: "next" | "previous") => void;
@@ -90,9 +89,7 @@ const {
   viewDetailsButton?: ButtonOptions;
   disablePagination?: Boolean;
   hideActionsColumn?: boolean;
-  //TODO perhaps make expict union type  selectedItems typed ? like allow a select types that can be passed in
   multiSelectDelete?: (selectedItems: unknown[]) => void;
-  // TODO transform all these unknowns into types
   rowEvents?: (row: unknown) => void;
 }>();
 
