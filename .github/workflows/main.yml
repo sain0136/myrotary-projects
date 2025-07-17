@@ -34,6 +34,7 @@ jobs:
             node ace build --production --ignore-ts-errors
             sudo chown -R servicehost:servicehost /opt/apps/myrotary-projects/backend/build
             sudo chmod -R u+rwX /opt/apps/myrotary-projects/backend/build
+            
             # Copy environment file to build directory
             cp /opt/apps/productionfiles/myrotary/.env /opt/apps/myrotary-projects/backend/build
             
@@ -46,7 +47,6 @@ jobs:
             pm2 delete ProductionApi
             pm2 list
             pm2 save
-
             pm2 start /opt/apps/myrotary-projects/backend/build/server.js --name ProductionApi
             pm2 save --force
             pm2 list
@@ -68,6 +68,7 @@ jobs:
             sudo mv /opt/apps/myrotary-projects/frontend/dist /var/www/pro
             #ENDSSH
             # '
+            
   # test:
   #   needs: deploy
   #   runs-on: ubuntu-latest
