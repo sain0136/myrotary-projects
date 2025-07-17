@@ -297,7 +297,6 @@ const getErrorMessage = (validationObject: string) => {
       `"
     />
     <div class="mb-4 text-sm text-gray-500">
-      <!-- // TODO: Figuere this text out later -->
       <p class="mb-2">
         {{ langTranslations.pledgeProcess.pledgeFormInfoLabel }}
       </p>

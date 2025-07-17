@@ -261,123 +261,51 @@ const getErrorMessage = (validationObject: string) => {
 
 <template>
   <form @submit.prevent class="">
-    <!-- Form header -->
-    <!-- TODO: Add prospect user header -->
     <H2 class="text-center" :content="langTranslations.userFormHeader" />
     <div class="flex-block flex-col items-center justify-center">
-      <BaseInput
-        v-model="prospectUserDistrictName"
-        :label="langTranslations.prospectUserForm.districtLabel"
-        :type="'text'"
-        :disabled="true"
-      />
-      <BaseInput
-        v-model="prospectUserClubName"
-        :label="langTranslations.baseClubLabel"
-        :type="'text'"
-        :disabled="true"
-      />
+      <BaseInput v-model="prospectUserDistrictName" :label="langTranslations.prospectUserForm.districtLabel"
+        :type="'text'" :disabled="true" />
+      <BaseInput v-model="prospectUserClubName" :label="langTranslations.baseClubLabel" :type="'text'"
+        :disabled="true" />
       <!--Right now, Only DistrictRole are being accepted. Add support for ClubRole to? check commonTypes.ts -->
-      <BaseInput
-        v-model="user.role"
-        :label="langTranslations.roleLabel"
-        :type="'text'"
-        :disabled="true"
-      />
+      <BaseInput v-model="user.role" :label="langTranslations.roleLabel" :type="'text'" :disabled="true" />
     </div>
     <div class="form-block">
-      <BaseInput
-        v-model="user.firstname"
-        :label="langTranslations.userForm.firstNameLabel"
-        :type="'text'"
-        :errorMessage="getErrorMessage('firstname')"
-        :disabled="true"
-      />
-      <BaseInput
-        v-model="user.lastname"
-        :label="langTranslations.userForm.lastNameLabel"
-        :type="'text'"
-        :errorMessage="getErrorMessage('lastname')"
-        :disabled="true"
-      />
-      <BaseInput
-        v-model="user.address"
-        :label="langTranslations.addressLabel"
-        :type="'text'"
-        :errorMessage="getErrorMessage('address')"
-        :disabled="true"
-      />
-      <BaseInput
-        v-model="user.user_city"
-        :label="langTranslations.cityLabel"
-        :type="'text'"
-        :errorMessage="getErrorMessage('user_city')"
-        :disabled="true"
-      />
-      <BaseInput
-        v-model="user.user_postal"
-        :label="langTranslations.postalCodeLabel"
-        :type="'text'"
-        :errorMessage="getErrorMessage('user_postal')"
-        :disabled="true"
-      />
-      <BaseSelect
-        v-model="user.user_country"
-        :label="langTranslations.countryLabel"
-        :options="ResourceList.countryList"
-        :errorMessage="getErrorMessage('user_country')"
-        :disabled="true"
-      />
-      <BaseInput
-        v-model="user.user_province"
-        :label="langTranslations.stateOrProvinceLabel"
-        :type="'text'"
-        :errorMessage="getErrorMessage('user_province')"
-        :disabled="true"
-      />
-      <BaseInput
-        v-model="user.phone"
-        :label="langTranslations.phone"
-        :type="'text'"
-        :errorMessage="getErrorMessage('phone')"
-        :disabled="true"
-      />
-      <BaseInput
-        v-model="user.email"
-        :label="langTranslations.email"
-        :type="'email'"
-        :errorMessage="getErrorMessage('email')"
-        :disabled="true"
-      />
+      <BaseInput v-model="user.firstname" :label="langTranslations.userForm.firstNameLabel" :type="'text'"
+        :errorMessage="getErrorMessage('firstname')" :disabled="true" />
+      <BaseInput v-model="user.lastname" :label="langTranslations.userForm.lastNameLabel" :type="'text'"
+        :errorMessage="getErrorMessage('lastname')" :disabled="true" />
+      <BaseInput v-model="user.address" :label="langTranslations.addressLabel" :type="'text'"
+        :errorMessage="getErrorMessage('address')" :disabled="true" />
+      <BaseInput v-model="user.user_city" :label="langTranslations.cityLabel" :type="'text'"
+        :errorMessage="getErrorMessage('user_city')" :disabled="true" />
+      <BaseInput v-model="user.user_postal" :label="langTranslations.postalCodeLabel" :type="'text'"
+        :errorMessage="getErrorMessage('user_postal')" :disabled="true" />
+      <BaseSelect v-model="user.user_country" :label="langTranslations.countryLabel" :options="ResourceList.countryList"
+        :errorMessage="getErrorMessage('user_country')" :disabled="true" />
+      <BaseInput v-model="user.user_province" :label="langTranslations.stateOrProvinceLabel" :type="'text'"
+        :errorMessage="getErrorMessage('user_province')" :disabled="true" />
+      <BaseInput v-model="user.phone" :label="langTranslations.phone" :type="'text'"
+        :errorMessage="getErrorMessage('phone')" :disabled="true" />
+      <BaseInput v-model="user.email" :label="langTranslations.email" :type="'email'"
+        :errorMessage="getErrorMessage('email')" :disabled="true" />
     </div>
     <div class="button_row mt-4 flex justify-center gap-4">
-      <RotaryButton
-        :theme="'primary'"
-        :label="langTranslations.approveLabel"
-        @click="
-          async () => {
-            await approveUser(user);
-            handleSuccess(langTranslations.toastSucessApproveProspect, true);
-            redirect();
-          }
-        "
-      />
-      <RotaryButton
-        :theme="'primary'"
-        :label="langTranslations.denyLabel"
-        @click="
-          async () => {
-            await denyUser(user);
-            handleInfo(langTranslations.toastDenyProspect, true);
-            redirect();
-          }
-        "
-      />
-      <RotaryButton
-        :theme="'primary'"
-        :label="langTranslations.cancelLabel"
-        @click="redirect()"
-      />
+      <RotaryButton :theme="'primary'" :label="langTranslations.approveLabel" @click="
+        async () => {
+          await approveUser(user);
+          handleSuccess(langTranslations.toastSucessApproveProspect, true);
+          redirect();
+        }
+      " />
+      <RotaryButton :theme="'primary'" :label="langTranslations.denyLabel" @click="
+        async () => {
+          await denyUser(user);
+          handleInfo(langTranslations.toastDenyProspect, true);
+          redirect();
+        }
+      " />
+      <RotaryButton :theme="'primary'" :label="langTranslations.cancelLabel" @click="redirect()" />
     </div>
   </form>
 </template>

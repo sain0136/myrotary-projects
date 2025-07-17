@@ -17,7 +17,7 @@ export const useLoggedInUserStore = defineStore(
     const serverSent = ref({
       connected: false,
       errorDisconnect: false,
-      lastPing: luxon.DateTime.now(), // TODO: Set Up a reconnect mechanism? This will be for case of connection lost from backend side not due to user logout or refresh
+      lastPing: luxon.DateTime.now(),
     });
 
     function setLoggedInUser(user: IUser) {

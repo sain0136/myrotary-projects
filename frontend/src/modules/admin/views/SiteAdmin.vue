@@ -20,8 +20,6 @@ const drawer = ref(false);
     <div class="antialiased bg-nearWhite dark:bg-gray-900 flex flex-col w-full">
       <AdminHeader :drawer-val="drawer" v-model="drawer" />
       <SideNavigation :key="languagePref" v-model="drawer" :drawer="drawer" />
-      // TODO - to use key to re-render this whole component might be a bad //
-      idea
       <main :key="languagePref" class="p-4 md:ml-64 h-full pt-20">
         <div class="fluid-container h-full">
           <router-view></router-view>

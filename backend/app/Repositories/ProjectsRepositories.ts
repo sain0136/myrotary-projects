@@ -172,7 +172,6 @@ export default class ProjectsRepositories {
         last_page: projectRolesRepositories.lastPage,
       },
     };
-    // TODO : Refactor Hackish
     for await (const project of projectRolesRepositories) {
       const associatedProject = await Projects.query()
         .select()

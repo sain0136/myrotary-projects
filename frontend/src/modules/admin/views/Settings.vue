@@ -21,7 +21,6 @@ const tabs = ref([
   { name: "logo", label: langTranslations.value.adminDash.logoTabLabel },
   { name: "setting", label: langTranslations.value.adminDash.settingsLabel },
 ]);
-// TODO add scroll to top - testing
 /* Hooks */
 onMounted(async () => {
   if (route.query.tabNameProp) {
