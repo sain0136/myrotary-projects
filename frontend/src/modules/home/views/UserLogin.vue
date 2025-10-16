@@ -113,7 +113,7 @@ const errorMessageForPassword = () => {
   <div class="flex justify-center items-center my-8">
     <form
       @submit.prevent="handleSubmit"
-      class="bg-nearWhite w-4/5 md:w-auto lg:w-1/4 p-5 rounded-lg border-solid border-primary border-2"
+      class="bg-nearWhite w-1/2 md:w-auto p-5 rounded-lg border-solid border-primary border-2"
     >
       <div class="py-10">
         <BaseInput
