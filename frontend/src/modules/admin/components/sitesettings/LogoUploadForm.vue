@@ -32,10 +32,7 @@ const validationData: ValidationData = reactive({
 });
 const validationRules = {
   image: {
-    required: helpers.withMessage(
-      langTranslations.value.formErorrText.noFilesUpload,
-      required
-    ),
+    required: helpers.withMessage(langTranslations.value.formErorrText.noFilesUpload, required),
   },
 };
 const uploadsApi = new UploadsApi(new ApiClient());
@@ -67,9 +64,7 @@ const submit = async () => {
       };
       await uploadsApi.uploadFile(req);
       validationData.image = null;
-      const fileInput = document.getElementById(
-        "file_input"
-      ) as HTMLInputElement;
+      const fileInput = document.getElementById("file_input") as HTMLInputElement;
       fileInput.value = "";
       const updateResponse = await assetsApi.getMainAssets();
       siteAssetsStore.setSiteAssets(updateResponse);
@@ -109,11 +104,7 @@ const submit = async () => {
       {{ langTranslations.fileUploadLabelFormats }}
     </p>
     <div>
-      <RotaryButton
-        :label="langTranslations.submit"
-        :theme="'black'"
-        @click="submit()"
-      />
+      <RotaryButton :label="langTranslations.submit" :theme="'black'" @click="submit()" />
     </div>
   </div>
 </template>
